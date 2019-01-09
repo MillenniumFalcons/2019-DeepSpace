@@ -34,7 +34,7 @@ public class Drivetrain
         if(!pracBot)
 		{
 			//Config left side PID settings
-			leftSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder , 0, Constants.kTimeoutMs);
+			leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative , 0, Constants.kTimeoutMs);
 			leftSRX.setSensorPhase(false);
 			leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
 			leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
@@ -47,7 +47,7 @@ public class Drivetrain
 			leftSRX.config_kI(Constants.drivePID, Constants.lDrivekI, Constants.kTimeoutMs);
 			leftSRX.config_kD(Constants.drivePID, Constants.lDrivekD, Constants.kTimeoutMs);
 			//Config right side PID settings
-			rightSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder , Constants.drivePID, Constants.kTimeoutMs);
+			rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative , Constants.drivePID, Constants.kTimeoutMs);
 			rightSRX.setSensorPhase(false);
 			rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
 			rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
