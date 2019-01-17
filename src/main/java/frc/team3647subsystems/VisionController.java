@@ -1,20 +1,33 @@
+//Class created by Kunal Singla
+
 package frc.team3647subsystems;
 
-public class Vision
-{
-    double x, y, area, speed, sumError, prevError;
+import frc.team3647inputs.Limelight;
+import frc.team3647subsystems.Drivetrain;   //using Drivetrain class to move motors
 
-    public void setVariables(double x, double y, double speed, double sumError, double prevError)
+public class VisionController
+{
+
+    private double x, y, speed, area, sumError, prevError;
+    //x is the tx degree value from Limelight Class
+    //y is the ty degree value from Limelight Class
+    //area is the ta value from Limelight Class. The ratio of the object area to the entire picture area, as a percent.
+    //sumError is theglobal vairable to keep track of the sum of all the error values in the PID loop
+    //prevError is the global variable to keep track of the previous error in the PID loop
+    Limelight limelight = new Limelight();
+
+
+    public void updateInputs()  //update Limelight Inputs
     {
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.sumError = sumError;
-        this.prevError = prevError;
+        x = limelight.getX();
+        y = limelight.getY();
+        area = limelight.getArea();
     }
 
+    // Drivebase Bot -> kP = .45, kI = 0.035, kD = .9
     public void center(double kp, double ki, double kd, double errorThreshold)  //method to center the robot to target without moving toward target
 	{
+        updateInputs();
 		double error = this.x / 27; //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
 		if(error > -errorThreshold && error < errorThreshold)   //checking if the error is within a threshold to stop the robot from moving
 		{
@@ -29,18 +42,18 @@ public class Vision
     
     public void follow(double kp, double ki, double kd, double errorThreshold, double defaultSpeed, double targetArea)    //method for robot to follow a target while maintaing center point
 	{
-        double error = this.x / 27;                            //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
-        if(this.area >= targetArea/2)
+        updateInputs();
+        double error = this.x / 27;                                 //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
+        if(this.area >= targetArea/2)                               //redundant "if" in order to make sure the robot stops
         {
-            Drivetrain.setSpeed(0,0);    //set drivetrain to default speed if target distance is unreached
+            Drivetrain.setSpeed(0,0);                               //set drivetrain to 0 speed if target distance is unreached
         }
 
-		if( (error > -errorThreshold) && (error < errorThreshold) )
+		if( (error > -errorThreshold) && (error < errorThreshold) ) //if error is in between the threshold execute following statements
 		{
-            if(this.area < targetArea-2)
+            if(this.area < targetArea/2)
             {
-                // Drivetrain.setSpeed(.5-(.37*this.area/targetArea), .5-(.37*this.area/targetArea));    //set drivetrain to default speed if target distance is unreached
-                Drivetrain.setSpeed(.5,.5);    //set drivetrain to default speed if target distance is unreached
+                Drivetrain.setSpeed(defaultSpeed,defaultSpeed);     //set drivetrain to default speed if target distance is unreached
             }
             else
             {
@@ -55,6 +68,7 @@ public class Vision
 
     private void centerAlgorithm(double error, double kp, double ki, double kd)
     {
+        updateInputs();
         double diffError = (error - prevError); // difference in the current error minus the (global variable) previous
                                                 // error
         sumError = sumError + error;            // sum of the error (global variable) + the current error
@@ -63,21 +77,13 @@ public class Vision
         speed = output;
 
         if (speed > 0 && speed < .25)       // Speed threshold if in between 0 and .25, set speed to .25
-        {
             speed = 0.25;
-        }
         else if (speed < 0 && speed > -.25) // Speed threshold if in between -.25 and 0, set speed to -.25
-        {
             speed = -0.25;
-        }
         else if (speed > 1)                 // Speed threshold if greater than 1, set speed to 1
-        {    
             speed = 1;
-        }
         else if (speed < -1)                // Speed threshold if less than -1, set speed to -1
-        {    
             speed = -1;
-        }    
 
         prevError = error; // update prevError to current Error
 
@@ -86,6 +92,7 @@ public class Vision
 
     public void bangBang(double speed, double threshold) //bang bang vision controller (simplest non-PID centering algorithm)
     {
+        updateInputs();
         if (x > threshold && x < -threshold)    //if x is between threshold, drivetrain is set to zero speed
 		{
 			Drivetrain.setSpeed(0, 0);
@@ -104,4 +111,13 @@ public class Vision
         }
     }
 
+    public double getPrevError()    //get prevError, because prevError is private
+    {
+        return this.prevError;
+    }
+
+    public double getSumError()     //get sumError, because sumError is private
+    {
+        return this.sumError;
+    }
 }

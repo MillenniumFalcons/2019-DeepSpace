@@ -1,18 +1,14 @@
 package frc.team3647inputs;
 
-import frc.team3647subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.*;
 
 public class Limelight
 {
-    private double x, y, area, speed, sumError, prevError;
+    private double x, y, area;
     //x is the tx degree value from Limelight Network Table
     //y is the ty degree value from Limelight Network Table
     //area is the ta value from Limelight Network Table. The ratio of the object area to the entire picture area, as a percent.
-    //speed is a given, cmon
-    //sumError is theglobal vairable to keep track of the sum of all the error values in the PID loop
-    //prevError is the global variable to keep track of the previous error in the PID loop
 
     public NetworkTable table;  // NetworkTable is the class used to grab values from the Limelight Network Table
 
@@ -51,20 +47,5 @@ public class Limelight
     public double getArea()         //get area, because area is private
     {
         return this.area;
-    }
-
-    public double getSpeed()        //get speed, because speed is private
-    {
-        return this.speed;
-    }
-
-    public double getPrevError()    //get prevError, because prevError is private
-    {
-        return this.prevError;
-    }
-
-    public double getSumError()     //get sumError, because sumError is private
-    {
-        return this.sumError;
     }
 }
