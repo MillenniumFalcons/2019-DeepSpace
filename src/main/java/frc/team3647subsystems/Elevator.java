@@ -9,7 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Elevator
 {
-    public static int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
+	public static int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
+	
+	public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
     public static WPI_TalonSRX leftGearboxMaster = new WPI_TalonSRX(Constants.leftGearboxSRX);
 	public static WPI_TalonSRX rightGearboxSRX = new WPI_TalonSRX(Constants.rightGearboxSRX);
@@ -105,6 +107,87 @@ public class Elevator
 		}
     }
     
+	public static void setElevatorEncoder()
+	{
+        if(reachedBottom())
+		{
+            resetElevatorEncoders();
+		}
+		elevatorEncoderValue = leftGearboxMaster.getSelectedSensorPosition(0);
+		elevatorVelocity = leftGearboxMaster.getSelectedSensorVelocity(0);
+	}
+	
+	public static void resetElevatorEncoders()
+	{
+        Elevator.leftGearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
+	}
 
+	public static boolean reachedBottom()//false/true for comp, true/false for prac
+	{
+		if(!Robot.pracBot)
+		{
+			if(bannerSensor.get())
+			{
+				return false;//true for prac, false for comp
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else 
+		{
+			if(bannerSensor.get())
+			{
+				return true;//true for prac, false for comp
+			}
+			else
+			{
+				return false;
+			}
+		}
+        
+	}
+
+	public static void setElevatorButtons(boolean Button)
+	{
+		//supposedly 8 levels
+	}
+
+	public static void setManualOverride(double jValue)
+	{
+        if(Math.abs(jValue) <.2 )
+		{
+			manualOverride = false;
+		}
+		else
+		{
+            overrideValue = jValue;
+			manualOverride = true;
+		}
+	}
+
+	public static void testElevatorEncoders()
+    {
+        System.out.println("Elevator Encoder Value: " + elevatorEncoderValue + "Elevator Velocity: " + elevatorVelocity);
+	}
+
+	public static void testBannerSensor()
+    {
+        if(reachedBottom())
+        {
+            System.out.println("Banner Sensor Triggered!");
+        }
+        else
+        {
+            System.out.println("Banner Sensor Not Triggered!");
+        }
+    }
+
+    public static void testElevatorCurrent()
+    {
+        System.out.println("Right Elevator Current:" + leftGearboxMaster.getOutputCurrent());
+	}
+	
 
 }
