@@ -23,4 +23,13 @@ public class Constants
 	public final static double rDrivekD = 0;
 	public final static double velocityConstant = 1550;
 
+	//Sensor Pins
+	public static final int elevatorBannerSensor = 1; //TO BE CHANGED
+
+	//Elevator Motor Pins
+	public static final int leftGearboxSRX = 1;
+	public static final int rightGearboxSRX = 1;
+	public static final int leftGearboxSPX = 1;
+	public static final int rightGearboxSPX = 1;
+
 }
