@@ -38,12 +38,14 @@ public class Drivetrain
 			leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
 			leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
 			leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
 			//Config left side PID Values
 			leftSRX.selectProfileSlot(Constants.drivePID, 0);
 			leftSRX.config_kF(Constants.drivePID, Constants.lDrivekF, Constants.kTimeoutMs);
 			leftSRX.config_kP(Constants.drivePID, Constants.lDrivekP, Constants.kTimeoutMs);
 			leftSRX.config_kI(Constants.drivePID, Constants.lDrivekI, Constants.kTimeoutMs);
 			leftSRX.config_kD(Constants.drivePID, Constants.lDrivekD, Constants.kTimeoutMs);
+			
 			//Config right side PID settings
 			rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative , Constants.drivePID, Constants.kTimeoutMs);
 			rightSRX.setSensorPhase(false);
@@ -51,12 +53,14 @@ public class Drivetrain
 			rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
 			rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
 			rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+			
 			//Config right side PID Values
 			rightSRX.selectProfileSlot(Constants.drivePID, 0);
 			rightSRX.config_kF(Constants.drivePID, Constants.rDrivekF, Constants.kTimeoutMs);
 			rightSRX.config_kP(Constants.drivePID, Constants.rDrivekP, Constants.kTimeoutMs);
 			rightSRX.config_kI(Constants.drivePID, Constants.rDrivekI, Constants.kTimeoutMs);
 			rightSRX.config_kD(Constants.drivePID, Constants.rDrivekD, Constants.kTimeoutMs);
+			
 			//Set up followers
 			leftSPX1.follow(leftSRX);
 			leftSPX2.follow(leftSRX);
@@ -142,7 +146,7 @@ public class Drivetrain
     
     public static void curvatureDrive(double throttle, double turn)
 	{
-		drive.curvatureDrive(throttle, turn, true);
+		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
 	}
 
 }

@@ -36,7 +36,7 @@ public class VisionController
 		}
 		else
 		{            
-			centerAlgorithm(error, kp, ki, kd);
+			centerAlgorithm(error, kp, ki, kd);     //Center robot if outside the error threshold
 		}
     }
     
