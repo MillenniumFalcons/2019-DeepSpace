@@ -31,8 +31,6 @@ public class Drivetrain
 
     public static void drivetrainInitialization(boolean pracBot)
 	{
-        if(!pracBot)
-		{
 			//Config left side PID settings
 			leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative , 0, Constants.kTimeoutMs);
 			leftSRX.setSensorPhase(false);
@@ -67,44 +65,6 @@ public class Drivetrain
 			rightSRX.setInverted(true);
 			rightSPX1.setInverted(true);
 			rightSPX2.setInverted(true);
-		}
-		else 
-		{
-			//Config left side PID settings
-			leftSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder , 0, Constants.kTimeoutMs);
-			leftSRX.setSensorPhase(false);
-			leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
-			leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
-			leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
-			leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
-			//Config left side PID Values
-			leftSRX.selectProfileSlot(Constants.drivePID, 0);
-			leftSRX.config_kF(Constants.drivePID, Constants.lDrivekF1, Constants.kTimeoutMs);
-			leftSRX.config_kP(Constants.drivePID, Constants.lDrivekP1, Constants.kTimeoutMs);
-			leftSRX.config_kI(Constants.drivePID, Constants.lDrivekI1, Constants.kTimeoutMs);
-			leftSRX.config_kD(Constants.drivePID, Constants.lDrivekD1, Constants.kTimeoutMs);
-			//Config right side PID settings
-			rightSRX.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder , Constants.drivePID, Constants.kTimeoutMs);
-			rightSRX.setSensorPhase(false);
-			rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
-			rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
-			rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
-			rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
-			//Config right side PID Values
-			rightSRX.selectProfileSlot(Constants.drivePID, 0);
-			rightSRX.config_kF(Constants.drivePID, Constants.rDrivekF1, Constants.kTimeoutMs);
-			rightSRX.config_kP(Constants.drivePID, Constants.rDrivekP1, Constants.kTimeoutMs);
-			rightSRX.config_kI(Constants.drivePID, Constants.rDrivekI1, Constants.kTimeoutMs);
-			rightSRX.config_kD(Constants.drivePID, Constants.rDrivekD1, Constants.kTimeoutMs);
-			//Set up followers
-			leftSPX1.follow(leftSRX);
-			leftSPX2.follow(leftSRX);
-			rightSPX1.follow(rightSRX);
-			rightSPX2.follow(rightSRX);
-			rightSRX.setInverted(true);
-			rightSPX1.setInverted(true);
-			rightSPX2.setInverted(true);
-		}
     }
 
     public static void newArcadeDrive(double yValue, double xValue, double angle, Gyro gyro)
