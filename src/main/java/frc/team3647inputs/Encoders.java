@@ -1,11 +1,11 @@
 package frc.team3647inputs;
 
 import frc.robot.Constants;
-import frc.team3647subsystems.Drivetrain;
+import frc.team3647subsystems.*;
 
 public class Encoders 
 {
-    public int leftEncoderValue, rightEncoderValue;
+    public int leftEncoderValue, rightEncoderValue, armEncoderValue;
 	public int  rVelocity, lVelocity;
 	public double rVelocityFPS, lVelocityFPS;
 
@@ -15,12 +15,14 @@ public class Encoders
 	{
 		leftEncoderValue = Drivetrain.leftSRX.getSelectedSensorPosition(Constants.drivePID);
 		rightEncoderValue = Drivetrain.rightSRX.getSelectedSensorPosition(Constants.drivePID);
+		armEncoderValue = Arm.armSRX.getSelectedSensorPosition(Constants.armPID);
 	}
 	
 	public void resetEncoders()
 	{
 		Drivetrain.leftSRX.setSelectedSensorPosition(0, Constants.drivePID, Constants.kTimeoutMs);
 		Drivetrain.rightSRX.setSelectedSensorPosition(0, Constants.drivePID, Constants.kTimeoutMs);
+		Arm.armSRX.setSelectedSensorPosition(0, Constants.armPID, Constants.kTimeoutMs);
 	}
 
 	public void testEncodersWithDrive(boolean jValue)

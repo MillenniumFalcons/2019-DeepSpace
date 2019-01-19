@@ -57,10 +57,10 @@ public class Elevator
 		leftGearboxSPX.setInverted(true);
     }
 
-    public static void moveElevatorPosition(double position)
+    public static void setElevatorPosition(double position)
     {
+		//Motion Magic
         leftGearboxMaster.set(ControlMode.MotionMagic, position);
-        //Motion Magic
     }
 
     public static void stopElevator()
@@ -103,7 +103,7 @@ public class Elevator
 					encoderState = 1;
 					break;
 				case 1:
-					moveElevatorPosition(manualEncoderValue);
+					setElevatorPosition(manualEncoderValue);
 					break;
 			}
 		}

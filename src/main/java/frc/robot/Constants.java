@@ -14,6 +14,11 @@ public class Constants
 	public final static int kTimeoutMs = 10;  //Universal Constant
 	
 	public final static int drivePID = 0;
+
+	//Arm Constants
+	public final static int armMaster = 0;		//TO BE CHANGED
+	public final static int armPID = 0;
+
 	
 		//Left PIDF Values
 	public final static double lDrivekP = 0;
