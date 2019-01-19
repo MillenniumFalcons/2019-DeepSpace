@@ -1,5 +1,5 @@
 # Team 3647's official repository for the 2019 FRC Game Deep Space.
-Repository for FRC team 6901 during the 2019 Deep Space Season.
+
 **NOTE:** Make sure to fork the code and submit change requests rather than pushing code directly.
 ## Table of contents:
 1. [Configuring Materials](https://github.com/MillenniumFalcons/2019-DeepSpace/blob/master/README.md#configuring-materials)
