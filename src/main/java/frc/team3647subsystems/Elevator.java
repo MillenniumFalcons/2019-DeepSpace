@@ -15,8 +15,7 @@ public class Elevator
 	
 	public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
-    public static WPI_TalonSRX leftGearboxMaster = new WPI_TalonSRX(Constants.leftGearboxSRX);
-	public static WPI_TalonSRX rightGearboxSRX = new WPI_TalonSRX(Constants.rightGearboxSRX);
+    public static WPI_TalonSRX GearboxMaster = new WPI_TalonSRX(Constants.leftGearboxSRX);
 	public static VictorSPX leftGearboxSPX = new VictorSPX(Constants.leftGearboxSPX);
     public static VictorSPX rightGearboxSPX = new VictorSPX(Constants.rightGearboxSPX);
     
@@ -27,8 +26,8 @@ public class Elevator
     public static void elevatorInitialization()
 	{
         //Config PID for Motors
-        leftGearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.kTimeoutMs);
-		leftGearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
+        GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.kTimeoutMs);
+		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
 
 		//Configure PID Values
 		/*leftGearboxMaster.selectProfileSlot(Constants.interstagePID, 0);
@@ -48,32 +47,50 @@ public class Elevator
 		leftGearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
         leftGearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
         */
-        rightGearboxSRX.follow(leftGearboxMaster);
-        rightGearboxSPX.follow(leftGearboxMaster);
-        leftGearboxSPX.follow(leftGearboxMaster);
-        rightGearboxSRX.setInverted(true);
+
+        rightGearboxSPX.follow(GearboxMaster);
+        leftGearboxSPX.follow(GearboxMaster);
 		rightGearboxSPX.setInverted(true);
-		leftGearboxMaster.setInverted(true);
+		GearboxMaster.setInverted(true);
 		leftGearboxSPX.setInverted(true);
-    }
+	}
+	
+	/** 
+	 * position 1 is the lowest position
+	 * position 2 is the middle position
+	 * position 3 is the highest position
+	*/
+	public static void setElevatorLevel(int position)
+	{
+		if(position == 1)
+			setElevatorPosition(1);
+
+		else if(position == 2)
+			setElevatorPosition(2);
+
+		else if(position == 3)
+			setElevatorPosition(3);
+
+		else
+			System.out.println("INVALID ARM POSITION");
+	}
 
     public static void setElevatorPosition(double position)
     {
 		//Motion Magic
-        leftGearboxMaster.set(ControlMode.MotionMagic, position);
+        GearboxMaster.set(ControlMode.MotionMagic, position);
     }
 
     public static void stopElevator()
     {
         //Stop Elevator
-        leftGearboxMaster.stopMotor();
+		GearboxMaster.stopMotor();
     }
 
     public static void moveElevator(double speed)
     {
 		// Percent Output
-		//
-        leftGearboxMaster.set(ControlMode.PercentOutput, speed);
+        GearboxMaster.set(ControlMode.PercentOutput, speed);
     }
 
     public static int encoderState;
@@ -115,13 +132,13 @@ public class Elevator
 		{
             resetElevatorEncoders();
 		}
-		elevatorEncoderValue = leftGearboxMaster.getSelectedSensorPosition(0);
-		elevatorVelocity = leftGearboxMaster.getSelectedSensorVelocity(0);
+		elevatorEncoderValue = GearboxMaster.getSelectedSensorPosition(0);
+		elevatorVelocity = GearboxMaster.getSelectedSensorVelocity(0);
 	}
 	
 	public static void resetElevatorEncoders()
 	{
-        Elevator.leftGearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
+        Elevator.GearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
 	public static boolean reachedBottom()//false/true for comp, true/false for prac
@@ -170,7 +187,7 @@ public class Elevator
 
     public static void testElevatorCurrent()
     {
-        System.out.println("Right Elevator Current:" + leftGearboxMaster.getOutputCurrent());
+        System.out.println("Right Elevator Current:" + GearboxMaster.getOutputCurrent());
 	}
 	
 

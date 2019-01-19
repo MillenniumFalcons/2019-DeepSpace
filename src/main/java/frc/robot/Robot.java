@@ -1,13 +1,18 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import frc.team3647inputs.*;
 
 
 public class Robot extends IterativeRobot 
 {
+
+    Joysticks joystick;
     @Override
     public void robotInit() 
     {
+        joystick = new Joysticks();
 
     }
 
@@ -44,6 +49,8 @@ public class Robot extends IterativeRobot
     @Override
     public void testPeriodic() 
     {
+        joystick.updateJoysticks();
+        joystick.vibrate();     
 
     }
 }

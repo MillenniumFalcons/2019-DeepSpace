@@ -16,7 +16,8 @@ public class Arm
 
     /***************** Need Fixing Beyond This Comment ***************/
 
-    public static int aimedArmState, armEncoderValue, armVelocity;
+	public static int armEncoderValue, armVelocity;
+	
 
     public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor);
     public static boolean bottomGoal, middleGoal, highGoal, lowerScale, moving, manualOverride, originalPositionButton;
@@ -27,18 +28,6 @@ public class Arm
     public static void armInitialization()
     {
 
-	}
-	
-	public static void setArmLevel(String position)
-	{
-		if(position.equalsIgnoreCase("low"))
-			setArmPosition(1);
-		else if(position.equalsIgnoreCase("medium"))
-			setArmPosition(2);
-		else if(position.equalsIgnoreCase("high"))
-			setArmPosition(3);
-		else
-			System.out.println("INVALID ARM POSITION");
 	}
 
     public static void setArmPosition(double position)
@@ -55,7 +44,7 @@ public class Arm
 
     public static void moveArm(double speed)
     {
-		// Percent Output
+		//Percent Output [-1,1]
         armSRX.set(ControlMode.PercentOutput, speed);
     }    
 
@@ -92,19 +81,19 @@ public class Arm
 		}
     }
     
-	public static void setElevatorEncoder()
+	public static void setArmEncoder()
 	{
         if(reachedBottom())
 		{
-            resetElevatorEncoders();
+            resetArmEncoders();
 		}
 		armEncoderValue = armSRX.getSelectedSensorPosition(0);
 		armVelocity = armSRX.getSelectedSensorVelocity(0);
 	}
 	
-	public static void resetElevatorEncoders()
+	public static void resetArmEncoders()
 	{
-        Elevator.leftGearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
+        Elevator.GearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
 	public static boolean reachedBottom()
@@ -116,7 +105,7 @@ public class Arm
 
 	}
 
-	public static void setElevatorButtons(boolean Button)
+	public static void setArmButtons(boolean Button)
 	{
 		//supposedly 8 levels
 	}
@@ -134,7 +123,7 @@ public class Arm
 		}
 	}
 
-	public static void testElevatorEncoders()
+	public static void testArmEncoders()
     {
         System.out.println("Elevator Encoder Value: " + armEncoderValue + "Elevator Velocity: " + armVelocity);
 	}
@@ -151,7 +140,7 @@ public class Arm
         }
     }
 
-    public static void testElevatorCurrent()
+    public static void testArmCurrent()
     {
         System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
 	}

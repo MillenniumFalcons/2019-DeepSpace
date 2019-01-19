@@ -2,12 +2,13 @@ package frc.team3647inputs;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class Joysticks 
 {
-	public Joystick mainController = new Joystick(0);
-	public Joystick coController = new Joystick(1);
-	public GenericHID dPad = new Joystick(1);
+	public XboxController mainController = new XboxController(0);
+	public XboxController coController = new XboxController(1);
 	
 	//Main controller Variables
 	public double leftTrigger1, rightTrigger1, leftJoyStickY1, leftJoyStickX1, rightJoyStickY1, rightJoyStickX1;
@@ -17,6 +18,12 @@ public class Joysticks
 	public double leftTrigger2, rightTrigger2, leftJoyStickY2, leftJoyStickX2, rightJoyStickY2, rightJoyStickX2;
 	public boolean rightBumper2, leftBumper2, buttonA2, buttonB2, buttonY2, buttonX2, dPadUp, dPadDown, dPadSide;
 	public int dPadValue;
+
+	public void updateJoysticks()
+	{
+		setMainContollerValues();
+		setCoDriverContollerValues();
+	}
 	
 	public void setMainContollerValues()
 	{
@@ -34,6 +41,14 @@ public class Joysticks
 		rightJoyStickY1 = 	-fixJoystickValue(mainController.getRawAxis(5));
 		
 	}
+
+	public void vibrate()
+	{
+		mainController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
+		Timer.delay(0.5);
+		mainController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+		Timer.delay(0.5);
+	}
 	
 	public void setCoDriverContollerValues()
 	{
@@ -49,7 +64,7 @@ public class Joysticks
 		leftJoyStickY2 	= 	fixJoystickValue(-coController.getRawAxis(1));
 		rightJoyStickX2	= 	fixJoystickValue(coController.getRawAxis(4));
 		rightJoyStickY2	= 	-fixJoystickValue(coController.getRawAxis(5));
-		dPadValue 		= 	dPad.getPOV();
+		dPadValue 		= 	coController.getPOV();
 		setDPadValues();
 	}
 	
