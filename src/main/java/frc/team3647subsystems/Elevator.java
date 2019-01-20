@@ -3,7 +3,6 @@ package frc.team3647subsystems;
 import frc.robot.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -54,12 +53,13 @@ public class Elevator
 		GearboxMaster.setInverted(true);
 		leftGearboxSPX.setInverted(true);
 	}
-	
-	/** 
-	 * position 1 is the lowest position
-	 * position 2 is the middle position
-	 * position 3 is the highest position
-	*/
+
+	/**
+	 * position 1 = lowest position,
+	 * position 2 = middle position,
+	 * position 3 = highest position
+	 * @param position
+	 */
 	public static void setElevatorLevel(int position)
 	{
 		if(position == 1)

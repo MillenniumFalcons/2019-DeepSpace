@@ -1,16 +1,25 @@
 package frc.team3647inputs;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 public class Gyro
 {
     PigeonIMU gyro = new PigeonIMU(0);  //Create new Pigeon Gyro Object
 
-    private double yaw, pitch, roll;     //Create public variables
+    double[] ypr = new double[3];
 
-    public void updateYaw()
+    private double yaw, pitch, roll, heading;     //Create public variables
+    private ErrorCode errorCode;
+    
+
+    public void updateGyro()
     {
-        yaw = gyro.getCompassHeading();
+        errorCode = gyro.getYawPitchRoll(ypr);
+        heading = gyro.getCompassHeading();
+        yaw = ypr[0];
+        pitch = ypr[1];
+        roll = ypr[2];
     }
 
     public void resetAngle()
@@ -20,7 +29,7 @@ public class Gyro
 
     public void testAngles()
     {
-        System.out.println("Yaw: " + -yaw + " Pitch: " + pitch + " Roll: " + roll);
+        System.out.println("Yaw: " + -yaw + "\nHeading: " + heading + "\nPitch: " + pitch + "\nRoll: " + roll);
     }
 
     public double getYaw()
@@ -38,4 +47,8 @@ public class Gyro
         return this.roll;
     }
 
+    public double getHeading()
+    {
+        return this.heading;
+    }
 }
