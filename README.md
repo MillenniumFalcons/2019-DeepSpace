@@ -38,5 +38,5 @@ File (Top left corner) > Open Folder
 * [Official WPILIB documentation](http://first.wpi.edu/FRC/roborio/release/docs/java/)
 * [Last Year's Github](https://github.com/MillenniumFalcons/2018-PowerUp)
 * [More documentation/tips (may have less content)](https://frc-pdr.readthedocs.io/en/latest/)
-* [FRC Forum](https://www.chiefdelphi.com/c/first)
+* [FRC Forum - Chief Delphi](https://www.chiefdelphi.com/)
 * **EMAIL:** falcons3647@gmail.com
