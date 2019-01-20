@@ -6,16 +6,29 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public class Joysticks 
 {
+	/**
+	 * XboxController Object for Main-Driver Controller; contains all Xbox Controller Functions
+	 */
 	public XboxController mainController = new XboxController(0);
+	/**
+	 * XboxController Object for Co-Driver Controller; contains all Xbox Controller Functions
+	 */
 	public XboxController coController = new XboxController(1);
 	
-	//Main controller Variables
+	/**
+	 * Main controller Variable
+	 */
 	public double leftTrigger1, rightTrigger1, leftJoyStickY1, leftJoyStickX1, rightJoyStickY1, rightJoyStickX1;
 	public boolean rightBumper1, leftBumper1, buttonA1, buttonB1, buttonY1, buttonX1;
 	
-	//Co-Driver Controller Variables
+	/**
+	 * Co-Driver Controller Variable
+	 */
 	public double leftTrigger2, rightTrigger2, leftJoyStickY2, leftJoyStickX2, rightJoyStickY2, rightJoyStickX2;
 	public boolean rightBumper2, leftBumper2, buttonA2, buttonB2, buttonY2, buttonX2, coDPadUp, coDPadDown, coDPadSide;
+	/**
+	 * Co-Driver Controller Variable
+	 */
 	public int dPadValue; //dPad degree value
 
 	/**
