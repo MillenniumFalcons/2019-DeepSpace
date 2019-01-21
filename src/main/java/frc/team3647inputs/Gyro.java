@@ -1,6 +1,5 @@
 package frc.team3647inputs;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 public class Gyro

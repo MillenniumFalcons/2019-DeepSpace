@@ -19,14 +19,19 @@ public class Constants
 	public final static int armMaster = 0;		//TO BE CHANGED
 	public final static int armPID = 0;
 
-	
-		//Left PIDF Values
+	//Current Limiting Constants
+	public final static int currentTimeoutMs = 10;		//Measured in Milliseconds
+	public final static int peakCurrent = 35;			//Measured in Amps
+	public final static int peakCurrentDuration = 200;	//Measured in Milliseconds
+	public final static int continousCurrent = 30;		//Measured in Amps
+
+	//Left PIDF Values
 	public final static double lDrivekP = 0;
 	public final static double lDrivekI = 0;
 	public final static double lDrivekD = 0;
 	public final static double lDrivekF = 0;
 
-		//Right PIDF Values
+	//Right PIDF Values
 	public final static double rDrivekP = 0;
 	public final static double rDrivekI = 0;
 	public final static double rDrivekD = 0;

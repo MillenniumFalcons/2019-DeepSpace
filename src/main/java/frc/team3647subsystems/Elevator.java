@@ -25,7 +25,7 @@ public class Elevator
     public static void elevatorInitialization()
 	{
         //Config PID for Motors
-        GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.kTimeoutMs);
+        GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
 
 		//Configure PID Values
@@ -55,10 +55,8 @@ public class Elevator
 	}
 
 	/**
-	 * position 1 = lowest position,
-	 * position 2 = middle position,
-	 * position 3 = highest position
-	 * @param position
+	 * 
+	 * @param position 1 = low; 2 = middle; 3 = high goal
 	 */
 	public static void setElevatorLevel(int position)
 	{
