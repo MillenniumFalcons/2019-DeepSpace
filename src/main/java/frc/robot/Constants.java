@@ -19,6 +19,15 @@ public class Constants
 	public final static int armMaster = 0;		//TO BE CHANGED
 	public final static int armPID = 0;
 
+	//Arm PID Values
+	public final static int armProfile1 = 1;
+	public final static int armkP = 0;
+	public final static int armkI = 0;
+	public final static int armkD = 0;
+	public final static int armkF = 0;
+	public final static int armIZone = 0;
+	
+
 	//Current Limiting Constants
 	public final static int currentTimeoutMs = 10;		//Measured in Milliseconds
 	public final static int peakCurrent = 35;			//Measured in Amps
@@ -41,6 +50,7 @@ public class Constants
 
 	//Sensor Pins
 	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
+	public static final int armBannerSensor = 1;		//TO BE CHANGED
 
 	//Elevator Motor Pins
 	public static final int leftGearboxSRX = 1;		//TO BE CHANGED

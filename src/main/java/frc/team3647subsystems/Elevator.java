@@ -24,7 +24,7 @@ public class Elevator
     // 8 levels
     public static void elevatorInitialization()
 	{
-        //Config PID for Motors
+        //Config Sensors for Motors
         GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
 
@@ -136,7 +136,7 @@ public class Elevator
 	
 	public static void resetElevatorEncoders()
 	{
-        Elevator.GearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
+        GearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
 	public static boolean reachedBottom()//false/true for comp, true/false for prac

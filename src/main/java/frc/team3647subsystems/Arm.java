@@ -1,6 +1,7 @@
 package frc.team3647subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
@@ -9,23 +10,57 @@ public class Arm
 {
     public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMaster);
 
-    /***************** Need Fixing Beyond This Comment ***************/
-
 	public static int armEncoderValue, armVelocity;
 	
 
-    public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor);
-    public static boolean bottomGoal, middleGoal, highGoal, lowerScale, moving, manualOverride, originalPositionButton;
+    public static DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
+    public static boolean manualOverride;
 
     public static double overrideValue;
 
-
+	/**
+	 * Initialize values for Arm such as PID profiles and Feedback Sensors
+	 */
     public static void armInitialization()
     {
 
+		// Config Sensors for Motors
+		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		armSRX.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
+
+		// PID for motors
+		armSRX.selectProfileSlot(Constants.armProfile1, 0);
+		armSRX.config_kP(Constants.armProfile1, Constants.armkP, Constants.kTimeoutMs);
+		armSRX.config_kI(Constants.armProfile1, Constants.armkI, Constants.kTimeoutMs);
+		armSRX.config_kD(Constants.armProfile1, Constants.armkD, Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armProfile1, Constants.armkF, Constants.kTimeoutMs);
+		armSRX.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
+
 	}
 
-    public static void setArmPosition(double position)
+	/**
+	 * 
+	 * @param position 1 = default; 2 = ball intake position; 3 = hatch intake position; 4 = cargo high goal;
+	 */
+	public static void setArmPos(int position)
+	{
+		if(position == 1)
+			setArmPosition(1);
+
+		else if(position == 2)
+			setArmPosition(2);
+
+		else if(position == 3)
+			setArmPosition(3);
+			
+		else if(position == 4)
+			setArmPosition(4);
+
+		else
+			System.out.println("INVALID ARM POSITION");
+	}
+
+    private static void setArmPosition(double position)
     {
 		//Motion Magic
         armSRX.set(ControlMode.MotionMagic, position);
@@ -78,7 +113,7 @@ public class Arm
     
 	public static void setArmEncoder()
 	{
-        if(reachedBottom())
+        if(reachedDefaultPos())
 		{
             resetArmEncoders();
 		}
@@ -88,21 +123,16 @@ public class Arm
 	
 	public static void resetArmEncoders()
 	{
-        Elevator.GearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
+        armSRX.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
-	public static boolean reachedBottom()
+	public static boolean reachedDefaultPos()
 	{
         if(bannerSensor.get())
             return false;
         else
             return true;
 
-	}
-
-	public static void setArmButtons(boolean Button)
-	{
-		//supposedly 8 levels
 	}
 
 	public static void setManualOverride(double jValue)
@@ -118,14 +148,14 @@ public class Arm
 		}
 	}
 
-	public static void testArmEncoders()
+	public static void printArmEncoders()
     {
         System.out.println("Elevator Encoder Value: " + armEncoderValue + "Elevator Velocity: " + armVelocity);
 	}
 
-	public static void testBannerSensor()
+	public static void bannerSensorTriggered()
     {
-        if(reachedBottom())
+        if(reachedDefaultPos())
         {
             System.out.println("Banner Sensor Triggered!");
         }
@@ -135,7 +165,7 @@ public class Arm
         }
     }
 
-    public static void testArmCurrent()
+    public static void printArmCurrent()
     {
         System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
 	}

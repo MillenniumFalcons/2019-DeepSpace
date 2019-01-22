@@ -85,23 +85,30 @@ public class Joysticks
 	 * 
 	 * @param controller 1 = mainController, 2 = coController, 3 = both
 	 */
-	public void vibrate(int controller)
+	public void vibrate(int controller, double power, double delay)
 	{
 		if(controller == 1)
 		{
-			mainController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
-			Timer.delay(0.25);
+			mainController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
+			Timer.delay(delay);
+			mainController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+			Timer.delay(delay);
 		}
 		else if(controller == 2)
 		{
-			coController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
-			Timer.delay(0.25);
+			coController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
+			Timer.delay(delay);
+			coController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+			Timer.delay(delay);
 		}
 		else if(controller == 3)
 		{
-			mainController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
-			coController.setRumble(GenericHID.RumbleType.kLeftRumble,.5);
-			Timer.delay(0.25);
+			mainController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
+			coController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
+			Timer.delay(delay);
+			mainController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+			coController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+			Timer.delay(delay);
 		}
 		else
 		{

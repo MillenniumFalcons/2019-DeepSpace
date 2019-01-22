@@ -8,6 +8,7 @@ public class Robot extends IterativeRobot
 {
 
     Joysticks joystick;
+    
     @Override
     public void robotInit() 
     {
@@ -49,7 +50,6 @@ public class Robot extends IterativeRobot
     public void testPeriodic() 
     {
         joystick.updateJoysticks();
-        joystick.vibrate(1);     
-
+        joystick.vibrate(1, .9, 0.5);
     }
 }

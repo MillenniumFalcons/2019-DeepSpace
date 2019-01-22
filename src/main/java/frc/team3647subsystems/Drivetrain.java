@@ -81,7 +81,7 @@ public class Drivetrain
 		rightSPX2.setInverted(true);
     }
 
-    public static void newArcadeDrive(double yValue, double xValue, double angle, Gyro gyro)
+    public static void customArcadeDrive(double yValue, double xValue, double angle, Gyro gyro)
 	{
 		if(yValue != 0 && Math.abs(xValue) < 0.15)
         {
