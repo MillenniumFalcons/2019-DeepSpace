@@ -1,6 +1,6 @@
 # Team 3647's official repository for the 2019 FRC Game Deep Space.
 
-**NOTE:** Make sure to fork the code and submit change requests rather than pushing code directly. Credit to Team 6901 for the readme template.
+**NOTE:** Make sure to fork the code and submit change requests rather than pushing code directly. Credit to Team 6901 for the ReadMe template.
 ## Table of contents:
 1. [Configuring Materials](https://github.com/MillenniumFalcons/2019-DeepSpace/blob/master/README.md#configuring-materials)
 2. [Opening the Program](https://github.com/MillenniumFalcons/2019-DeepSpace/blob/master/README.md#opening-the-program) 
