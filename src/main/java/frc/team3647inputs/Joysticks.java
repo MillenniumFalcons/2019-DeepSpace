@@ -82,39 +82,61 @@ public class Joysticks
 	}
 
 	/**
-	 * 
 	 * @param controller 1 = mainController, 2 = coController, 3 = both
+	 * @param power Rumble power from 0 to 1
+	 * @param times amount of times to rumble
 	 */
-	public void vibrate(int controller, double power, double delay)
+	public void vibrate(int controller, double power, int times)
 	{
+		double delay = 0.1;
 		if(controller == 1)
 		{
-			mainController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
-			Timer.delay(delay);
-			mainController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
-			Timer.delay(delay);
+			for(int i = 0; i < times; i++)
+			{
+				setRumble(mainController, power);
+				Timer.delay(delay);
+				setRumble(mainController, 0);
+				Timer.delay(delay);
+			}
 		}
 		else if(controller == 2)
 		{
-			coController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
-			Timer.delay(delay);
-			coController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
-			Timer.delay(delay);
+			for(int i = 0; i < times; i++)
+			{
+				setRumble(coController, power);
+				Timer.delay(delay);
+				setRumble(coController, 0);
+				Timer.delay(delay);
+			}
 		}
 		else if(controller == 3)
 		{
-			mainController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
-			coController.setRumble(GenericHID.RumbleType.kLeftRumble, power);
-			Timer.delay(delay);
-			mainController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
-			coController.setRumble(GenericHID.RumbleType.kLeftRumble,0);
-			Timer.delay(delay);
+			for(int i = 0; i < times; i++)
+			{
+				setRumble(mainController, power);
+				setRumble(coController, power);
+				Timer.delay(delay);
+				setRumble(mainController, 0);
+				setRumble(coController, 0);
+				Timer.delay(delay);
+			}
 		}
 		else
 		{
-			System.out.println("INVALID CONTROLLER VIBRATE ID");
+			System.out.println("INVALID CONTROLLER ID");
 		}
 
+	}
+
+	/**
+	 * easier way to set rumble for both side of controller
+	 * @param joystick object
+	 * @param power power of rumble from 0 to 1
+	 */
+	private void setRumble(XboxController joystick, double power)
+	{
+		joystick.setRumble(GenericHID.RumbleType.kLeftRumble, power);
+		joystick.setRumble(GenericHID.RumbleType.kRightRumble, power);
 	}
 	
 	/**

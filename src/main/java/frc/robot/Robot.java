@@ -7,12 +7,12 @@ import frc.team3647inputs.*;
 public class Robot extends IterativeRobot 
 {
 
-    Joysticks joystick;
+    Joysticks joysticks;
     
     @Override
     public void robotInit() 
     {
-        joystick = new Joysticks();
+        joysticks = new Joysticks();
 
     }
 
@@ -49,7 +49,7 @@ public class Robot extends IterativeRobot
     @Override
     public void testPeriodic() 
     {
-        joystick.updateJoysticks();
-        joystick.vibrate(1, .9, 0.5);
+        joysticks.updateJoysticks();
+        joysticks.vibrate(1, .9, 1);
     }
 }
