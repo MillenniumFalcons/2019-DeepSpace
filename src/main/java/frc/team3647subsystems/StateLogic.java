@@ -8,7 +8,7 @@ public class StateLogic
     {
         /* The original state with everything at rest. 
         Elevator: mid
-        Wrist: 0 deg
+        Arm: 0 deg
         BIntake: retracted
         BShoot: retracted
         BSensor: false
@@ -23,7 +23,7 @@ public class StateLogic
     {
         /* The intake of the hatch from player station from the front
         Elevator: low
-        Wrist: 0 deg
+        Arm: 0 deg
         However as for the HPiston and HGrab, there are a few steps:
         1.  HPiston: extracted      * Just the piston out in the hole *
             HGrab: retracted
@@ -40,7 +40,7 @@ public class StateLogic
     {
         /* The intake of the hatch from player station from the back
         Elevator: low
-        Wrist: 180 deg
+        Arm: 180 deg
         However as for the HPiston and HGrab, there are a few steps:
         1.  HPiston: extracted      * Just the piston out in the hole *
             HGrab: retracted
@@ -56,7 +56,7 @@ public class StateLogic
     public static void hatchIntakeF()
     {
         /* The intake of the hatch from the floor (which can only be done from the front)
-        Wrist: 0 deg
+        Arm: 0 deg
         The elevator and the hatch floor intake has several steps to follow:
         1.  Elevator: mid                       * The elevator must be moved up for the HFGrab
             HFGrab: retracted completely        to come out *
@@ -68,7 +68,7 @@ public class StateLogic
         3.  Elevator: low                       * The elevator in now in low position in order to score
             HFGrab: retracted in half way       the hatch so the HFGrab must be retracted half way and
             HGrab: extracted                    the HGrab in position to extract and keep hold of the hatch *
-        4.  Elevator mid                        * The hatch is now stored in the wrist ready for scoring
+        4.  Elevator mid                        * The hatch is now stored in the Arm ready for scoring
             HFGrab: retracted completely        while the elevator must be moved up in order to retract
             HGrab: extracted                    the HFGrab completely
         
@@ -80,7 +80,7 @@ public class StateLogic
     {
         /* The scoring of the hatch in low position from the front
         Elevator: low
-        Wrist: 0 deg
+        Arm: 0 deg
         The HPiston and HGrab will go through a process in order to score the hatch:
         1.  HPiston: retracted                  * The piston is retracted while the grab is still
             HGrab: extracted                    holding onto the hatch *
@@ -98,7 +98,7 @@ public class StateLogic
     {
         /* The scoring of the hatch in low position from the back
         Elevator: low
-        Wrist: 180 deg
+        Arm: 180 deg
         The HPiston and HGrab will go through a process in order to score the hatch:
         1.  HPiston: retracted                  * The piston is retracted while the grab is still
             HGrab: extracted                    holding onto the hatch *
@@ -116,7 +116,7 @@ public class StateLogic
     {
         /* The scoring of the hatch in mid position from the front
         Elevator: mid
-        Wrist: 0 deg
+        Arm: 0 deg
         The HPiston and HGrab will go through a process in order to score the hatch:
         1.  HPiston: retracted                  * The piston is retracted while the grab is still
             HGrab: extracted                    holding onto the hatch *
@@ -134,7 +134,7 @@ public class StateLogic
     {
         /* The scoring of the hatch in mid position from the back
         Elevator: mid
-        Wrist: 180 deg
+        Arm: 180 deg
         The HPiston and HGrab will go through a process in order to score the hatch:
         1.  HPiston: retracted                  * The piston is retracted while the grab is still
             HGrab: extracted                    holding onto the hatch *
@@ -152,7 +152,7 @@ public class StateLogic
     {
         /* The scoring of the hatch in high position from the front
         Elevator: high
-        Wrist: 0 deg
+        Arm: 0 deg
         The HPiston and HGrab will go through a process in order to score the hatch:
         1.  HPiston: retracted                  * The piston is retracted while the grab is still
             HGrab: extracted                    holding onto the hatch *
@@ -170,7 +170,7 @@ public class StateLogic
     {
         /* The scoring of the hatch in high position from the back
         Elevator: high
-        Wrist: 180 deg
+        Arm: 180 deg
         The HPiston and HGrab will go through a process in order to score the hatch:
         1.  HPiston: retracted                  * The piston is retracted while the grab is still
             HGrab: extracted                    holding onto the hatch *
@@ -189,7 +189,7 @@ public class StateLogic
         /*
         The ball has not been picked up yet, the ball intake and ball carrier are both empty.
         Elevator: mid
-        Wrist: 0 deg
+        Arm: 0 deg
         Intake: retracted
         Shoot: retracted
         BSensor: false
@@ -201,7 +201,7 @@ public class StateLogic
         The ball is being picked up and the ball intake has a ball, and the ball carrier is empty.
         At this state, the robot is ready for intake but the process must be mostly done manually
         Elevator: low
-        Wrist: 0 deg
+        Arm: 0 deg
         Intake: extracted
         Shoot: retracted
         BSensor: false
@@ -212,7 +212,7 @@ public class StateLogic
         /*
         The ball is loaded in the carrier and is ready to score. 
         Elevator: low
-        Wrist: 0 deg
+        Arm: 0 deg
         Intake: retracted
         Shoot: retracted
         BSensor: true
@@ -223,7 +223,7 @@ public class StateLogic
         /*
         The ball is being scored at the lowest elevator level from the front
         Elevator: low
-        Wrist: 0 deg
+        Arm: 0 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -234,7 +234,7 @@ public class StateLogic
         /*
         The ball is being scored at the lowest elevator level from the back
         Elevator: low
-        Wrist: 180 deg
+        Arm: 180 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -245,7 +245,7 @@ public class StateLogic
         /*
         The ball is being scored at the middle elevator level from the front
         Elevator: mid
-        Wrist: 0 deg
+        Arm: 0 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -256,7 +256,7 @@ public class StateLogic
         /*
         The ball is being scored at the middle elevator level from the back
         Elevator: mid
-        Wrist: 180 deg
+        Arm: 180 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -267,7 +267,7 @@ public class StateLogic
         /*
         The ball is being scored at the highest elevator level from the front
         Elevator: high
-        Wrist: 0 deg
+        Arm: 0 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -278,7 +278,7 @@ public class StateLogic
         /*
         The ball is being scored at the highest elevator level from the back
         Elevator: high
-        Wrist: 180 deg
+        Arm: 180 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -289,7 +289,7 @@ public class StateLogic
         /*
         The ball is being scored at the cargo elevator level from the front
         Elevator: cargo
-        Wrist: 0 deg
+        Arm: 180 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
@@ -300,7 +300,7 @@ public class StateLogic
         /*
         The ball is being scored at the cargo elevator level from the back
         Elevator: cargo
-        Wrist: 180 deg
+        Arm: 180 deg
         Intake: retracted
         Shoot: extracted
         BSensor: true
