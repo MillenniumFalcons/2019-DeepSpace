@@ -18,6 +18,12 @@ public class Constants
 	//Arm Constants
 	public final static int armMaster = 0;		//TO BE CHANGED
 	public final static int armPID = 0;
+	
+	//Arm Levels
+	public static int straight;
+	public static int hiGoal;
+	public static int hiGoal2;
+	public static int straight2;
 
 	//Arm PID Values
 	public final static int armProfile1 = 1;
