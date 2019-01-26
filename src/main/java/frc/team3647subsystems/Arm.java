@@ -8,7 +8,7 @@ import frc.robot.Constants;
 
 public class Arm
 {
-    public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMaster);
+    public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
 
 	public static int armEncoderValue, armVelocity;
 	public static int currentPosition;

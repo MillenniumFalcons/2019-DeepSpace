@@ -95,6 +95,12 @@ public class StateLogic
         
         At the end of this state, we should have the hatch stored and can be used to score
         */
+
+        Arm.setArmPosition(1);
+        IntakeHatch.openIntake();
+        Elevator.setElevatorLevel(1);
+        IntakeHatch.openIntake();
+        IntakeHatch.closeIntake();
     }
 
     public static void hatchLowScoreF()

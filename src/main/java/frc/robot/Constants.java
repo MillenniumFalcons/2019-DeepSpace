@@ -3,27 +3,44 @@ package frc.robot;
 public class Constants
 {
     //Drive Motor Pins
-	public final static int leftMaster = 57;	//TO BE CHANGED
-	public final static int rightMaster = 54;	//TO BE CHANGED
-	public final static int rightSlave1 = 58;	//TO BE CHANGED
-	public final static int rightSlave2 = 59;	//TO BE CHANGED
-	public final static int leftSlave1 = 52;	//TO BE CHANGED
-	public final static int leftSlave2 = 53;	//TO BE CHANGED
+	public final static int leftMasterPin = 57;		//TO BE CHANGED
+	public final static int rightMasterPin = 54;	//TO BE CHANGED
+	public final static int rightSlave1Pin = 58;	//TO BE CHANGED
+	public final static int rightSlave2Pin = 59;	//TO BE CHANGED
+	public final static int leftSlave1Pin = 52;		//TO BE CHANGED
+	public final static int leftSlave2Pin = 53;		//TO BE CHANGED
 
-	//Drive PID Constants
-	public final static int kTimeoutMs = 10;  //Universal Constant
-	
-	public final static int drivePID = 0;
+	//Elevator Motor Pins
+	public static final int leftGearboxSRX = 1;		//TO BE CHANGED
+	public static final int rightGearboxSRX = 1;	//TO BE CHANGED
+	public static final int leftGearboxSPX = 1;		//TO BE CHANGED
+	public static final int rightGearboxSPX = 1;	//TO BE CHANGED
 
-	//Arm Constants
-	public final static int armMaster = 0;		//TO BE CHANGED
-	public final static int armPID = 0;
+	//Arm Motor Pins
+	public final static int armMasterPin = 0;		//TO BE CHANGED
+
+	//Hatch Intake Motor Pin
+	public static int HatchMotorPin = 0;			//TO BE CHANGED
+
+	//Sensor Pins
+	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
+	public static final int armBannerSensor = 1;		//TO BE CHANGED
+
+	//Piston Forward and Reverse Channels
+	public static int BallInstakeFC = 0;
+	public static int BallInstakeRC = 0;
+	public static int HatchInstakeFC = 0;
+	public static int HatchInstakeRC = 0;
+
+
+	//Timeout Constants
+	public final static int kTimeoutMs = 10;	//Universal Constant
 	
-	//Arm Positions
-	public static int armStraight0;
-	public static int armStraight180;
-	public static int armHighGoalFront;
-	public static int armHighGoalBack;
+
+	//PIDIdx Constsnts
+	public final static int drivePIDIdx = 0;
+	public final static int armPIDIdx = 0;
+	public static int hatchIntakePIDIdx = 0;
 
 	//Arm PID Values
 	public final static int armProfile1 = 1;
@@ -32,48 +49,37 @@ public class Constants
 	public final static int armkD = 0;
 	public final static int armkF = 0;
 	public final static int armIZone = 0;
-	
 
-	//Current Limiting Constants
-	public final static int currentTimeoutMs = 10;		//Measured in Milliseconds
-	public final static int peakCurrent = 35;			//Measured in Amps
-	public final static int peakCurrentDuration = 200;	//Measured in Milliseconds
-	public final static int continousCurrent = 30;		//Measured in Amps
-
-	//Left PIDF Values
+	//Left Drivetrain PIDF Values
 	public final static double lDrivekP = 0;
 	public final static double lDrivekI = 0;
 	public final static double lDrivekD = 0;
 	public final static double lDrivekF = 0;
 
-	//Right PIDF Values
+	//Right Drivetrain PIDF Values
 	public final static double rDrivekP = 0;
 	public final static double rDrivekI = 0;
 	public final static double rDrivekD = 0;
 	public final static double rDrivekF = 0;
-	
 	public final static double velocityConstant = 1550; //Explanation for velocityConstant
 
-	//Sensor Pins
-	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
-	public static final int armBannerSensor = 1;		//TO BE CHANGED
+	
+	//Arm Positions
+	public static int armStraight0;
+	public static int armStraight180;
+	public static int armHighGoalFront;
+	public static int armHighGoalBack;	
 
 	//Elevator Positions
 	public static int elevatorLow;
 	public static int elevatorMiddle;
 	public static int elevatorHigh;
 
-	//Elevator Motor Pins
-	public static final int leftGearboxSRX = 1;		//TO BE CHANGED
-	public static final int rightGearboxSRX = 1;	//TO BE CHANGED
-	public static final int leftGearboxSPX = 1;		//TO BE CHANGED
-	public static final int rightGearboxSPX = 1;	//TO BE CHANGED
 
-	//Piston Forward and Reverse Channels
-	public static int BallInstakeFC = 0;
-	public static int BallInstakeRC = 0;
-	public static int HatchInstakeFC = 0;
-	public static int HatchInstakeRC = 0;
-	public static int HatchMotorPin = 0;
+	//Drivetrain Current Limiting Constants
+	public final static int drivePeakCurrent = 35;			//Measured in Amps
+	public final static int drivePeakCurrentDuration = 200;	//Measured in Milliseconds
+	public final static int driveContinousCurrent = 30;		//Measured in Amps
+	
 
 }

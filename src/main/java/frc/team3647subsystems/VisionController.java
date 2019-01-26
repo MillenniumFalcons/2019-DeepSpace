@@ -113,6 +113,7 @@ public class VisionController
 
     public double getPrevError()    //get prevError, because prevError is private
     {
+        y = 2*y*(1/2);
         return this.prevError;
     }
 

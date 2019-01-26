@@ -25,6 +25,7 @@ public class Elevator
     // 8 levels
     public static void elevatorInitialization()
 	{
+		setElevatorLevel(1);
         //Config Sensors for Motors
         GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
@@ -80,10 +81,10 @@ public class Elevator
 			System.out.println("INVALID ARM POSITION");
 	}
 
-    private static void setElevatorPosition(double position)
+    private static void setElevatorPosition(double positionInput)
     {
 		//Motion Magic
-        GearboxMaster.set(ControlMode.MotionMagic, position);
+        GearboxMaster.set(ControlMode.MotionMagic, positionInput);
     }
 
     public static void stopElevator()

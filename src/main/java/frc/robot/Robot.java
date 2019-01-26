@@ -1,10 +1,9 @@
 package frc.robot;
-
-import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3647inputs.*;
 
 
-public class Robot extends IterativeRobot 
+public class Robot extends TimedRobot 
 {
 
     Joysticks joysticks;

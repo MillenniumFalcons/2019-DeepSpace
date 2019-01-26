@@ -16,13 +16,13 @@ import frc.team3647inputs.*;
 public class Drivetrain 
 {
     
-	public static WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMaster);
-	public static WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMaster);
+	public static WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
+	public static WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
 	
-	public static VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1);
-	public static VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1);
-	public static VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2);
-    public static VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2);
+	public static VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
+	public static VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
+	public static VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
+    public static VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
 
     static double supposedAngle;
 
@@ -32,14 +32,14 @@ public class Drivetrain
     public static void drivetrainInitialization(boolean pracBot)
 	{
 		//Config Current Limiting
-		leftSRX.configPeakCurrentLimit(Constants.peakCurrent, Constants.currentTimeoutMs);
-		rightSRX.configPeakCurrentLimit(Constants.peakCurrent, Constants.currentTimeoutMs);
+		leftSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
+		rightSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
 
-		leftSRX.configPeakCurrentDuration(Constants.peakCurrentDuration, Constants.currentTimeoutMs);
-		rightSRX.configPeakCurrentDuration(Constants.peakCurrentDuration, Constants.currentTimeoutMs);
+		leftSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
+		rightSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
 
-		leftSRX.configContinuousCurrentLimit(Constants.continousCurrent, Constants.currentTimeoutMs);
-		rightSRX.configContinuousCurrentLimit(Constants.continousCurrent, Constants.currentTimeoutMs);
+		leftSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
+		rightSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
 
 		// Config left side PID settings
 		leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
@@ -50,14 +50,14 @@ public class Drivetrain
 		leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// Config left side PID Values
-		leftSRX.selectProfileSlot(Constants.drivePID, 0);
-		leftSRX.config_kF(Constants.drivePID, Constants.lDrivekF, Constants.kTimeoutMs);
-		leftSRX.config_kP(Constants.drivePID, Constants.lDrivekP, Constants.kTimeoutMs);
-		leftSRX.config_kI(Constants.drivePID, Constants.lDrivekI, Constants.kTimeoutMs);
-		leftSRX.config_kD(Constants.drivePID, Constants.lDrivekD, Constants.kTimeoutMs);
+		leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
+		leftSRX.config_kF(Constants.drivePIDIdx, Constants.lDrivekF, Constants.kTimeoutMs);
+		leftSRX.config_kP(Constants.drivePIDIdx, Constants.lDrivekP, Constants.kTimeoutMs);
+		leftSRX.config_kI(Constants.drivePIDIdx, Constants.lDrivekI, Constants.kTimeoutMs);
+		leftSRX.config_kD(Constants.drivePIDIdx, Constants.lDrivekD, Constants.kTimeoutMs);
 
 		// Config right side PID settings
-		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePID, Constants.kTimeoutMs);
+		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
 		rightSRX.setSensorPhase(false);
 		rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
 		rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
@@ -65,11 +65,11 @@ public class Drivetrain
 		rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// Config right side PID Values
-		rightSRX.selectProfileSlot(Constants.drivePID, 0);
-		rightSRX.config_kF(Constants.drivePID, Constants.rDrivekF, Constants.kTimeoutMs);
-		rightSRX.config_kP(Constants.drivePID, Constants.rDrivekP, Constants.kTimeoutMs);
-		rightSRX.config_kI(Constants.drivePID, Constants.rDrivekI, Constants.kTimeoutMs);
-		rightSRX.config_kD(Constants.drivePID, Constants.rDrivekD, Constants.kTimeoutMs);
+		rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
+		rightSRX.config_kF(Constants.drivePIDIdx, Constants.rDrivekF, Constants.kTimeoutMs);
+		rightSRX.config_kP(Constants.drivePIDIdx, Constants.rDrivekP, Constants.kTimeoutMs);
+		rightSRX.config_kI(Constants.drivePIDIdx, Constants.rDrivekI, Constants.kTimeoutMs);
+		rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
 
 		// Set up followers
 		leftSPX1.follow(leftSRX);
