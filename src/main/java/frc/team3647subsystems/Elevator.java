@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Elevator
 {
 	public static int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
+	public static int currentLevel;
 	
 	public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
@@ -61,19 +62,25 @@ public class Elevator
 	public static void setElevatorLevel(int position)
 	{
 		if(position == 1)
-			setElevatorPosition(1);
-
+		{
+			setElevatorPosition(Constants.elevatorLow);
+			currentLevel = 1;
+		}
 		else if(position == 2)
-			setElevatorPosition(2);
-
+		{
+			setElevatorPosition(Constants.elevatorMiddle);
+			currentLevel = 2;
+		}
 		else if(position == 3)
-			setElevatorPosition(3);
-
+		{
+			setElevatorPosition(Constants.elevatorHigh);
+			currentLevel = 3;
+		}
 		else
 			System.out.println("INVALID ARM POSITION");
 	}
 
-    public static void setElevatorPosition(double position)
+    private static void setElevatorPosition(double position)
     {
 		//Motion Magic
         GearboxMaster.set(ControlMode.MotionMagic, position);

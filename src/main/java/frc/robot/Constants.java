@@ -19,11 +19,11 @@ public class Constants
 	public final static int armMaster = 0;		//TO BE CHANGED
 	public final static int armPID = 0;
 	
-	//Arm Levels
-	public static int straight;
-	public static int hiGoal;
-	public static int hiGoal2;
-	public static int straight2;
+	//Arm Positions
+	public static int armStraight0;
+	public static int armStraight180;
+	public static int armHighGoalFront;
+	public static int armHighGoalBack;
 
 	//Arm PID Values
 	public final static int armProfile1 = 1;
@@ -58,10 +58,22 @@ public class Constants
 	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
 	public static final int armBannerSensor = 1;		//TO BE CHANGED
 
+	//Elevator Positions
+	public static int elevatorLow;
+	public static int elevatorMiddle;
+	public static int elevatorHigh;
+
 	//Elevator Motor Pins
 	public static final int leftGearboxSRX = 1;		//TO BE CHANGED
 	public static final int rightGearboxSRX = 1;	//TO BE CHANGED
 	public static final int leftGearboxSPX = 1;		//TO BE CHANGED
 	public static final int rightGearboxSPX = 1;	//TO BE CHANGED
+
+	//Piston Forward and Reverse Channels
+	public static int BallInstakeFC = 0;
+	public static int BallInstakeRC = 0;
+	public static int HatchInstakeFC = 0;
+	public static int HatchInstakeRC = 0;
+	public static int HatchMotorPin = 0;
 
 }

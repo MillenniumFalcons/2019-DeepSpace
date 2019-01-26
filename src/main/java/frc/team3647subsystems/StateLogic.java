@@ -1,5 +1,8 @@
 package frc.team3647subsystems;
 
+import frc.team3647pistons.IntakeBall;
+import frc.team3647pistons.IntakeHatch;
+
 public class StateLogic
 {
     //Combined Elevator and Arm System
@@ -17,7 +20,15 @@ public class StateLogic
         HFloorGrab: retracted
         HSensor: false
         */
+        Arm.setArmPosition(1);
+        Elevator.setElevatorLevel(2);
+        IntakeBall.closeIntake();
+        IntakeHatch.closeIntake();
     }
+
+    // PS = player station
+    // F = front
+    // B = back
 
     public static void hatchIntakePSF()
     {
@@ -34,9 +45,14 @@ public class StateLogic
         
         At the end of this state, we should have the hatch stored and can be used to score
         */
+
+        Arm.setArmPosition(1);
+        Elevator.setElevatorLevel(1);
+        IntakeHatch.openIntake();
+        IntakeHatch.closeIntake();
     }
 
-    public static void hatchIntakePDB()
+    public static void hatchIntakePSB()
     {
         /* The intake of the hatch from player station from the back
         Elevator: low
@@ -51,9 +67,14 @@ public class StateLogic
         
         At the end of this state, we should have the hatch stored and can be used to score
         */
+
+        Arm.setArmPosition(2);
+        Elevator.setElevatorLevel(1);
+        IntakeHatch.openIntake();
+        IntakeHatch.closeIntake();
     }
 
-    public static void hatchIntakeF()
+    public static void hatchIntakeFloor()
     {
         /* The intake of the hatch from the floor (which can only be done from the front)
         Arm: 0 deg

@@ -11,6 +11,7 @@ public class Arm
     public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMaster);
 
 	public static int armEncoderValue, armVelocity;
+	public static int currentPosition;
 	
 
     public static DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
@@ -40,27 +41,74 @@ public class Arm
 
 	/**
 	 * 
-	 * @param position 1 = default; 2 = ball intake position; 3 = hatch intake position; 4 = cargo high goal;
+	 * @param positionInput 1 = Straight 0; 2 = Straight 180; 3 = High Goal Front; 4 = High Goal Back; Position other # = error
 	 */
-	public static void setArmPos(int position)
+	public static void setArmPosition(int positionInput)
 	{
-		if(position == 1)
-			setArmPosition(1);
 
-		else if(position == 2)
-			setArmPosition(2);
+		//Check is the arm is already at the projected position
+		if(positionInput == currentPosition)
+		{
+			System.out.println("Already at " + positionInput + " position");
+		}
 
-		else if(position == 3)
-			setArmPosition(3);
-			
-		else if(position == 4)
-			setArmPosition(4);
+		//check if positionInput is equal to Straight 0 degrees
+		else if(positionInput == 1 && currentPosition != 1)
+		{
+			elevatorCheck(Constants.armStraight0);
+			currentPosition = 1;
+		}
+
+		//check if positionInput is equal to Straight 180 degrees
+		else if(positionInput == 2 && currentPosition != 2)
+		{
+			elevatorCheck(Constants.armStraight180);
+			currentPosition = 2;
+		}
+
+		//check if positionInput is equal to High Goal Front
+		else if(positionInput == 3 && currentPosition != 3)
+		{
+			elevatorCheck(Constants.armHighGoalFront);
+			currentPosition = 3;
+		}
+
+		//check if positionInput is equal to High Goal Back
+		else if(positionInput == 4 && currentPosition != 4)
+		{
+			elevatorCheck(Constants.armHighGoalBack);
+			currentPosition = 4;
+		}
 
 		else
 			System.out.println("INVALID ARM POSITION");
 	}
 
-    private static void setArmPosition(double position)
+	/**
+	 * Checks if the arm can move at the current elevator position
+	 * @param encPositionInput arm position input
+	 */
+	private static void elevatorCheck(int encPositionInput)
+	{
+		//Check if elevator is higher than the low position
+		if (Elevator.currentLevel == 2 || Elevator.currentLevel == 3) 
+		{
+			//if true set arm to position without moving elevator
+			setArmEncPosition(encPositionInput);
+		}
+		else
+		{
+			//else set elevator to middle position
+			Elevator.setElevatorLevel(2);
+			//then set arm position to input position
+			setArmEncPosition(encPositionInput);
+		}
+
+	}
+
+
+
+    private static void setArmEncPosition(double position)
     {
 		//Motion Magic
         armSRX.set(ControlMode.MotionMagic, position);
@@ -105,7 +153,7 @@ public class Arm
 					encoderState = 1;
 					break;
 				case 1:
-					setArmPosition(manualEncoderValue);
+					setArmEncPosition(manualEncoderValue);
 					break;
 			}
 		}
