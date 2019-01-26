@@ -2,23 +2,55 @@ package frc.team3647pistons;
 
 import frc.robot.*;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class IntakeHatch 
 {
-	public static DoubleSolenoid piston = new DoubleSolenoid(Constants.HatchInstakeFC, Constants.HatchInstakeRC);
-	public static TalonSRX intakeMotor = new TalonSRX(Constants.HatchMotorPin);
+	public static int currentPosition;
+	public static Solenoid piston = new Solenoid(Constants.BallIntakeFC);
+	public static TalonSRX hatchSRX = new TalonSRX(Constants.HatchMotorPin);
 	
 	public static void openIntake()
 	{
-		piston.set(DoubleSolenoid.Value.kForward);
+		piston.set(true);
 	}
 	
 	public static void closeIntake()
 	{
-		piston.set(DoubleSolenoid.Value.kReverse);
+		piston.set(false);
+	}
+
+	/**
+	 * 
+	 * @param positionInput 1 = inside drivetrain (0); 2 = loading position for arm (90); 3 = outside intake position (180)
+	 */
+	public static void setPosition(int positionInput)
+	{
+		if(positionInput == 1)
+		{
+			setEncPosition(Constants.hatchIntakeInside);
+			currentPosition = 1;
+		}
+		else if(positionInput == 2)
+		{
+			setEncPosition(Constants.hatchIntakeLoad);
+			currentPosition = 2;
+		}			
+		else if(positionInput == 3)
+		{
+			setEncPosition(Constants.hatchIntakeOutside);
+			currentPosition = 3;
+		}
+		else
+			System.out.println("INVALID HATCH INTAKE POSITION INPUT");
+	}
+
+	public static void setEncPosition(int encoderInput)
+	{
+		hatchSRX.set(ControlMode.MotionMagic, encoderInput);
 	}
 	
 	public static void runIntake(boolean joyValue)

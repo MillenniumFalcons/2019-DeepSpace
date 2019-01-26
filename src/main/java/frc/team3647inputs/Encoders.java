@@ -22,7 +22,7 @@ public class Encoders
 	/**
 	 * Encoder value for hatch intake floor
 	 */
-	private int hatchIntakeValue;
+	private int hatchIntakeEncoderValue;
 
 	/**
 	 * Previous Left Side of Drivetrain Encoder Position
@@ -36,7 +36,10 @@ public class Encoders
 	 * Previous Arm Encoder Position
 	 */
 	private int prevArmEncoderValue;	//Previous Arm Encoder Position
-
+	/**
+	 * Encoder value for hatch intake floor
+	 */
+	private int prevHatchIntakeEncoderValue;
 
 	/**
 	 * Right Side Encoder Unit Velocity
@@ -66,11 +69,12 @@ public class Encoders
 		prevLeftEncoderValue = leftEncoderValue;
 		prevRightEncoderValue = rightEncoderValue;
 		prevArmEncoderValue = armEncoderValue;
+		prevHatchIntakeEncoderValue = hatchIntakeEncoderValue;
 
 		leftEncoderValue = Drivetrain.leftSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
 		rightEncoderValue = Drivetrain.rightSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
 		armEncoderValue = Arm.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
-		hatchIntakeValue = IntakeHatch.intakeMotor.getSelectedSensorPosition(Constants.hatchIntakePIDIdx);
+		hatchIntakeEncoderValue = IntakeHatch.hatchSRX.getSelectedSensorPosition(Constants.hatchIntakePIDIdx);
 	}
 	
 	/**
@@ -84,6 +88,7 @@ public class Encoders
 		Drivetrain.leftSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
 		Drivetrain.rightSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
 		Arm.armSRX.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
+		IntakeHatch.hatchSRX.setSelectedSensorPosition(0, Constants.hatchIntakePIDIdx, Constants.kTimeoutMs);
 	}
 
 	/**
@@ -110,6 +115,7 @@ public class Encoders
 		System.out.println("Left Encoder Value: " + leftEncoderValue);
 		System.out.println("Right Encoder Value: " + rightEncoderValue);
 		System.out.println("Arm Encoder Value: " + armEncoderValue);
+		System.out.println("Hatch Encoder Value: " + hatchIntakeEncoderValue);
 	}
 
 	/**
@@ -136,6 +142,7 @@ public class Encoders
 		System.out.println("Left Encoder CL Error: " + Drivetrain.leftSRX.getClosedLoopError(Constants.drivePIDIdx));
 		System.out.println("Right Encoder CL Error: " + Drivetrain.rightSRX.getClosedLoopError(Constants.drivePIDIdx));
 		System.out.println("Arm Encoder CL Error: " + Arm.armSRX.getClosedLoopError(Constants.armPIDIdx));
+		System.out.println("Hatch Intake Encoder CL Error: " + IntakeHatch.hatchSRX.getClosedLoopError(Constants.hatchIntakePIDIdx));
 	}
 
 	/**
@@ -163,6 +170,14 @@ public class Encoders
 	}
 
 	/**
+	 * @return Hatch Intake Encoder Value
+	 */
+	public int getHatchIntakeEncoder()
+	{
+		return hatchIntakeEncoderValue;
+	}
+
+	/**
 	 * @return Prev Left Encoder Value
 	 */
 	public int getPrevLeftEncoder()
@@ -184,5 +199,13 @@ public class Encoders
 	public int getPrevArmEncoder()
 	{
 		return prevArmEncoderValue;
+	}
+
+	/**
+	 * @return Prev Encoder value for hatch intake floor
+	 */
+	public int getPrevHatchIntakeEncoder()
+	{
+		return prevHatchIntakeEncoderValue;
 	}
 }

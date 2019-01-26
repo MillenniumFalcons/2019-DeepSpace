@@ -1,13 +1,14 @@
 package frc.team3647inputs;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import frc.robot.Constants;
 
 public class Gyro
 {
     /**
      * Pigeon IMU Object (a gyro sensor) to receive and reset Yaw, Pitch, Roll, and Heading
      */
-    PigeonIMU gyro = new PigeonIMU(0);  //Create new Pigeon Gyro Object
+    PigeonIMU gyro = new PigeonIMU(Constants.gyroPin);  //Create new Pigeon Gyro Object
 
     /**
      * array of type double that holds Yaw (0), Pitch(1), and Roll(2) values (in degrees).

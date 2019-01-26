@@ -9,77 +9,45 @@ public class Joysticks
 	/**
 	 * XboxController Object for Main-Driver Controller; contains all Xbox Controller Functions
 	 */
-	public XboxController mainController = new XboxController(0);
-	/**
-	 * XboxController Object for Co-Driver Controller; contains all Xbox Controller Functions
-	 */
-	public XboxController coController = new XboxController(1);
+	private XboxController controller;
 	
 	/**
 	 * Main controller Variable
 	 */
-	public double leftTrigger1, rightTrigger1, leftJoyStickY1, leftJoyStickX1, rightJoyStickY1, rightJoyStickX1;
-	public boolean rightBumper1, leftBumper1, buttonA1, buttonB1, buttonY1, buttonX1;
+	public double leftTrigger, rightTrigger, leftJoyStickY, leftJoyStickX, rightJoyStickY, rightJoyStickX;
+	public boolean rightBumper, leftBumper, buttonA, buttonB, buttonY, buttonX, dPadDown, dPadSide, dPadUp;
 	
-	/**
-	 * Co-Driver Controller Variable
-	 */
-	public double leftTrigger2, rightTrigger2, leftJoyStickY2, leftJoyStickX2, rightJoyStickY2, rightJoyStickX2;
-	public boolean rightBumper2, leftBumper2, buttonA2, buttonB2, buttonY2, buttonX2, coDPadUp, coDPadDown, coDPadSide;
 	/**
 	 * Co-Driver Controller Variable
 	 */
 	public int dPadValue; //dPad degree value
 
-	/**
-	 * Used in periodic loop to update both controller values periodically
-	 */
-	public void updateJoysticks()
+	public Joysticks(int controllerPin)
 	{
-		setMainContollerValues();
-		setCoDriverContollerValues();
+		controller = new XboxController(controllerPin);
 	}
+
 	
 	/**
 	 * Set main controller values.
 	 */
 	public void setMainContollerValues()
 	{
-		leftBumper1		= 	mainController.getRawButton(5);
-		rightBumper1 	=	mainController.getRawButton(6);
-		leftTrigger1 	= 	joystickThreshold(mainController.getRawAxis(2));
-		rightTrigger1 	= 	joystickThreshold(mainController.getRawAxis(3));
-		buttonA1 		=	mainController.getRawButton(1);
-		buttonB1 		= 	mainController.getRawButton(2);
-		buttonX1 		= 	mainController.getRawButton(3);
-		buttonY1 		= 	mainController.getRawButton(4);
-		leftJoyStickX1 	= 	joystickThreshold(mainController.getRawAxis(0));
-		leftJoyStickY1 	= 	joystickThreshold(-mainController.getRawAxis(1));
-		rightJoyStickX1 = 	joystickThreshold(mainController.getRawAxis(4));
-		rightJoyStickY1 = 	-joystickThreshold(mainController.getRawAxis(5));
-		
+		leftBumper		= 	controller.getRawButton(5);
+		rightBumper 	=	controller.getRawButton(6);
+		leftTrigger 	= 	joystickThreshold(controller.getRawAxis(2));
+		rightTrigger 	= 	joystickThreshold(controller.getRawAxis(3));
+		buttonA 		=	controller.getRawButton(1);
+		buttonB 		= 	controller.getRawButton(2);
+		buttonX 		= 	controller.getRawButton(3);
+		buttonY 		= 	controller.getRawButton(4);
+		leftJoyStickX 	= 	joystickThreshold(controller.getRawAxis(0));
+		leftJoyStickY 	= 	joystickThreshold(-controller.getRawAxis(1));
+		rightJoyStickX = 	joystickThreshold(controller.getRawAxis(4));
+		rightJoyStickY = 	-joystickThreshold(controller.getRawAxis(5));
+		setDPadValues();
 	}
 
-	/**
-	 * Set co driver controller values.
-	 */
-	public void setCoDriverContollerValues()
-	{
-		leftBumper2 	=	coController.getRawButton(5);
-		rightBumper2	=	coController.getRawButton(6);
-		leftTrigger2 	= 	joystickThreshold(coController.getRawAxis(2));
-		rightTrigger2 	= 	joystickThreshold(coController.getRawAxis(3));
-		buttonA2 		=	coController.getRawButton(1);
-		buttonB2 		= 	coController.getRawButton(2);
-		buttonX2 		= 	coController.getRawButton(3);
-		buttonY2 		= 	coController.getRawButton(4);
-		leftJoyStickX2 	= 	joystickThreshold(coController.getRawAxis(0));
-		leftJoyStickY2 	= 	joystickThreshold(-coController.getRawAxis(1));
-		rightJoyStickX2	= 	joystickThreshold(coController.getRawAxis(4));
-		rightJoyStickY2	= 	-joystickThreshold(coController.getRawAxis(5));
-		dPadValue 		= 	coController.getPOV();
-		setCoDPadValues();
-	}
 
 	/**
 	 * @param controller 1 = mainController, 2 = coController, 3 = both
@@ -89,43 +57,13 @@ public class Joysticks
 	public void vibrate(int controller, double power, int times)
 	{
 		double delay = 0.1;
-		if(controller == 1)
+		for(int i = 0; i < times; i++) 
 		{
-			for(int i = 0; i < times; i++)
-			{
-				setRumble(mainController, power);
-				Timer.delay(delay);
-				setRumble(mainController, 0);
-				Timer.delay(delay);
-			}
+			setRumble(power);
+			Timer.delay(delay);
+			setRumble(0);
+			Timer.delay(delay);
 		}
-		else if(controller == 2)
-		{
-			for(int i = 0; i < times; i++)
-			{
-				setRumble(coController, power);
-				Timer.delay(delay);
-				setRumble(coController, 0);
-				Timer.delay(delay);
-			}
-		}
-		else if(controller == 3)
-		{
-			for(int i = 0; i < times; i++)
-			{
-				setRumble(mainController, power);
-				setRumble(coController, power);
-				Timer.delay(delay);
-				setRumble(mainController, 0);
-				setRumble(coController, 0);
-				Timer.delay(delay);
-			}
-		}
-		else
-		{
-			System.out.println("INVALID CONTROLLER ID");
-		}
-
 	}
 
 	/**
@@ -133,40 +71,40 @@ public class Joysticks
 	 * @param joystick object
 	 * @param power power of rumble from 0 to 1
 	 */
-	private void setRumble(XboxController joystick, double power)
+	private void setRumble(double power)
 	{
-		joystick.setRumble(GenericHID.RumbleType.kLeftRumble, power);
-		joystick.setRumble(GenericHID.RumbleType.kRightRumble, power);
+		controller.setRumble(GenericHID.RumbleType.kLeftRumble, power);
+		controller.setRumble(GenericHID.RumbleType.kRightRumble, power);
 	}
 	
 	/**
 	 * Set co driver dPad values. 0 degrees = top, 180 = down, 90 || 270 = side
 	 */
-	public void setCoDPadValues()
+	public void setDPadValues()
 	{
 		if(dPadValue == 0)
 		{
-			coDPadUp = true;
-			coDPadDown = false;
-			coDPadSide = false;
+			dPadUp = true;
+			dPadDown = false;
+			dPadSide = false;
 		}
 		else if(dPadValue == 180)
 		{
-			coDPadUp = false;
-			coDPadDown = true;
-			coDPadSide = false;
+			dPadUp = false;
+			dPadDown = true;
+			dPadSide = false;
 		}
 		else if(dPadValue == 90 || dPadValue == 270)
 		{
-			coDPadUp = false;
-			coDPadDown = false;
-			coDPadSide = true;
+			dPadUp = false;
+			dPadDown = false;
+			dPadSide = true;
 		}
 		else
 		{
-			coDPadUp = false;
-			coDPadDown = false;
-			coDPadSide = false;
+			dPadUp = false;
+			dPadDown = false;
+			dPadSide = false;
 		}
 	}
 	

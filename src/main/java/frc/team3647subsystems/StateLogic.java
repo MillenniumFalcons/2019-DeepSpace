@@ -86,6 +86,19 @@ public class StateLogic
             HFGrab: extracted completely        the floor *
             HGrab: retracted
         * Manual control to get the hatch inside the intake *
+        */
+
+        Arm.setArmPosition(1);
+        IntakeHatch.setPosition(3);
+        Elevator.setElevatorLevel(1);
+    }
+
+    /**
+     * this is called when a hatch is inside the floor intake and we want to intake it into the arm
+     */
+    public static void hatchIntakeFloorLoad()
+    {
+        /*
         3.  Elevator: low                       * The elevator in now in low position in order to score
             HFGrab: retracted in half way       the hatch so the HFGrab must be retracted half way and
             HGrab: extracted                    the HGrab in position to extract and keep hold of the hatch *
@@ -97,10 +110,11 @@ public class StateLogic
         */
 
         Arm.setArmPosition(1);
-        IntakeHatch.openIntake();
+        IntakeHatch.setPosition(2);
         Elevator.setElevatorLevel(1);
-        IntakeHatch.openIntake();
-        IntakeHatch.closeIntake();
+        //Add floor hatch to arm hatch intake
+        Elevator.setElevatorLevel(2); 
+
     }
 
     public static void hatchLowScoreF()

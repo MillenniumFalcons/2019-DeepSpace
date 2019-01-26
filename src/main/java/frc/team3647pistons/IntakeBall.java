@@ -1,20 +1,28 @@
 package frc.team3647pistons;
 
 import frc.robot.*;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.*;
 
 public class IntakeBall 
 {
-	public static DoubleSolenoid piston = new DoubleSolenoid(Constants.BallInstakeFC, Constants.BallInstakeRC);
+	public static Solenoid piston = new Solenoid(Constants.BallIntakeFC);
+	public static TalonSRX hatchSRX = new TalonSRX(Constants.HatchMotorPin);
 	
+	public static void setSpeed(double speedInput)
+	{
+		hatchSRX.set(ControlMode.PercentOutput, speedInput);
+	}
+
 	public static void openIntake()
 	{
-		piston.set(DoubleSolenoid.Value.kForward);
+		piston.set(true);
 	}
 	
 	public static void closeIntake()
 	{
-		piston.set(DoubleSolenoid.Value.kReverse);
+		piston.set(false);
 	}
 	
 	public static void runIntake(boolean joyValue)

@@ -3,12 +3,14 @@ package frc.robot;
 public class Constants
 {
     //Drive Motor Pins
-	public final static int leftMasterPin = 57;		//TO BE CHANGED
-	public final static int rightMasterPin = 54;	//TO BE CHANGED
-	public final static int rightSlave1Pin = 58;	//TO BE CHANGED
-	public final static int rightSlave2Pin = 59;	//TO BE CHANGED
-	public final static int leftSlave1Pin = 52;		//TO BE CHANGED
-	public final static int leftSlave2Pin = 53;		//TO BE CHANGED
+	public static final int leftMasterPin = 4;		//TO BE CHANGED
+	public static final int leftSlave1Pin = 5;		//TO BE CHANGED
+	public static final int leftSlave2Pin = 6;		//TO BE CHANGED
+
+	public static final int rightMasterPin = 9;		//TO BE CHANGED
+	public static final int rightSlave1Pin = 10;	//TO BE CHANGED
+	public static final int rightSlave2Pin = 11;	//TO BE CHANGED
+
 
 	//Elevator Motor Pins
 	public static final int leftGearboxSRX = 1;		//TO BE CHANGED
@@ -20,17 +22,24 @@ public class Constants
 	public final static int armMasterPin = 0;		//TO BE CHANGED
 
 	//Hatch Intake Motor Pin
-	public static int HatchMotorPin = 0;			//TO BE CHANGED
+	public static final int HatchMotorPin = 3;		//TO BE CHANGED
+
+	//Ball Intake Motor
+	public static final int BallMotorPin = 2;
+
+	//Gyro Pin
+	public static final int gyroPin = 0;
 
 	//Sensor Pins
 	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
 	public static final int armBannerSensor = 1;		//TO BE CHANGED
 
 	//Piston Forward and Reverse Channels
-	public static int BallInstakeFC = 0;
-	public static int BallInstakeRC = 0;
-	public static int HatchInstakeFC = 0;
-	public static int HatchInstakeRC = 0;
+	public static final int BallIntakeFC = 0;
+	public static final int HatchIntakeFC = 1;
+	
+	// AirCompressor Pin
+	public static final int CompressorPCMPin = 0; // TO BE CHANGED
 
 
 	//Timeout Constants
@@ -40,7 +49,7 @@ public class Constants
 	//PIDIdx Constsnts
 	public final static int drivePIDIdx = 0;
 	public final static int armPIDIdx = 0;
-	public static int hatchIntakePIDIdx = 0;
+	public static final int hatchIntakePIDIdx = 0;
 
 	//Arm PID Values
 	public final static int armProfile1 = 1;
@@ -64,6 +73,8 @@ public class Constants
 	public final static double velocityConstant = 1550; //Explanation for velocityConstant
 
 	
+	/*****************ANY NON-FINAL INTs SHOULD BE FINAL ONCE GIVEN A VALUE*******************/
+
 	//Arm Positions
 	public static int armStraight0;
 	public static int armStraight180;
@@ -74,6 +85,11 @@ public class Constants
 	public static int elevatorLow;
 	public static int elevatorMiddle;
 	public static int elevatorHigh;
+
+	//Hatch Intake Positions
+	public static int hatchIntakeInside;
+	public static int hatchIntakeOutside;
+	public static int hatchIntakeLoad;
 
 
 	//Drivetrain Current Limiting Constants

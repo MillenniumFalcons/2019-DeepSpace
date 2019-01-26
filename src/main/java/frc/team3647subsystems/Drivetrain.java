@@ -29,7 +29,7 @@ public class Drivetrain
     public static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 
 
-    public static void drivetrainInitialization(boolean pracBot)
+    public static void drivetrainInitialization()
 	{
 		//Config Current Limiting
 		leftSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
@@ -81,7 +81,14 @@ public class Drivetrain
 		rightSPX2.setInverted(true);
     }
 
-    public static void customArcadeDrive(double yValue, double xValue, double angle, Gyro gyro)
+	/**
+	 * Method to control robot
+	 * @param xValue joystick x value
+	 * @param yValue joystick y value
+	 * @param angle
+	 * @param gyro gyro object
+	 */
+    public static void customArcadeDrive(double xValue, double yValue, Gyro gyro)
 	{
 		if(yValue != 0 && Math.abs(xValue) < 0.15)
         {
@@ -91,13 +98,13 @@ public class Drivetrain
 		{
 			gyro.resetAngle();
 			stop();
-			supposedAngle = angle;
+			supposedAngle = gyro.getYaw();
 		}
 		else
 		{
 			gyro.resetAngle();
 			curvatureDrive(xValue, yValue);
-			supposedAngle = angle;
+			supposedAngle = gyro.getYaw();
 		}
 	}
     
@@ -154,7 +161,7 @@ public class Drivetrain
 		rightSPX2.setNeutralMode(NeutralMode.Coast);
     }
     
-    public static void curvatureDrive(double throttle, double turn)
+    private static void curvatureDrive(double throttle, double turn)
 	{
 		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
 	}
