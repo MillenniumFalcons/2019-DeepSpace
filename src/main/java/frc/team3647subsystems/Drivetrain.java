@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -13,82 +14,88 @@ import frc.robot.Constants;
 import frc.team3647inputs.*;
 
 
-public class Drivetrain 
+public class Drivetrain extends Subsystem
 {
-    
-	public static WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
-	public static WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
-	
-	public static VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
-	public static VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
-	public static VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
-    public static VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
-
-    static double supposedAngle;
-
-    public static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
-
-
-    public static void drivetrainInitialization()
+    public void initDefaultCommand() 
 	{
-		//Config Current Limiting
-		leftSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
-		rightSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
+        // Set the default command for a subsystem here.
+        // setDefaultCommand(new MySpecialCommand());
+	}
+	
+	public WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
+	public WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
+	
+	public VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
+	public VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
+	public VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
+    public VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
 
-		leftSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
-		rightSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
+    public double supposedAngle;
 
-		leftSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
-		rightSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
+    public DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 
-		// Config left side PID settings
-		leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		leftSRX.setSensorPhase(false);
-		leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
-		leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
-		leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
-		// Config left side PID Values
-		leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		leftSRX.config_kF(Constants.drivePIDIdx, Constants.lDrivekF, Constants.kTimeoutMs);
-		leftSRX.config_kP(Constants.drivePIDIdx, Constants.lDrivekP, Constants.kTimeoutMs);
-		leftSRX.config_kI(Constants.drivePIDIdx, Constants.lDrivekI, Constants.kTimeoutMs);
-		leftSRX.config_kD(Constants.drivePIDIdx, Constants.lDrivekD, Constants.kTimeoutMs);
+    public void drivetrainInitialization()
+	{
+		// //Config Current Limiting
+		// leftSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
+		// rightSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
 
-		// Config right side PID settings
-		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
-		rightSRX.setSensorPhase(false);
-		rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
-		rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
-		rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		// leftSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
+		// rightSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
 
-		// Config right side PID Values
-		rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		rightSRX.config_kF(Constants.drivePIDIdx, Constants.rDrivekF, Constants.kTimeoutMs);
-		rightSRX.config_kP(Constants.drivePIDIdx, Constants.rDrivekP, Constants.kTimeoutMs);
-		rightSRX.config_kI(Constants.drivePIDIdx, Constants.rDrivekI, Constants.kTimeoutMs);
-		rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
+		// leftSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
+		// rightSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
+
+		// // Config left side PID settings
+		// leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		// leftSRX.setSensorPhase(false);
+		// leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
+		// leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		// leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
+		// leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+		// // Config left side PID Values
+		// leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
+		// leftSRX.config_kF(Constants.drivePIDIdx, Constants.lDrivekF, Constants.kTimeoutMs);
+		// leftSRX.config_kP(Constants.drivePIDIdx, Constants.lDrivekP, Constants.kTimeoutMs);
+		// leftSRX.config_kI(Constants.drivePIDIdx, Constants.lDrivekI, Constants.kTimeoutMs);
+		// leftSRX.config_kD(Constants.drivePIDIdx, Constants.lDrivekD, Constants.kTimeoutMs);
+
+		// // Config right side PID settings
+		// rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
+		// rightSRX.setSensorPhase(false);
+		// rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
+		// rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		// rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
+		// rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+
+		// // Config right side PID Values
+		// rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
+		// rightSRX.config_kF(Constants.drivePIDIdx, Constants.rDrivekF, Constants.kTimeoutMs);
+		// rightSRX.config_kP(Constants.drivePIDIdx, Constants.rDrivekP, Constants.kTimeoutMs);
+		// rightSRX.config_kI(Constants.drivePIDIdx, Constants.rDrivekI, Constants.kTimeoutMs);
+		// rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
 
 		// Set up followers
 		leftSPX1.follow(leftSRX);
 		leftSPX2.follow(leftSRX);
+
 		rightSPX1.follow(rightSRX);
 		rightSPX2.follow(rightSRX);
-		rightSRX.setInverted(true);
-		rightSPX1.setInverted(true);
-		rightSPX2.setInverted(true);
+		
+		leftSRX.setInverted(true);
+		leftSPX1.setInverted(true);
+		leftSPX2.setInverted(true);
     }
 
 	/**
 	 * Method to control robot
 	 * @param xValue joystick x value
 	 * @param yValue joystick y value
-	 * @param angle
 	 * @param gyro gyro object
 	 */
-    public static void customArcadeDrive(double xValue, double yValue, Gyro gyro)
+    public void customArcadeDrive(double xValue, double yValue, Gyro gyro)
 	{
 		if(yValue != 0 && Math.abs(xValue) < 0.15)
         {
@@ -108,20 +115,20 @@ public class Drivetrain
 		}
 	}
     
-    public static void setPercentOutput(double lOutput, double rOutput)
+    public void setPercentOutput(double lOutput, double rOutput)
 	{
-		rightSRX.set(ControlMode.PercentOutput, lOutput);
-		leftSRX.set(ControlMode.PercentOutput, rOutput);
+		rightSRX.set(ControlMode.PercentOutput, rOutput);
+		leftSRX.set(ControlMode.PercentOutput, lOutput);
 	}
 
 	
-	public static void stop()
+	public void stop()
 	{
 		rightSRX.stopMotor();
 		leftSRX.stopMotor();
     }
     
-    public static void setSpeed(double lSpeed, double rSpeed)
+    public void setSpeed(double lSpeed, double rSpeed)
 	{
 		double targetVelocityRight = rSpeed * Constants.velocityConstant;
 		double targetVelocityLeft = lSpeed * Constants.velocityConstant;
@@ -129,19 +136,19 @@ public class Drivetrain
 		leftSRX.set(ControlMode.Velocity, targetVelocityLeft);
 	}
 
-	public static void testDrivetrainCurrent()
+	public void testDrivetrainCurrent()
 	{
 		System.out.println("Left Motor Current: " + leftSRX.getOutputCurrent());
 		System.out.println("Right Motor Current:" + rightSRX.getOutputCurrent());
 	}
 	
-	public static void enableCurrentLimiting(double amps)
+	public void enableCurrentLimiting(double amps)
 	{
 		leftSRX.enableCurrentLimit(true);
 		rightSRX.enableCurrentLimit(true);
 	}
 	
-	public static void setToBrake()
+	public void setToBrake()
 	{
 		leftSRX.setNeutralMode(NeutralMode.Brake);
 		rightSRX.setNeutralMode(NeutralMode.Brake);
@@ -151,7 +158,7 @@ public class Drivetrain
 		rightSPX2.setNeutralMode(NeutralMode.Brake);
 	}
 	
-	public static void setToCoast()
+	public void setToCoast()
 	{
 		leftSRX.setNeutralMode(NeutralMode.Coast);
 		rightSRX.setNeutralMode(NeutralMode.Coast);
@@ -161,7 +168,7 @@ public class Drivetrain
 		rightSPX2.setNeutralMode(NeutralMode.Coast);
     }
     
-    private static void curvatureDrive(double throttle, double turn)
+    private void curvatureDrive(double throttle, double turn)
 	{
 		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
 	}

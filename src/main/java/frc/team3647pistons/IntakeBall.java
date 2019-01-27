@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj.*;
 
 public class IntakeBall 
 {
-	public static Solenoid piston = new Solenoid(Constants.BallIntakeFC);
-	public static TalonSRX hatchSRX = new TalonSRX(Constants.HatchMotorPin);
+	public static Solenoid piston = new Solenoid(Constants.ballIntakeFC);
+	public static TalonSRX ballSRX = new TalonSRX(Constants.ballMotorPin);
 	
 	public static void setSpeed(double speedInput)
 	{
-		hatchSRX.set(ControlMode.PercentOutput, speedInput);
+		ballSRX.set(ControlMode.PercentOutput, speedInput);
 	}
 
 	public static void openIntake()

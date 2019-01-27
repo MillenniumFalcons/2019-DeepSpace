@@ -20,7 +20,11 @@ public class Elevator
     public static VictorSPX rightGearboxSPX = new VictorSPX(Constants.rightGearboxSPX);
     
     public static boolean bottom, sWitch, scale, lowerScale, moving, manualOverride, originalPositionButton;
-    public static double overrideValue;
+	public static double overrideValue;
+	
+	public static int encoderState;
+	public static int manualEncoderValue;
+	public static int manualAdjustment;
     
     // 8 levels
     public static void elevatorInitialization()
@@ -98,10 +102,6 @@ public class Elevator
 		// Percent Output
         GearboxMaster.set(ControlMode.PercentOutput, speed);
     }
-
-    public static int encoderState;
-	public static int manualEncoderValue;
-	public static int manualAdjustment;
 
     public static void moveManual(double jValue)
 	{

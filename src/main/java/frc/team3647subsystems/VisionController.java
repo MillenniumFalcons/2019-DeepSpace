@@ -16,6 +16,14 @@ public class VisionController
     //prevError is the global variable to keep track of the previous error in the PID loop
     Limelight limelight = new Limelight();
 
+    Drivetrain drivetrain;
+
+    public VisionController(Drivetrain input)
+    {
+        this.drivetrain = input;
+
+    }
+
 
     public void updateInputs()  //update Limelight Inputs
     {
@@ -32,7 +40,7 @@ public class VisionController
 		if(error > -errorThreshold && error < errorThreshold)   //checking if the error is within a threshold to stop the robot from moving
 		{
 			speed = 0;                              //setting global variable speed equal to zero
-			Drivetrain.setSpeed(speed, speed);      //setting Drivetrain to 0 speed
+			drivetrain.setSpeed(speed, speed);      //setting Drivetrain to 0 speed
 		}
 		else
 		{            
@@ -46,18 +54,18 @@ public class VisionController
         double error = this.x / 27;                                 //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
         if(this.area >= targetArea/2)                               //redundant "if" in order to make sure the robot stops
         {
-            Drivetrain.setSpeed(0,0);                               //set drivetrain to 0 speed if target distance is unreached
+            drivetrain.setSpeed(0,0);                               //set drivetrain to 0 speed if target distance is unreached
         }
 
 		if( (error > -errorThreshold) && (error < errorThreshold) ) //if error is in between the threshold execute following statements
 		{
             if(this.area < targetArea/2)
             {
-                Drivetrain.setSpeed(defaultSpeed,defaultSpeed);     //set drivetrain to default speed if target distance is unreached
+                drivetrain.setSpeed(defaultSpeed,defaultSpeed);     //set drivetrain to default speed if target distance is unreached
             }
             else
             {
-                Drivetrain.setSpeed(0, 0);                          //set drivetrain to zero, stop robot if it has reached target distance
+                drivetrain.setSpeed(0, 0);                          //set drivetrain to zero, stop robot if it has reached target distance
             }			
 		}
 		else
@@ -87,7 +95,7 @@ public class VisionController
 
         prevError = error; // update prevError to current Error
 
-        Drivetrain.setSpeed(speed, -speed); // set motor speeds to opposite adjusted PID values
+        drivetrain.setSpeed(speed, -speed); // set motor speeds to opposite adjusted PID values
     }
 
     public void bangBang(double speed, double threshold) //bang bang vision controller (simplest non-PID centering algorithm)
@@ -95,19 +103,19 @@ public class VisionController
         updateInputs();
         if (x > threshold && x < -threshold)    //if x is between threshold, drivetrain is set to zero speed
 		{
-			Drivetrain.setSpeed(0, 0);
+			drivetrain.setSpeed(0, 0);
 		}
 		else if (x > threshold)                 //if x is greater than threshold, then turn right
 		{
-			Drivetrain.setSpeed(speed, -speed);
+			drivetrain.setSpeed(speed, -speed);
 		}
 		else if(x < -threshold)                 //if x is less than -threshold, then turn left
 		{
-            Drivetrain.setSpeed(-speed, speed);
+            drivetrain.setSpeed(-speed, speed);
         }
         else                                    //if all else fails just stop the robot, redundant for safety
         {
-            Drivetrain.setSpeed(0, 0);
+            drivetrain.setSpeed(0, 0);
         }
     }
 

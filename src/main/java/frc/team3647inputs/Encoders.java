@@ -3,6 +3,7 @@ package frc.team3647inputs;
 import frc.robot.Constants;
 import frc.team3647pistons.IntakeHatch;
 import frc.team3647subsystems.*;
+import frc.robot.*;
 
 public class Encoders 
 {
@@ -71,8 +72,8 @@ public class Encoders
 		prevArmEncoderValue = armEncoderValue;
 		prevHatchIntakeEncoderValue = hatchIntakeEncoderValue;
 
-		leftEncoderValue = Drivetrain.leftSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
-		rightEncoderValue = Drivetrain.rightSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
+		leftEncoderValue = Robot.drivetrain.leftSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
+		rightEncoderValue = Robot.drivetrain.rightSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
 		armEncoderValue = Arm.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
 		hatchIntakeEncoderValue = IntakeHatch.hatchSRX.getSelectedSensorPosition(Constants.hatchIntakePIDIdx);
 	}
@@ -85,8 +86,8 @@ public class Encoders
 	 */
 	public void resetEncoders()
 	{
-		Drivetrain.leftSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
-		Drivetrain.rightSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
+		Robot.drivetrain.leftSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
+		Robot.drivetrain.rightSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
 		Arm.armSRX.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
 		IntakeHatch.hatchSRX.setSelectedSensorPosition(0, Constants.hatchIntakePIDIdx, Constants.kTimeoutMs);
 	}
@@ -123,8 +124,8 @@ public class Encoders
 	 */
 	public void printEncoderVelocity()
 	{
-		rVelocity = Drivetrain.rightSRX.getSelectedSensorVelocity(Constants.drivePIDIdx);
-		lVelocity = Drivetrain.leftSRX.getSelectedSensorVelocity(Constants.drivePIDIdx);
+		rVelocity = Robot.drivetrain.rightSRX.getSelectedSensorVelocity(Constants.drivePIDIdx);
+		lVelocity = Robot.drivetrain.leftSRX.getSelectedSensorVelocity(Constants.drivePIDIdx);
 		rVelocityFPS = (rVelocity / 1440) * 10 * 5 * Math.PI / 12;	//calculate feet per second from right encoder velocity
 		lVelocityFPS = (lVelocity / 1440) * 10 * 5 * Math.PI / 12;	//calculate feet per second from left encoder velocity
 		System.out.println("Left Encoder Velocity: " + lVelocity + " Left: " + lVelocityFPS + " Ft/Sec");
@@ -139,8 +140,8 @@ public class Encoders
 	 */
  	public void printEncoderCLError()
 	{
-		System.out.println("Left Encoder CL Error: " + Drivetrain.leftSRX.getClosedLoopError(Constants.drivePIDIdx));
-		System.out.println("Right Encoder CL Error: " + Drivetrain.rightSRX.getClosedLoopError(Constants.drivePIDIdx));
+		System.out.println("Left Encoder CL Error: " + Robot.drivetrain.leftSRX.getClosedLoopError(Constants.drivePIDIdx));
+		System.out.println("Right Encoder CL Error: " + Robot.drivetrain.rightSRX.getClosedLoopError(Constants.drivePIDIdx));
 		System.out.println("Arm Encoder CL Error: " + Arm.armSRX.getClosedLoopError(Constants.armPIDIdx));
 		System.out.println("Hatch Intake Encoder CL Error: " + IntakeHatch.hatchSRX.getClosedLoopError(Constants.hatchIntakePIDIdx));
 	}

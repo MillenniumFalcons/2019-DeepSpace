@@ -13,21 +13,24 @@ public class Robot extends TimedRobot
 
     Joysticks mainController;
     Joysticks coController;
-    Gyro gyro;
+    public static Encoders encoders;
+    public static Gyro gyro;
+    public static final Drivetrain drivetrain = new Drivetrain();
     
     @Override
     public void robotInit() 
     {
+        encoders = new Encoders();
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
         gyro = new Gyro();
-        Drivetrain.drivetrainInitialization();
+        drivetrain.drivetrainInitialization();
     }
 
     @Override
     public void robotPeriodic() 
     {
-        
+        updateControllers();
     }
     
     @Override
@@ -51,15 +54,31 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic() 
     {
-        testDrivetrain1();
+        System.out.println(mainController.rightJoyStickY);
+        System.out.println(mainController.leftJoyStickX);
+        drivetrain.setPercentOutput(.2,0);
+        // drivetrain.customArcadeDrive(mainController.leftJoyStickX, mainController.rightJoyStickY, gyro);
+        // testDrivetrain1();
     }
 
 
     //testing ball intake and drivetrain 01/26/2019
     public void testDrivetrain1()
     {
+        if(mainController.rightTrigger > 0)
+        {
+            
+            IntakeHatch.moveMotor(.5*mainController.rightTrigger);
+        }
+        else if(mainController.leftTrigger > 0)
+        {
+            IntakeHatch.moveMotor(-.5*mainController.leftTrigger);
+        }
+        else
+        {
+            IntakeHatch.moveMotor(0);
+        }
         boolean ball = false;
-        Drivetrain.customArcadeDrive(mainController.leftJoyStickX, mainController.leftJoyStickY, gyro);
         if(mainController.buttonX)
         {
             if(ball == false)
@@ -100,6 +119,7 @@ public class Robot extends TimedRobot
 
     public void updateControllers()
     {
-
+        mainController.setMainContollerValues();
+        coController.setMainContollerValues();
     }
 }

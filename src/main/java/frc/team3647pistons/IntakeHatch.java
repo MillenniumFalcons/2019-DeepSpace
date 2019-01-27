@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class IntakeHatch 
 {
 	public static int currentPosition;
-	public static Solenoid piston = new Solenoid(Constants.BallIntakeFC);
-	public static TalonSRX hatchSRX = new TalonSRX(Constants.HatchMotorPin);
+	public static Solenoid piston = new Solenoid(Constants.hatchIntakeFC);
+	public static TalonSRX hatchSRX = new TalonSRX(Constants.hatchMotorPin);
 	
 	public static void openIntake()
 	{
@@ -46,6 +46,12 @@ public class IntakeHatch
 		}
 		else
 			System.out.println("INVALID HATCH INTAKE POSITION INPUT");
+	}
+	
+	public static void moveMotor(double power)
+	{
+		hatchSRX.set(ControlMode.PercentOutput, power);
+
 	}
 
 	public static void setEncPosition(int encoderInput)

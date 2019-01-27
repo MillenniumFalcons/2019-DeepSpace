@@ -13,19 +13,19 @@ public class Constants
 
 
 	//Elevator Motor Pins
-	public static final int leftGearboxSRX = 1;		//TO BE CHANGED
-	public static final int rightGearboxSRX = 1;	//TO BE CHANGED
-	public static final int leftGearboxSPX = 1;		//TO BE CHANGED
-	public static final int rightGearboxSPX = 1;	//TO BE CHANGED
+	public static final int leftGearboxSRX = 50;		//TO BE CHANGED
+	public static final int rightGearboxSRX = 51;	//TO BE CHANGED
+	public static final int leftGearboxSPX = 52;		//TO BE CHANGED
+	public static final int rightGearboxSPX = 53;	//TO BE CHANGED
 
 	//Arm Motor Pins
-	public final static int armMasterPin = 0;		//TO BE CHANGED
+	public static final int armMasterPin = 54;		//TO BE CHANGED
 
 	//Hatch Intake Motor Pin
-	public static final int HatchMotorPin = 3;		//TO BE CHANGED
+	public static final int hatchMotorPin = 3;		//TO BE CHANGED
 
 	//Ball Intake Motor
-	public static final int BallMotorPin = 2;
+	public static final int ballMotorPin = 2;
 
 	//Gyro Pin
 	public static final int gyroPin = 0;
@@ -35,42 +35,42 @@ public class Constants
 	public static final int armBannerSensor = 1;		//TO BE CHANGED
 
 	//Piston Forward and Reverse Channels
-	public static final int BallIntakeFC = 0;
-	public static final int HatchIntakeFC = 1;
+	public static final int ballIntakeFC = 0;
+	public static final int hatchIntakeFC = 1;
 	
 	// AirCompressor Pin
 	public static final int CompressorPCMPin = 0; // TO BE CHANGED
 
 
 	//Timeout Constants
-	public final static int kTimeoutMs = 10;	//Universal Constant
+	public static final int kTimeoutMs = 10;	//Universal Constant
 	
 
 	//PIDIdx Constsnts
-	public final static int drivePIDIdx = 0;
-	public final static int armPIDIdx = 0;
+	public static final int drivePIDIdx = 0;
+	public static final int armPIDIdx = 0;
 	public static final int hatchIntakePIDIdx = 0;
 
 	//Arm PID Values
-	public final static int armProfile1 = 1;
-	public final static int armkP = 0;
-	public final static int armkI = 0;
-	public final static int armkD = 0;
-	public final static int armkF = 0;
-	public final static int armIZone = 0;
+	public static final int armProfile1 = 1;
+	public static final int armkP = 0;
+	public static final int armkI = 0;
+	public static final int armkD = 0;
+	public static final int armkF = 0;
+	public static final int armIZone = 0;
 
 	//Left Drivetrain PIDF Values
-	public final static double lDrivekP = 0;
-	public final static double lDrivekI = 0;
-	public final static double lDrivekD = 0;
-	public final static double lDrivekF = 0;
+	public static final double lDrivekP = .3;
+	public static final double lDrivekI = 0;
+	public static final double lDrivekD = 0;
+	public static final double lDrivekF = .65;
 
 	//Right Drivetrain PIDF Values
-	public final static double rDrivekP = 0;
-	public final static double rDrivekI = 0;
-	public final static double rDrivekD = 0;
-	public final static double rDrivekF = 0;
-	public final static double velocityConstant = 1550; //Explanation for velocityConstant
+	public static final double rDrivekP = .3;
+	public static final double rDrivekI = 0;
+	public static final double rDrivekD = 0;
+	public static final double rDrivekF = .65;
+	public static final double velocityConstant = 1550; //Explanation for velocityConstant
 
 	
 	/*****************ANY NON-FINAL INTs SHOULD BE FINAL ONCE GIVEN A VALUE*******************/
@@ -93,9 +93,22 @@ public class Constants
 
 
 	//Drivetrain Current Limiting Constants
-	public final static int drivePeakCurrent = 35;			//Measured in Amps
-	public final static int drivePeakCurrentDuration = 200;	//Measured in Milliseconds
-	public final static int driveContinousCurrent = 30;		//Measured in Amps
+	public static final int drivePeakCurrent = 35;			//Measured in Amps
+	public static final int drivePeakCurrentDuration = 200;	//Measured in Milliseconds
+	public static final int driveContinousCurrent = 30;		//Measured in Amps
 	
+
+	/**************AUTONOMOUS CONSTANTS******************/
+	
+	public static final double kEncoderTicks = 0;
+	public static final double kWheelDiameter = 0;
+	public static final double kWheelBase = 0;
+	public static final double kMaxVelocity = 0;
+
+	public static final double kZeta = 0;
+	public static final double kBeta = 0;
+
+
+
 
 }
