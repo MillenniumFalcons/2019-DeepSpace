@@ -3,13 +3,13 @@ package frc.robot;
 public class Constants
 {
     //Drive Motor Pins
-	public static final int leftMasterPin = 4;		//TO BE CHANGED
-	public static final int leftSlave1Pin = 5;		//TO BE CHANGED
-	public static final int leftSlave2Pin = 6;		//TO BE CHANGED
+	public static final int leftMasterPin = 9;		//TO BE CHANGED
+	public static final int leftSlave1Pin = 10;		//TO BE CHANGED
+	public static final int leftSlave2Pin = 11;		//TO BE CHANGED
 
-	public static final int rightMasterPin = 9;		//TO BE CHANGED
-	public static final int rightSlave1Pin = 10;	//TO BE CHANGED
-	public static final int rightSlave2Pin = 11;	//TO BE CHANGED
+	public static final int rightMasterPin = 4;		//TO BE CHANGED
+	public static final int rightSlave1Pin = 5;	//TO BE CHANGED
+	public static final int rightSlave2Pin = 6;	//TO BE CHANGED
 
 
 	//Elevator Motor Pins

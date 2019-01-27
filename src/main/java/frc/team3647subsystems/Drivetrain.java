@@ -78,15 +78,15 @@ public class Drivetrain extends Subsystem
 		// rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
 
 		// Set up followers
-		leftSPX1.follow(leftSRX);
-		leftSPX2.follow(leftSRX);
+		// leftSPX1.follow(leftSRX);
+		// leftSPX2.follow(leftSRX);
 
-		rightSPX1.follow(rightSRX);
-		rightSPX2.follow(rightSRX);
+		// rightSPX1.follow(rightSRX);
+		// rightSPX2.follow(rightSRX);
 		
-		leftSRX.setInverted(true);
-		leftSPX1.setInverted(true);
-		leftSPX2.setInverted(true);
+		// rightSRX.setInverted(true);
+		// rightSPX1.setInverted(true);
+		// rightSPX2.setInverted(true);
     }
 
 	/**

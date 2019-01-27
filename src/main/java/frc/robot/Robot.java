@@ -54,25 +54,27 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic() 
     {
-        System.out.println(mainController.rightJoyStickY);
-        System.out.println(mainController.leftJoyStickX);
-        drivetrain.setPercentOutput(.2,0);
-        // drivetrain.customArcadeDrive(mainController.leftJoyStickX, mainController.rightJoyStickY, gyro);
-        // testDrivetrain1();
+        // System.out.println(mainController.rightJoyStickY);
+        // System.out.println(mainController.leftJoyStickX);
+        drivetrain.leftSRX.set(.35);
+        System.out.println(drivetrain.leftSRX.getMotorOutputPercent());
+        // drivetrain.setPercentOutput(.2,0);
     }
 
 
     //testing ball intake and drivetrain 01/26/2019
     public void testDrivetrain1()
     {
+        drivetrain.customArcadeDrive(mainController.leftJoyStickY, mainController.rightJoyStickX, gyro);
+        System.out.println("Bumpers " + mainController.leftBumper + " " + mainController.rightBumper);
+        System.out.println("Triggers " + mainController.leftTrigger + " " + mainController.rightTrigger);
         if(mainController.rightTrigger > 0)
         {
-            
-            IntakeHatch.moveMotor(.5*mainController.rightTrigger);
+            IntakeHatch.moveMotor(.25*mainController.rightTrigger);
         }
         else if(mainController.leftTrigger > 0)
         {
-            IntakeHatch.moveMotor(-.5*mainController.leftTrigger);
+            IntakeHatch.moveMotor(-.25*mainController.leftTrigger);
         }
         else
         {
@@ -113,8 +115,10 @@ public class Robot extends TimedRobot
     @Override
     public void testPeriodic() 
     {
-        AirCompressor.runCompressor();
+        // AirCompressor.runCompressor();
         // mainController.vibrate(1, .9, 1);
+
+        testDrivetrain1();
     }
 
     public void updateControllers()

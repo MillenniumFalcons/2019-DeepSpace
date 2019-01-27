@@ -2,13 +2,13 @@ package frc.team3647pistons;
 
 import frc.robot.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.*;
 
 public class IntakeBall 
 {
 	public static Solenoid piston = new Solenoid(Constants.ballIntakeFC);
-	public static TalonSRX ballSRX = new TalonSRX(Constants.ballMotorPin);
+	public static VictorSPX ballSRX = new VictorSPX(Constants.ballMotorPin);
 	
 	public static void setSpeed(double speedInput)
 	{
