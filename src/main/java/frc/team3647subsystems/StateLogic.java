@@ -2,6 +2,9 @@ package frc.team3647subsystems;
 
 import frc.team3647pistons.IntakeBall;
 import frc.team3647pistons.IntakeHatch;
+import frc.team3647pistons.IntakeHatch.HatchPosition;
+import frc.team3647subsystems.Arm.ArmPosition;
+import frc.team3647subsystems.Elevator.ElevatorLevel;;
 
 public class StateLogic
 {
@@ -20,8 +23,8 @@ public class StateLogic
         HFloorGrab: retracted
         HSensor: false
         */
-        Arm.setArmPosition(1);
-        Elevator.setElevatorLevel(2);
+        Arm.setArmPosition(ArmPosition.STRAIGHT0);
+        Elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
         IntakeBall.closeIntake();
         IntakeHatch.closeIntake();
     }
@@ -46,8 +49,8 @@ public class StateLogic
         At the end of this state, we should have the hatch stored and can be used to score
         */
 
-        Arm.setArmPosition(1);
-        Elevator.setElevatorLevel(1);
+        Arm.setArmPosition(ArmPosition.STRAIGHT0);
+        Elevator.setElevatorLevel(ElevatorLevel.LOW);
         IntakeHatch.openIntake();
         IntakeHatch.closeIntake();
     }
@@ -68,8 +71,8 @@ public class StateLogic
         At the end of this state, we should have the hatch stored and can be used to score
         */
 
-        Arm.setArmPosition(2);
-        Elevator.setElevatorLevel(1);
+        Arm.setArmPosition(ArmPosition.STRAIGHT180);
+        Elevator.setElevatorLevel(ElevatorLevel.LOW);
         IntakeHatch.openIntake();
         IntakeHatch.closeIntake();
     }
@@ -88,9 +91,9 @@ public class StateLogic
         * Manual control to get the hatch inside the intake *
         */
 
-        Arm.setArmPosition(1);
-        IntakeHatch.setPosition(3);
-        Elevator.setElevatorLevel(1);
+        Arm.setArmPosition(ArmPosition.STRAIGHT0);
+        IntakeHatch.setPosition(HatchPosition.OUTSIDE);
+        Elevator.setElevatorLevel(ElevatorLevel.LOW);
     }
 
     /**
@@ -109,11 +112,11 @@ public class StateLogic
         At the end of this state, we should have the hatch stored and can be used to score
         */
 
-        Arm.setArmPosition(1);
-        IntakeHatch.setPosition(2);
-        Elevator.setElevatorLevel(1);
+        Arm.setArmPosition(ArmPosition.STRAIGHT0);
+        IntakeHatch.setPosition(HatchPosition.LOADING);
+        Elevator.setElevatorLevel(ElevatorLevel.LOW);
         //Add floor hatch to arm hatch intake
-        Elevator.setElevatorLevel(2); 
+        Elevator.setElevatorLevel(ElevatorLevel.MIDDLE); 
 
     }
 

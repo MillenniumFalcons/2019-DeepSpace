@@ -9,9 +9,16 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class IntakeHatch 
 {
-	public static int currentPosition;
+	public static HatchPosition currentPosition;
 	public static Solenoid piston = new Solenoid(Constants.hatchIntakeFC);
 	public static TalonSRX hatchSRX = new TalonSRX(Constants.hatchMotorPin);
+
+	public static enum HatchPosition
+	{
+		INSIDE,
+		OUTSIDE,
+		LOADING
+	}
 	
 	public static void openIntake()
 	{
@@ -27,22 +34,22 @@ public class IntakeHatch
 	 * 
 	 * @param positionInput 1 = inside drivetrain (0); 2 = loading position for arm (90); 3 = outside intake position (180)
 	 */
-	public static void setPosition(int positionInput)
+	public static void setPosition(HatchPosition positionInput)
 	{
-		if(positionInput == 1)
+		if(positionInput == HatchPosition.INSIDE)
 		{
 			setEncPosition(Constants.hatchIntakeInside);
-			currentPosition = 1;
+			currentPosition = HatchPosition.INSIDE;
 		}
-		else if(positionInput == 2)
+		else if(positionInput == HatchPosition.LOADING)
 		{
 			setEncPosition(Constants.hatchIntakeLoad);
-			currentPosition = 2;
+			currentPosition = HatchPosition.LOADING;
 		}			
-		else if(positionInput == 3)
+		else if(positionInput == HatchPosition.OUTSIDE)
 		{
 			setEncPosition(Constants.hatchIntakeOutside);
-			currentPosition = 3;
+			currentPosition = HatchPosition.OUTSIDE;
 		}
 		else
 			System.out.println("INVALID HATCH INTAKE POSITION INPUT");

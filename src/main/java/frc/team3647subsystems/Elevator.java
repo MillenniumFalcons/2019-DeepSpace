@@ -10,8 +10,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Elevator
 {
+	public static enum ElevatorLevel
+	{
+		LOW,
+		MIDDLE,
+		HIGH
+	}
 	public static int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
-	public static int currentLevel;
+	public static ElevatorLevel currentLevel;
 	
 	public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
@@ -29,7 +35,7 @@ public class Elevator
     // 8 levels
     public static void elevatorInitialization()
 	{
-		setElevatorLevel(1);
+		setElevatorLevel(ElevatorLevel.LOW);
         //Config Sensors for Motors
         GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
@@ -64,22 +70,22 @@ public class Elevator
 	 * 
 	 * @param position 1 = low; 2 = middle; 3 = high goal
 	 */
-	public static void setElevatorLevel(int position)
+	public static void setElevatorLevel(ElevatorLevel inputLevel)
 	{
-		if(position == 1)
+		if(inputLevel == ElevatorLevel.LOW)
 		{
 			setElevatorPosition(Constants.elevatorLow);
-			currentLevel = 1;
+			currentLevel = ElevatorLevel.LOW;
 		}
-		else if(position == 2)
+		else if(inputLevel == ElevatorLevel.MIDDLE)
 		{
 			setElevatorPosition(Constants.elevatorMiddle);
-			currentLevel = 2;
+			currentLevel = ElevatorLevel.MIDDLE;
 		}
-		else if(position == 3)
+		else if(inputLevel == ElevatorLevel.HIGH)
 		{
 			setElevatorPosition(Constants.elevatorHigh);
-			currentLevel = 3;
+			currentLevel = ElevatorLevel.HIGH;
 		}
 		else
 			System.out.println("INVALID ARM POSITION");

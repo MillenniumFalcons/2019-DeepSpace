@@ -5,13 +5,23 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
 {
     public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
 
 	public static int armEncoderValue, armVelocity;
-	public static int currentPosition;
+	// public static int currentPosition;
+
+	public enum ArmPosition
+	{
+		STRAIGHT0,
+		STRAIGHT180,
+		HIGHGOALFRONT,
+		HIGHGOALBACK
+	}
+	public static ArmPosition currentPosition;
 	
 
     public static DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
@@ -43,7 +53,7 @@ public class Arm
 	 * 
 	 * @param positionInput 1 = Straight 0; 2 = Straight 180; 3 = High Goal Front; 4 = High Goal Back; Position other # = error
 	 */
-	public static void setArmPosition(int positionInput)
+	public static void setArmPosition(ArmPosition positionInput)
 	{
 
 		//Check is the arm is already at the projected position
@@ -53,31 +63,31 @@ public class Arm
 		}
 
 		//check if positionInput is equal to Straight 0 degrees
-		else if(positionInput == 1 && currentPosition != 1)
+		else if(positionInput == ArmPosition.STRAIGHT0 && currentPosition != ArmPosition.STRAIGHT0)
 		{
 			elevatorCheck(Constants.armStraight0);
-			currentPosition = 1;
+			currentPosition = ArmPosition.STRAIGHT0;
 		}
 
 		//check if positionInput is equal to Straight 180 degrees
-		else if(positionInput == 2 && currentPosition != 2)
+		else if(positionInput == ArmPosition.STRAIGHT180 && currentPosition != ArmPosition.STRAIGHT180)
 		{
 			elevatorCheck(Constants.armStraight180);
-			currentPosition = 2;
+			currentPosition = ArmPosition.STRAIGHT180;
 		}
 
 		//check if positionInput is equal to High Goal Front
-		else if(positionInput == 3 && currentPosition != 3)
+		else if(positionInput == ArmPosition.HIGHGOALFRONT && currentPosition != ArmPosition.HIGHGOALFRONT)
 		{
 			elevatorCheck(Constants.armHighGoalFront);
-			currentPosition = 3;
+			currentPosition = ArmPosition.HIGHGOALFRONT;
 		}
 
 		//check if positionInput is equal to High Goal Back
-		else if(positionInput == 4 && currentPosition != 4)
+		else if(positionInput == ArmPosition.HIGHGOALBACK && currentPosition != ArmPosition.HIGHGOALBACK)
 		{
 			elevatorCheck(Constants.armHighGoalBack);
-			currentPosition = 4;
+			currentPosition = ArmPosition.HIGHGOALBACK;
 		}
 
 		else
@@ -91,7 +101,7 @@ public class Arm
 	private static void elevatorCheck(int encPositionInput)
 	{
 		//Check if elevator is higher than the low position
-		if (Elevator.currentLevel == 2 || Elevator.currentLevel == 3) 
+		if (Elevator.currentLevel == ElevatorLevel.MIDDLE || Elevator.currentLevel == ElevatorLevel.HIGH) 
 		{
 			//if true set arm to position without moving elevator
 			setArmEncPosition(encPositionInput);
@@ -99,7 +109,7 @@ public class Arm
 		else
 		{
 			//else set elevator to middle position
-			Elevator.setElevatorLevel(2);
+			Elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
 			//then set arm position to input position
 			setArmEncPosition(encPositionInput);
 		}
