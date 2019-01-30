@@ -37,23 +37,14 @@ public class Drivetrain extends Subsystem
 
     public void drivetrainInitialization()
 	{
-		// //Config Current Limiting
-		// leftSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
-		// rightSRX.configPeakCurrentLimit(Constants.drivePeakCurrent, Constants.kTimeoutMs);
-
-		// leftSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
-		// rightSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration, Constants.kTimeoutMs);
-
-		// leftSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
-		// rightSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent, Constants.kTimeoutMs);
-
-		// // Config left side PID settings
-		// leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		// leftSRX.setSensorPhase(false);
-		// leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
-		// leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		// leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
-		// leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		
+		// Config left side PID settings
+		leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		leftSRX.setSensorPhase(false);
+		leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
+		leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
+		leftSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// // Config left side PID Values
 		// leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
@@ -62,13 +53,13 @@ public class Drivetrain extends Subsystem
 		// leftSRX.config_kI(Constants.drivePIDIdx, Constants.lDrivekI, Constants.kTimeoutMs);
 		// leftSRX.config_kD(Constants.drivePIDIdx, Constants.lDrivekD, Constants.kTimeoutMs);
 
-		// // Config right side PID settings
-		// rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
-		// rightSRX.setSensorPhase(false);
-		// rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
-		// rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
-		// rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
-		// rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
+		// Config right side PID settings
+		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
+		rightSRX.setSensorPhase(false);
+		rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
+		rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
+		rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
+		rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// // Config right side PID Values
 		// rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
@@ -78,15 +69,15 @@ public class Drivetrain extends Subsystem
 		// rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
 
 		// Set up followers
-		// leftSPX1.follow(leftSRX);
-		// leftSPX2.follow(leftSRX);
+		leftSPX1.follow(leftSRX);
+		leftSPX2.follow(leftSRX);
 
-		// rightSPX1.follow(rightSRX);
-		// rightSPX2.follow(rightSRX);
+		rightSPX1.follow(rightSRX);
+		rightSPX2.follow(rightSRX);
 		
-		// rightSRX.setInverted(true);
-		// rightSPX1.setInverted(true);
-		// rightSPX2.setInverted(true);
+		rightSRX.setInverted(true);
+		rightSPX1.setInverted(true);
+		rightSPX2.setInverted(true);
     }
 
 	/**

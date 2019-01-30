@@ -14,36 +14,42 @@ public class Constants
 
 	//Elevator Motor Pins
 	public static final int leftGearboxSRX = 50;		//TO BE CHANGED
-	public static final int rightGearboxSRX = 51;	//TO BE CHANGED
+	public static final int rightGearboxSRX = 51;		//TO BE CHANGED
 	public static final int leftGearboxSPX = 52;		//TO BE CHANGED
-	public static final int rightGearboxSPX = 53;	//TO BE CHANGED
+	public static final int rightGearboxSPX = 53;		//TO BE CHANGED
 
 	//Arm Motor Pins
 	public static final int armMasterPin = 54;		//TO BE CHANGED
 
-	//Hatch Intake Motor Pin
-	public static final int hatchMotorPin = 3;		//TO BE CHANGED
+	//Hatch Intake Motor Pins
+	public static final int hatchMotorPin = 3;		
+
 
 	//Ball Intake Motor
 	public static final int ballMotorPin = 2;
 
 	//Gyro Pin
-	public static final int gyroPin = 0;
+	public static final int gyroPin = 16;
 
 	//Sensor Pins
 	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
 	public static final int armBannerSensor = 1;		//TO BE CHANGED
+	public static final int hatchLimitSwitchPin = 9;
 
 	//Piston Forward and Reverse Channels
 	public static final int ballIntakeFC = 0;
 	public static final int hatchIntakeFC = 1;
 	
 	// AirCompressor Pin
-	public static final int CompressorPCMPin = 0; // TO BE CHANGED
+	public static final int CompressorPCMPin = 0;	
 
 
 	//Timeout Constants
 	public static final int kTimeoutMs = 10;	//Universal Constant
+
+	//Current Limiting
+	public static final int peakCurrentHatch = 40;
+	public static final int continuousCurrentHatch = 5;
 	
 
 	//PIDIdx Constsnts
@@ -60,16 +66,16 @@ public class Constants
 	public static final int armIZone = 0;
 
 	//Left Drivetrain PIDF Values
-	public static final double lDrivekP = .3;
+	public static final double lDrivekP = 0.3;
 	public static final double lDrivekI = 0;
-	public static final double lDrivekD = 0;
-	public static final double lDrivekF = .65;
+	public static final double lDrivekD = 0.1;
+	public static final double lDrivekF = 0;
 
 	//Right Drivetrain PIDF Values
-	public static final double rDrivekP = .3;
+	public static final double rDrivekP = 0.3;
 	public static final double rDrivekI = 0;
-	public static final double rDrivekD = 0;
-	public static final double rDrivekF = .65;
+	public static final double rDrivekD = 0.1;
+	public static final double rDrivekF = 0;
 	public static final double velocityConstant = 1550; //Explanation for velocityConstant
 
 	
@@ -87,9 +93,18 @@ public class Constants
 	public static int elevatorHigh;
 
 	//Hatch Intake Positions
-	public static int hatchIntakeInside;
-	public static int hatchIntakeOutside;
-	public static int hatchIntakeLoad;
+	public static final int hatchIntakeInside = 3800;
+	public static final int hatchIntakeLoad = 2150;
+	//Motion magic
+	public static final int kHatchAcceleration = 5000;
+	public static final int kHatchVelocity = 1750;
+	//PIDF
+	public static final double kPHatch = .65;
+	public static final double kIHatch = .00001;
+	public static final double kDHatch = .1;
+	public static final double kFHatch = 0;
+	//PID Slot Index
+	public static final int hatchPIDSlot = 0;
 
 
 	//Drivetrain Current Limiting Constants
