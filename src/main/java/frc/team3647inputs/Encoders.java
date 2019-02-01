@@ -4,6 +4,10 @@ import frc.robot.Constants;
 import frc.team3647pistons.IntakeHatch;
 import frc.team3647subsystems.*;
 import frc.robot.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import frc.team3647subsystems.Drivetrain;
+
 
 public class Encoders 
 {
@@ -58,6 +62,15 @@ public class Encoders
 	 * Left Side velocity in feet per second (FPS)
 	 */
 	private double lVelocityFPS;	//Left Side velocity in feet per second (FPS)
+	
+
+
+    //Variables to calculate left and right max velocities
+    private double prevLeftVelocity, prevRightVelocity, maxLeftVelocity, maxRightVelocity;
+
+    //Variables to store and calculate left and right max acceleration
+    private double prevLeftAccel, prevRightAccel, maxLeftAccel, maxRightAccel;
+	
 	
 	/**
 	 * Used in periodic loop to update previous and current encoder position of:
@@ -209,4 +222,106 @@ public class Encoders
 	{
 		return prevHatchIntakeEncoderValue;
 	}
+
+	public void initializeVelAccel()
+	{
+		this.resetEncoders();
+        // Velocity variables initialization
+        prevLeftVelocity = 0;
+        prevRightVelocity = 0;
+        maxLeftVelocity = 0;
+        maxRightVelocity = 0;
+
+        //Acceleration variables initialization
+        prevLeftAccel = 0;
+        prevRightAccel = 0;
+        maxLeftAccel = 0;
+        maxRightAccel = 0;
+	}
+
+	private double encoderToMpS(double encoderVal, double wheelRadius)
+    {
+        SmartDashboard.putNumber("encoderValue", encoderVal);
+        return Math.abs(encoderVal) / .1  / 4096.0 * .0254 * wheelRadius * Math.PI * 2;
+	}
+	public void runMotors()
+	{
+		Robot.drivetrain.leftSRX.set(ControlMode.PercentOutput, 1);
+        Robot.drivetrain.rightSRX.set(ControlMode.PercentOutput, 1);
+	}
+	public void velAccel()
+	{
+        // Takes sensors encoder ticks per .1second and wheel radius to get velocity for left and right motors
+        double leftMpS = this.encoderToMpS(Robot.drivetrain.leftSRX.getSelectedSensorVelocity(0), 3);
+        double rightMpS = this.encoderToMpS(Robot.drivetrain.rightSRX.getSelectedSensorVelocity(0), 3);
+        
+        // Compare current velocity to max velocity recoreded
+        if(leftMpS > this.maxLeftVelocity)
+        {
+            // If current left velocity is bigger than max, set max to current
+            this.maxLeftVelocity = leftMpS;
+        }
+        if(rightMpS > this.maxRightVelocity)
+        {
+            // Same for right motor
+            this.maxRightVelocity = rightMpS;
+        }
+
+        // Get current acceleration for left and right
+        double leftAccel = (leftMpS - this.prevLeftVelocity) / .02;
+        double rightAccel = (rightMpS - this.prevRightVelocity) / .02;
+
+        // Compare previous acceleration to current acceleration
+        if(leftAccel > this.maxLeftAccel)
+        {
+            this.maxLeftAccel = leftAccel;
+        }
+        if(rightAccel > this.maxRightAccel)
+        {
+            this.maxRightAccel = rightAccel;
+        }
+
+        // Displays current and max velocity values on smartdashboard
+        // SmartDashboard.putNumber("lMaxVelocity", maxLeftVelocity);
+        // SmartDashboard.putNumber("lCurrentVelocity", leftMpS);
+        // SmartDashboard.putNumber("rMaxVelocity", maxRightVelocity);
+        // SmartDashboard.putNumber("rCurrentVelocity", rightMpS);
+
+
+
+        // Displays current and max acceleration values on smartdashboard
+        // SmartDashboard.putNumber("lMaxAccel", maxLeftAccel);
+        // SmartDashboard.putNumber("lCurrentAccel", leftAccel);
+        // SmartDashboard.putNumber("rMaxAccel", maxRightAccel);
+        // SmartDashboard.putNumber("rCurrentAccel", rightAccel);
+
+        // Sets previous velocity to current velocity before method ends
+        this.prevLeftVelocity = leftMpS;
+        this.prevRightVelocity = rightMpS;
+
+        // Sets previous acceleraion to current acceleraion before method ends
+        this.prevLeftAccel = leftAccel;
+        this.prevRightAccel = rightAccel;		
+	}
+
+	// Getters for max velocity, left and right
+	public double getMaxLeftVelocity()
+	{
+		return this.maxLeftVelocity;
+	}
+	public double getMaxRightVelocity()
+	{
+		return this.maxRightVelocity;
+	}
+
+	// Getters for max acceleration, left and right
+	public double getMaxLeftAccel()
+	{
+		return this.maxLeftAccel;
+	}
+	public double getMaxRightAccel()
+	{
+		return this.maxRightAccel;
+	}
+
 }
