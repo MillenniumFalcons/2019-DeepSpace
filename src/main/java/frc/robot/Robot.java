@@ -40,17 +40,17 @@ public class Robot extends TimedRobot
         drivetrain.leftSRX.configFactoryDefault();
         drivetrain.rightSRX.configFactoryDefault();
         drivetrain.drivetrainInitialization();
-        //IntakeHatch.intitialize();
+        IntakeHatch.intitialize();
 
-        // SmartDashboard.putNumber("kP", .1);
-        // SmartDashboard.putNumber("kI", 0);
-        // SmartDashboard.putNumber("kD", 0);
-        // SmartDashboard.putNumber("kF", 0);
+        SmartDashboard.putNumber("kP", .1);
+        SmartDashboard.putNumber("kI", 0);
+        SmartDashboard.putNumber("kD", 0);
+        SmartDashboard.putNumber("kF", 0);
         
-        // SmartDashboard.putNumber("kP2", .1);
-        // SmartDashboard.putNumber("kI2", 0);
-        // SmartDashboard.putNumber("kD2", 0);
-        // SmartDashboard.putNumber("kF2", 0);
+        SmartDashboard.putNumber("kP2", .1);
+        SmartDashboard.putNumber("kI2", 0);
+        SmartDashboard.putNumber("kD2", 0);
+        SmartDashboard.putNumber("kF2", 0);
 
         encoders.resetEncoders();
         // Velocity variables initialization
@@ -76,6 +76,9 @@ public class Robot extends TimedRobot
         SmartDashboard.putNumber("lCurrentAccel", 0);
         SmartDashboard.putNumber("rMaxAccel", 0);
         SmartDashboard.putNumber("rCurrentAccel", 0);
+
+
+        SmartDashboard.putNumber("encoderValue", 0);
 
 
     }
@@ -122,20 +125,35 @@ public class Robot extends TimedRobot
     public static double kF2 = 0;
 
     @Override
+    public void testInit() 
+    {
+        maxLeftAccel = 0;
+        maxRightAccel = 0;
+
+        prevLeftAccel = 0;
+        prevRightAccel = 0;
+
+        maxLeftVelocity = 0;
+        maxRightVelocity = 0;
+
+        prevLeftVelocity = 0;
+        prevRightVelocity = 0;
+    }
+    @Override
     public void testPeriodic()
     {
-        /* AirCompressor.runCompressor();
+        AirCompressor.runCompressor();
         updatePIDF();
         drivetrainPID();
         // testDrivetrain1();
         shuffleboard();
-        intakeHatch(); */
+        intakeHatch(); 
         // drivetrain.leftSRX.configFactoryDefault();
         // drivetrain.rightSRX.configFactoryDefault();
         // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
         // drivetrain.rightSRX.set(ControlMode.PercentOutput, .35);
-        drivetrain.leftSRX.set(ControlMode.PercentOutput, .5);
-        drivetrain.rightSRX.set(ControlMode.PercentOutput, .5);
+        drivetrain.leftSRX.set(ControlMode.PercentOutput, 1);
+        drivetrain.rightSRX.set(ControlMode.PercentOutput, 1);
         encoderToVelocity();
 
     }
@@ -248,8 +266,8 @@ public class Robot extends TimedRobot
     //encoder value in ticks / 100ms
     public double encoderToMpS(double encoderVal, double wheelRadius)
     {
-        System.out.println("Encoder Value: " +  encoderVal);
-        return Math.abs(encoderVal) * (1000.0 / 4096.0) * .0254 * wheelRadius * Math.PI * 2;
+        SmartDashboard.putNumber("encoderValue", encoderVal);
+        return Math.abs(encoderVal) / .1  / 4096.0 * .0254 * wheelRadius * Math.PI * 2;
     }
 
     public void encoderToVelocity()
@@ -271,8 +289,8 @@ public class Robot extends TimedRobot
         }
 
         // Get current acceleration for left and right
-        double leftAccel = (leftMpS + prevLeftVelocity) / .02;
-        double rightAccel = (rightMpS + prevRightVelocity) / .02;
+        double leftAccel = (leftMpS - prevLeftVelocity) / .02;
+        double rightAccel = (rightMpS - prevRightVelocity) / .02;
 
         // Compare previous acceleration to current acceleration
         if(leftAccel > maxLeftAccel)
