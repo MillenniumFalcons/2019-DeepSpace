@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647inputs.*;
@@ -22,9 +23,11 @@ public class Robot extends TimedRobot
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
     
+ 
     @Override
     public void robotInit() 
     {
+        
         encoders = new Encoders();
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
@@ -88,9 +91,19 @@ public class Robot extends TimedRobot
     public static double kF2 = 0;
 
     @Override
+    public void testInit() 
+    {
+
+    }
+    @Override
     public void testPeriodic()
     {
         AirCompressor.runCompressor();
+        updatePIDF();
+        drivetrainPID();
+        // testDrivetrain1();
+        shuffleboard();
+        intakeHatch(); 
         System.out.println(mainController.rightJoyStickY);
         drivetrain.customArcadeDrive(mainController.leftJoyStickX, mainController.leftJoyStickY, gyro);
         // updatePIDF();
@@ -102,7 +115,6 @@ public class Robot extends TimedRobot
         // drivetrain.rightSRX.configFactoryDefault();
         // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
         // drivetrain.rightSRX.set(ControlMode.PercentOutput, .35);
-
     }
 
 
@@ -120,7 +132,7 @@ public class Robot extends TimedRobot
 		drivetrain.rightSRX.config_kF(Constants.drivePIDIdx, kF2, Constants.kTimeoutMs);
 		drivetrain.rightSRX.config_kP(Constants.drivePIDIdx, kP2, Constants.kTimeoutMs);
 		drivetrain.rightSRX.config_kI(Constants.drivePIDIdx, kI2, Constants.kTimeoutMs);
-		drivetrain.rightSRX.config_kD(Constants.drivePIDIdx, kD2, Constants.kTimeoutMs);
+        drivetrain.rightSRX.config_kD(Constants.drivePIDIdx, kD2, Constants.kTimeoutMs);
     }
 
     public void updatePIDF()
@@ -208,4 +220,5 @@ public class Robot extends TimedRobot
             IntakeHatch.closeIntake();
         }
     }
+
 }

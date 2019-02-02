@@ -40,7 +40,7 @@ public class Drivetrain extends Subsystem
 		
 		// Config left side PID settings
 		leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		leftSRX.setSensorPhase(false);
+		leftSRX.setSensorPhase(true);
 		leftSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
 		leftSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
 		leftSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
@@ -55,7 +55,7 @@ public class Drivetrain extends Subsystem
 
 		// Config right side PID settings
 		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
-		rightSRX.setSensorPhase(false);
+		rightSRX.setSensorPhase(true);
 		rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
 		rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
 		rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
