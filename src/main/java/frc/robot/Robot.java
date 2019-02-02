@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647inputs.*;
@@ -22,10 +23,13 @@ public class Robot extends TimedRobot
     public static Encoders encoders;
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
+    
+
  
     @Override
     public void robotInit() 
     {
+        
         encoders = new Encoders();
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
@@ -34,7 +38,7 @@ public class Robot extends TimedRobot
         drivetrain.leftSRX.configFactoryDefault();
         drivetrain.rightSRX.configFactoryDefault();
         drivetrain.drivetrainInitialization();
-        IntakeHatch.intitialize();
+        //IntakeHatch.intitialize();
 
         SmartDashboard.putNumber("kP", .1);
         SmartDashboard.putNumber("kI", 0);
@@ -106,17 +110,20 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
+        encoders.initializeVelAccel();
 
     }
     @Override
     public void testPeriodic()
     {
-        AirCompressor.runCompressor();
-        updatePIDF();
-        drivetrainPID();
+
+        encoders.velAccel();
+        //AirCompressor.runCompressor();
+        //updatePIDF();
+        //drivetrainPID();
         // testDrivetrain1();
-        shuffleboard();
-        intakeHatch(); 
+        //shuffleboard();
+        //intakeHatch(); 
         // drivetrain.leftSRX.configFactoryDefault();
         // drivetrain.rightSRX.configFactoryDefault();
         // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
