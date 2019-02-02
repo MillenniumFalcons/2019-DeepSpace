@@ -65,6 +65,23 @@ public class Constants
 	public static final int armkF = 0;
 	public static final int armIZone = 0;
 
+	//Elevator PID Values
+	public static final int interstageIZone = 0;
+	public static final double interstageP = 0.1;
+	public static final double interstageI = 0;
+	public static final double interstageD = 0;
+	public static final double interstageF = 0;
+
+	public static final int carriageIZone = 0;
+	public static final double carriageP = 0.1;
+	public static final double carriageI = 0;
+	public static final double carriageD = 0;
+	public static final double carriageF = 0;
+
+	//Elevator Motion Magic
+	public static final int elevatorCruiseVelocity = 0;
+	public static final int elevatorAcceleration = 0;
+
 	//Left Drivetrain PIDF Values
 	public static final double lDrivekP = 0.3;
 	public static final double lDrivekI = 0;
@@ -103,8 +120,11 @@ public class Constants
 	public static final double kIHatch = .00001;
 	public static final double kDHatch = .1;
 	public static final double kFHatch = 0;
+
 	//PID Slot Index
 	public static final int hatchPIDSlot = 0;
+	public static final int interstagePIDX = 0;
+	public static final int carriagePIDX = 1;
 
 
 	//Drivetrain Current Limiting Constants
