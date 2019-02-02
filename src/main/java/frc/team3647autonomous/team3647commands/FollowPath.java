@@ -1,7 +1,5 @@
 package frc.team3647autonomous.team3647commands;
 
-import com.ctre.phoenix.time.StopWatch;
-
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;

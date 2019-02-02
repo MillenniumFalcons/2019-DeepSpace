@@ -2,7 +2,6 @@ package frc.team3647utility;
 
 import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Robot;
-import frc.team3647subsystems.Drivetrain;
 
 public class Odometry
 {
