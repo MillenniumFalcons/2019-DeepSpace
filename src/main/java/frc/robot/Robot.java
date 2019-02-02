@@ -12,7 +12,6 @@ import frc.team3647pistons.AirCompressor;
 import frc.team3647pistons.IntakeBall;
 import frc.team3647pistons.IntakeHatch;
 import frc.team3647subsystems.Drivetrain;
-import frc.team3647utility.Units;
 
 
 public class Robot extends TimedRobot 
@@ -24,7 +23,6 @@ public class Robot extends TimedRobot
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
     
-
  
     @Override
     public void robotInit() 
@@ -49,21 +47,6 @@ public class Robot extends TimedRobot
         SmartDashboard.putNumber("kI2", 0);
         SmartDashboard.putNumber("kD2", 0);
         SmartDashboard.putNumber("kF2", 0);
-
-
-        SmartDashboard.putNumber("lMaxVelocity", 0);
-        SmartDashboard.putNumber("lCurrentVelocity", 0);
-        SmartDashboard.putNumber("rMaxVelocity", 0);
-        SmartDashboard.putNumber("rCurrentVelocity", 0);
-
-
-        SmartDashboard.putNumber("lMaxAccel", 0);
-        SmartDashboard.putNumber("lCurrentAccel", 0);
-        SmartDashboard.putNumber("rMaxAccel", 0);
-        SmartDashboard.putNumber("rCurrentAccel", 0);
-        SmartDashboard.putNumber("encoderValue", 0);
-
-
     }
 
     @Override
@@ -115,7 +98,6 @@ public class Robot extends TimedRobot
     @Override
     public void testPeriodic()
     {
-
         AirCompressor.runCompressor();
         updatePIDF();
         drivetrainPID();
@@ -126,7 +108,6 @@ public class Robot extends TimedRobot
         // drivetrain.rightSRX.configFactoryDefault();
         // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
         // drivetrain.rightSRX.set(ControlMode.PercentOutput, .35);
-
     }
 
 

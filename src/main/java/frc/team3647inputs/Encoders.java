@@ -259,6 +259,21 @@ public class Encoders
         maxRightAccel = 0;
 	}
 
+	// Puts velocity on the smart dashboard
+	public void initializeSmartDashboardVelAccel()
+	{
+		SmartDashboard.putNumber("lMaxVelocity", 0);
+        SmartDashboard.putNumber("lCurrentVelocity", 0);
+        SmartDashboard.putNumber("rMaxVelocity", 0);
+        SmartDashboard.putNumber("rCurrentVelocity", 0);
+
+
+        SmartDashboard.putNumber("lMaxAccel", 0);
+        SmartDashboard.putNumber("lCurrentAccel", 0);
+        SmartDashboard.putNumber("rMaxAccel", 0);
+        SmartDashboard.putNumber("rCurrentAccel", 0);
+        SmartDashboard.putNumber("encoderValue", 0);
+	}
 	// Converting encoder ticks per 100ms to meters per second (m/s)
 	// Takes sensors encoder ticks per .1second (100ms) and wheel radius to get velocity for left and right motors
 	private double encoderToMpS(double encoderVal, double wheelRadius)
