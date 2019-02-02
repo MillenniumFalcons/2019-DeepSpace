@@ -6,7 +6,6 @@ import frc.team3647subsystems.*;
 import frc.robot.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import frc.team3647subsystems.Drivetrain;
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -46,23 +45,6 @@ public class Encoders
 	 * Encoder value for hatch intake floor
 	 */
 	private int prevHatchIntakeEncoderValue;
-
-	/**
-	 * Right Side Encoder Unit Velocity
-	 */
-	private int rVelocity;			//Right Side Encoder Unit Velocity
-	/**
-	 * Left Side Encoder Unit Velocity
-	 */
-	private int lVelocity;			//Left Side Encoder Unit Velocity
-	/**
-	 * Right Side velocity in feet per second (FPS)
-	 */
-	private double rVelocityFPS;	//Right Side velocity in feet per second (FPS)
-	/**
-	 * Left Side velocity in feet per second (FPS)
-	 */
-	private double lVelocityFPS;	//Left Side velocity in feet per second (FPS)
 	
 
 
@@ -134,18 +116,6 @@ public class Encoders
 		System.out.println("Hatch Encoder Value: " + hatchIntakeEncoderValue);
 	}
 
-	/**
-	 * Calculates and prints right and left velocity in encoder units and ft/sec
-	 */
-	public void printEncoderVelocity()
-	{
-		rVelocity = Robot.drivetrain.rightSRX.getSelectedSensorVelocity(Constants.drivePIDIdx);
-		lVelocity = Robot.drivetrain.leftSRX.getSelectedSensorVelocity(Constants.drivePIDIdx);
-		rVelocityFPS = (rVelocity / 1440) * 10 * 5 * Math.PI / 12;	//calculate feet per second from right encoder velocity
-		lVelocityFPS = (lVelocity / 1440) * 10 * 5 * Math.PI / 12;	//calculate feet per second from left encoder velocity
-		System.out.println("Left Encoder Velocity: " + lVelocity + " Left: " + lVelocityFPS + " Ft/Sec");
-		System.out.println("Right Encoder Velocity: " + rVelocity + " Right: " + rVelocityFPS + " Ft/Sec");
-	}
 
 	/**
 	 * prints closed loop (CL) error of:

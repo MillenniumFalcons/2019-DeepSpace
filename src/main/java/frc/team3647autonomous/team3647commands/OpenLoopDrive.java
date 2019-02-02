@@ -2,9 +2,6 @@ package frc.team3647autonomous.team3647commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-import frc.team3647subsystems.*;
-import frc.team3647autonomous.*;
-import frc.team3647utility.*;
 import frc.robot.*;
 
 public class OpenLoopDrive extends Command 

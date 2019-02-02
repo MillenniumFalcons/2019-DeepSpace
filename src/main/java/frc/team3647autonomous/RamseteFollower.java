@@ -1,14 +1,11 @@
 package frc.team3647autonomous;
 
 import frc.team3647subsystems.*;
-import frc.team3647autonomous.*;
 import frc.team3647utility.*;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Segment;
 import java.io.File;
-import java.util.*; 
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 

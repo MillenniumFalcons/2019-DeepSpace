@@ -1,10 +1,6 @@
 package frc.team3647autonomous;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.*;
-import frc.team3647subsystems.*;
 import frc.team3647autonomous.team3647commands.*;
 
 public class AutoSelector extends CommandGroup
