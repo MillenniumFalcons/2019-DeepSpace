@@ -38,7 +38,7 @@ public class Robot extends TimedRobot
         drivetrain.leftSRX.configFactoryDefault();
         drivetrain.rightSRX.configFactoryDefault();
         drivetrain.drivetrainInitialization();
-        //IntakeHatch.intitialize();
+        IntakeHatch.intitialize();
 
         SmartDashboard.putNumber("kP", .1);
         SmartDashboard.putNumber("kI", 0);
@@ -110,20 +110,18 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
-        encoders.initializeVelAccel();
 
     }
     @Override
     public void testPeriodic()
     {
 
-        encoders.velAccel();
-        //AirCompressor.runCompressor();
-        //updatePIDF();
-        //drivetrainPID();
+        AirCompressor.runCompressor();
+        updatePIDF();
+        drivetrainPID();
         // testDrivetrain1();
-        //shuffleboard();
-        //intakeHatch(); 
+        shuffleboard();
+        intakeHatch(); 
         // drivetrain.leftSRX.configFactoryDefault();
         // drivetrain.rightSRX.configFactoryDefault();
         // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
