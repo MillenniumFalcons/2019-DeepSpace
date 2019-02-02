@@ -33,7 +33,7 @@ public class Robot extends TimedRobot
         drivetrain.leftSRX.configFactoryDefault();
         drivetrain.rightSRX.configFactoryDefault();
         drivetrain.drivetrainInitialization();
-        IntakeHatch.intitialize();
+        // IntakeHatch.intitialize();
 
         SmartDashboard.putNumber("kP", .1);
         SmartDashboard.putNumber("kI", 0);
@@ -91,11 +91,13 @@ public class Robot extends TimedRobot
     public void testPeriodic()
     {
         AirCompressor.runCompressor();
-        updatePIDF();
-        drivetrainPID();
-        // testDrivetrain1();
-        shuffleboard();
-        intakeHatch();
+        System.out.println(mainController.rightJoyStickY);
+        drivetrain.customArcadeDrive(mainController.leftJoyStickX, mainController.leftJoyStickY, gyro);
+        // updatePIDF();
+        // drivetrainPID();
+        testDrivetrain1();
+        // shuffleboard();
+        // intakeHatch();
         // drivetrain.leftSRX.configFactoryDefault();
         // drivetrain.rightSRX.configFactoryDefault();
         // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
@@ -136,7 +138,7 @@ public class Robot extends TimedRobot
 
     public void intakeHatch()
     {
-        if(mainController.buttonX)
+        if(mainController.buttonA)
         {
             IntakeHatch.setPosition(IntakeHatch.HatchPosition.OUTSIDE);
         }

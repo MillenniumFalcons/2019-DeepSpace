@@ -41,29 +41,51 @@ public class Elevator
 		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
 
 		//Configure PID Values
-		/*leftGearboxMaster.selectProfileSlot(Constants.interstagePID, 0);
-		leftGearboxMaster.config_kF(Constants.carriagePID, Constants.carriageF, Constants.kTimeoutMs);
-		leftGearboxMaster.config_kP(Constants.carriagePID, Constants.carriageP, Constants.kTimeoutMs);
-		leftGearboxMaster.config_kI(Constants.carriagePID, Constants.carriageI, Constants.kTimeoutMs);
-		leftGearboxMaster.config_kD(Constants.carriagePID, Constants.carriageD, Constants.kTimeoutMs);	
-		leftGearboxMaster.config_IntegralZone(Constants.carriagePID, Constants.carriageIZone, Constants.kTimeoutMs);
+		GearboxMaster.selectProfileSlot(Constants.interstagePIDX, 0);
 
-		leftGearboxMaster.config_kF(Constants.interstagePID, Constants.interstageF, Constants.kTimeoutMs);		
-		leftGearboxMaster.config_kP(Constants.interstagePID, Constants.interstageP, Constants.kTimeoutMs);		
-		leftGearboxMaster.config_kI(Constants.interstagePID, Constants.interstageI, Constants.kTimeoutMs);		
-       	leftGearboxMaster.config_kD(Constants.interstagePID, Constants.interstageD, Constants.kTimeoutMs);	
-		leftGearboxMaster.config_IntegralZone(Constants.interstagePID, Constants.interstageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_IntegralZone(Constants.interstagePIDX, Constants.interstageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_kP(Constants.interstagePIDX, Constants.interstageP, Constants.kTimeoutMs);		
+		GearboxMaster.config_kI(Constants.interstagePIDX, Constants.interstageI, Constants.kTimeoutMs);	
+		GearboxMaster.config_kD(Constants.interstagePIDX, Constants.interstageD, Constants.kTimeoutMs);
+		GearboxMaster.config_kF(Constants.interstagePIDX, Constants.interstageF, Constants.kTimeoutMs);
+		
+		GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
+		GearboxMaster.config_kI(Constants.carriagePIDX, Constants.carriageI, Constants.kTimeoutMs);
+		GearboxMaster.config_kD(Constants.carriagePIDX, Constants.carriageD, Constants.kTimeoutMs);	
+		GearboxMaster.config_kF(Constants.carriagePIDX, Constants.carriageF, Constants.kTimeoutMs);
 		
 		//Motion Magic Constants
-		leftGearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
-        leftGearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
-        */
+		GearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
+        GearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
 
         rightGearboxSPX.follow(GearboxMaster);
         leftGearboxSPX.follow(GearboxMaster);
 		rightGearboxSPX.setInverted(true);
 		GearboxMaster.setInverted(true);
 		leftGearboxSPX.setInverted(true);
+	}
+
+	public void configurePIDFMM(double p, double i, double d, double f, double vel, double accel)
+	{
+		GearboxMaster.selectProfileSlot(Constants.interstagePIDX, 0);
+
+		GearboxMaster.config_IntegralZone(Constants.interstagePIDX, Constants.interstageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_kP(Constants.interstagePIDX, Constants.interstageP, Constants.kTimeoutMs);		
+		GearboxMaster.config_kI(Constants.interstagePIDX, Constants.interstageI, Constants.kTimeoutMs);	
+		GearboxMaster.config_kD(Constants.interstagePIDX, Constants.interstageD, Constants.kTimeoutMs);
+		GearboxMaster.config_kF(Constants.interstagePIDX, Constants.interstageF, Constants.kTimeoutMs);
+		
+		GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
+		GearboxMaster.config_kI(Constants.carriagePIDX, Constants.carriageI, Constants.kTimeoutMs);
+		GearboxMaster.config_kD(Constants.carriagePIDX, Constants.carriageD, Constants.kTimeoutMs);	
+		GearboxMaster.config_kF(Constants.carriagePIDX, Constants.carriageF, Constants.kTimeoutMs);
+		
+		//Motion Magic Constants
+		GearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
+        GearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
+        
 	}
 
 	/**
