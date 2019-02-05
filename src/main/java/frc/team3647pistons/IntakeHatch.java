@@ -25,12 +25,12 @@ public class IntakeHatch
 		hatchSRX.configContinuousCurrentLimit(Constants.continuousCurrentHatch, Constants.kTimeoutMs);
 		hatchSRX.enableCurrentLimit(true);
 		//PID
-		hatchSRX.config_kP(Constants.hatchPIDSlot, Constants.kPHatch);
-		hatchSRX.config_kI(Constants.hatchPIDSlot, Constants.kIHatch);
-		hatchSRX.config_kD(Constants.hatchPIDSlot, Constants.kDHatch);
-		hatchSRX.config_kF(Constants.hatchPIDSlot, Constants.kFHatch);
+		hatchSRX.config_kP(Constants.hatchIntakePIDIdx, Constants.kPHatch);
+		hatchSRX.config_kI(Constants.hatchIntakePIDIdx, Constants.kIHatch);
+		hatchSRX.config_kD(Constants.hatchIntakePIDIdx, Constants.kDHatch);
+		hatchSRX.config_kF(Constants.hatchIntakePIDIdx, Constants.kFHatch);
 		//Positioning
-		resetPosition();
+		// resetPosition();
 
 		// motion magic
 		hatchSRX.configMotionAcceleration(Constants.kHatchAcceleration, Constants.kTimeoutMs);
@@ -62,17 +62,18 @@ public class IntakeHatch
 	{
 		if(positionInput == HatchPosition.INSIDE)
 		{
-			setEncPosition(Constants.hatchIntakeInside);
+			resetPosition();
+			//hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
 			currentPosition = HatchPosition.INSIDE;
 		}
 		else if(positionInput == HatchPosition.LOADING)
 		{
-			setEncPosition(Constants.hatchIntakeLoad);
+			setMMPosition(Constants.hatchIntakeLoad);
 			currentPosition = HatchPosition.LOADING;
 		}			
 		else if(positionInput == HatchPosition.OUTSIDE)
 		{
-			resetPosition();
+			setMMPosition(Constants.hatchIntakeOutside);
 			currentPosition = HatchPosition.OUTSIDE;
 		}
 		else
@@ -81,14 +82,19 @@ public class IntakeHatch
 
 	public static void resetPosition()
 	{
-		if(limitSwitchIntake.get())
+		if(limitSwitchIntake.get() == true)
 		{
-			moveMotor(-.35);
+			moveMotor(.25);
+		}
+		else if(limitSwitchIntake.get() == false)
+		{
+			moveMotor(0);
+			hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
 		}
 		else
 		{
 			moveMotor(0);
-			hatchSRX.setSelectedSensorPosition(0);
+			hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
 		}
 	}
 	
@@ -98,7 +104,7 @@ public class IntakeHatch
 
 	}
 
-	public static void setEncPosition(int encoderInput)
+	public static void setMMPosition(int encoderInput) //MM = Motion Magic
 	{
 		hatchSRX.set(ControlMode.MotionMagic, encoderInput);
 	}

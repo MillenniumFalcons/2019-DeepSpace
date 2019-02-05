@@ -16,7 +16,7 @@ import frc.team3647inputs.*;
 
 public class Drivetrain extends Subsystem
 {
-    public void initDefaultCommand() 
+    public void initDefaultCommand()
 	{
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
@@ -90,7 +90,7 @@ public class Drivetrain extends Subsystem
 	{
 		if(yValue != 0 && Math.abs(xValue) < 0.15)
         {
-			setSpeed(yValue, yValue);
+			setPercentOutput(yValue, yValue);
 	 	}
 		else if(yValue == 0 && Math.abs(xValue) < 0.15)
 		{
@@ -118,8 +118,9 @@ public class Drivetrain extends Subsystem
 		rightSRX.stopMotor();
 		leftSRX.stopMotor();
     }
-    
-    public void setSpeed(double lSpeed, double rSpeed)
+	
+	//USED BY AUTO FOR SOME REASON
+    public void setVelocity(double lSpeed, double rSpeed)
 	{
 		double targetVelocityRight = rSpeed * Constants.velocityConstant;
 		double targetVelocityLeft = lSpeed * Constants.velocityConstant;

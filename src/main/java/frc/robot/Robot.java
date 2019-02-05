@@ -1,12 +1,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647inputs.*;
-import frc.team3647pistons.AirCompressor;
-import frc.team3647pistons.IntakeBall;
 import frc.team3647pistons.IntakeHatch;
+import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
+import frc.team3647subsystems.Elevator;
 
 
 public class Robot extends TimedRobot 
@@ -17,6 +16,8 @@ public class Robot extends TimedRobot
     public static Encoders encoders;
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
+    public static final Elevator elevator = new Elevator();
+    public static final Arm arm = new Arm();
     
  
     @Override
@@ -31,23 +32,16 @@ public class Robot extends TimedRobot
         drivetrain.leftSRX.configFactoryDefault();
         drivetrain.rightSRX.configFactoryDefault();
         drivetrain.drivetrainInitialization();
-        // IntakeHatch.intitialize();
-
-        SmartDashboard.putNumber("kP", .1);
-        SmartDashboard.putNumber("kI", 0);
-        SmartDashboard.putNumber("kD", 0);
-        SmartDashboard.putNumber("kF", 0);
-        
-        SmartDashboard.putNumber("kP2", .1);
-        SmartDashboard.putNumber("kI2", 0);
-        SmartDashboard.putNumber("kD2", 0);
-        SmartDashboard.putNumber("kF2", 0);
+        IntakeHatch.intitialize();
+        elevator.elevatorInitialization();
+        TestFunctions.shuffleboard();
     }
 
     @Override
     public void robotPeriodic() 
     {
-        updateControllers();
+        TestFunctions.updateControllers(mainController, coController);
+        // encoders.updateEncoderValues();
     }
     
     @Override
@@ -79,6 +73,8 @@ public class Robot extends TimedRobot
     public static double kI = 0;
     public static double kD = 0;
     public static double kF = 0;
+    public static int mVel = 0;
+    public static int mAccel = 0;
 
     public static double kP2 = 0;
     public static double kI2 = 0;
@@ -88,132 +84,15 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
-
+        IntakeHatch.hatchSRX.setSelectedSensorPosition(0);
     }
+
     @Override
     public void testPeriodic()
     {
-        AirCompressor.runCompressor();
-        updatePIDF();
-        drivetrainPID();
-        // testDrivetrain1();
-        shuffleboard();
-        intakeHatch(); 
-        System.out.println(mainController.rightJoyStickY);
-        drivetrain.customArcadeDrive(mainController.leftJoyStickX, mainController.leftJoyStickY, gyro);
-        // updatePIDF();
-        // drivetrainPID();
-        testDrivetrain1();
-        // shuffleboard();
-        // intakeHatch();
-        // drivetrain.leftSRX.configFactoryDefault();
-        // drivetrain.rightSRX.configFactoryDefault();
-        // drivetrain.leftSRX.set(ControlMode.PercentOutput, .35);
-        // drivetrain.rightSRX.set(ControlMode.PercentOutput, .35);
-    }
-
-
-    public static void drivetrainPID()
-    {
-		// Config left side PID Values
-		drivetrain.leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		drivetrain.leftSRX.config_kF(Constants.drivePIDIdx, kF, Constants.kTimeoutMs);
-		drivetrain.leftSRX.config_kP(Constants.drivePIDIdx, kP, Constants.kTimeoutMs);
-		drivetrain.leftSRX.config_kI(Constants.drivePIDIdx, kI, Constants.kTimeoutMs);
-		drivetrain.leftSRX.config_kD(Constants.drivePIDIdx, kD, Constants.kTimeoutMs);
-
-		// Config right side PID Values
-		drivetrain.rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		drivetrain.rightSRX.config_kF(Constants.drivePIDIdx, kF2, Constants.kTimeoutMs);
-		drivetrain.rightSRX.config_kP(Constants.drivePIDIdx, kP2, Constants.kTimeoutMs);
-		drivetrain.rightSRX.config_kI(Constants.drivePIDIdx, kI2, Constants.kTimeoutMs);
-        drivetrain.rightSRX.config_kD(Constants.drivePIDIdx, kD2, Constants.kTimeoutMs);
-    }
-
-    public void updatePIDF()
-    {        
-        kP = SmartDashboard.getNumber("kP", 0.1);
-        kI = SmartDashboard.getNumber("kP", 0);
-        kD = SmartDashboard.getNumber("kP", 0);
-        kF = SmartDashboard.getNumber("kP", 0);
-
-        kP2 = SmartDashboard.getNumber("kP2", 0.1);
-        kI2 = SmartDashboard.getNumber("kP2", 0);
-        kD2 = SmartDashboard.getNumber("kP2", 0);
-        kF2 = SmartDashboard.getNumber("kP2", 0);
-    }
-
-    public void intakeHatch()
-    {
-        if(mainController.buttonA)
-        {
-            IntakeHatch.setPosition(IntakeHatch.HatchPosition.OUTSIDE);
-        }
-        else if(mainController.buttonY)
-        {
-            IntakeHatch.setPosition(IntakeHatch.HatchPosition.LOADING);
-        }
-        else if(mainController.buttonB)
-        {
-            IntakeHatch.setPosition(IntakeHatch.HatchPosition.INSIDE);
-        }
-        else
-        {
-            System.out.println("Intake Hatch Position " + IntakeHatch.currentPosition);
-        }
-    }
-
-    public void shuffleboard()
-    {
-        SmartDashboard.putNumber("Left SRX Velocity RPM", rpmEquation(drivetrain.leftSRX.getSelectedSensorVelocity(0)));
-        SmartDashboard.putNumber("Right SRX Velocity RPM", rpmEquation(drivetrain.rightSRX.getSelectedSensorVelocity(0)));
-    }
-
-    public double rpmEquation(double srxVel)
-    {
-        return (((srxVel/4096)/.1)*60);
-
-    }
-
-    public void updateControllers()
-    {
-        mainController.setMainContollerValues();
-        coController.setMainContollerValues();
-    }
-
-    //testing ball intake and drivetrain 01/26/2019
-    public void testDrivetrain1()
-    {
-        boolean ball = false;
-        if(mainController.buttonX)
-        {
-            if(ball == false)
-            {
-                IntakeBall.openIntake();
-                ball = true;
-            }
-            if(mainController.rightBumper)
-                IntakeBall.setSpeed(.5);
-
-            else if(mainController.leftBumper)
-                IntakeBall.setSpeed(-.5);
-                
-            else
-                IntakeBall.setSpeed(0);
-        }
-        else
-        {
-            IntakeBall.closeIntake();
-            ball = false;
-        }
-        if(mainController.buttonA)
-        {
-            IntakeHatch.openIntake();
-        }
-        else
-        {
-            IntakeHatch.closeIntake();
-        }
+        // AirCompressor.runCompressor();
+        drivetrain.customArcadeDrive(.25*mainController.leftJoyStickX, .25*mainController.rightJoyStickY, gyro);
+        // System.out.println(IntakeBall.reed.get());
     }
 
 }

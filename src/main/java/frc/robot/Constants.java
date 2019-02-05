@@ -13,10 +13,9 @@ public class Constants
 
 
 	//Elevator Motor Pins
-	public static final int leftGearboxSRX = 50;		//TO BE CHANGED
-	public static final int rightGearboxSRX = 51;		//TO BE CHANGED
-	public static final int leftGearboxSPX = 52;		//TO BE CHANGED
-	public static final int rightGearboxSPX = 53;		//TO BE CHANGED
+	public static final int ElevatorGearboxSRX = 8;		//TO BE CHANGED
+	public static final int ElevatorGearboxSPX1 = 12;		//TO BE CHANGED
+	public static final int ElevatorGearboxSPX2 = 13;		//TO BE CHANGED
 
 	//Arm Motor Pins
 	public static final int armMasterPin = 54;		//TO BE CHANGED
@@ -32,7 +31,7 @@ public class Constants
 	public static final int gyroPin = 16;
 
 	//Sensor Pins
-	public static final int elevatorBannerSensor = 1;	//TO BE CHANGED
+	public static final int elevatorBannerSensor = 7;
 	public static final int armBannerSensor = 1;		//TO BE CHANGED
 	public static final int hatchLimitSwitchPin = 9;
 
@@ -52,10 +51,13 @@ public class Constants
 	public static final int continuousCurrentHatch = 5;
 	
 
-	//PIDIdx Constsnts
+	//PID Slot Index
 	public static final int drivePIDIdx = 0;
 	public static final int armPIDIdx = 0;
 	public static final int hatchIntakePIDIdx = 0;
+
+	public static final int interstagePIDIdx = 0;
+	public static final int carriagePIDIdx = 1;
 
 	//Arm PID Values
 	public static final int armProfile1 = 1;
@@ -67,20 +69,20 @@ public class Constants
 
 	//Elevator PID Values
 	public static final int interstageIZone = 0;
-	public static final double interstageP = 0.1;
-	public static final double interstageI = 0;
-	public static final double interstageD = 0;
+	public static final double interstageP = 0.3473;
+	public static final double interstageI = 0.0005;
+	public static final double interstageD = 0.7389;
 	public static final double interstageF = 0;
 
-	public static final int carriageIZone = 0;
+	public static final int carriageIZone = 1; //TO BE CHANGED
 	public static final double carriageP = 0.1;
 	public static final double carriageI = 0;
 	public static final double carriageD = 0;
 	public static final double carriageF = 0;
 
 	//Elevator Motion Magic
-	public static final int elevatorCruiseVelocity = 0;
-	public static final int elevatorAcceleration = 0;
+	public static final int elevatorCruiseVelocity = 8500;
+	public static final int elevatorAcceleration = 29500;
 
 	//Left Drivetrain PIDF Values
 	public static final double lDrivekP = 0.3;
@@ -105,13 +107,13 @@ public class Constants
 	public static int armHighGoalBack;	
 
 	//Elevator Positions
-	public static int elevatorLow;
-	public static int elevatorMiddle;
-	public static int elevatorHigh;
+	public static final int elevatorLow = 13400;
+	public static final int elevatorMiddle = 28000;
+	public static final int elevatorHigh = 43000;
 
 	//Hatch Intake Positions
-	public static final int hatchIntakeInside = 3800;
-	public static final int hatchIntakeLoad = 2150;
+	public static final int hatchIntakeOutside = -3700;
+	public static final int hatchIntakeLoad = -1850;
 	//Motion magic
 	public static final int kHatchAcceleration = 5000;
 	public static final int kHatchVelocity = 1750;
@@ -120,11 +122,6 @@ public class Constants
 	public static final double kIHatch = .00001;
 	public static final double kDHatch = .1;
 	public static final double kFHatch = 0;
-
-	//PID Slot Index
-	public static final int hatchPIDSlot = 0;
-	public static final int interstagePIDX = 0;
-	public static final int carriagePIDX = 1;
 
 
 	//Drivetrain Current Limiting Constants

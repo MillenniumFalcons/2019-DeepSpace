@@ -30,7 +30,7 @@ public class OpenLoopDrive extends Command
   {
     if(stopWatch.get() < timeMS)
     {
-      Robot.drivetrain.setSpeed(lOutput, rOutput);
+      Robot.drivetrain.setVelocity(lOutput, rOutput);
     }
   }
 

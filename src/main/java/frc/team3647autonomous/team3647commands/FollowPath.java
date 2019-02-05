@@ -8,34 +8,32 @@ import frc.team3647autonomous.RamseteFollower;
 
 public class FollowPath extends Command 
 {
-  RamseteFollower pathFollower;
+  RamseteFollower ramseteFollower;
   Notifier pathThread;
   Timer stopWatch = new Timer();
 
   public FollowPath(String path, boolean backwards) 
   {
-    if(backwards == true)
+    if (backwards == true) 
     {
       requires(Robot.drivetrain);
-      pathFollower = new RamseteFollower(path, backwards);
+      ramseteFollower = new RamseteFollower(path, backwards);
       System.out.println("Created Ramsete follower");
-      pathThread = new Notifier(() ->{
-        pathFollower.runPathBackwards();
+      pathThread = new Notifier(() -> {
+      ramseteFollower.runPathBackwards();
       });
-    }
+    } 
     else
     {
       requires(Robot.drivetrain);
-      pathFollower = new RamseteFollower(path, backwards);
+      ramseteFollower = new RamseteFollower(path, backwards);
       System.out.println("Created Ramsete follower");
-      pathThread = new Notifier(() ->{
-        pathFollower.runPath();
+      pathThread = new Notifier(() -> {
+      ramseteFollower.runPath();
       });
     }
-    
-  }
 
-  
+  }
 
   // Called just before this Command runs the first time
   @Override
@@ -58,7 +56,7 @@ public class FollowPath extends Command
   @Override
   protected boolean isFinished() 
   {
-    return pathFollower.isFinished();
+    return ramseteFollower.isFinished();
   }
 
   // Called once after isFinished returns true
