@@ -1,7 +1,10 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3647inputs.*;
+import frc.team3647pistons.AirCompressor;
 import frc.team3647pistons.IntakeHatch;
 import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
@@ -29,12 +32,13 @@ public class Robot extends TimedRobot
         coController = new Joysticks(1);
         gyro = new Gyro();
         
+        
+        drivetrain.drivetrainInitialization();
         drivetrain.leftSRX.configFactoryDefault();
         drivetrain.rightSRX.configFactoryDefault();
-        drivetrain.drivetrainInitialization();
-        IntakeHatch.intitialize();
+        IntakeHatch.hatchSRX.set(ControlMode.PercentOutput, 0);
         elevator.elevatorInitialization();
-        TestFunctions.shuffleboard();
+        // TestFunctions.shuffleboard();
     }
 
     @Override
@@ -84,15 +88,18 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
-        IntakeHatch.hatchSRX.setSelectedSensorPosition(0);
+
     }
 
     @Override
     public void testPeriodic()
     {
-        // AirCompressor.runCompressor();
-        drivetrain.customArcadeDrive(.25*mainController.leftJoyStickX, .25*mainController.rightJoyStickY, gyro);
-        // System.out.println(IntakeBall.reed.get());
+        AirCompressor.runCompressor();
+        drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
+        TestFunctions.elevatorControllerMovement(mainController);
+        TestFunctions.testBallIntake(mainController);
+        System.out.println(elevator.bannerSensor.get());
+        // TestFunctions.testHatchIntake(mainController);
     }
 
 }

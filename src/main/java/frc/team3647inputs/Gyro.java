@@ -37,7 +37,7 @@ public class Gyro
      */
     public void resetAngle()
     {
-        gyro.setCompassAngle(0);
+        gyro.setYaw(0);
     }
 
     /**

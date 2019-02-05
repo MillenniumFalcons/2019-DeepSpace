@@ -9,7 +9,7 @@ import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647subsystems.team3647commands.*;
 
-public class StateMachine extends CommandGroup
+public class StateMachine
 {
     //Combined Robot.elevator and Robot.arm System
 

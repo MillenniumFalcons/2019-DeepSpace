@@ -10,6 +10,10 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 ///TO BE MOVED SOMETIME, ELSEWHERE
 public class TestFunctions
 {
+    /**
+     * Button A = bottom; Button X = low; Button B = middle; Button Y = High
+     * @param mainController
+     */
     public static void elevatorControllerMovement(Joysticks mainController)
     {
         if(mainController.buttonA)
@@ -66,19 +70,19 @@ public class TestFunctions
     }
 
     /**
-     * button B Outside; button Y Loading; button X Inside
+     * dPad Side = outside position, dpad Up = loading position; dPad down = inside position
      */
     public static void testHatchIntake(Joysticks mainController)
     {
-        if(mainController.buttonB)
+        if(mainController.dPadSide)
         {
             IntakeHatch.setPosition(IntakeHatch.HatchPosition.OUTSIDE);
         }
-        else if(mainController.buttonY)
+        else if(mainController.dPadUp)
         {
             IntakeHatch.setPosition(IntakeHatch.HatchPosition.LOADING);
         }
-        else if(mainController.buttonX)
+        else if(mainController.dPadDown)
         {
             IntakeHatch.setPosition(IntakeHatch.HatchPosition.INSIDE);
         }
@@ -127,20 +131,24 @@ public class TestFunctions
     }
 
     //testing ball intake and drivetrain 01/26/2019
+    /**
+     * Either Controller bumper to actuate Ball Intake Pistons; Left and right trigger to actuate ball intake motors.
+     * @param mainController
+     */
     public static void testBallIntake(Joysticks mainController)
     {
         boolean ball = false;
-        if(mainController.buttonX)
+        if(mainController.leftBumper)
         {
             if(ball == false)
             {
                 IntakeBall.openIntake();
                 ball = true;
             }
-            if(mainController.rightBumper)
+            if(mainController.rightTrigger > 0)
                 IntakeBall.setSpeed(.5);
 
-            else if(mainController.leftBumper)
+            else if(mainController.leftTrigger > 0)
                 IntakeBall.setSpeed(-.5);
                 
             else

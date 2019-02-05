@@ -18,6 +18,7 @@ public class IntakeHatch
 	public static void intitialize()
 	{
 		//Motor Direction
+		hatchSRX.set(ControlMode.PercentOutput, 0);
 		hatchSRX.setInverted(true);
 		hatchSRX.setSensorPhase(true);
 		//Current Limiting
