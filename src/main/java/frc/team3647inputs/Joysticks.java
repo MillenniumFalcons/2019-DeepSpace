@@ -25,7 +25,6 @@ public class Joysticks
 	 */
 	public int dPadValue; //dPad degree value
 
-	public GenericHID dPad;
 
 	public Joysticks(int controllerPin)
 	{
