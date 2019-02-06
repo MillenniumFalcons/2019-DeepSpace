@@ -88,6 +88,7 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
+        IntakeHatch.intitialize();
 
     }
 
@@ -99,7 +100,7 @@ public class Robot extends TimedRobot
         TestFunctions.elevatorControllerMovement(mainController);
         TestFunctions.testBallIntake(mainController);
         System.out.println(elevator.bannerSensor.get());
-        // TestFunctions.testHatchIntake(mainController);
+        TestFunctions.testHatchIntake(mainController);
     }
 
 }
