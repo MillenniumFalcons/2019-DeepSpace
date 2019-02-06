@@ -41,7 +41,7 @@ public class RamseteFollower
         pointNum++;             //Increase pointNum as you go from one trajectory point to another
         odo.printPosition();    //Prints current position of the robot
 
-        mDrivetrain.setSpeed(lOutput, rOutput); //Sets speed of motors to calculated adjusted speed
+        mDrivetrain.setVelocity(lOutput, rOutput); //Sets speed of motors to calculated adjusted speed
     }
 
     public void runPathBackwards()
@@ -59,7 +59,7 @@ public class RamseteFollower
         pointNum++;             //Increase pointNum as you go from one trajectory point to another
         odo.printPosition();    //Prints current position of the robot
 
-        mDrivetrain.setSpeed(-rOutput, -lOutput); //Sets speed of motors to calculated adjusted speed
+        mDrivetrain.setVelocity(-rOutput, -lOutput); //Sets speed of motors to calculated adjusted speed
     }
 
     /*

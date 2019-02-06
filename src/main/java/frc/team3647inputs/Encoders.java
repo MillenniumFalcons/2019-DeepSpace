@@ -11,40 +11,16 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Encoders 
 {
-	/**
-	 * Left Side of Drivetrain Encoder Position
-	 */
 	private int leftEncoderValue;	//Left Side of Drivetrain Encoder Position
-	/**
-	 * Right Side of Drivetrain Encoder Position
-	 */
 	private int rightEncoderValue;	//Right Side of Drivetrain Encoder Position
-	/**
-	 * Arm Encoder Position
-	 */
 	private int armEncoderValue;	//Arm Encoder Position
-	
-	/**
-	 * Encoder value for hatch intake floor
-	 */
 	private int hatchIntakeEncoderValue;
-
-	/**
-	 * Previous Left Side of Drivetrain Encoder Position
-	 */
 	private int prevLeftEncoderValue;	//Previous Left Side of Drivetrain Encoder Position
-	/**
-	 * Previous Right Side of Drivetrain Encoder Position
-	 */
 	private int prevRightEncoderValue;	//Previous Right Side of Drivetrain Encoder Position
-	/**
-	 * Previous Arm Encoder Position
-	 */
 	private int prevArmEncoderValue;	//Previous Arm Encoder Position
-	/**
-	 * Encoder value for hatch intake floor
-	 */
 	private int prevHatchIntakeEncoderValue;
+	private int elevatorEncoderValue;
+
 	
 
 
@@ -71,8 +47,9 @@ public class Encoders
 
 		leftEncoderValue = Robot.drivetrain.leftSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
 		rightEncoderValue = Robot.drivetrain.rightSRX.getSelectedSensorPosition(Constants.drivePIDIdx);
-		armEncoderValue = Arm.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
+		armEncoderValue = Robot.arm.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
 		hatchIntakeEncoderValue = IntakeHatch.hatchSRX.getSelectedSensorPosition(Constants.hatchIntakePIDIdx);
+		elevatorEncoderValue = Robot.elevator.GearboxMaster.getSelectedSensorPosition(Constants.interstagePIDIdx);
 	}
 	
 	/**
@@ -85,7 +62,7 @@ public class Encoders
 	{
 		Robot.drivetrain.leftSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
 		Robot.drivetrain.rightSRX.setSelectedSensorPosition(0, Constants.drivePIDIdx, Constants.kTimeoutMs);
-		Arm.armSRX.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
+		Robot.arm.armSRX.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
 		IntakeHatch.hatchSRX.setSelectedSensorPosition(0, Constants.hatchIntakePIDIdx, Constants.kTimeoutMs);
 	}
 
@@ -127,7 +104,7 @@ public class Encoders
 	{
 		System.out.println("Left Encoder CL Error: " + Robot.drivetrain.leftSRX.getClosedLoopError(Constants.drivePIDIdx));
 		System.out.println("Right Encoder CL Error: " + Robot.drivetrain.rightSRX.getClosedLoopError(Constants.drivePIDIdx));
-		System.out.println("Arm Encoder CL Error: " + Arm.armSRX.getClosedLoopError(Constants.armPIDIdx));
+		System.out.println("Arm Encoder CL Error: " + Robot.arm.armSRX.getClosedLoopError(Constants.armPIDIdx));
 		System.out.println("Hatch Intake Encoder CL Error: " + IntakeHatch.hatchSRX.getClosedLoopError(Constants.hatchIntakePIDIdx));
 	}
 
@@ -193,6 +170,11 @@ public class Encoders
 	public int getPrevHatchIntakeEncoder()
 	{
 		return prevHatchIntakeEncoderValue;
+	}
+
+	public int getElevatorEncoder()
+	{
+		return elevatorEncoderValue;
 	}
 
 	//-- -- -- Methods for testing max velocity and acceleration -- -- -- //

@@ -9,6 +9,7 @@ public class IntakeBall
 {
 	public static Solenoid piston = new Solenoid(Constants.ballIntakeFC);
 	public static VictorSPX ballSRX = new VictorSPX(Constants.ballMotorPin);
+	public static DigitalInput reed = new DigitalInput(8);
 	
 	public static void setSpeed(double speedInput)
 	{

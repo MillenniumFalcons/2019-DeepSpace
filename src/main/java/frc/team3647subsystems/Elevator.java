@@ -1,213 +1,204 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
+import frc.team3647inputs.Joysticks;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 
-public class Elevator
+public class Elevator extends Subsystem
 {
-	public static enum ElevatorLevel
+	public void initDefaultCommand()
 	{
+        // Set the default command for a subsystem here.
+        // setDefaultCommand(new MySpecialCommand());
+	}
+
+	public enum ElevatorLevel
+	{
+		BOTTOM,
 		LOW,
 		MIDDLE,
-		HIGH
+		MAX
 	}
-	public static int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
-	public static ElevatorLevel currentLevel;
+	public int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
+	public ElevatorLevel currentLevel;
 	
-	public static DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
+	public DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
-    public static WPI_TalonSRX GearboxMaster = new WPI_TalonSRX(Constants.leftGearboxSRX);
-	public static VictorSPX leftGearboxSPX = new VictorSPX(Constants.leftGearboxSPX);
-    public static VictorSPX rightGearboxSPX = new VictorSPX(Constants.rightGearboxSPX);
+    public WPI_TalonSRX GearboxMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
+	public VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
+    public VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
     
-    public static boolean bottom, sWitch, scale, lowerScale, moving, manualOverride, originalPositionButton;
-	public static double overrideValue;
+    public boolean bottom, sWitch, scale, lowerScale, moving, manualOverride, originalPositionButton;
+	public double overrideValue;
 	
-	public static int encoderState;
-	public static int manualEncoderValue;
-	public static int manualAdjustment;
+	public int encoderState;
+	public int manualEncoderValue;
+	public int manualAdjustment;
     
-    // 8 levels
-    public static void elevatorInitialization()
+    public void elevatorInitialization()
 	{
-		setElevatorLevel(ElevatorLevel.LOW);
+		setElevatorLevel(ElevatorLevel.BOTTOM);
         //Config Sensors for Motors
         GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		GearboxMaster.setSensorPhase(true); //if i set to false I might not need to invert gearbox motors
+		GearboxMaster.setSensorPhase(true);
 
-		//Configure PID Values
-		GearboxMaster.selectProfileSlot(Constants.interstagePIDX, 0);
+		// Configure PID Values
+		GearboxMaster.selectProfileSlot(Constants.interstagePIDIdx, 0);
 
-		GearboxMaster.config_IntegralZone(Constants.interstagePIDX, Constants.interstageIZone, Constants.kTimeoutMs);
-		GearboxMaster.config_kP(Constants.interstagePIDX, Constants.interstageP, Constants.kTimeoutMs);		
-		GearboxMaster.config_kI(Constants.interstagePIDX, Constants.interstageI, Constants.kTimeoutMs);	
-		GearboxMaster.config_kD(Constants.interstagePIDX, Constants.interstageD, Constants.kTimeoutMs);
-		GearboxMaster.config_kF(Constants.interstagePIDX, Constants.interstageF, Constants.kTimeoutMs);
+		GearboxMaster.config_IntegralZone(Constants.interstagePIDIdx, Constants.interstageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_kP(Constants.interstagePIDIdx, Constants.interstageP, Constants.kTimeoutMs);		
+		GearboxMaster.config_kI(Constants.interstagePIDIdx, Constants.interstageI, Constants.kTimeoutMs);	
+		GearboxMaster.config_kD(Constants.interstagePIDIdx, Constants.interstageD, Constants.kTimeoutMs);
+		GearboxMaster.config_kF(Constants.interstagePIDIdx, Constants.interstageF, Constants.kTimeoutMs);
 		
-		GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
-		GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
-		GearboxMaster.config_kI(Constants.carriagePIDX, Constants.carriageI, Constants.kTimeoutMs);
-		GearboxMaster.config_kD(Constants.carriagePIDX, Constants.carriageD, Constants.kTimeoutMs);	
-		GearboxMaster.config_kF(Constants.carriagePIDX, Constants.carriageF, Constants.kTimeoutMs);
+		// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
+		// GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
+		// GearboxMaster.config_kI(Constants.carriagePIDX, Constants.carriageI, Constants.kTimeoutMs);
+		// GearboxMaster.config_kD(Constants.carriagePIDX, Constants.carriageD, Constants.kTimeoutMs);	
+		// GearboxMaster.config_kF(Constants.carriagePIDX, Constants.carriageF, Constants.kTimeoutMs);
 		
-		//Motion Magic Constants
-		GearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
-        GearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
+		// //Motion Magic Constants
+		// GearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
+        // GearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
 
-        rightGearboxSPX.follow(GearboxMaster);
-        leftGearboxSPX.follow(GearboxMaster);
-		rightGearboxSPX.setInverted(true);
-		GearboxMaster.setInverted(true);
-		leftGearboxSPX.setInverted(true);
+        GearboxSPX2.follow(GearboxMaster);
+        GearboxSPX1.follow(GearboxMaster);
+		GearboxSPX2.setInverted(false);
+		GearboxMaster.setInverted(false);
+		GearboxSPX1.setInverted(false);
 	}
 
-	public void configurePIDFMM(double p, double i, double d, double f, double vel, double accel)
+	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
-		GearboxMaster.selectProfileSlot(Constants.interstagePIDX, 0);
+		GearboxMaster.selectProfileSlot(Constants.interstagePIDIdx, 0);
 
-		GearboxMaster.config_IntegralZone(Constants.interstagePIDX, Constants.interstageIZone, Constants.kTimeoutMs);
-		GearboxMaster.config_kP(Constants.interstagePIDX, Constants.interstageP, Constants.kTimeoutMs);		
-		GearboxMaster.config_kI(Constants.interstagePIDX, Constants.interstageI, Constants.kTimeoutMs);	
-		GearboxMaster.config_kD(Constants.interstagePIDX, Constants.interstageD, Constants.kTimeoutMs);
-		GearboxMaster.config_kF(Constants.interstagePIDX, Constants.interstageF, Constants.kTimeoutMs);
+		GearboxMaster.config_IntegralZone(Constants.interstagePIDIdx, Constants.interstageIZone, Constants.kTimeoutMs);
+		GearboxMaster.config_kP(Constants.interstagePIDIdx, p, Constants.kTimeoutMs);		
+		GearboxMaster.config_kI(Constants.interstagePIDIdx, i, Constants.kTimeoutMs);	
+		GearboxMaster.config_kD(Constants.interstagePIDIdx, d, Constants.kTimeoutMs);
+		GearboxMaster.config_kF(Constants.interstagePIDIdx, f, Constants.kTimeoutMs);
 		
-		GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
-		GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
-		GearboxMaster.config_kI(Constants.carriagePIDX, Constants.carriageI, Constants.kTimeoutMs);
-		GearboxMaster.config_kD(Constants.carriagePIDX, Constants.carriageD, Constants.kTimeoutMs);	
-		GearboxMaster.config_kF(Constants.carriagePIDX, Constants.carriageF, Constants.kTimeoutMs);
+		// GearboxMaster.config_IntegralZone(Constants.carriagePIDIdx, Constants.carriageIZone, Constants.kTimeoutMs);
+		// GearboxMaster.config_kP(Constants.carriagePIDIdx, Constants.carriageP, Constants.kTimeoutMs);
+		// GearboxMaster.config_kI(Constants.carriagePIDIdx, Constants.carriageI, Constants.kTimeoutMs);
+		// GearboxMaster.config_kD(Constants.carriagePIDIdx, Constants.carriageD, Constants.kTimeoutMs);	
+		// GearboxMaster.config_kF(Constants.carriagePIDIdx, Constants.carriageF, Constants.kTimeoutMs);
 		
 		//Motion Magic Constants
-		GearboxMaster.configMotionCruiseVelocity(Constants.elevatorCruiseVelocity, Constants.kTimeoutMs);
-        GearboxMaster.configMotionAcceleration(Constants.elevatorAcceleration, Constants.kTimeoutMs);
+		GearboxMaster.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+        GearboxMaster.configMotionAcceleration(accel, Constants.kTimeoutMs);
         
 	}
 
 	/**
 	 * 
-	 * @param position 1 = low; 2 = middle; 3 = high goal
+	 * @param inputLevel BOTTOM, LOW, MIDDLE, MAX
 	 */
-	public static void setElevatorLevel(ElevatorLevel inputLevel)
+	public void setElevatorLevel(ElevatorLevel inputLevel)
 	{
-		if(inputLevel == ElevatorLevel.LOW)
+		if(inputLevel == ElevatorLevel.BOTTOM)
+		{
+			resetElevator();
+			currentLevel = ElevatorLevel.BOTTOM;
+		}
+
+		else if(inputLevel == ElevatorLevel.LOW)
 		{
 			setElevatorPosition(Constants.elevatorLow);
 			currentLevel = ElevatorLevel.LOW;
 		}
+
 		else if(inputLevel == ElevatorLevel.MIDDLE)
 		{
 			setElevatorPosition(Constants.elevatorMiddle);
 			currentLevel = ElevatorLevel.MIDDLE;
 		}
-		else if(inputLevel == ElevatorLevel.HIGH)
+
+		else if(inputLevel == ElevatorLevel.MAX)
 		{
 			setElevatorPosition(Constants.elevatorHigh);
-			currentLevel = ElevatorLevel.HIGH;
+			currentLevel = ElevatorLevel.MAX;
 		}
+
 		else
 			System.out.println("INVALID ARM POSITION");
 	}
 
-    private static void setElevatorPosition(double positionInput)
+	public void resetElevator()
+	{
+		if(reachedBottom())
+		{
+			stopElevator();
+			resetElevatorEncoder();
+		}
+		else
+		{
+			moveElevator(-.25);
+		}
+	}
+
+    private void setElevatorPosition(double positionInput)
     {
 		//Motion Magic
         GearboxMaster.set(ControlMode.MotionMagic, positionInput);
     }
 
-    public static void stopElevator()
+    public void stopElevator()
     {
         //Stop Elevator
 		GearboxMaster.stopMotor();
     }
 
-    public static void moveElevator(double speed)
+    public void moveElevator(double speed)
     {
-		// Percent Output
-        GearboxMaster.set(ControlMode.PercentOutput, speed);
+		// Percent Output		
+		GearboxMaster.set(ControlMode.PercentOutput, speed);
+		if(bannerSensor.get())
+			resetElevatorEncoder();
     }
 
-    public static void moveManual(double jValue)
+    public void moveManual(Joysticks controller)
 	{
-		if(jValue > 0)
-		{
-			moveElevator(overrideValue * 0.65);
-			manualAdjustment = 1500;
-			encoderState = 0;
-		}
-		else if(jValue < 0)
-		{
-			moveElevator(overrideValue * 0.2);
-			manualAdjustment = 0;
-			encoderState = 0;
-		}
-		else
-		{
-			switch(encoderState)
-			{
-				case 0:
-					manualEncoderValue = elevatorEncoderValue + manualAdjustment;
-					encoderState = 1;
-					break;
-				case 1:
-					setElevatorPosition(manualEncoderValue);
-					break;
-			}
-		}
-    }
-    
-	public static void setElevatorEncoder()
-	{
-        if(reachedBottom())
-		{
-            resetElevatorEncoders();
-		}
-		elevatorEncoderValue = GearboxMaster.getSelectedSensorPosition(0);
-		elevatorVelocity = GearboxMaster.getSelectedSensorVelocity(0);
-	}
-	
-	public static void resetElevatorEncoders()
-	{
-        GearboxMaster.getSensorCollection().setQuadraturePosition(0, 10);
-	}
-
-	public static boolean reachedBottom()//false/true for comp, true/false for prac
-	{
-        if(bannerSensor.get())
-            return false;// true for prac, false for comp 
+        if(Math.abs(controller.leftJoyStickY) > 0)
+        {
+            moveElevator(controller.leftJoyStickY);
+        }
         else
-            return true;
-
-	}
-
-	public static void setElevatorButtons(boolean Button)
+        {
+            stopElevator();
+        }
+    }
+	
+	public void resetElevatorEncoder()
 	{
-		//supposedly 8 levels
+        GearboxMaster.setSelectedSensorPosition(0,0,0);
 	}
 
-	public static void setManualOverride(double jValue)
+	public boolean reachedBottom()//false/true for comp, true/false for prac
 	{
-        if(Math.abs(jValue) <.2 )
+		if(bannerSensor.get())
 		{
-			manualOverride = false;
+			resetElevatorEncoder();
+			return true;
 		}
-		else
-		{
-            overrideValue = jValue;
-			manualOverride = true;
-		}
+        else
+            return false;
+
 	}
 
-	public static void testElevatorEncoders()
+	public void testElevatorEncoders()
     {
         System.out.println("Elevator Encoder Value: " + elevatorEncoderValue + "Elevator Velocity: " + elevatorVelocity);
 	}
 
-	public static void testBannerSensor()
+	public void testBannerSensor()
     {
         if(reachedBottom())
         {
@@ -219,7 +210,7 @@ public class Elevator
         }
     }
 
-    public static void testElevatorCurrent()
+    public void testElevatorCurrent()
     {
         System.out.println("Right Elevator Current:" + GearboxMaster.getOutputCurrent());
 	}

@@ -5,14 +5,15 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
 {
-    public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
+    public WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
 
-	public static int armEncoderValue, armVelocity;
-	// public static int currentPosition;
+	public int armEncoderValue, armVelocity;
+	// public int currentPosition;
 
 	public enum ArmPosition
 	{
@@ -21,18 +22,18 @@ public class Arm
 		HIGHGOALFRONT,
 		HIGHGOALBACK
 	}
-	public static ArmPosition currentPosition;
+	public ArmPosition currentPosition;
 	
 
-    public static DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
-    public static boolean manualOverride;
+    public DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
+    public boolean manualOverride;
 
-    public static double overrideValue;
+    public double overrideValue;
 
 	/**
 	 * Initialize values for Arm such as PID profiles and Feedback Sensors
 	 */
-    public static void armInitialization()
+    public void armInitialization()
     {
 
 		// Config Sensors for Motors
@@ -53,9 +54,8 @@ public class Arm
 	 * 
 	 * @param positionInput 1 = Straight 0; 2 = Straight 180; 3 = High Goal Front; 4 = High Goal Back; Position other # = error
 	 */
-	public static void setArmPosition(ArmPosition positionInput)
+	public void setArmPosition(ArmPosition positionInput)
 	{
-
 		//Check is the arm is already at the projected position
 		if(positionInput == currentPosition)
 		{
@@ -98,10 +98,10 @@ public class Arm
 	 * Checks if the arm can move at the current elevator position
 	 * @param encPositionInput arm position input
 	 */
-	private static void elevatorCheck(int encPositionInput)
+	private void elevatorCheck(int encPositionInput)
 	{
 		//Check if elevator is higher than the low position
-		if (Elevator.currentLevel == ElevatorLevel.MIDDLE || Elevator.currentLevel == ElevatorLevel.HIGH) 
+		if (Robot.elevator.currentLevel == ElevatorLevel.MIDDLE || Robot.elevator.currentLevel == ElevatorLevel.MAX) 
 		{
 			//if true set arm to position without moving elevator
 			setArmEncPosition(encPositionInput);
@@ -109,7 +109,7 @@ public class Arm
 		else
 		{
 			//else set elevator to middle position
-			Elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+			Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
 			//then set arm position to input position
 			setArmEncPosition(encPositionInput);
 		}
@@ -118,29 +118,29 @@ public class Arm
 
 
 
-    private static void setArmEncPosition(double position)
+    private void setArmEncPosition(double position)
     {
 		//Motion Magic
         armSRX.set(ControlMode.MotionMagic, position);
     }
 
-    public static void stopArm()
+    public void stopArm()
     {
         //Stop Elevator
         armSRX.stopMotor();
     }
 
-    public static void moveArm(double speed)
+    public void moveArm(double speed)
     {
 		//Percent Output [-1,1]
         armSRX.set(ControlMode.PercentOutput, speed);
     }    
 
-    public static int encoderState;
-	public static int manualEncoderValue;
-	public static int manualAdjustment;
+    public int encoderState;
+	public int manualEncoderValue;
+	public int manualAdjustment;
 
-    public static void moveManual(double jValue)
+    public void moveManual(double jValue)
 	{
 		if(jValue > 0)
 		{
@@ -169,7 +169,7 @@ public class Arm
 		}
     }
     
-	public static void setArmEncoder()
+	public void setArmEncoder()
 	{
         if(reachedDefaultPos())
 		{
@@ -179,12 +179,12 @@ public class Arm
 		armVelocity = armSRX.getSelectedSensorVelocity(0);
 	}
 	
-	public static void resetArmEncoders()
+	public void resetArmEncoders()
 	{
         armSRX.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
-	public static boolean reachedDefaultPos()
+	public boolean reachedDefaultPos()
 	{
         if(bannerSensor.get())
             return false;
@@ -193,7 +193,7 @@ public class Arm
 
 	}
 
-	public static void setManualOverride(double jValue)
+	public void setManualOverride(double jValue)
 	{
         if(Math.abs(jValue) <.2 )
 		{
@@ -206,12 +206,12 @@ public class Arm
 		}
 	}
 
-	public static void printArmEncoders()
+	public void printArmEncoders()
     {
         System.out.println("Elevator Encoder Value: " + armEncoderValue + "Elevator Velocity: " + armVelocity);
 	}
 
-	public static void bannerSensorTriggered()
+	public void bannerSensorTriggered()
     {
         if(reachedDefaultPos())
         {
@@ -223,7 +223,7 @@ public class Arm
         }
     }
 
-    public static void printArmCurrent()
+    public void printArmCurrent()
     {
         System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
 	}
