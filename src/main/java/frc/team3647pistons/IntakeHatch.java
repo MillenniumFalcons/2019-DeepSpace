@@ -3,7 +3,7 @@ package frc.team3647pistons;
 import frc.robot.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -12,7 +12,7 @@ public class IntakeHatch
 {
 	public static HatchPosition currentPosition;
 	public static Solenoid piston = new Solenoid(Constants.hatchIntakeFC);
-	public static TalonSRX hatchSRX = new TalonSRX(Constants.hatchMotorPin);
+	public static WPI_TalonSRX hatchSRX = new WPI_TalonSRX(Constants.hatchMotorPin);
 	public static DigitalInput limitSwitchIntake = new DigitalInput(Constants.hatchLimitSwitchPin);
 
 	public static void intitialize()
@@ -31,11 +31,25 @@ public class IntakeHatch
 		hatchSRX.config_kD(Constants.hatchIntakePIDIdx, Constants.kDHatch);
 		hatchSRX.config_kF(Constants.hatchIntakePIDIdx, Constants.kFHatch);
 		//Positioning
-		// resetPosition();
+		resetPosition();
 
 		// motion magic
 		hatchSRX.configMotionAcceleration(Constants.kHatchAcceleration, Constants.kTimeoutMs);
 		hatchSRX.configMotionCruiseVelocity(Constants.kHatchVelocity, Constants.kTimeoutMs);
+	}
+
+	public static void configPIDFMM(double p, double i, double d, double f, int vel, int accel)
+	{
+				//PID
+				hatchSRX.config_kP(Constants.hatchIntakePIDIdx, p);
+				hatchSRX.config_kI(Constants.hatchIntakePIDIdx, i);
+				hatchSRX.config_kD(Constants.hatchIntakePIDIdx, d);
+				hatchSRX.config_kF(Constants.hatchIntakePIDIdx, f);
+		
+				// motion magic
+				hatchSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+				hatchSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+
 	}
 
 	public static enum HatchPosition
@@ -83,20 +97,12 @@ public class IntakeHatch
 
 	public static void resetPosition()
 	{
-		if(limitSwitchIntake.get() == true)
+		while(limitSwitchIntake.get() == true)
 		{
 			moveMotor(.25);
 		}
-		else if(limitSwitchIntake.get() == false)
-		{
-			moveMotor(0);
-			hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
-		}
-		else
-		{
-			moveMotor(0);
-			hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
-		}
+		hatchSRX.stopMotor();
+		hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
 	}
 	
 	public static void moveMotor(double power)
