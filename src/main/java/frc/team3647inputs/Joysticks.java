@@ -11,6 +11,9 @@ public class Joysticks
 	 */
 	private XboxController controller;
 	
+	// to get dPad degrees
+	private GenericHID dPad;
+	
 	/**
 	 * Main controller Variable
 	 */
@@ -22,9 +25,11 @@ public class Joysticks
 	 */
 	public int dPadValue; //dPad degree value
 
+
 	public Joysticks(int controllerPin)
 	{
 		controller = new XboxController(controllerPin);
+		dPad = new XboxController(controllerPin);
 	}
 
 	
@@ -45,6 +50,7 @@ public class Joysticks
 		leftJoyStickY 	= 	joystickThreshold(-controller.getRawAxis(1));
 		rightJoyStickX = 	joystickThreshold(controller.getRawAxis(4));
 		rightJoyStickY = 	-joystickThreshold(controller.getRawAxis(5));
+		dPadValue = dPad.getPOV();
 		setDPadValues();
 	}
 
