@@ -104,9 +104,9 @@ public class TestFunctions
     {
         SmartDashboard.delete("Left SRX Velocity RPM");
         SmartDashboard.delete("Right SRX Velocity RPM");
-        SmartDashboard.putNumber("kP", 0.35);
+        SmartDashboard.putNumber("kP", 0);
         SmartDashboard.putNumber("kI", 0);
-        SmartDashboard.putNumber("kD", 0.75);
+        SmartDashboard.putNumber("kD", 0);
         SmartDashboard.putNumber("kF", 0);
 
         SmartDashboard.putNumber("kP2", 0.1);
@@ -114,8 +114,8 @@ public class TestFunctions
         SmartDashboard.putNumber("kD2", 0);
         SmartDashboard.putNumber("kF2", 0);
 
-        SmartDashboard.putNumber("MM Acceleration", 30000);
-        SmartDashboard.putNumber("MM Velocity", 9000);   
+        SmartDashboard.putNumber("MM Acceleration", 0);
+        SmartDashboard.putNumber("MM Velocity", 0);   
     }
 
     public double rpmEquation(double srxVel)

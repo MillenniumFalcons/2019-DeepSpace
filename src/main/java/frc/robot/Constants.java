@@ -113,14 +113,14 @@ public class Constants
 
 	//Hatch Intake Positions
 	public static final int hatchIntakeOutside = -3700;
-	public static final int hatchIntakeLoad = -1850;
+	public static final int hatchIntakeLoad = -1840;
 	//Motion magic
-	public static final int kHatchAcceleration = 5000;
-	public static final int kHatchVelocity = 1750;
+	public static final int kHatchAcceleration = 0;
+	public static final int kHatchVelocity = 0;
 	//PIDF
-	public static final double kPHatch = .65;
-	public static final double kIHatch = .00001;
-	public static final double kDHatch = .1;
+	public static final double kPHatch = 0;
+	public static final double kIHatch = 0;
+	public static final double kDHatch = 0;
 	public static final double kFHatch = 0;
 
 

@@ -133,15 +133,12 @@ public class Elevator extends Subsystem
 
 	public void resetElevator()
 	{
-		if(reachedBottom())
-		{
-			stopElevator();
-			resetElevatorEncoder();
-		}
-		else
+		while(reachedBottom() == false)
 		{
 			moveElevator(-.25);
 		}
+		stopElevator();
+		resetElevatorEncoder();
 	}
 
     private void setElevatorPosition(double positionInput)

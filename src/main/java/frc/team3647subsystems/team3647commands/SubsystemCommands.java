@@ -10,7 +10,7 @@ public class SubsystemCommands extends Command
     @Override
     protected boolean isFinished() 
     {
-        return true;
+        return false;
     }
 
     public void setElevatorLevel(ElevatorLevel level)
