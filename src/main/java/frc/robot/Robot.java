@@ -96,19 +96,10 @@ public class Robot extends TimedRobot
     public void testPeriodic()
     {
         AirCompressor.runCompressor();
-        // drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
-        // TestFunctions.elevatorControllerMovement(mainController);
-        // TestFunctions.testBallIntake(mainController);
-        // System.out.println(elevator.bannerSensor.get());
-
-        TestFunctions.updatePIDFMM();
-        IntakeHatch.configPIDFMM(kP, kI, kD, kF, mVel, mAccel);
-        if(mainController.buttonA)
-        {
-            IntakeHatch.hatchSRX.setSelectedSensorPosition(0,0,0);
-        }
-        System.out.println(IntakeHatch.hatchSRX.getSelectedSensorPosition());
-        System.out.println(IntakeHatch.limitSwitchIntake.get());
+        drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
+        TestFunctions.elevatorControllerMovement(mainController);
+        TestFunctions.testBallIntake(mainController);
+        System.out.println(elevator.bannerSensor.get());
         TestFunctions.testHatchIntake(mainController);
     }
 
