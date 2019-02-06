@@ -11,6 +11,9 @@ public class Joysticks
 	 */
 	private XboxController controller;
 	
+	// to get dPad degrees
+	private GenericHID dPad;
+	
 	/**
 	 * Main controller Variable
 	 */
