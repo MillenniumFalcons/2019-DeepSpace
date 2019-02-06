@@ -102,7 +102,8 @@ public class IntakeHatch
 			moveMotor(.25);
 		}
 		hatchSRX.stopMotor();
-		hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
+		hatchSRX.setSelectedSensorPosition(0);
+		System.out.println("RESET POSITION");
 	}
 	
 	public static void moveMotor(double power)
