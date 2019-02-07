@@ -88,8 +88,8 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
-        IntakeHatch.intitialize();
-        TestFunctions.shuffleboard();
+        // IntakeHatch.intitialize();
+        // TestFunctions.shuffleboard();
     }
 
     @Override
@@ -99,8 +99,7 @@ public class Robot extends TimedRobot
         drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
         TestFunctions.elevatorControllerMovement(mainController);
         TestFunctions.testBallIntake(mainController);
-        System.out.println(elevator.bannerSensor.get());
-        TestFunctions.testHatchIntake(mainController);
+        // IntakeHatch.runIntake(mainController);
     }
 
 }

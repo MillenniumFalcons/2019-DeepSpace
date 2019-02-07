@@ -1,16 +1,19 @@
 package frc.team3647pistons;
 
 import frc.robot.*;
+import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class IntakeHatch 
 {
-	public static HatchPosition currentPosition;
+	public static HatchPosition currentState;
+	public static HatchPosition aimedState;
 	public static Solenoid piston = new Solenoid(Constants.hatchIntakeFC);
 	public static WPI_TalonSRX hatchSRX = new WPI_TalonSRX(Constants.hatchMotorPin);
 	public static DigitalInput limitSwitchIntake = new DigitalInput(Constants.hatchLimitSwitchPin);
@@ -30,8 +33,7 @@ public class IntakeHatch
 		hatchSRX.config_kI(Constants.hatchIntakePIDIdx, Constants.kIHatch);
 		hatchSRX.config_kD(Constants.hatchIntakePIDIdx, Constants.kDHatch);
 		hatchSRX.config_kF(Constants.hatchIntakePIDIdx, Constants.kFHatch);
-		//Positioning
-		resetPosition();
+		aimedState = HatchPosition.INSIDE;
 
 		// motion magic
 		hatchSRX.configMotionAcceleration(Constants.kHatchAcceleration, Constants.kTimeoutMs);
@@ -79,17 +81,17 @@ public class IntakeHatch
 		{
 			resetPosition();
 			//hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
-			currentPosition = HatchPosition.INSIDE;
+			currentState = HatchPosition.INSIDE;
 		}
 		else if(positionInput == HatchPosition.LOADING)
 		{
 			setMMPosition(Constants.hatchIntakeLoad);
-			currentPosition = HatchPosition.LOADING;
+			currentState = HatchPosition.LOADING;
 		}			
 		else if(positionInput == HatchPosition.OUTSIDE)
 		{
 			setMMPosition(Constants.hatchIntakeOutside);
-			currentPosition = HatchPosition.OUTSIDE;
+			currentState = HatchPosition.OUTSIDE;
 		}
 		else
 			System.out.println("INVALID HATCH INTAKE POSITION INPUT");
@@ -97,13 +99,16 @@ public class IntakeHatch
 
 	public static void resetPosition()
 	{
-		while(limitSwitchIntake.get() == true)
+		if(limitSwitchIntake.get() == true)
 		{
 			moveMotor(.25);
 		}
-		hatchSRX.stopMotor();
-		hatchSRX.setSelectedSensorPosition(0);
-		System.out.println("RESET POSITION");
+		else
+		{
+			hatchSRX.stopMotor();
+			hatchSRX.setSelectedSensorPosition(0);
+			System.out.println("RESET POSITION");
+		}
 	}
 	
 	public static void moveMotor(double power)
@@ -117,9 +122,33 @@ public class IntakeHatch
 		hatchSRX.set(ControlMode.MotionMagic, encoderInput);
 	}
 	
-	public static void runIntake(boolean joyValue)
+	public static void runIntake(Joysticks controller)
 	{
-		if(joyValue)
+		//Assigns aimed state based on controller input
+		if(controller.dPadUp)
+			aimedState = HatchPosition.LOADING;
+		else if(controller.dPadDown)
+			aimedState = HatchPosition.INSIDE;
+		else if(controller.dPadSide)
+			aimedState = HatchPosition.OUTSIDE;
+
+		//updates position based on aimedstate
+		switch(aimedState)
+		{
+			case INSIDE:
+				setPosition(HatchPosition.INSIDE);
+				break;
+			case LOADING:
+				setPosition(HatchPosition.LOADING);
+				break;
+			case OUTSIDE:
+				setPosition(HatchPosition.OUTSIDE);
+				break;
+			default:
+				break;
+		}
+
+		if(controller.leftBumper)
 		{
 			openIntake();
 		}
