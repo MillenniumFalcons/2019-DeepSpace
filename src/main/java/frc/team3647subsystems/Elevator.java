@@ -1,6 +1,7 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
+import frc.team3647inputs.Encoders;
 import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -27,7 +28,8 @@ public class Elevator extends Subsystem
 		MAX
 	}
 	public int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
-	public ElevatorLevel currentLevel;
+	public static ElevatorLevel currentState;
+	public static ElevatorLevel aimedState;
 	
 	public DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
@@ -44,7 +46,7 @@ public class Elevator extends Subsystem
     
     public void elevatorInitialization()
 	{
-		setElevatorLevel(ElevatorLevel.BOTTOM);
+		aimedState = ElevatorLevel.BOTTOM;
         //Config Sensors for Motors
         GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		GearboxMaster.setSensorPhase(true);
@@ -73,6 +75,108 @@ public class Elevator extends Subsystem
 		GearboxSPX2.setInverted(false);
 		GearboxMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
+	}
+
+	private static boolean stateThreshold(double comparison, double input, double threshold)
+	{
+		if((comparison + threshold) > input && (comparison - threshold) > input)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static boolean stateRecognizer(ElevatorLevel level)
+	{
+		int threshold = 25;
+		if(level == ElevatorLevel.LOW)
+		{
+			if(stateThreshold(Constants.elevatorLow, Robot.encoders.getElevatorEncoder(), threshold))
+				return true;
+			else
+				return false;
+		}
+		else if(level == ElevatorLevel.MIDDLE)
+		{
+			if(stateThreshold(Constants.elevatorMiddle, Robot.encoders.getElevatorEncoder(), threshold))
+				return true;
+			else
+				return false;
+		}
+		else if(level == ElevatorLevel.MAX)
+		{
+			if(stateThreshold(Constants.elevatorHigh, Robot.encoders.getElevatorEncoder(), threshold))
+				return true;
+			else
+				return false;
+		}
+		else if(level == ElevatorLevel.BOTTOM)
+			return Robot.elevator.bannerSensor.get();
+		else
+			return false;
+
+	}
+
+	public static void runElevator(Joysticks controller)
+	{
+		// if(elevatorEncoderValue > Constants.elevatorSafetyLimit && overrideValue != 0)
+		// {
+		// 	currentWristState = 0;
+		// 	aimedElevatorState = -10;
+		// }
+		// else if(elevatorEncoderValue > Constants.elevatorSafetyLimit && overrideValue == 0)
+		// {
+		// 	currentWristState = 0;
+		// 	aimedElevatorState = -11;
+		// }
+		// else if(manualOverride)
+		// {
+		// 	currentWristState = 0;
+		// 	aimedElevatorState = -1;
+		// }
+		/*else*/ if(controller.buttonA)
+		{
+			aimedState = ElevatorLevel.BOTTOM;
+		}
+		else if(controller.buttonX)
+		{
+			aimedState = ElevatorLevel.LOW;
+		}
+		else if(controller.buttonB)
+		{
+			aimedState = ElevatorLevel.MIDDLE;
+		}
+		else if(controller.buttonY)
+		{
+			aimedState = ElevatorLevel.MAX;
+		}
+		switch(aimedState)
+		{
+			case BOTTOM:
+				Robot.elevator.setElevatorLevel(ElevatorLevel.BOTTOM);
+				if(stateRecognizer(ElevatorLevel.BOTTOM))
+					currentState = ElevatorLevel.BOTTOM;
+				break;
+			case LOW:
+				Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
+				currentState = ElevatorLevel.LOW;
+				break;
+			case MIDDLE:
+				Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+				currentState = ElevatorLevel.MIDDLE;
+				break;
+			case MAX:
+				Robot.elevator.setElevatorLevel(ElevatorLevel.MAX);
+				currentState = ElevatorLevel.MAX;
+				break;
+			default:
+				Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+				currentState = ElevatorLevel.MIDDLE;
+				break;
+		}
 	}
 
 	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -106,25 +210,25 @@ public class Elevator extends Subsystem
 		if(inputLevel == ElevatorLevel.BOTTOM)
 		{
 			resetElevator();
-			currentLevel = ElevatorLevel.BOTTOM;
+			currentState = ElevatorLevel.BOTTOM;
 		}
 
 		else if(inputLevel == ElevatorLevel.LOW)
 		{
 			setElevatorPosition(Constants.elevatorLow);
-			currentLevel = ElevatorLevel.LOW;
+			currentState = ElevatorLevel.LOW;
 		}
 
 		else if(inputLevel == ElevatorLevel.MIDDLE)
 		{
 			setElevatorPosition(Constants.elevatorMiddle);
-			currentLevel = ElevatorLevel.MIDDLE;
+			currentState = ElevatorLevel.MIDDLE;
 		}
 
 		else if(inputLevel == ElevatorLevel.MAX)
 		{
 			setElevatorPosition(Constants.elevatorHigh);
-			currentLevel = ElevatorLevel.MAX;
+			currentState = ElevatorLevel.MAX;
 		}
 
 		else
@@ -133,12 +237,16 @@ public class Elevator extends Subsystem
 
 	public void resetElevator()
 	{
-		while(reachedBottom() == false)
+		if(reachedBottom() == false)
 		{
 			moveElevator(-.25);
 		}
-		stopElevator();
-		resetElevatorEncoder();
+		else
+		{
+			stopElevator();
+			resetElevatorEncoder();
+		}
+		
 	}
 
     private void setElevatorPosition(double positionInput)

@@ -80,18 +80,21 @@ public class IntakeHatch
 		if(positionInput == HatchPosition.INSIDE)
 		{
 			resetPosition();
+			if(stateRecognizer(HatchPosition.INSIDE))
+				currentState = HatchPosition.INSIDE;
 			//hatchSRX.setSelectedSensorPosition(0,0,Constants.kTimeoutMs);
-			currentState = HatchPosition.INSIDE;
 		}
 		else if(positionInput == HatchPosition.LOADING)
 		{
 			setMMPosition(Constants.hatchIntakeLoad);
-			currentState = HatchPosition.LOADING;
+			if(stateRecognizer(HatchPosition.LOADING))
+					currentState = HatchPosition.LOADING;
 		}			
 		else if(positionInput == HatchPosition.OUTSIDE)
 		{
 			setMMPosition(Constants.hatchIntakeOutside);
-			currentState = HatchPosition.OUTSIDE;
+			if(stateRecognizer(HatchPosition.OUTSIDE))
+					currentState = HatchPosition.OUTSIDE;
 		}
 		else
 			System.out.println("INVALID HATCH INTAKE POSITION INPUT");
@@ -107,7 +110,7 @@ public class IntakeHatch
 		{
 			hatchSRX.stopMotor();
 			hatchSRX.setSelectedSensorPosition(0);
-			System.out.println("RESET POSITION");
+			// System.out.println("RESET POSITION");
 		}
 	}
 	
@@ -120,6 +123,47 @@ public class IntakeHatch
 	public static void setMMPosition(int encoderInput) //MM = Motion Magic
 	{
 		hatchSRX.set(ControlMode.MotionMagic, encoderInput);
+	}
+
+	private static boolean stateThreshold(double constant, double encoder, double threshold)
+	{
+		if((constant + threshold) > encoder && (constant - threshold) < encoder)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static boolean stateRecognizer(HatchPosition level)
+	{
+		if(level == HatchPosition.LOADING)
+		{
+			if(stateThreshold(Constants.hatchIntakeLoad, Robot.encoders.getHatchIntakeEncoder(), 25))
+				return true;
+			else
+				return false;
+		}
+		else if(level == HatchPosition.OUTSIDE)
+		{
+			if(stateThreshold(Constants.hatchIntakeOutside, Robot.encoders.getHatchIntakeEncoder(), 25))
+				return true;
+			else
+				return false;
+		}
+		else if(level == HatchPosition.INSIDE)
+		{
+			// if(stateThreshold(0, Robot.encoders.getArmEncoder(), 50))
+			// 	return true;
+			// else
+			// 	return false;
+			return !limitSwitchIntake.get();
+		}
+		else
+			return false;
+
 	}
 	
 	public static void runIntake(Joysticks controller)
