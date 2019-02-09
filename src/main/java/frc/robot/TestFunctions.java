@@ -2,14 +2,20 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647inputs.Joysticks;
-import frc.team3647pistons.IntakeBall;
-import frc.team3647pistons.IntakeHatch;
+// import frc.team3647pistons.IntakeBall;
+import frc.team3647pistons.*;
+import frc.team3647subsystems.*;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 
-
+import frc.robot.Robot;
 ///TO BE MOVED SOMETIME, ELSEWHERE
 public class TestFunctions
 {
+    static Drivetrain drivetrain = Robot.drivetrain;
+    static Elevator elevator = Robot.elevator;
+    static IntakeHatch intakeHatch = Robot.intakeHatch;
+    //static Arm arm = Robot.arm;
+    static IntakeBall intakeBall = Robot.intakeBall;
     /**
      * Button A = bottom; Button X = low; Button B = middle; Button Y = High
      * @param mainController
@@ -18,39 +24,27 @@ public class TestFunctions
     {
         if(mainController.buttonA)
         {
-            Robot.elevator.setElevatorLevel(ElevatorLevel.BOTTOM);
+            elevator.setElevatorPosition(ElevatorLevel.BOTTOM);
         }
         else if(mainController.buttonX)
         {
-            Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
+            Robot.elevator.setElevatorPosition(ElevatorLevel.LOW);
         }
         else if(mainController.buttonB)
         {
-            Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+            Robot.elevator.setElevatorPosition(ElevatorLevel.MIDDLE);
         }
         else if(mainController.buttonY)
         {
-            Robot.elevator.setElevatorLevel(ElevatorLevel.MAX);
+            Robot.elevator.setElevatorPosition(ElevatorLevel.MAX);
         }
 
     }
 
 
-    public static void drivetrainPID()
+    public static void configDrivetrainPID()
     {
-		// Config left side PID Values
-		Robot.drivetrain.leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		Robot.drivetrain.leftSRX.config_kF(Constants.drivePIDIdx, Robot.kF, Constants.kTimeoutMs);
-		Robot.drivetrain.leftSRX.config_kP(Constants.drivePIDIdx, Robot.kP, Constants.kTimeoutMs);
-		Robot.drivetrain.leftSRX.config_kI(Constants.drivePIDIdx, Robot.kI, Constants.kTimeoutMs);
-		Robot.drivetrain.leftSRX.config_kD(Constants.drivePIDIdx, Robot.kD, Constants.kTimeoutMs);
-
-		// Config right side PID Values
-		Robot.drivetrain.rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		Robot.drivetrain.rightSRX.config_kF(Constants.drivePIDIdx, Robot.kF2, Constants.kTimeoutMs);
-		Robot.drivetrain.rightSRX.config_kP(Constants.drivePIDIdx, Robot.kP2, Constants.kTimeoutMs);
-		Robot.drivetrain.rightSRX.config_kI(Constants.drivePIDIdx, Robot.kI2, Constants.kTimeoutMs);
-        Robot.drivetrain.rightSRX.config_kD(Constants.drivePIDIdx, Robot.kD2, Constants.kTimeoutMs);
+        drivetrain.configPID();
     }
 
     public static void updatePIDFMM()
@@ -76,27 +70,27 @@ public class TestFunctions
     {
         if(mainController.dPadSide)
         {
-            IntakeHatch.setPosition(IntakeHatch.HatchPosition.OUTSIDE);
+            intakeHatch.setPosition(IntakeHatch.HatchPosition.OUTSIDE);
         }
         else if(mainController.dPadUp)
         {
-            IntakeHatch.setPosition(IntakeHatch.HatchPosition.LOADING);
+            intakeHatch.setPosition(IntakeHatch.HatchPosition.LOADING);
         }
         else if(mainController.dPadDown)
         {
-            IntakeHatch.setPosition(IntakeHatch.HatchPosition.INSIDE);
+            intakeHatch.setPosition(IntakeHatch.HatchPosition.INSIDE);
         }
         else
         {
-            System.out.println("Intake Hatch Position " + IntakeHatch.currentState);
+            System.out.println("Intake Hatch Position " + intakeHatch.getCurrentState());
         }
         if(mainController.rightBumper)
         {
-            IntakeHatch.openIntake();
+            intakeHatch.openIntake();
         }
         else
         {
-            IntakeHatch.closeIntake();
+            intakeHatch.closeIntake();
         }
     }
 
@@ -142,21 +136,21 @@ public class TestFunctions
         {
             if(ball == false)
             {
-                IntakeBall.openIntake();
+                intakeBall.openIntake();
                 ball = true;
             }
             if(mainController.rightTrigger > 0)
-                IntakeBall.setSpeed(.75);
+                intakeBall.spinRoller(.75);
 
             else if(mainController.leftTrigger > 0)
-                IntakeBall.setSpeed(-.75);
+                intakeBall.spinRoller(-.75);
                 
             else
-                IntakeBall.setSpeed(0);
+                intakeBall.spinRoller(0);
         }
         else
         {
-            IntakeBall.closeIntake();
+            intakeBall.closeIntake();
             ball = false;
         }
     }

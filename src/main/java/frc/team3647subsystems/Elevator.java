@@ -1,7 +1,6 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
-import frc.team3647inputs.Encoders;
 import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -28,23 +27,26 @@ public class Elevator extends Subsystem
 		MAX
 	}
 	public int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
-	public static ElevatorLevel currentState;
-	public static ElevatorLevel aimedState;
+	public ElevatorLevel currentState;
+	public ElevatorLevel aimedState;
 	
-	public DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
+	private DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
-    public WPI_TalonSRX GearboxMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
-	public VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
-    public VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
+    private WPI_TalonSRX GearboxMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
+	private VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
+    private VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
     
-    public boolean bottom, sWitch, scale, lowerScale, moving, manualOverride, originalPositionButton;
-	public double overrideValue;
+    private boolean bottom, sWitch, scale, lowerScale, moving, manualOverride, originalPositionButton;
+	private double overrideValue;
 	
-	public int encoderState;
-	public int manualEncoderValue;
-	public int manualAdjustment;
-    
-    public void elevatorInitialization()
+	private int encoderState;
+	private int manualEncoderValue;
+	private int manualAdjustment;
+
+	private int encoderValue = getSelectedSensorPosition();
+	private int prevEncoderValue;
+
+    public Elevator()
 	{
 		aimedState = ElevatorLevel.BOTTOM;
         //Config Sensors for Motors
@@ -77,7 +79,7 @@ public class Elevator extends Subsystem
 		GearboxSPX1.setInverted(false);
 	}
 
-	private static boolean stateThreshold(double comparison, double input, double threshold)
+	private boolean stateThreshold(double comparison, double input, double threshold)
 	{
 		if((comparison + threshold) > input && (comparison - threshold) > input)
 		{
@@ -89,38 +91,59 @@ public class Elevator extends Subsystem
 		}
 	}
 
-	public static boolean stateRecognizer(ElevatorLevel level)
+	private boolean stateRecognizer(ElevatorLevel level)
 	{
-		int threshold = 25;
-		if(level == ElevatorLevel.LOW)
+		int threshold = Constants.elevatorEncoderThreshold;
+		switch(level)
 		{
-			if(stateThreshold(Constants.elevatorLow, Robot.encoders.getElevatorEncoder(), threshold))
-				return true;
-			else
+			case LOW:
+				if(stateThreshold(Constants.elevatorLow, this.encoderValue, threshold))
+					return true;
+				else
+					return false;
+			case MIDDLE:
+				if(stateThreshold(Constants.elevatorMiddle, this.encoderValue, threshold))
+					return true;
+				else
+					return false;
+			case MAX:
+				if(stateThreshold(Constants.elevatorHigh, this.encoderValue, threshold))
+					return true;
+				else
+					return false;
+			case BOTTOM:
+				return Robot.elevator.bannerSensor.get();
+			default:
 				return false;
 		}
-		else if(level == ElevatorLevel.MIDDLE)
-		{
-			if(stateThreshold(Constants.elevatorMiddle, Robot.encoders.getElevatorEncoder(), threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.MAX)
-		{
-			if(stateThreshold(Constants.elevatorHigh, Robot.encoders.getElevatorEncoder(), threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.BOTTOM)
-			return Robot.elevator.bannerSensor.get();
-		else
-			return false;
-
+		// if(level == ElevatorLevel.LOW)
+		// {
+		// 	if(stateThreshold(Constants.elevatorLow, Robot.encoders.getElevatorEncoder(), threshold))
+		// 		return true;
+		// 	else
+		// 		return false;
+		// }
+		// else if(level == ElevatorLevel.MIDDLE)
+		// {
+		// 	if(stateThreshold(Constants.elevatorMiddle, Robot.encoders.getElevatorEncoder(), threshold))
+		// 		return true;
+		// 	else
+		// 		return false;
+		// }
+		// else if(level == ElevatorLevel.MAX)
+		// {
+		// 	if(stateThreshold(Constants.elevatorHigh, Robot.encoders.getElevatorEncoder(), threshold))
+		// 		return true;
+		// 	else
+		// 		return false;
+		// }
+		// else if(level == ElevatorLevel.BOTTOM)
+		// 	return Robot.elevator.bannerSensor.get();
+		// else
+		// 	return false;
 	}
 
-	public static void runElevator(Joysticks controller)
+	public void runElevator(Joysticks controller)
 	{
 		// if(elevatorEncoderValue > Constants.elevatorSafetyLimit && overrideValue != 0)
 		// {
@@ -137,7 +160,8 @@ public class Elevator extends Subsystem
 		// 	currentWristState = 0;
 		// 	aimedElevatorState = -1;
 		// }
-		/*else*/ if(controller.buttonA)
+		/*else*/ 
+		if(controller.buttonA)
 		{
 			aimedState = ElevatorLevel.BOTTOM;
 		}
@@ -156,25 +180,29 @@ public class Elevator extends Subsystem
 		switch(aimedState)
 		{
 			case BOTTOM:
-				Robot.elevator.setElevatorLevel(ElevatorLevel.BOTTOM);
-				if(stateRecognizer(ElevatorLevel.BOTTOM))
-					currentState = ElevatorLevel.BOTTOM;
+				setElevatorPosition(ElevatorLevel.BOTTOM);
+				if(stateRecognizer(aimedState))
+					currentState = aimedState;
 				break;
 			case LOW:
-				Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
-				currentState = ElevatorLevel.LOW;
+				setElevatorPosition(ElevatorLevel.LOW);
+				if(stateRecognizer(aimedState))
+					currentState = aimedState;
 				break;
 			case MIDDLE:
-				Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
-				currentState = ElevatorLevel.MIDDLE;
+				setElevatorPosition(ElevatorLevel.MIDDLE);
+				if(stateRecognizer(aimedState))
+					currentState = aimedState;
 				break;
 			case MAX:
-				Robot.elevator.setElevatorLevel(ElevatorLevel.MAX);
-				currentState = ElevatorLevel.MAX;
+				setElevatorPosition(ElevatorLevel.MAX);
+				if(stateRecognizer(aimedState))
+					currentState = aimedState;
 				break;
 			default:
-				Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
-				currentState = ElevatorLevel.MIDDLE;
+				setElevatorPosition(ElevatorLevel.BOTTOM);
+				if(stateRecognizer(aimedState))
+					currentState = aimedState;
 				break;
 		}
 	}
@@ -201,58 +229,75 @@ public class Elevator extends Subsystem
         
 	}
 
-	/**
-	 * 
-	 * @param inputLevel BOTTOM, LOW, MIDDLE, MAX
-	 */
-	public void setElevatorLevel(ElevatorLevel inputLevel)
-	{
-		if(inputLevel == ElevatorLevel.BOTTOM)
-		{
-			resetElevator();
-			currentState = ElevatorLevel.BOTTOM;
-		}
+	// /**
+	//  * 
+	//  * @param inputLevel BOTTOM, LOW, MIDDLE, MAX
+	//  */
+	// public void setElevatorPosition(ElevatorLevel inputLevel)
+	// {
+	// 	if(inputLevel == ElevatorLevel.BOTTOM)
+	// 	{
+	// 		resetElevator();
+	// 		currentState = ElevatorLevel.BOTTOM;
+	// 	}
 
-		else if(inputLevel == ElevatorLevel.LOW)
-		{
-			setElevatorPosition(Constants.elevatorLow);
-			currentState = ElevatorLevel.LOW;
-		}
+	// 	else if(inputLevel == ElevatorLevel.LOW)
+	// 	{
+	// 		setElevatorPosition(Constants.elevatorLow);
+	// 		currentState = ElevatorLevel.LOW;
+	// 	}
 
-		else if(inputLevel == ElevatorLevel.MIDDLE)
-		{
-			setElevatorPosition(Constants.elevatorMiddle);
-			currentState = ElevatorLevel.MIDDLE;
-		}
+	// 	else if(inputLevel == ElevatorLevel.MIDDLE)
+	// 	{
+	// 		setElevatorPosition(Constants.elevatorMiddle);
+	// 		currentState = ElevatorLevel.MIDDLE;
+	// 	}
 
-		else if(inputLevel == ElevatorLevel.MAX)
-		{
-			setElevatorPosition(Constants.elevatorHigh);
-			currentState = ElevatorLevel.MAX;
-		}
+	// 	else if(inputLevel == ElevatorLevel.MAX)
+	// 	{
+	// 		setElevatorPosition(Constants.elevatorHigh);
+	// 		currentState = ElevatorLevel.MAX;
+	// 	}
 
-		else
-			System.out.println("INVALID ARM POSITION");
-	}
+	// 	else
+	// 		System.out.println("INVALID ARM POSITION");
+	// }
 
 	public void resetElevator()
 	{
-		if(reachedBottom() == false)
+		if(!reachedBottom())
 		{
 			moveElevator(-.25);
 		}
 		else
 		{
 			stopElevator();
-			resetElevatorEncoder();
+			resetEncoder();
 		}
 		
 	}
 
-    private void setElevatorPosition(double positionInput)
+    public void setElevatorPosition(ElevatorLevel positionInput)
     {
-		//Motion Magic
-        GearboxMaster.set(ControlMode.MotionMagic, positionInput);
+		switch(positionInput)
+		{
+			case BOTTOM:
+				resetElevator();
+				break;
+			case LOW:
+				GearboxMaster.set(ControlMode.MotionMagic, Constants.elevatorLow);
+				break;
+			case MIDDLE:
+				GearboxMaster.set(ControlMode.MotionMagic, Constants.elevatorMiddle);
+				break;
+			case MAX:
+				GearboxMaster.set(ControlMode.MotionMagic, Constants.elevatorHigh);
+			default:
+				System.out.println("INVALID HATCH INTAKE POSITION INPUT");
+				break;
+		}
+		// //Motion Magic
+        // GearboxMaster.set(ControlMode.MotionMagic, positionInput);
     }
 
     public void stopElevator()
@@ -266,7 +311,7 @@ public class Elevator extends Subsystem
 		// Percent Output		
 		GearboxMaster.set(ControlMode.PercentOutput, speed);
 		if(bannerSensor.get())
-			resetElevatorEncoder();
+			resetEncoder();
     }
 
     public void moveManual(Joysticks controller)
@@ -281,18 +326,11 @@ public class Elevator extends Subsystem
         }
     }
 	
-	public void resetElevatorEncoder()
-	{
-        GearboxMaster.setSelectedSensorPosition(0,0,0);
-	}
 
 	public boolean reachedBottom()//false/true for comp, true/false for prac
 	{
 		if(bannerSensor.get())
-		{
-			resetElevatorEncoder();
 			return true;
-		}
         else
             return false;
 
@@ -320,5 +358,41 @@ public class Elevator extends Subsystem
         System.out.println("Right Elevator Current:" + GearboxMaster.getOutputCurrent());
 	}
 	
+	private void updateEncoder()
+	{
+		this.prevEncoderValue = this.encoderValue;
+		this.encoderValue = this.getSelectedSensorPosition();
+	}
 
+	public int getSelectedSensorPosition()
+	{
+		return this.GearboxMaster.getSelectedSensorPosition(Constants.hatchIntakePIDIdx);
+	}
+
+	public void setEncoderPosition()
+	{
+		GearboxMaster.setSelectedSensorPosition(0);
+	}
+
+	public void resetEncoder()
+	{
+		GearboxMaster.setSelectedSensorPosition(0, Constants.hatchIntakePIDIdx, Constants.kTimeoutMs);
+	}
+
+	public int getEncoder()
+	{
+		this.updateEncoder();
+		return this.encoderValue;
+	}
+
+	public int getPrevEndcoder()
+	{
+		this.updateEncoder();
+		return this.prevEncoderValue;
+	}
+
+	public boolean getBannerSensor()
+	{
+		return bannerSensor.get();
+	}
 }

@@ -7,33 +7,26 @@ import edu.wpi.first.wpilibj.*;
 
 public class IntakeBall 
 {
-	public static Solenoid piston = new Solenoid(Constants.ballIntakeFC);
-	public static VictorSPX ballSPX = new VictorSPX(Constants.ballMotorPin);
-	public static DigitalInput reed = new DigitalInput(8);
+	private Solenoid piston = new Solenoid(Constants.ballIntakeFC);
+	private VictorSPX ballSPX = new VictorSPX(Constants.ballMotorPin);
+	private DigitalInput reed = new DigitalInput(8);
 	
-	public static void initialize()
-	{
-		// Current Limiting
-		// ballSPX.configPeakCurrentLimit(Constants.peakCurrentHatch, Constants.kTimeoutMs);
-		// ballSPX.configContinuousCurrentLimit(Constants.continuousCurrentHatch, Constants.kTimeoutMs);
-		// ballSPX.enableCurrentLimit(true);
-	}
-	public static void setSpeed(double speedInput)
+	public void spinRoller(double speedInput)
 	{
 		ballSPX.set(ControlMode.PercentOutput, speedInput);
 	}
 
-	public static void openIntake()
+	public void openIntake()
 	{
 		piston.set(true);
 	}
 	
-	public static void closeIntake()
+	public void closeIntake()
 	{
 		piston.set(false);
 	}
 	
-	public static void runIntake(boolean joyValue)
+	public void runIntake(boolean joyValue)
 	{
 		if(joyValue)
 		{
