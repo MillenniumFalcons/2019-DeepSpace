@@ -104,7 +104,10 @@ public class Constants
 	public static int armStraight0;
 	public static int armStraight180;
 	public static int armHighGoalFront;
-	public static int armHighGoalBack;	
+	public static int armHighGoalBack;
+
+	// Threshold for arm positions in encoder values
+	public static final int armEncoderThreshold = 25;
 
 	//Elevator Positions
 	public static final int elevatorLow = 13400;
@@ -114,6 +117,10 @@ public class Constants
 	//Hatch Intake Positions
 	public static final int hatchIntakeOutside = -4075;
 	public static final int hatchIntakeLoad = -1840;
+
+	// Threshold for hatch position in encoder values
+	public static final int hatchIntakeEncoderThreshold = 25;
+
 	//Motion magic
 	public static final int kHatchAcceleration = 2500;
 	public static final int kHatchVelocity = 1750;

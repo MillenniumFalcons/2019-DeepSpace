@@ -13,6 +13,7 @@ public class StateMachine
 {
     //Combined Robot.elevator and Robot.arm System
 
+
     public void testCommand()
     {
         // addSequential(new setElevatorLevel(ElevatorLevel.MIDDLE));
@@ -21,14 +22,16 @@ public class StateMachine
     public void rest()
     {
         /* The original state with everything at rest. 
-        Robot.elevator: mid
-        Robot.arm: 0 deg
-        BIntake: retracted
-        BShoot: retracted
-        BSensor: false
-        HPiston: retracted
-        HGrab: retracted
-        HFloorGrab: retracted
+        Robot.elevator: Bottom/ low / middle / max
+        Robot.arm: 0 deg or any
+        Robot.arm.Sensorfwd
+        Robot.arm.sensorbwd
+        BIntake: retracted / out
+        BallArm: not-rolling / rolling fwd / rolling bwd
+        HGrab: retracted / out
+        IntakeHatch: Inside
+        BBannerSensor: false
+
         HSensor: false
         */
         Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);

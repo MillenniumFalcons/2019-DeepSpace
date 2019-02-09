@@ -146,10 +146,10 @@ public class TestFunctions
                 ball = true;
             }
             if(mainController.rightTrigger > 0)
-                IntakeBall.setSpeed(.5);
+                IntakeBall.setSpeed(.75);
 
             else if(mainController.leftTrigger > 0)
-                IntakeBall.setSpeed(-.5);
+                IntakeBall.setSpeed(-.75);
                 
             else
                 IntakeBall.setSpeed(0);

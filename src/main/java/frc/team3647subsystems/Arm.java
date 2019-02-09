@@ -231,5 +231,46 @@ public class Arm
         System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
 	}
 
+	public static boolean stateRecognizer(ArmPosition position)
+	{
+		int currentArmEncoder = Robot.encoders.getArmEncoder();
+		switch(position)
+		{
+			case STRAIGHT0:
+				if(stateThreshold(Constants.armStraight0, currentArmEncoder, Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case STRAIGHT180:
+				if(stateThreshold(Constants.armStraight180, currentArmEncoder, Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case HIGHGOALFRONT:
+				if(stateThreshold(Constants.armHighGoalFront, currentArmEncoder, Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case HIGHGOALBACK:
+				if(stateThreshold(Constants.armHighGoalBack, currentArmEncoder, Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			default:
+				return false;
+		}
+	}
+
+	private static boolean stateThreshold(double constant, double encoder, double threshold)
+	{
+		if((constant + threshold) > encoder && (constant - threshold) < encoder)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 }
