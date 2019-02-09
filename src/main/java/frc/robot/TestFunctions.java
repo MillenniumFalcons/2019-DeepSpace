@@ -88,7 +88,7 @@ public class TestFunctions
         }
         else
         {
-            System.out.println("Intake Hatch Position " + IntakeHatch.currentPosition);
+            System.out.println("Intake Hatch Position " + IntakeHatch.currentState);
         }
         if(mainController.rightBumper)
         {
