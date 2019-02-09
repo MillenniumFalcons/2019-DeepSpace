@@ -112,15 +112,15 @@ public class Constants
 	public static final int elevatorHigh = 43000;
 
 	//Hatch Intake Positions
-	public static final int hatchIntakeOutside = -3900;
+	public static final int hatchIntakeOutside = -4075;
 	public static final int hatchIntakeLoad = -1840;
 	//Motion magic
 	public static final int kHatchAcceleration = 2500;
 	public static final int kHatchVelocity = 1750;
 	//PIDF
-	public static final double kPHatch = 0.65;
+	public static final double kPHatch = 0.75;
 	public static final double kIHatch = 0;
-	public static final double kDHatch = 0.3;
+	public static final double kDHatch = 0.25;
 	public static final double kFHatch = 0;
 
 

@@ -9,6 +9,7 @@ import frc.team3647pistons.IntakeHatch;
 import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
 import frc.team3647subsystems.Elevator;
+import static java.lang.System.out;
 
 
 public class Robot extends TimedRobot 
@@ -45,7 +46,7 @@ public class Robot extends TimedRobot
     public void robotPeriodic() 
     {
         TestFunctions.updateControllers(mainController, coController);
-        // encoders.updateEncoderValues();
+        encoders.updateEncoderValues();
     }
     
     @Override
@@ -88,7 +89,8 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
-        // IntakeHatch.intitialize();
+        IntakeHatch.intitialize();
+        // elevator.elevatorInitialization();
         // TestFunctions.shuffleboard();
     }
 
@@ -99,7 +101,11 @@ public class Robot extends TimedRobot
         drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
         TestFunctions.elevatorControllerMovement(mainController);
         TestFunctions.testBallIntake(mainController);
-        // IntakeHatch.runIntake(mainController);
+        IntakeHatch.runIntake(mainController);
+        // out.println("Hatch Intake " + IntakeHatch.limitSwitchIntake.get());
+        // elevator.runElevator(mainController);
+        out.println(IntakeHatch.currentState);
+        // out.println("" + encoders.getHatchIntakeEncoder());
     }
 
 }

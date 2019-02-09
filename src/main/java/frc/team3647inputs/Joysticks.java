@@ -38,7 +38,7 @@ public class Joysticks
 	 */
 	public void setMainContollerValues()
 	{
-		leftBumper		= 	controller.getRawButton(5);
+		leftBumper		= 	controller.getBumper(XboxController.Hand.kLeft);
 		rightBumper 	=	controller.getRawButton(6);
 		leftTrigger 	= 	joystickThreshold(controller.getRawAxis(2));
 		rightTrigger 	= 	joystickThreshold(controller.getRawAxis(3));
