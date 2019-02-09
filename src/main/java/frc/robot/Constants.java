@@ -101,15 +101,28 @@ public class Constants
 	/*****************ANY NON-FINAL INTs SHOULD BE FINAL ONCE GIVEN A VALUE*******************/
 
 	//Arm Positions
-	public static int armStraight0;
-	public static int armStraight180;
-	public static int armHighGoalFront;
-	public static int armHighGoalBack;
+	public static int armEncoderStraightForwards;
+	public static int armEncoderStraightBackwards;
+	public static int armEncoderCargoLevel3Front;
+	public static int armEncoderCargoLevel3Back;
+	public static int armEncoderHatchHandoff;
+	public static int armEncoderHatchIntakeMovement;
+	public static int armEncoderRobotStowed;
+	public static int armEncoderBallHandoff;
 
 	// Threshold for arm positions in encoder values
 	public static final int armEncoderThreshold = 25;
 
 	//Elevator Positions
+	public static int elevatorEncoderHatchLevel1;
+	public static int elevatorEncoderHatchHandoff;
+	public static int elevatorEncoderBallHandoff;
+	public static int elevatorEncoderHatchIntakeMovement;
+	public static int elevatorEncoderRobotStowed;
+	public static int elevatorEncoderHatchLevel2;
+	public static int elevatorEncoderCargoLevel2;
+	public static int elevatorEncoderHatchLevel3;
+
 	public static final int elevatorLow = 13400;
 	public static final int elevatorMiddle = 28000;
 	public static final int elevatorHigh = 43000;

@@ -14,7 +14,7 @@ public class TestFunctions
     static Drivetrain drivetrain = Robot.drivetrain;
     static Elevator elevator = Robot.elevator;
     static IntakeHatch intakeHatch = Robot.intakeHatch;
-    static Arm arm = Robot.arm;
+    //static Arm arm = Robot.arm;
     static IntakeBall intakeBall = Robot.intakeBall;
     /**
      * Button A = bottom; Button X = low; Button B = middle; Button Y = High

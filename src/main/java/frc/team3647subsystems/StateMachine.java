@@ -2,22 +2,21 @@ package frc.team3647subsystems;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
-import frc.team3647pistons.IntakeBall;
-import frc.team3647pistons.IntakeHatch;
+import frc.team3647subsystems.*;
+import frc.team3647pistons.*;
 import frc.team3647pistons.IntakeHatch.HatchPosition;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class StateMachine
 {
+    Elevator elevator = Robot.elevator;
+    //Arm arm = Robot.arm;
+    IntakeBall intakeBall = Robot.intakeBall;
+    IntakeHatch intakeHatch = Robot.intakeHatch;
+
     //Combined Robot.elevator and Robot.arm System
-
-
-    public void testCommand()
-    {
-        // addSequential(new setElevatorLevel(ElevatorLevel.MIDDLE));
-    }
-
+    public Enum[] currrentPosition = new Enum[4];
     public void rest()
     {
         /* 

@@ -17,9 +17,9 @@ public class Robot extends TimedRobot
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
     public static final Elevator elevator = new Elevator();
-    public static final Arm arm = new Arm();
-    public static final IntakeHatch intakeHatch = new IntakeHatch();
-    public static final IntakeBall intakeBall = new IntakeBall();
+    //public static Arm arm = new Arm();
+    public static IntakeHatch intakeHatch;
+    public static IntakeBall intakeBall;
     
  
     @Override
@@ -28,9 +28,11 @@ public class Robot extends TimedRobot
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
         gyro = new Gyro();
+        intakeHatch = new IntakeHatch();
+        intakeBall = new IntakeBall();
        // IntakeHatch.hatchSRX.set(ControlMode.PercentOutput, 0);
         //elevator.elevatorInitialization();
-        // TestFunctions.shuffleboard();
+        TestFunctions.shuffleboard();
     }
 
     @Override
@@ -90,11 +92,11 @@ public class Robot extends TimedRobot
         drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
         TestFunctions.elevatorControllerMovement(mainController);
         TestFunctions.testBallIntake(mainController);
-       // IntakeHatch.runIntake(mainController);
-        // out.println("Hatch Intake " + IntakeHatch.limitSwitchIntake.get());
-        // elevator.runElevator(mainController);
-     //   out.println(IntakeHatch.currentState);
-        // out.println("" + encoders.getHatchIntakeEncoder());
+        intakeHatch.runIntake(mainController);
+        System.out.println("Hatch Intake switch " + intakeHatch.getLimitSwitch());
+        elevator.runElevator(mainController);
+        System.out.println("Current hatch state: " + intakeHatch.getCurrentState());
+        System.out.println("Hatch Encoder " + intakeHatch.getEncoder());
     }
 
 }

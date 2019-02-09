@@ -19,10 +19,14 @@ public class Arm
 
 	public enum ArmPosition
 	{
-		STRAIGHT0,
-		STRAIGHT180,
-		HIGHGOALFRONT,
-		HIGHGOALBACK
+		StraightForwards,
+		StraightBackwards,
+		CargoLevel3Front,
+		CargoLevel3Back,
+		HatchHandoff,
+		HatchIntakeMovement,
+		RobotStowed,
+		BallHandoff,
 	}
 	public ArmPosition currentState;
 	public ArmPosition aimedState;
@@ -41,7 +45,6 @@ public class Arm
 	 */
     public Arm()
     {
-
 		// Config Sensors for Motors
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		armSRX.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
@@ -53,7 +56,6 @@ public class Arm
 		armSRX.config_kD(Constants.armProfile1, Constants.armkD, Constants.kTimeoutMs);
 		armSRX.config_kF(Constants.armProfile1, Constants.armkF, Constants.kTimeoutMs);
 		armSRX.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
-
 	}
 
 	/**
@@ -69,31 +71,31 @@ public class Arm
 		}
 
 		//check if positionInput is equal to Straight 0 degrees
-		else if(positionInput == ArmPosition.STRAIGHT0 && currentState != ArmPosition.STRAIGHT0)
+		else if(positionInput == ArmPosition.StraightForwards && currentState != ArmPosition.StraightBackwards)
 		{
-			elevatorCheck(Constants.armStraight0);
-			currentState = ArmPosition.STRAIGHT0;
+			elevatorCheck(Constants.armEncoderStraightForwards);
+			currentState = ArmPosition.StraightForwards;
 		}
 
 		//check if positionInput is equal to Straight 180 degrees
-		else if(positionInput == ArmPosition.STRAIGHT180 && currentState != ArmPosition.STRAIGHT180)
+		else if(positionInput == ArmPosition.StraightBackwards && currentState != ArmPosition.StraightBackwards)
 		{
-			elevatorCheck(Constants.armStraight180);
-			currentState = ArmPosition.STRAIGHT180;
+			elevatorCheck(Constants.armEncoderStraightBackwards);
+			currentState = ArmPosition.StraightBackwards;
 		}
 
 		//check if positionInput is equal to High Goal Front
-		else if(positionInput == ArmPosition.HIGHGOALFRONT && currentState != ArmPosition.HIGHGOALFRONT)
+		else if(positionInput == ArmPosition.CargoLevel3Front && currentState != ArmPosition.CargoLevel3Front)
 		{
-			elevatorCheck(Constants.armHighGoalFront);
-			currentState = ArmPosition.HIGHGOALFRONT;
+			elevatorCheck(Constants.armEncoderCargoLevel3Front);
+			currentState = ArmPosition.CargoLevel3Front;
 		}
 
 		//check if positionInput is equal to High Goal Back
-		else if(positionInput == ArmPosition.HIGHGOALBACK && currentState != ArmPosition.HIGHGOALBACK)
+		else if(positionInput == ArmPosition.CargoLevel3Back && currentState != ArmPosition.CargoLevel3Back)
 		{
-			elevatorCheck(Constants.armHighGoalBack);
-			currentState = ArmPosition.HIGHGOALBACK;
+			//elevatorCheck(Constants.elevatorCur);
+			currentState = ArmPosition.CargoLevel3Back;
 		}
 
 		else
@@ -216,23 +218,23 @@ public class Arm
 	{
 		switch(position)
 		{
-			case STRAIGHT0:
-				if(this.stateThreshold(Constants.armStraight0, this.encoderValue, Constants.armEncoderThreshold))
+			case StraightForwards:
+				if(this.stateThreshold(Constants.armEncoderStraightForwards, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
-			case STRAIGHT180:
-				if(this.stateThreshold(Constants.armStraight180, this.encoderValue, Constants.armEncoderThreshold))
+			case StraightBackwards:
+				if(this.stateThreshold(Constants.armEncoderStraightBackwards, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
-			case HIGHGOALFRONT:
-				if(this.stateThreshold(Constants.armHighGoalFront, this.encoderValue, Constants.armEncoderThreshold))
+			case CargoLevel3Front:
+				if(this.stateThreshold(Constants.armEncoderCargoLevel3Front, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
-			case HIGHGOALBACK:
-				if(this.stateThreshold(Constants.armHighGoalBack, this.encoderValue, Constants.armEncoderThreshold))
+			case CargoLevel3Back:
+				if(this.stateThreshold(Constants.armEncoderCargoLevel3Back, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
