@@ -39,7 +39,7 @@ public class FollowPath extends Command
   @Override
   protected void initialize() 
   {
-    Robot.encoders.resetEncoders();
+    Robot.drivetrain.resetEncoders();
     stopWatch.start();
     System.out.println("Initialized path");
     pathThread.startPeriodic(0.02);

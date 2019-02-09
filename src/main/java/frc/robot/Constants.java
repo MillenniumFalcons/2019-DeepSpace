@@ -121,6 +121,8 @@ public class Constants
 	// Threshold for hatch position in encoder values
 	public static final int hatchIntakeEncoderThreshold = 25;
 
+	public static final int elevatorEncoderThreshold = 25;
+
 	//Motion magic
 	public static final int kHatchAcceleration = 2500;
 	public static final int kHatchVelocity = 1750;
@@ -146,6 +148,7 @@ public class Constants
 
 	public static final double kZeta = 0;
 	public static final double kBeta = 0;
+	
 
 
 

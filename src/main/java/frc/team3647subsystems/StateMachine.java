@@ -7,7 +7,6 @@ import frc.team3647pistons.IntakeHatch;
 import frc.team3647pistons.IntakeHatch.HatchPosition;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
-import frc.team3647subsystems.team3647commands.*;
 
 public class StateMachine
 {
@@ -21,23 +20,30 @@ public class StateMachine
 
     public void rest()
     {
-        /* The original state with everything at rest. 
-        Robot.elevator: Bottom/ low / middle / max
-        Robot.arm: 0 deg or any
-        Robot.arm.Sensorfwd
-        Robot.arm.sensorbwd
-        BIntake: retracted / out
-        BallArm: not-rolling / rolling fwd / rolling bwd
-        HGrab: retracted / out
-        IntakeHatch: Inside
-        BBannerSensor: false
+        /* 
+        Forwards : is where the ball floor intake is facing
+        Backwards: is where the hatch floor intake is facing
 
-        HSensor: false
+        ---Enum array:
+        Robot.elevator: Seven positions: Lowest -> 0-7, will have other names
+        Robot.arm: Seven positions: combined with elevator positions, there are 11 states.
+        Robot.IntakeHatch: Three positions, INSIDE in all other cases, LOADING <- corresponds to one elevator+arm positions , OUTSIDE <- one possible position
+        BallFloorIntake: In <-any arm+elevator pos. Out <- when arm points towards it to get the ball, arm will grab ball move up straighten, 
+                        ball intake will retracted and arm+elevator go to og pos
+        BallArm: not-rolling / rolling fwd / rolling bwd
+
+        ---Sensor (boolean) Array:
+        Robot.arm.Sensorfwd true/ false
+        Robot.arm.sensorbwd true/false
+        HatchPistonGrab: retracted / out
+        BallBannerSensor: false
+
+        HSensor: do we have a hatch sensor?
         */
-        Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
-        Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
-        IntakeBall.closeIntake();
-        IntakeHatch.closeIntake();
+        // Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
+        // Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+        // IntakeBall.closeIntake();
+        // IntakeHatch.closeIntake();
     }
 
     // PS = player station
@@ -60,10 +66,10 @@ public class StateMachine
         At the end of this state, we should have the hatch stored and can be used to score
         */
 
-        Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
-        Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
-        IntakeHatch.openIntake();
-        IntakeHatch.closeIntake();
+        // Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
+        // Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
+        // IntakeHatch.openIntake();
+        // IntakeHatch.closeIntake();
     }
 
     public void hatchIntakePSB()
@@ -82,10 +88,10 @@ public class StateMachine
         At the end of this state, we should have the hatch stored and can be used to score
         */
 
-        Robot.arm.setArmPosition(ArmPosition.STRAIGHT180);
-        Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
-        IntakeHatch.openIntake();
-        IntakeHatch.closeIntake();
+        // Robot.arm.setArmPosition(ArmPosition.STRAIGHT180);
+        // Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
+        // IntakeHatch.openIntake();
+        // IntakeHatch.closeIntake();
     }
 
     public void hatchIntakeFloor()
@@ -102,9 +108,9 @@ public class StateMachine
         * Manual control to get the hatch inside the intake *
         */
 
-        Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
-        IntakeHatch.setPosition(HatchPosition.OUTSIDE);
-        Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
+        // Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
+        // IntakeHatch.setPosition(HatchPosition.OUTSIDE);
+        // Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
     }
 
     /**
@@ -123,11 +129,11 @@ public class StateMachine
         At the end of this state, we should have the hatch stored and can be used to score
         */
 
-        Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
-        IntakeHatch.setPosition(HatchPosition.LOADING);
-        Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
-        //Add floor hatch to arm hatch intake
-        Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE); 
+        // Robot.arm.setArmPosition(ArmPosition.STRAIGHT0);
+        // IntakeHatch.setPosition(HatchPosition.LOADING);
+        // Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
+        // //Add floor hatch to arm hatch intake
+        // Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE); 
 
     }
 

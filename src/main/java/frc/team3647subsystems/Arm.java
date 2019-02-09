@@ -10,11 +10,11 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
 {
-	public WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
-	public DigitalInput forwardLimitSwitch; // PIN NEEDED
-	public DigitalInput backwardLimitSwitch; // PIN NEEDED
+	private WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
+	private DigitalInput forwardLimitSwitch; // PIN NEEDED
+	private DigitalInput backwardLimitSwitch; // PIN NEEDED
 
-	public int armEncoderValue, armVelocity;
+	private int armVelocity;
 	// public int currentPosition;
 
 	public enum ArmPosition
@@ -28,15 +28,18 @@ public class Arm
 	public ArmPosition aimedState;
 	
 
-    public DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
-    public boolean manualOverride;
+    private DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
+    private boolean manualOverride;
 
-    public double overrideValue;
+	private double overrideValue;
+	
+	private int encoderValue = getSelectedSensorPosition();
+	private int prevEncoderValue;
 
 	/**
 	 * Initialize values for Arm such as PID profiles and Feedback Sensors
 	 */
-    public void armInitialization()
+    public Arm()
     {
 
 		// Config Sensors for Motors
@@ -107,30 +110,22 @@ public class Arm
 		if (Robot.elevator.currentState == ElevatorLevel.MIDDLE || Robot.elevator.currentState == ElevatorLevel.MAX) 
 		{
 			//if true set arm to position without moving elevator
-			setArmEncPosition(encPositionInput);
+			setMMMPosition(encPositionInput);
 		}
 		else
 		{
 			//else set elevator to middle position
-			Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+			Robot.elevator.setElevatorPosition(ElevatorLevel.MIDDLE);
 			//then set arm position to input position
-			setArmEncPosition(encPositionInput);
+			setMMMPosition(encPositionInput);
 		}
 
 	}
 
-
-
-    private void setArmEncPosition(double position)
+    private void setMMMPosition(double position)
     {
 		//Motion Magic
         armSRX.set(ControlMode.MotionMagic, position);
-    }
-
-    public void stopArm()
-    {
-        //Stop Elevator
-        armSRX.stopMotor();
     }
 
     public void moveArm(double speed)
@@ -162,30 +157,16 @@ public class Arm
 			switch(encoderState)
 			{
 				case 0:
-					manualEncoderValue = armEncoderValue + manualAdjustment;
+					manualEncoderValue = encoderValue + manualAdjustment;
 					encoderState = 1;
 					break;
 				case 1:
-					setArmEncPosition(manualEncoderValue);
+					setMMMPosition(manualEncoderValue);
 					break;
 			}
 		}
     }
     
-	public void setArmEncoder()
-	{
-        if(reachedDefaultPos())
-		{
-            resetArmEncoders();
-		}
-		armEncoderValue = armSRX.getSelectedSensorPosition(0);
-		armVelocity = armSRX.getSelectedSensorVelocity(0);
-	}
-	
-	public void resetArmEncoders()
-	{
-        armSRX.getSensorCollection().setQuadraturePosition(0, 10);
-	}
 
 	public boolean reachedDefaultPos()
 	{
@@ -200,23 +181,23 @@ public class Arm
 	{
         if(Math.abs(jValue) <.2 )
 		{
-			manualOverride = false;
+			this.manualOverride = false;
 		}
 		else
 		{
-            overrideValue = jValue;
-			manualOverride = true;
+            this.overrideValue = jValue;
+			this.manualOverride = true;
 		}
 	}
 
 	public void printArmEncoders()
     {
-        System.out.println("Elevator Encoder Value: " + armEncoderValue + "Elevator Velocity: " + armVelocity);
+        System.out.println("Elevator Encoder Value: " + encoderValue + "Elevator Velocity: " + armVelocity);
 	}
 
 	public void bannerSensorTriggered()
     {
-        if(reachedDefaultPos())
+        if(this.reachedDefaultPos())
         {
             System.out.println("Banner Sensor Triggered!");
         }
@@ -231,28 +212,27 @@ public class Arm
         System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
 	}
 
-	public static boolean stateRecognizer(ArmPosition position)
+	public boolean stateRecognizer(ArmPosition position)
 	{
-		int currentArmEncoder = Robot.encoders.getArmEncoder();
 		switch(position)
 		{
 			case STRAIGHT0:
-				if(stateThreshold(Constants.armStraight0, currentArmEncoder, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armStraight0, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
 			case STRAIGHT180:
-				if(stateThreshold(Constants.armStraight180, currentArmEncoder, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armStraight180, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
 			case HIGHGOALFRONT:
-				if(stateThreshold(Constants.armHighGoalFront, currentArmEncoder, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armHighGoalFront, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
 			case HIGHGOALBACK:
-				if(stateThreshold(Constants.armHighGoalBack, currentArmEncoder, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armHighGoalBack, this.encoderValue, Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
@@ -261,7 +241,7 @@ public class Arm
 		}
 	}
 
-	private static boolean stateThreshold(double constant, double encoder, double threshold)
+	private boolean stateThreshold(double constant, double encoder, double threshold)
 	{
 		if((constant + threshold) > encoder && (constant - threshold) < encoder)
 		{
@@ -273,4 +253,68 @@ public class Arm
 		}
 	}
 
+	public boolean isManualOverride()
+	{
+		return manualOverride;
+	}
+
+	private void updateEncoder()
+	{
+		this.prevEncoderValue = this.encoderValue;
+		this.encoderValue = this.getSelectedSensorPosition();
+	}
+
+	public int getSelectedSensorPosition()
+	{
+		this.updateEncoder();
+		return this.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
+	}
+
+	public void setEncoderPosition()
+	{
+		armSRX.setSelectedSensorPosition(0);
+	}
+
+	public void resetEncoder()
+	{
+		this.updateEncoder();
+		if(reachedDefaultPos())
+		{
+            armSRX.getSensorCollection().setQuadraturePosition(0, 10);
+		}
+		armSRX.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
+		this.armVelocity = getVelocity();
+	}
+
+	public int getEncoder()
+	{
+		this.updateEncoder();
+		return this.encoderValue;
+	}
+
+	public int getPrevEndcoder()
+	{
+		this.updateEncoder();
+		return this.prevEncoderValue;
+	}
+
+	public boolean getForwardSensor()
+	{
+		return forwardLimitSwitch.get();
+	}
+
+	public boolean getBackwardSensor()
+	{
+		return backwardLimitSwitch.get();
+	}
+
+	public void stopMotor()
+	{
+		armSRX.stopMotor();
+	}
+
+	public int getVelocity()
+	{
+		return this.armSRX.getSelectedSensorVelocity(0);
+	}
 }
