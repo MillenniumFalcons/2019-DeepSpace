@@ -139,30 +139,24 @@ public class IntakeHatch
 
 	public static boolean stateRecognizer(HatchPosition level)
 	{
-		if(level == HatchPosition.LOADING)
+		int hatchIntakeEncoder = Robot.encoders.getHatchIntakeEncoder();
+		switch(level)
 		{
-			if(stateThreshold(Constants.hatchIntakeLoad, Robot.encoders.getHatchIntakeEncoder(), 25))
-				return true;
-			else
+			case LOADING:
+				if(stateThreshold(Constants.hatchIntakeLoad, hatchIntakeEncoder, 25))
+					return true;
+				else
+					return false;
+			case OUTSIDE:
+				if(stateThreshold(Constants.hatchIntakeOutside, hatchIntakeEncoder, 25))
+					return true;
+				else
+					return false;
+			case INSIDE:
+				return !limitSwitchIntake.get();
+			default:
 				return false;
 		}
-		else if(level == HatchPosition.OUTSIDE)
-		{
-			if(stateThreshold(Constants.hatchIntakeOutside, Robot.encoders.getHatchIntakeEncoder(), 25))
-				return true;
-			else
-				return false;
-		}
-		else if(level == HatchPosition.INSIDE)
-		{
-			// if(stateThreshold(0, Robot.encoders.getArmEncoder(), 50))
-			// 	return true;
-			// else
-			// 	return false;
-			return !limitSwitchIntake.get();
-		}
-		else
-			return false;
 
 	}
 	
