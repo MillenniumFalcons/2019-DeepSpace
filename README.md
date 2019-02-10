@@ -10,6 +10,10 @@
 ## Configuring Materials
 * [Get the visual studio IDE to write and run robot programs](https://wpilib.screenstepslive.com/s/currentCS/m/java/l/1027503-installing-c-and-java-development-tools-for-frc)
 * [Download the National instruments update suite(**REQUIRED IN ORDER TO RUN PROGRAMS**)](https://wpilib.screenstepslive.com/s/currentCS/m/java/l/1027504-installing-the-frc-update-suite-all-languages) 
+* [CTRE PHOENIX Framework](https://github.com/CrossTheRoadElec/Phoenix-Releases/releases/download/aPhoenix-v5.13.0.0/CTRE_Phoenix_Framework_v5.13.0.0.zip)
+* [REV ROBOTICS Framework](https://www.revrobotics.com/sparkmax-software/)
+* REV Spark Max Online URL Install: https://www.revrobotics.com/content/sw/max/sdk/REVRobotics-Beta.json
+* JACI PATHFINDER Online URL Install: https://dev.imjac.in/maven/jaci/pathfinder/PathfinderOLD-latest.json
 * [Building and deploying robot code for testing](https://wpilib.screenstepslive.com/s/currentCS/m/java/l/1027063-building-and-deploying-to-a-roborio)
 
 ## Opening the program
