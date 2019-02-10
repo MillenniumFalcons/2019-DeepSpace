@@ -374,4 +374,16 @@ public class Elevator extends Subsystem
 	{
 		return this.currentState;
 	}
+
+	public boolean aboveMinLevel() 
+	{
+		if(getEncoder() > Constants.elevatorEncoderMinValue)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }

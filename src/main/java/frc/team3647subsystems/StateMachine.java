@@ -7,6 +7,7 @@ import frc.team3647pistons.*;
 import frc.team3647pistons.IntakeHatch.HatchPosition;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
+import java.util.Arrays;
 
 public class StateMachine
 {
@@ -16,11 +17,23 @@ public class StateMachine
     IntakeHatch intakeHatch = Robot.intakeHatch;
 
     //Combined Robot.elevator and Robot.arm System
-    public Enum[] currrentState = new Enum[]{elevator.getCurrentState(), arm.getCurrentState(), intakeBall.getCurrentState(), intakeHatch.getCurrentState()};
+    public Enum[] currentState = new Enum[]{elevator.getCurrentState(), arm.getCurrentState(), intakeBall.getCurrentState(), intakeHatch.getCurrentState()};
+    
     public Enum[] aimedState = new Enum[]{elevator.getAimedState(), arm.getAimedState(), intakeBall.getAimedState(), intakeHatch.getAimedState()};
-    public static void runStateMachine()
+    
+    public void runStateMachine()
     {
-
+        if(!Arrays.equals(currentState, aimedState))
+        {
+            // If the robot needs to stay at the same elevator position
+            if(currentState[0] == aimedState[0])
+            {
+                if(elevator.aboveMinLevel())
+                {
+                    
+                }
+            }
+        }
     }
     public void rest()
     {
