@@ -85,28 +85,28 @@ public class Arm
 				this.resetArmBackwards();
 				break;
 			case StraightForwards:
-				this.setMMMPosition(Constants.armEncoderStraightForwards);
+				this.setMMPosition(Constants.armEncoderStraightForwards);
 				break;
 			case StraightBackwards:
-				this.setMMMPosition(Constants.armEncoderStraightBackwards);
+				this.setMMPosition(Constants.armEncoderStraightBackwards);
 				break;
 			case CargoLevel3Front:
-				this.setMMMPosition(Constants.armEncoderCargoLevel3Front);
+				this.setMMPosition(Constants.armEncoderCargoLevel3Front);
 				break;
 			case CargoLevel3Back:
-				this.setMMMPosition(Constants.armEncoderCargoLevel3Back);
+				this.setMMPosition(Constants.armEncoderCargoLevel3Back);
 				break;
 			case HatchHandoff:
-				this.setMMMPosition(Constants.armEncoderHatchHandoff);
+				this.setMMPosition(Constants.armEncoderHatchHandoff);
 				break;
 			case HatchIntakeMovement:
-				this.setMMMPosition(Constants.armEncoderHatchIntakeMovement);
+				this.setMMPosition(Constants.armEncoderHatchIntakeMovement);
 				break;
 			case RobotStowed:
-				this.setMMMPosition(Constants.armEncoderRobotStowed);
+				this.setMMPosition(Constants.armEncoderRobotStowed);
 				break;
 			case BallHandoff:
-				this.setMMMPosition(Constants.armEncoderBallHandoff);
+				this.setMMPosition(Constants.armEncoderBallHandoff);
 				break;
 			default:
 				break;
@@ -174,7 +174,7 @@ public class Arm
 	}
 
 
-    private void setMMMPosition(double position)
+    private void setMMPosition(double position)
     {
 		//Motion Magic
         armSRXLeader.set(ControlMode.MotionMagic, position);
@@ -189,7 +189,7 @@ public class Arm
 		else
 		{
 			resetEncoder();
-			setMMMPosition(0);
+			setMMPosition(0);
 		}
 	}
 
@@ -202,7 +202,7 @@ public class Arm
 		else
 		{
 			setEncoderPosition(3072); // Needs to be in constants!!
-			setMMMPosition(3072); //As well!!
+			setMMPosition(3072); //As well!!
 		}
 
 	}
@@ -240,7 +240,7 @@ public class Arm
 					encoderState = 1;
 					break;
 				case 1:
-					setMMMPosition(manualEncoderValue);
+					setMMPosition(manualEncoderValue);
 					break;
 			}
 		}
