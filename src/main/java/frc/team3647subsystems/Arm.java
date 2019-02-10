@@ -3,6 +3,9 @@ package frc.team3647subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -10,7 +13,8 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
 {
-	private WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armMasterPin);
+	private WPI_TalonSRX armSRXLeader = new WPI_TalonSRX(Constants.armSRXLeaderPin);
+	private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	private DigitalInput forwardLimitSwitch; // PIN NEEDED
 	private DigitalInput backwardLimitSwitch; // PIN NEEDED
 
@@ -31,8 +35,6 @@ public class Arm
 	public ArmPosition currentState;
 	public ArmPosition aimedState;
 	
-
-    private DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
     private boolean manualOverride;
 
 	private double overrideValue;
@@ -44,18 +46,21 @@ public class Arm
 	 * Initialize values for Arm such as PID profiles and Feedback Sensors
 	 */
     public Arm()
-    {
+    {		
 		// Config Sensors for Motors
-		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		armSRX.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
+		armSRXLeader.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		armSRXLeader.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
 
 		// PID for motors
-		armSRX.selectProfileSlot(Constants.armProfile1, 0);
-		armSRX.config_kP(Constants.armProfile1, Constants.armkP, Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armProfile1, Constants.armkI, Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armProfile1, Constants.armkD, Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armProfile1, Constants.armkF, Constants.kTimeoutMs);
-		armSRX.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
+		armSRXLeader.selectProfileSlot(Constants.armProfile1, 0);
+		armSRXLeader.config_kP(Constants.armProfile1, Constants.armkP, Constants.kTimeoutMs);
+		armSRXLeader.config_kI(Constants.armProfile1, Constants.armkI, Constants.kTimeoutMs);
+		armSRXLeader.config_kD(Constants.armProfile1, Constants.armkD, Constants.kTimeoutMs);
+		armSRXLeader.config_kF(Constants.armProfile1, Constants.armkF, Constants.kTimeoutMs);
+		armSRXLeader.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
+
+		//arm NEO Follower Code
+		armNEOFollower.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
 	}
 
 	/**
@@ -127,13 +132,13 @@ public class Arm
     private void setMMMPosition(double position)
     {
 		//Motion Magic
-        armSRX.set(ControlMode.MotionMagic, position);
+        armSRXLeader.set(ControlMode.MotionMagic, position);
     }
 
     public void moveArm(double speed)
     {
 		//Percent Output [-1,1]
-        armSRX.set(ControlMode.PercentOutput, speed);
+        armSRXLeader.set(ControlMode.PercentOutput, speed);
     }    
 
     public int encoderState;
@@ -169,15 +174,12 @@ public class Arm
 		}
     }
     
-
+	/* **********************FIX THIS METHOD*********************** */
 	public boolean reachedDefaultPos()
 	{
-        if(bannerSensor.get())
-            return false;
-        else
-            return true;
-
+		return true;
 	}
+	/* **********************FIX THIS METHOD*********************** */
 
 	public void setManualOverride(double jValue)
 	{
@@ -211,7 +213,7 @@ public class Arm
 
     public void printArmCurrent()
     {
-        System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
+        System.out.println("Right Elevator Current:" + armSRXLeader.getOutputCurrent());
 	}
 
 	public boolean stateRecognizer(ArmPosition position)
@@ -269,12 +271,12 @@ public class Arm
 	public int getSelectedSensorPosition()
 	{
 		this.updateEncoder();
-		return this.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
+		return this.armSRXLeader.getSelectedSensorPosition(Constants.armPIDIdx);
 	}
 
 	public void setEncoderPosition()
 	{
-		armSRX.setSelectedSensorPosition(0);
+		armSRXLeader.setSelectedSensorPosition(0);
 	}
 
 	public void resetEncoder()
@@ -282,9 +284,9 @@ public class Arm
 		this.updateEncoder();
 		if(reachedDefaultPos())
 		{
-            armSRX.getSensorCollection().setQuadraturePosition(0, 10);
+            armSRXLeader.getSensorCollection().setQuadraturePosition(0, 10);
 		}
-		armSRX.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
+		armSRXLeader.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
 		this.armVelocity = getVelocity();
 	}
 
@@ -312,11 +314,11 @@ public class Arm
 
 	public void stopMotor()
 	{
-		armSRX.stopMotor();
+		armSRXLeader.stopMotor();
 	}
 
 	public int getVelocity()
 	{
-		return this.armSRX.getSelectedSensorVelocity(0);
+		return this.armSRXLeader.getSelectedSensorVelocity(0);
 	}
 }
