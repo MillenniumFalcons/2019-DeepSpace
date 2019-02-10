@@ -20,23 +20,23 @@ public class TestFunctions
      * Button A = bottom; Button X = low; Button B = middle; Button Y = High
      * @param mainController
      */
-    public static void elevatorControllerMovement(Joysticks mainController)
+    public static void elevatoArmControllerMovement(Joysticks mainController)
     {
         if(mainController.buttonA)
         {
-            elevator.setElevatorPosition(ElevatorLevel.BOTTOM);
+            //elevator.setElevatorPosition(ElevatorLevel.BOTTOM);
         }
         else if(mainController.buttonX)
         {
-            Robot.elevator.setElevatorPosition(ElevatorLevel.LOW);
+            //Robot.elevator.setElevatorPosition(ElevatorLevel.LOW);
         }
         else if(mainController.buttonB)
         {
-            Robot.elevator.setElevatorPosition(ElevatorLevel.MIDDLE);
+            //Robot.elevator.setElevatorPosition(ElevatorLevel.MIDDLE);
         }
         else if(mainController.buttonY)
         {
-            Robot.elevator.setElevatorPosition(ElevatorLevel.MAX);
+            //Robot.elevator.setElevatorPosition(ElevatorLevel.MAX);
         }
 
     }

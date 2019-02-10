@@ -11,12 +11,17 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class StateMachine
 {
     Elevator elevator = Robot.elevator;
-    //Arm arm = Robot.arm;
+    Arm arm = Robot.arm;
     IntakeBall intakeBall = Robot.intakeBall;
     IntakeHatch intakeHatch = Robot.intakeHatch;
 
     //Combined Robot.elevator and Robot.arm System
-    public Enum[] currrentPosition = new Enum[]{elevator.currentState, arm.currentState, intakeBall.currentState};
+    public Enum[] currrentState = new Enum[]{elevator.getCurrentState(), arm.getCurrentState(), intakeBall.getCurrentState(), intakeHatch.getCurrentState()};
+    public Enum[] aimedState = new Enum[]{elevator.getAimedState(), arm.getAimedState(), intakeBall.getAimedState(), intakeHatch.getAimedState()};
+    public static void runStateMachine()
+    {
+
+    }
     public void rest()
     {
         /* 
@@ -45,6 +50,9 @@ public class StateMachine
         // IntakeHatch.closeIntake();
     }
 
+    public void ScoreHatchForwardLevel1()
+    {
+    }
     // PS = player station
     // F = front
     // B = back

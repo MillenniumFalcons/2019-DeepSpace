@@ -21,13 +21,17 @@ public class Elevator extends Subsystem
 
 	public enum ElevatorLevel
 	{
-		BOTTOM,
-		LOW,
-		MIDDLE,
-		MAX
+		HatchLevel1,
+		HatchHandoff,
+		BallHandoff,
+		HatchIntakeMovement,
+		RobotStowed,
+		HatchLevel2,
+		CargoLevel2,
+		HatchLevel3,
 	}
-	public int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
-	public ElevatorLevel currentState, aimedState;
+	//public int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
+	private ElevatorLevel currentState, aimedState;
 	
 	private DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 
@@ -47,7 +51,7 @@ public class Elevator extends Subsystem
 
     public Elevator()
 	{
-		aimedState = ElevatorLevel.BOTTOM;
+		aimedState = ElevatorLevel.RobotStowed;
         //Config Sensors for Motors
         GearboxMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		GearboxMaster.setSensorPhase(true);
@@ -95,113 +99,93 @@ public class Elevator extends Subsystem
 		int threshold = Constants.elevatorEncoderThreshold;
 		switch(level)
 		{
-			case LOW:
-				if(stateThreshold(Constants.elevatorLow, this.encoderValue, threshold))
+			case HatchLevel1:
+				return getBannerSensor();
+			case HatchHandoff:
+				if(stateThreshold(Constants.elevatorEncoderHatchHandoff, this.getEncoder(), threshold))
 					return true;
 				else
 					return false;
-			case MIDDLE:
-				if(stateThreshold(Constants.elevatorMiddle, this.encoderValue, threshold))
+			case BallHandoff:
+				if(stateThreshold(Constants.elevatorEncoderBallHandoff, this.getEncoder(), threshold))
 					return true;
 				else
 					return false;
-			case MAX:
-				if(stateThreshold(Constants.elevatorHigh, this.encoderValue, threshold))
+			case HatchIntakeMovement:
+				if(stateThreshold(Constants.elevatorEncoderHatchIntakeMovement, this.getEncoder(), threshold))
 					return true;
 				else
 					return false;
-			case BOTTOM:
-				return Robot.elevator.bannerSensor.get();
+			case RobotStowed:
+				if(stateThreshold(Constants.elevatorEncoderRobotStowed, this.getEncoder(), threshold))
+					return true;
+				else
+					return false;
+			case HatchLevel2:
+				if(stateThreshold(Constants.elevatorEncoderHatchLevel2, this.getEncoder(), threshold))
+					return true;
+				else
+					return false;
+			case CargoLevel2:
+				if(stateThreshold(Constants.elevatorEncoderCargoLevel2, this.getEncoder(), threshold))
+					return true;
+				else
+					return false;
+			case HatchLevel3:
+				if(stateThreshold(Constants.elevatorEncoderHatchLevel3, this.getEncoder(), threshold))
+					return true;
+				else
+					return false;
 			default:
 				return false;
 		}
-		// if(level == ElevatorLevel.LOW)
-		// {
-		// 	if(stateThreshold(Constants.elevatorLow, Robot.encoders.getElevatorEncoder(), threshold))
-		// 		return true;
-		// 	else
-		// 		return false;
-		// }
-		// else if(level == ElevatorLevel.MIDDLE)
-		// {
-		// 	if(stateThreshold(Constants.elevatorMiddle, Robot.encoders.getElevatorEncoder(), threshold))
-		// 		return true;
-		// 	else
-		// 		return false;
-		// }
-		// else if(level == ElevatorLevel.MAX)
-		// {
-		// 	if(stateThreshold(Constants.elevatorHigh, Robot.encoders.getElevatorEncoder(), threshold))
-		// 		return true;
-		// 	else
-		// 		return false;
-		// }
-		// else if(level == ElevatorLevel.BOTTOM)
-		// 	return Robot.elevator.bannerSensor.get();
-		// else
-		// 	return false;
 	}
 
-	public void runElevator(Joysticks controller)
+	public void runElevator()
 	{
-		// if(elevatorEncoderValue > Constants.elevatorSafetyLimit && overrideValue != 0)
-		// {
-		// 	currentWristState = 0;
-		// 	aimedElevatorState = -10;
-		// }
-		// else if(elevatorEncoderValue > Constants.elevatorSafetyLimit && overrideValue == 0)
-		// {
-		// 	currentWristState = 0;
-		// 	aimedElevatorState = -11;
-		// }
-		// else if(manualOverride)
-		// {
-		// 	currentWristState = 0;
-		// 	aimedElevatorState = -1;
-		// }
-		/*else*/ 
-		if(controller.buttonA)
-		{
-			aimedState = ElevatorLevel.BOTTOM;
-		}
-		else if(controller.buttonX)
-		{
-			aimedState = ElevatorLevel.LOW;
-		}
-		else if(controller.buttonB)
-		{
-			aimedState = ElevatorLevel.MIDDLE;
-		}
-		else if(controller.buttonY)
-		{
-			aimedState = ElevatorLevel.MAX;
-		}
 		switch(aimedState)
 		{
-			case BOTTOM:
-				setElevatorPosition(ElevatorLevel.BOTTOM);
+			case HatchLevel1:
+				setElevatorPosition(ElevatorLevel.HatchLevel1);
 				if(stateRecognizer(aimedState))
 					currentState = aimedState;
 				break;
-			case LOW:
-				setElevatorPosition(ElevatorLevel.LOW);
+			case HatchHandoff:
+				setElevatorPosition(ElevatorLevel.HatchHandoff);
+					if(stateRecognizer(aimedState))
+						currentState = aimedState;
+				break;
+			case BallHandoff:
+				setElevatorPosition(ElevatorLevel.BallHandoff);
 				if(stateRecognizer(aimedState))
 					currentState = aimedState;
 				break;
-			case MIDDLE:
-				setElevatorPosition(ElevatorLevel.MIDDLE);
+			case HatchIntakeMovement:
+				setElevatorPosition(ElevatorLevel.HatchIntakeMovement);
+						if(stateRecognizer(aimedState))
+							currentState = aimedState;
+				break;
+			case RobotStowed:
+				setElevatorPosition(ElevatorLevel.RobotStowed);
 				if(stateRecognizer(aimedState))
 					currentState = aimedState;
 				break;
-			case MAX:
-				setElevatorPosition(ElevatorLevel.MAX);
+			case HatchLevel2:
+				setElevatorPosition(ElevatorLevel.HatchLevel2);
 				if(stateRecognizer(aimedState))
 					currentState = aimedState;
+				break;
+			case CargoLevel2:
+				setElevatorPosition(ElevatorLevel.CargoLevel2);
+						if(stateRecognizer(aimedState))
+							currentState = aimedState;
+				break;
+			case HatchLevel3:
+				setElevatorPosition(ElevatorLevel.HatchLevel3);
+						if(stateRecognizer(aimedState))
+							currentState = aimedState;
 				break;
 			default:
-				setElevatorPosition(ElevatorLevel.BOTTOM);
-				if(stateRecognizer(aimedState))
-					currentState = aimedState;
 				break;
 		}
 	}
@@ -228,40 +212,6 @@ public class Elevator extends Subsystem
         
 	}
 
-	// /**
-	//  * 
-	//  * @param inputLevel BOTTOM, LOW, MIDDLE, MAX
-	//  */
-	// public void setElevatorPosition(ElevatorLevel inputLevel)
-	// {
-	// 	if(inputLevel == ElevatorLevel.BOTTOM)
-	// 	{
-	// 		resetElevator();
-	// 		currentState = ElevatorLevel.BOTTOM;
-	// 	}
-
-	// 	else if(inputLevel == ElevatorLevel.LOW)
-	// 	{
-	// 		setElevatorPosition(Constants.elevatorLow);
-	// 		currentState = ElevatorLevel.LOW;
-	// 	}
-
-	// 	else if(inputLevel == ElevatorLevel.MIDDLE)
-	// 	{
-	// 		setElevatorPosition(Constants.elevatorMiddle);
-	// 		currentState = ElevatorLevel.MIDDLE;
-	// 	}
-
-	// 	else if(inputLevel == ElevatorLevel.MAX)
-	// 	{
-	// 		setElevatorPosition(Constants.elevatorHigh);
-	// 		currentState = ElevatorLevel.MAX;
-	// 	}
-
-	// 	else
-	// 		System.out.println("INVALID ARM POSITION");
-	// }
-
 	public void resetElevator()
 	{
 		if(!reachedBottom())
@@ -280,30 +230,45 @@ public class Elevator extends Subsystem
     {
 		switch(positionInput)
 		{
-			case BOTTOM:
-				resetElevator();
+			case HatchLevel1:
+				this.resetElevator();
 				break;
-			case LOW:
-				GearboxMaster.set(ControlMode.MotionMagic, Constants.elevatorLow);
+			case HatchHandoff:
+				this.setMMPosition(Constants.elevatorEncoderHatchHandoff);
 				break;
-			case MIDDLE:
-				GearboxMaster.set(ControlMode.MotionMagic, Constants.elevatorMiddle);
+			case BallHandoff:
+				this.setMMPosition(Constants.elevatorEncoderBallHandoff);
 				break;
-			case MAX:
-				GearboxMaster.set(ControlMode.MotionMagic, Constants.elevatorHigh);
+			case HatchIntakeMovement:
+				this.setMMPosition(Constants.elevatorEncoderHatchIntakeMovement);
+				break;
+			case RobotStowed:
+				this.setMMPosition(Constants.elevatorEncoderRobotStowed);
+				break;
+			case HatchLevel2:
+				this.setMMPosition(Constants.elevatorEncoderHatchLevel2);
+				break;
+			case CargoLevel2:
+				this.setMMPosition(Constants.elevatorEncoderCargoLevel2);
+				break;
+			case HatchLevel3:
+				this.setMMPosition(Constants.elevatorEncoderHatchLevel3);
+				break;
 			default:
-				System.out.println("INVALID HATCH INTAKE POSITION INPUT");
 				break;
 		}
-		// //Motion Magic
-        // GearboxMaster.set(ControlMode.MotionMagic, positionInput);
     }
 
     public void stopElevator()
     {
         //Stop Elevator
 		GearboxMaster.stopMotor();
-    }
+	}
+	
+	private void setMMPosition(int encoderVal)
+	{
+		GearboxMaster.set(ControlMode.MotionMagic, encoderVal);
+	}
 
     public void moveElevator(double speed)
     {
@@ -337,7 +302,7 @@ public class Elevator extends Subsystem
 
 	public void testElevatorEncoders()
     {
-        System.out.println("Elevator Encoder Value: " + elevatorEncoderValue + "Elevator Velocity: " + elevatorVelocity);
+        System.out.println("Elevator Encoder Value: " + getEncoder());
 	}
 
 	public void testBannerSensor()
@@ -393,5 +358,20 @@ public class Elevator extends Subsystem
 	public boolean getBannerSensor()
 	{
 		return bannerSensor.get();
+	}
+
+	public void setAimedState(ElevatorLevel aimedState)
+	{
+		this.aimedState = aimedState;
+	}
+
+	public ElevatorLevel getAimedState()
+	{
+		return this.aimedState;
+	}
+
+	public ElevatorLevel getCurrentState()
+	{
+		return this.currentState;
 	}
 }

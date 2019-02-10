@@ -17,7 +17,7 @@ public class Robot extends TimedRobot
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
     public static final Elevator elevator = new Elevator();
-    //public static Arm arm = new Arm();
+    public static Arm arm = new Arm();
     public static IntakeHatch intakeHatch;
     public static IntakeBall intakeBall;
     
@@ -90,11 +90,10 @@ public class Robot extends TimedRobot
     {
         AirCompressor.runCompressor();
         drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
-        TestFunctions.elevatorControllerMovement(mainController);
+        elevator.runElevator();
         TestFunctions.testBallIntake(mainController);
         intakeHatch.runIntake(mainController);
         System.out.println("Hatch Intake switch " + intakeHatch.getLimitSwitch());
-        elevator.runElevator(mainController);
         System.out.println("Current hatch state: " + intakeHatch.getCurrentState());
         System.out.println("Hatch Encoder " + intakeHatch.getEncoder());
     }
