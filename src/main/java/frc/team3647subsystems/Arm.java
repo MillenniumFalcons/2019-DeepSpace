@@ -15,7 +15,7 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class Arm
 {
 	private WPI_TalonSRX armSRXLeader = new WPI_TalonSRX(Constants.armSRXLeaderPin);
-	// private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+	private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	private DigitalInput forwardLimitSwitch; // PIN NEEDED
 	private DigitalInput backwardLimitSwitch; // PIN NEEDED
 	private DigitalInput ballSensor; //PIN NEEDED
@@ -65,7 +65,7 @@ public class Arm
 		armSRXLeader.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
 
 		//arm NEO Follower Code
-		// armNEOFollower.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
+		armNEOFollower.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
 	}
 
 	/**
