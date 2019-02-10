@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
@@ -20,6 +21,7 @@ public class Arm
 	private DigitalInput backwardLimitSwitch; // PIN NEEDED
 	private DigitalInput ballSensor; //PIN NEEDED
 	private VictorSPX ballHolderSPX; //PIN NEEDED
+	private Solenoid hatchHolderPiston = new Solenoid(6);
 
 	private int armVelocity;
 	// public int currentPosition;
@@ -399,7 +401,17 @@ public class Arm
 	{
 		this.setBallHolderPower(0);
 	}
-	
+
+	public void deployHatchHolderPiston()
+	{
+		hatchHolderPiston.set(true);
+	}
+
+	public void retractedHatchHolderPiston()
+	{
+		hatchHolderPiston.set(false);
+	}
+
 	public void resetEncoder()
 	{
 		this.updateEncoder();
