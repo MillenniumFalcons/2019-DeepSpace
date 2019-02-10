@@ -27,8 +27,7 @@ public class Elevator extends Subsystem
 		MAX
 	}
 	public int aimedElevatorState, elevatorEncoderValue, elevatorVelocity;
-	public ElevatorLevel currentState;
-	public ElevatorLevel aimedState;
+	public ElevatorLevel currentState, aimedState;
 	
 	private DigitalInput bannerSensor = new DigitalInput(Constants.elevatorBannerSensor); 
 

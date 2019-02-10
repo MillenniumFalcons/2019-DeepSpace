@@ -10,6 +10,16 @@ public class IntakeBall
 	private Solenoid piston = new Solenoid(Constants.ballIntakeFC);
 	private VictorSPX ballSPX = new VictorSPX(Constants.ballMotorPin);
 	private DigitalInput reed = new DigitalInput(8);
+	public BallState currentState, aimedState;
+	public enum BallState
+	{
+		RetractedRollingForward,
+		RetractedRollingBackwards,
+		RetractedNotRolling,
+		ExtractedRollingForward,
+		ExtractedRollingBackward,
+		ExtractedNotRolling
+	}
 	
 	public void spinRoller(double speedInput)
 	{

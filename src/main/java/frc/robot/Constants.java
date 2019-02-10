@@ -114,14 +114,14 @@ public class Constants
 	public static final int armEncoderThreshold = 25;
 
 	//Elevator Positions
-	public static int elevatorEncoderHatchLevel1;
+	public static int elevatorEncoderHatchLevel1 = 13400;
 	public static int elevatorEncoderHatchHandoff;
 	public static int elevatorEncoderBallHandoff;
 	public static int elevatorEncoderHatchIntakeMovement;
 	public static int elevatorEncoderRobotStowed;
-	public static int elevatorEncoderHatchLevel2;
+	public static int elevatorEncoderHatchLevel2 = 28000;
 	public static int elevatorEncoderCargoLevel2;
-	public static int elevatorEncoderHatchLevel3;
+	public static int elevatorEncoderHatchLevel3 = 43000;
 
 	public static final int elevatorLow = 13400;
 	public static final int elevatorMiddle = 28000;

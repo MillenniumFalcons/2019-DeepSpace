@@ -16,7 +16,7 @@ public class StateMachine
     IntakeHatch intakeHatch = Robot.intakeHatch;
 
     //Combined Robot.elevator and Robot.arm System
-    public Enum[] currrentPosition = new Enum[4];
+    public Enum[] currrentPosition = new Enum{elevator.currentState, }
     public void rest()
     {
         /* 
