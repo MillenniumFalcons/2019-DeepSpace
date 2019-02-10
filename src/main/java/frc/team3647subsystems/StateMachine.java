@@ -21,16 +21,130 @@ public class StateMachine
     
     public Enum[] aimedState = new Enum[]{elevator.getAimedState(), arm.getAimedState(), intakeBall.getAimedState(), intakeHatch.getAimedState()};
     
-    public void runStateMachine()
-    {
-        if(!Arrays.equals(currentState, aimedState))
-        {
+    public void runStateMachine(){
+        if(!Arrays.equals(currentState, aimedState)){
             // If the robot needs to stay at the same elevator position
-            if(currentState[0] == aimedState[0])
-            {
-                if(elevator.aboveMinLevel())
-                {
-                    
+            if(currentState[0] == aimedState[0]){
+                if(elevator.aboveMinLevel()){ // if the robot is above the required encoder val for rotating the arm
+                    if(currentState[1]==aimedState[1]){ //if the arm stays at the same place
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] != aimedState[3]){ // Hatch intake must be moving (because at least one element has to be different)
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }else{ // The arm must move
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }
+                }else{ // elevator is not above required encoder val
+                    if(currentState[1]==aimedState[1]){ //if the arm stays at the same place
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }
+                    else{ // The arm must move
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }                    
+                }
+            }else{ // must move elevator
+                if(elevator.aboveMinLevel()){ // if the robot is above the required encoder val for rotating the arm
+                    if(currentState[1]==aimedState[1]){ //if the arm stays at the same place
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake must be moving (because at least one element has to be different)
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }else{ // The arm must move
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }
+                }else{ // elevator is not above required encoder val
+                    if(currentState[1]==aimedState[1]){ //if the arm stays at the same place
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }
+                    else{ // The arm must move
+                        if(currentState[2] == aimedState[2]){ //Ball intake isn't moving
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }
+                        }else{ //ball intake must move
+                            if(currentState[3] == aimedState[3]){ // Hatch intake isn't moving
+
+                            }else{ // Hatch intake must move
+
+                            }                            
+                        }
+                    }                    
                 }
             }
         }
