@@ -16,10 +16,11 @@ public class Arm
 {
 	private WPI_TalonSRX armSRXLeader = new WPI_TalonSRX(Constants.armSRXLeaderPin);
 	private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
-	private DigitalInput forwardLimitSwitch; // PIN NEEDED
-	private DigitalInput backwardLimitSwitch; // PIN NEEDED
-	private DigitalInput ballSensor; //PIN NEEDED
-	private VictorSPX ballHolderSPX; //PIN NEEDED
+	private VictorSPX ballHolderSPX = new VictorSPX(Constants.ballHolderSPXPin);
+	
+	private DigitalInput forwardLimitSwitch = new DigitalInput(Constants.armLimitSwitchForward);
+	private DigitalInput backwardLimitSwitch = new DigitalInput(Constants.armLimitSwitchBackward);
+	private DigitalInput ballSensor = new DigitalInput(Constants.armBallBannerSensor);
 
 	private int armVelocity;
 	// public int currentPosition;
@@ -286,6 +287,14 @@ public class Arm
         System.out.println("Right Elevator Current:" + armSRXLeader.getOutputCurrent());
 	}
 
+	public boolean stateRecogLogic(int constant)
+	{
+		if (this.stateThreshold(constant, this.getEncoder(), Constants.armEncoderThreshold))
+			return true;
+		else
+			return false;
+	}
+	//repeated if else, turn into method?
 	public boolean stateRecognizer(ArmPosition position)
 	{
 		switch(position)
@@ -424,17 +433,19 @@ public class Arm
 
 	public boolean getForwardLimitSwitch()
 	{
-		return forwardLimitSwitch.get();
+		//True when activated
+		return !this.forwardLimitSwitch.get();
 	}
 
 	public boolean getBackwardLimitSwitch()
 	{
-		return backwardLimitSwitch.get();
+		//True when activated
+		return !this.backwardLimitSwitch.get();
 	}
 
 	public void stopMotor()
 	{
-		armSRXLeader.stopMotor();
+		this.armSRXLeader.stopMotor();
 	}
 
 	public int getVelocity()

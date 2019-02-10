@@ -9,16 +9,21 @@ public class IntakeBall
 {
 	private Solenoid piston = new Solenoid(Constants.ballIntakeFC);
 	private VictorSPX ballSPX = new VictorSPX(Constants.ballMotorPin);
-	private DigitalInput reed = new DigitalInput(8);
-	public IntakeBallState currentState, aimedState;
+
+	private IntakeBallState currentState, aimedState;
+
 	public enum IntakeBallState
 	{
-		RetractedRollingForward,
-		RetractedRollingBackwards,
-		RetractedNotRolling,
-		ExtractedRollingForward,
-		ExtractedRollingBackward,
-		ExtractedNotRolling
+		//Will never Roll while retracted
+		// RetractedRollingForward,
+		// RetractedRollingBackwards,
+		// RetractedNotRolling,
+		// ExtractedRollingForward,
+		// ExtractedRollingBackward,
+		// ExtractedNotRolling
+		//Only need these:
+		RETRACTED,
+		EXTRACTED
 	}
 	
 	public void spinRoller(double speedInput)

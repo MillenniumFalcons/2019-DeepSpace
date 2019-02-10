@@ -128,13 +128,13 @@ public class IntakeHatch
 	{
 		if(getLimitSwitch() == true)
 		{
-			this.moveMotor(.25);
-		}
-		else
-		{
 			this.stopMotor();
 			this.setEncoderPosition();
 			// System.out.println("RESET POSITION");
+		}
+		else
+		{
+			this.moveMotor(.25);
 		}
 	}
 	
@@ -176,7 +176,7 @@ public class IntakeHatch
 				else
 					return false;
 			case INSIDE:
-				return !this.getLimitSwitch();
+				return this.getLimitSwitch();
 			default:
 				return false;
 		}
@@ -254,7 +254,7 @@ public class IntakeHatch
 
 	public boolean getLimitSwitch()
 	{
-		return limitSwitchIntake.get();
+		return !limitSwitchIntake.get();
 	}
 
 	public void stopMotor()
