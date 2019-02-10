@@ -406,6 +406,10 @@ public class Arm
 	{
 		hatchHolderPiston.set(true);
 	}
+	public boolean isHatchHolderPistonDeployed()
+	{
+		return hatchHolderPiston.get();
+	}
 
 	public void retractedHatchHolderPiston()
 	{
