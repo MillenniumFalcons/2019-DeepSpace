@@ -18,7 +18,8 @@ public class Constants
 	public static final int ElevatorGearboxSPX2 = 13;		//TO BE CHANGED
 
 	//Arm Motor Pins
-	public static final int armMasterPin = 54;		//TO BE CHANGED
+	public static final int armSRXLeaderPin = 18;		//TO BE CHANGED
+	public static final int armNEOFollowerPin = 17;		//TO BE CHANGED
 
 	//Hatch Intake Motor Pins
 	public static final int hatchMotorPin = 3;		
