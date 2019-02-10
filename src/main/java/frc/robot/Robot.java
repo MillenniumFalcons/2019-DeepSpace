@@ -46,9 +46,9 @@ public class Robot extends TimedRobot
             mainController = new Joysticks(0);
             coController = new Joysticks(1);
             gyro = new Gyro();
-            intakeHatch = new IntakeHatch();
-            intakeBall = new IntakeBall();
-            TestFunctions.shuffleboard();
+            // intakeHatch = new IntakeHatch();
+            // intakeBall = new IntakeBall();
+            // TestFunctions.shuffleboard();
 
             //RAMSETE AUTO STUFF
 			odo = new Odometry(); 	//Initialize Odometry Object (see Odometry.java)
@@ -141,13 +141,22 @@ public class Robot extends TimedRobot
     public void testPeriodic()
     {
         AirCompressor.runCompressor();
-        drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
-        elevator.runElevator();
-        TestFunctions.testBallIntake(mainController);
-        intakeHatch.runIntake(mainController);
-        System.out.println("Hatch Intake switch " + intakeHatch.getLimitSwitch());
-        System.out.println("Current hatch state: " + intakeHatch.getCurrentState());
-        System.out.println("Hatch Encoder " + intakeHatch.getEncoder());
+        // drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
+        // elevator.runElevator();
+        // TestFunctions.testBallIntake(mainController);
+        // intakeHatch.runIntake(mainController);
+        elevator.moveElevator(mainController.leftJoyStickY);
+        arm.moveArm(.5*mainController.rightJoyStickX);
+        // System.out.println("Hatch Intake switch " + intakeHatch.getLimitSwitch());
+        // System.out.println("Current hatch state: " + intakeHatch.getCurrentState());
+        // System.out.println("Hatch Encoder " + intakeHatch.getEncoder());
+        out.println("Arm Encoder Value: " + arm.getEncoder());
+
+        if(mainController.leftBumper)
+        {
+            arm.resetEncoder();
+            elevator.resetEncoder();
+        }
     }
 
 }

@@ -15,7 +15,7 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class Arm
 {
 	private WPI_TalonSRX armSRXLeader = new WPI_TalonSRX(Constants.armSRXLeaderPin);
-	private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+	// private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	private DigitalInput forwardLimitSwitch; // PIN NEEDED
 	private DigitalInput backwardLimitSwitch; // PIN NEEDED
 	private DigitalInput ballSensor; //PIN NEEDED
@@ -65,7 +65,7 @@ public class Arm
 		armSRXLeader.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
 
 		//arm NEO Follower Code
-		armNEOFollower.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
+		// armNEOFollower.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
 	}
 
 	/**
@@ -83,28 +83,28 @@ public class Arm
 				this.resetArmBackwards();
 				break;
 			case StraightForwards:
-				this.setMMMPosition(Constants.armEncoderStraightForwards);
+				this.setMMPosition(Constants.armEncoderStraightForwards);
 				break;
 			case StraightBackwards:
-				this.setMMMPosition(Constants.armEncoderStraightBackwards);
+				this.setMMPosition(Constants.armEncoderStraightBackwards);
 				break;
 			case CargoLevel3Front:
-				this.setMMMPosition(Constants.armEncoderCargoLevel3Front);
+				this.setMMPosition(Constants.armEncoderCargoLevel3Front);
 				break;
 			case CargoLevel3Back:
-				this.setMMMPosition(Constants.armEncoderCargoLevel3Back);
+				this.setMMPosition(Constants.armEncoderCargoLevel3Back);
 				break;
 			case HatchHandoff:
-				this.setMMMPosition(Constants.armEncoderHatchHandoff);
+				this.setMMPosition(Constants.armEncoderHatchHandoff);
 				break;
 			case HatchIntakeMovement:
-				this.setMMMPosition(Constants.armEncoderHatchIntakeMovement);
+				this.setMMPosition(Constants.armEncoderHatchIntakeMovement);
 				break;
 			case RobotStowed:
-				this.setMMMPosition(Constants.armEncoderRobotStowed);
+				this.setMMPosition(Constants.armEncoderRobotStowed);
 				break;
 			case BallHandoff:
-				this.setMMMPosition(Constants.armEncoderBallHandoff);
+				this.setMMPosition(Constants.armEncoderBallHandoff);
 				break;
 			default:
 				break;
@@ -172,7 +172,7 @@ public class Arm
 	}
 
 
-    private void setMMMPosition(double position)
+    private void setMMPosition(double position)
     {
 		//Motion Magic
         armSRXLeader.set(ControlMode.MotionMagic, position);
@@ -187,7 +187,7 @@ public class Arm
 		else
 		{
 			resetEncoder();
-			setMMMPosition(0);
+			setMMPosition(0);
 		}
 	}
 
@@ -200,7 +200,7 @@ public class Arm
 		else
 		{
 			setEncoderPosition(3072); // Needs to be in constants!!
-			setMMMPosition(3072); //As well!!
+			setMMPosition(3072); //As well!!
 		}
 
 	}
@@ -238,7 +238,7 @@ public class Arm
 					encoderState = 1;
 					break;
 				case 1:
-					setMMMPosition(manualEncoderValue);
+					setMMPosition(manualEncoderValue);
 					break;
 			}
 		}
