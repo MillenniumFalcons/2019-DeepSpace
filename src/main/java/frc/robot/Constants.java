@@ -2,24 +2,27 @@ package frc.robot;
 
 public class Constants
 {
-    //Drive Motor Pins
-	public static final int leftMasterPin = 9;		//TO BE CHANGED
-	public static final int leftSlave1Pin = 10;		//TO BE CHANGED
-	public static final int leftSlave2Pin = 11;		//TO BE CHANGED
+	//Change to Interface once all constants have values
 
-	public static final int rightMasterPin = 4;		//TO BE CHANGED
-	public static final int rightSlave1Pin = 5;	//TO BE CHANGED
-	public static final int rightSlave2Pin = 6;	//TO BE CHANGED
+    //Drive Motor Pins
+	public static final int leftMasterPin = 9;		
+	public static final int leftSlave1Pin = 10;		
+	public static final int leftSlave2Pin = 11;		
+
+	public static final int rightMasterPin = 4;		
+	public static final int rightSlave1Pin = 5;	
+	public static final int rightSlave2Pin = 6;	
 
 
 	//Elevator Motor Pins
-	public static final int ElevatorGearboxSRX = 8;		//TO BE CHANGED
-	public static final int ElevatorGearboxSPX1 = 12;		//TO BE CHANGED
-	public static final int ElevatorGearboxSPX2 = 13;		//TO BE CHANGED
+	public static final int ElevatorGearboxSRX = 8;	
+	public static final int ElevatorGearboxSPX1 = 12;		
+	public static final int ElevatorGearboxSPX2 = 13;	
 
 	//Arm Motor Pins
-	public static final int armSRXLeaderPin = 18;		//TO BE CHANGED
-	public static final int armNEOFollowerPin = 17;		//TO BE CHANGED
+	public static final int armSRXLeaderPin = 18;	
+	public static final int armNEOFollowerPin = 17;
+	public static final int ballHolderSPXPin = 0; //TO BE CHANGED
 
 	//Hatch Intake Motor Pins
 	public static final int hatchMotorPin = 3;		
@@ -33,8 +36,12 @@ public class Constants
 
 	//Sensor Pins
 	public static final int elevatorBannerSensor = 7;
-	public static final int armBannerSensor = 1;		//TO BE CHANGED
+	public static final int drivetrainBannerSensorLeft = 0; 	//TO BE CHANGED
+	public static final int drivetrainBannerSensorRight = 0; 	//TO BE CHANGED
 	public static final int hatchLimitSwitchPin = 9;
+	public static final int armLimitSwitchForward = 0;	//TO BE CHANGED
+	public static final int armLimitSwitchBackward = 0;	//TO BE CHANGED
+	public static final int armBallBannerSensor = 0;	//TO BE CHANGED
 
 	//Piston Forward and Reverse Channels
 	public static final int ballIntakeFC = 0;

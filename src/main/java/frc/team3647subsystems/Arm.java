@@ -558,19 +558,21 @@ public class Arm
 	/**Is limit switch at the front is reached */
 	public boolean getForwardLimitSwitch()
 	{
-		return forwardLimitSwitch.get();
+		//True when activated
+		return !this.forwardLimitSwitch.get();
 	}
 
 	/**Is limit switch at the back reached */
 	public boolean getBackwardLimitSwitch()
 	{
-		return backwardLimitSwitch.get();
+		//True when activated
+		return !this.backwardLimitSwitch.get();
 	}
 
 	/**Stops armSRX, stops arm */
 	public void stopMotor()
 	{
-		armSRXLeader.stopMotor();
+		this.armSRXLeader.stopMotor();
 	}
 
 	/**@return selected sensor (in raw sensor units) per 100ms. See Phoenix-Documentation for how to interpret. */
