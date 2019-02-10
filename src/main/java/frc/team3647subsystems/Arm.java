@@ -23,24 +23,24 @@ public class Arm
 	/**The limit switch in the front of the robot (where the ground ball intake is), is at 135deg from pos x-axis
 	 * <p> PIN NEEDED
 	*/
-	private DigitalInput forwardLimitSwitch; 
+	private DigitalInput forwardLimitSwitch =new DigitalInput(Constants.armLimitSwitchForward); 
 
 	/**The limit switch in the back of the robot (where the hatch ground intake is), is at 45deg from pos x-axis
 	* <p> PIN NEEDED
 	*/
-	private DigitalInput backwardLimitSwitch;
+	private DigitalInput backwardLimitSwitch = new DigitalInput(Constants.armLimitSwitchBackward);
 
 	/**
 	 * On the arm-ball-intake, detectes if the ball is present or not
 	 * <p>PIN NEEDED
 	 */
-	private DigitalInput ballSensor;
+	private DigitalInput ballSensor = new DigitalInput(Constants.armBallBannerSensor);
 
 
 	/**Motor that moves the arm-ball-intake rollers that suck the ball from ground intake
 	* <p>PIN NEEDED
 	*/
-	private VictorSPX ballHolderSPX;
+	private VictorSPX ballHolderSPX = new VictorSPX(Constants.ballMotorPin);
 	/** Piston that holds the hatch in place on the arm-hatch intake / placer */
 	private Solenoid hatchHolderPiston;
 
