@@ -2,6 +2,7 @@ package frc.team3647subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -17,12 +18,16 @@ public class Arm
 	private CANSparkMax armNEOFollower = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	private DigitalInput forwardLimitSwitch; // PIN NEEDED
 	private DigitalInput backwardLimitSwitch; // PIN NEEDED
+	private DigitalInput ballSensor; //PIN NEEDED
+	private VictorSPX ballHolderSPX; //PIN NEEDED
 
 	private int armVelocity;
 	// public int currentPosition;
 
 	public enum ArmPosition
 	{
+		LimitSwitchForwards,
+		LimitSwitchBackWards,
 		StraightForwards,
 		StraightBackwards,
 		CargoLevel3Front,
@@ -69,71 +74,136 @@ public class Arm
 	 */
 	public void setArmPosition(ArmPosition positionInput)
 	{
-		//Check is the arm is already at the projected position
-		if(positionInput == currentState)
+		switch(positionInput)
 		{
-			System.out.println("Already at " + positionInput + " position");
+			case LimitSwitchForwards:
+				this.resetArmForwards();
+				break;
+			case LimitSwitchBackWards:
+				this.resetArmBackwards();
+				break;
+			case StraightForwards:
+				this.setMMMPosition(Constants.armEncoderStraightForwards);
+				break;
+			case StraightBackwards:
+				this.setMMMPosition(Constants.armEncoderStraightBackwards);
+				break;
+			case CargoLevel3Front:
+				this.setMMMPosition(Constants.armEncoderCargoLevel3Front);
+				break;
+			case CargoLevel3Back:
+				this.setMMMPosition(Constants.armEncoderCargoLevel3Back);
+				break;
+			case HatchHandoff:
+				this.setMMMPosition(Constants.armEncoderHatchHandoff);
+				break;
+			case HatchIntakeMovement:
+				this.setMMMPosition(Constants.armEncoderHatchIntakeMovement);
+				break;
+			case RobotStowed:
+				this.setMMMPosition(Constants.armEncoderRobotStowed);
+				break;
+			case BallHandoff:
+				this.setMMMPosition(Constants.armEncoderBallHandoff);
+				break;
+			default:
+				break;
 		}
-
-		//check if positionInput is equal to Straight 0 degrees
-		else if(positionInput == ArmPosition.StraightForwards && currentState != ArmPosition.StraightBackwards)
-		{
-			elevatorCheck(Constants.armEncoderStraightForwards);
-			currentState = ArmPosition.StraightForwards;
-		}
-
-		//check if positionInput is equal to Straight 180 degrees
-		else if(positionInput == ArmPosition.StraightBackwards && currentState != ArmPosition.StraightBackwards)
-		{
-			elevatorCheck(Constants.armEncoderStraightBackwards);
-			currentState = ArmPosition.StraightBackwards;
-		}
-
-		//check if positionInput is equal to High Goal Front
-		else if(positionInput == ArmPosition.CargoLevel3Front && currentState != ArmPosition.CargoLevel3Front)
-		{
-			elevatorCheck(Constants.armEncoderCargoLevel3Front);
-			currentState = ArmPosition.CargoLevel3Front;
-		}
-
-		//check if positionInput is equal to High Goal Back
-		else if(positionInput == ArmPosition.CargoLevel3Back && currentState != ArmPosition.CargoLevel3Back)
-		{
-			//elevatorCheck(Constants.elevatorCur);
-			currentState = ArmPosition.CargoLevel3Back;
-		}
-
-		else
-			System.out.println("INVALID ARM POSITION");
 	}
 
-	/**
-	 * Checks if the arm can move at the current elevator position
-	 * @param encPositionInput arm position input
-	 */
-	private void elevatorCheck(int encPositionInput)
+	public void runArm()
 	{
-		//Check if elevator is higher than the low position
-		if (Robot.elevator.currentState == ElevatorLevel.MIDDLE || Robot.elevator.currentState == ElevatorLevel.MAX) 
+		switch(aimedState)
 		{
-			//if true set arm to position without moving elevator
-			setMMMPosition(encPositionInput);
-		}
-		else
-		{
-			//else set elevator to middle position
-			Robot.elevator.setElevatorPosition(ElevatorLevel.MIDDLE);
-			//then set arm position to input position
-			setMMMPosition(encPositionInput);
-		}
+			case LimitSwitchForwards:
+				setArmPosition(ArmPosition.LimitSwitchForwards);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case LimitSwitchBackWards:
+				setArmPosition(ArmPosition.HatchHandoff);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case StraightForwards:
+				setArmPosition(ArmPosition.BallHandoff);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case StraightBackwards:
+				setArmPosition(ArmPosition.HatchIntakeMovement);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case CargoLevel3Front:
+				setArmPosition(ArmPosition.RobotStowed);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case CargoLevel3Back:
+				setArmPosition(ArmPosition.CargoLevel3Back);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case HatchHandoff:
+				setArmPosition(ArmPosition.HatchHandoff);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case HatchIntakeMovement:
+				setArmPosition(ArmPosition.HatchIntakeMovement);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case RobotStowed:
+				setArmPosition(ArmPosition.RobotStowed);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
+			case BallHandoff:
+				setArmPosition(ArmPosition.BallHandoff);
+				if (stateRecognizer(aimedState))
+					currentState = aimedState;
+				break;
 
+			default:
+				break;
+		}
 	}
+
 
     private void setMMMPosition(double position)
     {
 		//Motion Magic
         armSRXLeader.set(ControlMode.MotionMagic, position);
-    }
+	}
+	
+	private void resetArmForwards()
+	{
+		if(!this.getForwardLimitSwitch())
+		{
+			moveArm(-.25);
+		}
+		else
+		{
+			resetEncoder();
+			setMMMPosition(0);
+		}
+	}
+
+	private void resetArmBackwards()
+	{
+		if(!this.getBackwardLimitSwitch())
+		{
+			moveArm(.25);
+		}
+		else
+		{
+			setEncoderPosition(3072); // Needs to be in constants!!
+			setMMMPosition(3072); //As well!!
+		}
+
+	}
 
     public void moveArm(double speed)
     {
@@ -220,23 +290,47 @@ public class Arm
 	{
 		switch(position)
 		{
+			case LimitSwitchForwards:
+				return this.getForwardLimitSwitch();
+			case LimitSwitchBackWards:
+				return this.getBackwardLimitSwitch();
 			case StraightForwards:
-				if(this.stateThreshold(Constants.armEncoderStraightForwards, this.encoderValue, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armEncoderStraightForwards, this.getEncoder(), Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
 			case StraightBackwards:
-				if(this.stateThreshold(Constants.armEncoderStraightBackwards, this.encoderValue, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armEncoderStraightBackwards, this.getEncoder(), Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
 			case CargoLevel3Front:
-				if(this.stateThreshold(Constants.armEncoderCargoLevel3Front, this.encoderValue, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armEncoderCargoLevel3Front, this.getEncoder(), Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
 			case CargoLevel3Back:
-				if(this.stateThreshold(Constants.armEncoderCargoLevel3Back, this.encoderValue, Constants.armEncoderThreshold))
+				if(this.stateThreshold(Constants.armEncoderCargoLevel3Back, this.getEncoder(), Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case HatchHandoff:
+				if(this.stateThreshold(Constants.armEncoderHatchHandoff, this.getEncoder(), Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case HatchIntakeMovement:
+				if(this.stateThreshold(Constants.armEncoderHatchIntakeMovement, this.getEncoder(), Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case RobotStowed:
+				if(this.stateThreshold(Constants.armEncoderRobotStowed, this.getEncoder(), Constants.armEncoderThreshold))
+					return true;
+				else
+					return false;
+			case BallHandoff:
+				if(this.stateThreshold(Constants.armEncoderBallHandoff, this.getEncoder(), Constants.armEncoderThreshold))
 					return true;
 				else
 					return false;
@@ -274,11 +368,38 @@ public class Arm
 		return this.armSRXLeader.getSelectedSensorPosition(Constants.armPIDIdx);
 	}
 
-	public void setEncoderPosition()
+	public void setEncoderPosition(int pos)
 	{
-		armSRXLeader.setSelectedSensorPosition(0);
+		armSRXLeader.setSelectedSensorPosition(pos, Constants.armPIDIdx, Constants.kTimeoutMs);
 	}
 
+	public void setBallHolderPower(double power)
+	{
+		ballHolderSPX.set(ControlMode.PercentOutput, power);
+	}
+
+	public void runBallHolderIn()
+	{
+		if(this.getBallSensor())
+		{
+			this.stopBallHolderMotor();
+		}
+		else
+		{
+			this.setBallHolderPower(.75);
+		}
+	}
+
+	public void runBallHolderOut()
+	{
+		this.setBallHolderPower(-.75);
+	}
+
+	private void stopBallHolderMotor()
+	{
+		this.setBallHolderPower(0);
+	}
+	
 	public void resetEncoder()
 	{
 		this.updateEncoder();
@@ -286,7 +407,6 @@ public class Arm
 		{
             armSRXLeader.getSensorCollection().setQuadraturePosition(0, 10);
 		}
-		armSRXLeader.setSelectedSensorPosition(0, Constants.armPIDIdx, Constants.kTimeoutMs);
 		this.armVelocity = getVelocity();
 	}
 
@@ -302,12 +422,12 @@ public class Arm
 		return this.prevEncoderValue;
 	}
 
-	public boolean getForwardSensor()
+	public boolean getForwardLimitSwitch()
 	{
 		return forwardLimitSwitch.get();
 	}
 
-	public boolean getBackwardSensor()
+	public boolean getBackwardLimitSwitch()
 	{
 		return backwardLimitSwitch.get();
 	}
@@ -320,5 +440,25 @@ public class Arm
 	public int getVelocity()
 	{
 		return this.armSRXLeader.getSelectedSensorVelocity(0);
+	}
+
+	public void setAimedState(ArmPosition aimedState)
+	{
+		this.aimedState = aimedState;
+	}
+
+	public ArmPosition getAimedState()
+	{
+		return this.aimedState;
+	}
+
+	public ArmPosition getCurrentState()
+	{
+		return this.currentState;
+	}
+
+	public boolean getBallSensor()
+	{
+		return this.ballSensor.get();
 	}
 }
