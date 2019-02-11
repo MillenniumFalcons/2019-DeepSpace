@@ -31,45 +31,23 @@ public class Robot extends TimedRobot
     Joysticks coController;
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
-    public static final Elevator elevator = new Elevator();
-    public static Arm arm = new Arm();
+    public static Elevator elevator;
+    public static Arm arm;
     public static IntakeHatch intakeHatch;
     public static IntakeBall intakeBall;
     
  
     @Override
     public void robotInit() 
-    {
-        try
-		{
-                    
-            mainController = new Joysticks(0);
-            coController = new Joysticks(1);
-            gyro = new Gyro();
-            // intakeHatch = new IntakeHatch();
-            // intakeBall = new IntakeBall();
-            // TestFunctions.shuffleboard();
-
-            //RAMSETE AUTO STUFF
-			odo = new Odometry(); 	//Initialize Odometry Object (see Odometry.java)
-			lastAuto = false; 	    //lastauto determines the coasting of motors
-
-            mAutoModeChooser = new SendableChooser<>(); 								//Create a SendableChooser to put in dashboard for choosing auto
-			mAutoModeChooser.setDefaultOption("TEST_PATH", AutoMode.TEST_PATH);			//Default object set to, from AutoSelector.java, AutoMode Enum: "TEST_PATH" 
-			mAutoModeChooser.addOption("OPEN_LOOP_DRIVE", AutoMode.OPEN_LOOP_DRIVE);	//Adding another object from AutoSelector.java, AutoMode Enum: "OPEN_LOOP_DRIVE"
-			SmartDashboard.putData("Auto Mode", mAutoModeChooser);                      //Put the data from mA.M.C. in the SmartDashboard under "Auto Mode"
-			
-			mStartPosChooser = new SendableChooser<>();						    //Create a SendableChooser to put in dashboard for choosing starting position of robot
-			mStartPosChooser.setDefaultOption("Right", StartPosition.RIGHT);	//Default object set to, from AutoSelector.java, StartPosition Enum: "RIGHT" 
-			mStartPosChooser.addOption("Middle", StartPosition.MIDDLE);		    //Adding another object from AutoSelector.java, StartPosition Enum: "MIDDLE"
-			mStartPosChooser.addOption("Left", StartPosition.LEFT);			    //Adding another object from AutoSelector.java, StartPosition Enum: "LEFT"
-			SmartDashboard.putData("Start Position", mStartPosChooser);		    //Put the data from mS.P.C. in the SmartDashboard under "Start Position"
-		}
-		catch(Throwable t)
-		{
-			throw t;	//Catch any errors or exceptions
-        }
-
+    {                
+        mainController = new Joysticks(0);
+        coController = new Joysticks(1);
+        //gyro = new Gyro();
+        //intakeHatch = new IntakeHatch();
+        // intakeBall = new IntakeBall();
+        // TestFunctions.shuffleboard();
+        arm = new Arm();
+        //elevator = new Elevator();    
     }
 
     @Override
@@ -82,6 +60,21 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit() 
     {
+        //RAMSETE AUTO STUFF
+        odo = new Odometry(); 	//Initialize Odometry Object (see Odometry.java)
+        lastAuto = false; 	    //lastauto determines the coasting of motors
+
+        mAutoModeChooser = new SendableChooser<>(); 								//Create a SendableChooser to put in dashboard for choosing auto
+        mAutoModeChooser.setDefaultOption("TEST_PATH", AutoMode.TEST_PATH);			//Default object set to, from AutoSelector.java, AutoMode Enum: "TEST_PATH" 
+        mAutoModeChooser.addOption("OPEN_LOOP_DRIVE", AutoMode.OPEN_LOOP_DRIVE);	//Adding another object from AutoSelector.java, AutoMode Enum: "OPEN_LOOP_DRIVE"
+        SmartDashboard.putData("Auto Mode", mAutoModeChooser);                      //Put the data from mA.M.C. in the SmartDashboard under "Auto Mode"
+        
+        mStartPosChooser = new SendableChooser<>();						    //Create a SendableChooser to put in dashboard for choosing starting position of robot
+        mStartPosChooser.setDefaultOption("Right", StartPosition.RIGHT);	//Default object set to, from AutoSelector.java, StartPosition Enum: "RIGHT" 
+        mStartPosChooser.addOption("Middle", StartPosition.MIDDLE);		    //Adding another object from AutoSelector.java, StartPosition Enum: "MIDDLE"
+        mStartPosChooser.addOption("Left", StartPosition.LEFT);			    //Adding another object from AutoSelector.java, StartPosition Enum: "LEFT"
+        SmartDashboard.putData("Start Position", mStartPosChooser);		    //Put the data from mS.P.C. in the SmartDashboard under "Start Position"
+    
         resetForAuto();
 		mAutonomous = new AutoSelector		//Create new AutoSelector Object to select auto behavior for the robot to run
 		(
@@ -140,17 +133,18 @@ public class Robot extends TimedRobot
     @Override
     public void testPeriodic()
     {
-        AirCompressor.runCompressor();
+        //AirCompressor.runCompressor();
         // drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
         // elevator.runElevator();
         // TestFunctions.testBallIntake(mainController);
         // intakeHatch.runIntake(mainController);
-        elevator.moveElevator(mainController.leftJoyStickY);
+        //elevator.moveElevator(mainController.leftJoyStickY);
         arm.moveArm(.5*mainController.rightJoyStickX);
         // System.out.println("Hatch Intake switch " + intakeHatch.getLimitSwitch());
         // System.out.println("Current hatch state: " + intakeHatch.getCurrentState());
         // System.out.println("Hatch Encoder " + intakeHatch.getEncoder());
         out.println("Arm Encoder Value: " + arm.getEncoder());
+        out.println("Elevator Encoder Value " + elevator.getEncoder());
 
         if(mainController.leftBumper)
         {

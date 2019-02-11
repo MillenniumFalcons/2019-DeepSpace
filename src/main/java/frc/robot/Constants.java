@@ -131,6 +131,8 @@ public class Constants
 	public static int elevatorEncoderCargoLevel2;
 	public static int elevatorEncoderHatchLevel3 = 43000;
 
+	public static final int elevatorEncoderMinValue = 0;
+
 	public static final int elevatorLow = 13400;
 	public static final int elevatorMiddle = 28000;
 	public static final int elevatorHigh = 43000;
@@ -169,6 +171,7 @@ public class Constants
 
 	public static final double kZeta = 0;
 	public static final double kBeta = 0;
+	
 	
 
 
