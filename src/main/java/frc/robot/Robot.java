@@ -1,52 +1,37 @@
+
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647inputs.*;
-import frc.team3647pistons.AirCompressor;
-import frc.team3647pistons.IntakeHatch;
-import frc.team3647subsystems.Arm;
-import frc.team3647subsystems.Drivetrain;
-import frc.team3647subsystems.Elevator;
-import static java.lang.System.out;
+import frc.team3647subsystems.*;
 
-
-public class Robot extends TimedRobot 
+public class Robot extends IterativeRobot 
 {
-
+   
     Joysticks mainController;
     Joysticks coController;
-    public static Encoders encoders;
     public static Gyro gyro;
     public static final Drivetrain drivetrain = new Drivetrain();
-    public static final Elevator elevator = new Elevator();
-    public static final Arm arm = new Arm();
     
  
     @Override
     public void robotInit() 
     {
-        
-        encoders = new Encoders();
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
         gyro = new Gyro();
-        
-        
-        drivetrain.drivetrainInitialization();
-        drivetrain.leftSRX.configFactoryDefault();
-        drivetrain.rightSRX.configFactoryDefault();
-        IntakeHatch.hatchSRX.set(ControlMode.PercentOutput, 0);
-        elevator.elevatorInitialization();
-        // TestFunctions.shuffleboard();
+       // IntakeHatch.hatchSRX.set(ControlMode.PercentOutput, 0);
+        //elevator.elevatorInitialization();
+        //TestFunctions.shuffleboard();
     }
 
     @Override
     public void robotPeriodic() 
     {
-        TestFunctions.updateControllers(mainController, coController);
-        encoders.updateEncoderValues();
+        gyro.updateGyro();
+        //TestFunctions.updateControllers(mainController, coController);
     }
     
     @Override
@@ -89,23 +74,30 @@ public class Robot extends TimedRobot
     @Override
     public void testInit() 
     {
-        IntakeHatch.intitialize();
-        // elevator.elevatorInitialization();
-        // TestFunctions.shuffleboard();
+        HatchIntake.hatchIntakeInitialization();
+        BallIntake.ballIntakeinitialization();
+        BallShooter.ballShooterinitialization();
+       // Arm.armInitialization();
     }
 
     @Override
     public void testPeriodic()
     {
-        AirCompressor.runCompressor();
-        drivetrain.customArcadeDrive(.35*mainController.rightJoyStickX, .35*mainController.leftJoyStickY, gyro);
-        TestFunctions.elevatorControllerMovement(mainController);
-        TestFunctions.testBallIntake(mainController);
-        IntakeHatch.runIntake(mainController);
-        // out.println("Hatch Intake " + IntakeHatch.limitSwitchIntake.get());
-        // elevator.runElevator(mainController);
-        out.println(IntakeHatch.currentState);
-        // out.println("" + encoders.getHatchIntakeEncoder());
+        //gyro.printAngles();
+        setJoysticks();
+        drivetrain.customArcadeDrive(mainController.leftJoyStickY, mainController.rightJoyStickX, gyro);
+        //BallIntake.runSmartBallIntake(coController.leftTrigger, coController.leftBumper);
+        HatchIntake.runHatchIntakeWrist(coController);
+        //HatchIntake.printPosition();
+        HatchGrabber.runHatchGrabber(coController.rightBumper);
+      //  Arm.moveManual(coController.rightJoyStickY);
     }
 
+    public void setJoysticks()
+    {
+        mainController.setMainContollerValues();
+        mainController.setDPadValues();
+        coController.setMainContollerValues();
+        coController.setDPadValues();
+    }
 }

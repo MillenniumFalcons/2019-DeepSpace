@@ -27,8 +27,6 @@ public class Arm
 	public ArmPosition currentState;
 	public ArmPosition aimedState;
 	
-
-    public DigitalInput bannerSensor = new DigitalInput(Constants.armBannerSensor);
     public boolean manualOverride;
 
     public double overrideValue;
@@ -44,12 +42,12 @@ public class Arm
 		armSRX.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
 
 		// PID for motors
-		armSRX.selectProfileSlot(Constants.armProfile1, 0);
-		armSRX.config_kP(Constants.armProfile1, Constants.armkP, Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armProfile1, Constants.armkI, Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armProfile1, Constants.armkD, Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armProfile1, Constants.armkF, Constants.kTimeoutMs);
-		armSRX.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
+		armSRX.selectProfileSlot(Constants.armPID, 0);
+		armSRX.config_kP(Constants.armPID, Constants.armkP, Constants.kTimeoutMs);
+		armSRX.config_kI(Constants.armPID, Constants.armkI, Constants.kTimeoutMs);
+		armSRX.config_kD(Constants.armPID, Constants.armkD, Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armPID, Constants.armkF, Constants.kTimeoutMs);
+		armSRX.config_IntegralZone(Constants.armPID, Constants.armIZone, Constants.kTimeoutMs);
 
 	}
 
@@ -68,28 +66,28 @@ public class Arm
 		//check if positionInput is equal to Straight 0 degrees
 		else if(positionInput == ArmPosition.STRAIGHT0 && currentState != ArmPosition.STRAIGHT0)
 		{
-			elevatorCheck(Constants.armStraight0);
+			elevatorCheck(Constants.armFlatForwards);
 			currentState = ArmPosition.STRAIGHT0;
 		}
 
 		//check if positionInput is equal to Straight 180 degrees
 		else if(positionInput == ArmPosition.STRAIGHT180 && currentState != ArmPosition.STRAIGHT180)
 		{
-			elevatorCheck(Constants.armStraight180);
+			elevatorCheck(Constants.armFlatBackwards);
 			currentState = ArmPosition.STRAIGHT180;
 		}
 
 		//check if positionInput is equal to High Goal Front
 		else if(positionInput == ArmPosition.HIGHGOALFRONT && currentState != ArmPosition.HIGHGOALFRONT)
 		{
-			elevatorCheck(Constants.armHighGoalFront);
+			elevatorCheck(Constants.armCargoL3Front);
 			currentState = ArmPosition.HIGHGOALFRONT;
 		}
 
 		//check if positionInput is equal to High Goal Back
 		else if(positionInput == ArmPosition.HIGHGOALBACK && currentState != ArmPosition.HIGHGOALBACK)
 		{
-			elevatorCheck(Constants.armHighGoalBack);
+			elevatorCheck(Constants.armCargoL3Back);
 			currentState = ArmPosition.HIGHGOALBACK;
 		}
 
@@ -104,7 +102,7 @@ public class Arm
 	private void elevatorCheck(int encPositionInput)
 	{
 		//Check if elevator is higher than the low position
-		if (Robot.elevator.currentState == ElevatorLevel.MIDDLE || Robot.elevator.currentState == ElevatorLevel.MAX) 
+		if (Elevator.currentState == ElevatorLevel.MIDDLE || Elevator.currentState == ElevatorLevel.MAX) 
 		{
 			//if true set arm to position without moving elevator
 			setArmEncPosition(encPositionInput);
@@ -112,7 +110,7 @@ public class Arm
 		else
 		{
 			//else set elevator to middle position
-			Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
+			Elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
 			//then set arm position to input position
 			setArmEncPosition(encPositionInput);
 		}
@@ -171,29 +169,10 @@ public class Arm
 			}
 		}
     }
-    
-	public void setArmEncoder()
-	{
-        if(reachedDefaultPos())
-		{
-            resetArmEncoders();
-		}
-		armEncoderValue = armSRX.getSelectedSensorPosition(0);
-		armVelocity = armSRX.getSelectedSensorVelocity(0);
-	}
 	
 	public void resetArmEncoders()
 	{
         armSRX.getSensorCollection().setQuadraturePosition(0, 10);
-	}
-
-	public boolean reachedDefaultPos()
-	{
-        if(bannerSensor.get())
-            return false;
-        else
-            return true;
-
 	}
 
 	public void setManualOverride(double jValue)
@@ -213,18 +192,6 @@ public class Arm
     {
         System.out.println("Elevator Encoder Value: " + armEncoderValue + "Elevator Velocity: " + armVelocity);
 	}
-
-	public void bannerSensorTriggered()
-    {
-        if(reachedDefaultPos())
-        {
-            System.out.println("Banner Sensor Triggered!");
-        }
-        else
-        {
-            System.out.println("Banner Sensor Not Triggered!");
-        }
-    }
 
     public void printArmCurrent()
     {
