@@ -34,7 +34,8 @@ public class HatchIntake
 		wristMotor.setSensorPhase(true);
 		//Current Limiting
 		wristMotor.configPeakCurrentLimit(Constants.kHatchWristPeakCurrent, Constants.kTimeoutMs);
-		wristMotor.configContinuousCurrentLimit(Constants.kHatchWristContinuousCurrentHatch, Constants.kTimeoutMs);
+		wristMotor.configPeakCurrentDuration(Constants.kHatchWristPeakCurrentDuration);
+		wristMotor.configContinuousCurrentLimit(Constants.kHatchWristContinuousCurrent, Constants.kTimeoutMs);
 		wristMotor.enableCurrentLimit(true);
 		//PID
 		wristMotor.config_kP(Constants.kHatchWristPID, Constants.kHatchWristP, Constants.kTimeoutMs);

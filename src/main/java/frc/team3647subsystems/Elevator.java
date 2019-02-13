@@ -1,7 +1,10 @@
+//Class not created by Kunal Singla
+
 package frc.team3647subsystems;
 
 import frc.robot.*;
 import frc.team3647inputs.Joysticks;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -11,12 +14,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 
 public class Elevator
-{ 
+{
 
 	public static ElevatorLevel currentState;
 	public static ElevatorLevel aimedState;
 	
-	public static DigitalInput beamSensor = new DigitalInput(Constants.elevatorBreamBreakPin); 
+	public static DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin); 
 
     public static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
 	public static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
@@ -34,13 +37,12 @@ public class Elevator
 		elevatorMaster.setSensorPhase(true);
 
 		// Configure PID Values
-		elevatorMaster.selectProfileSlot(Constants.interstageIdx, 0);
+		elevatorMaster.selectProfileSlot(Constants.interstagePID, 0);
 
-		elevatorMaster.config_IntegralZone(Constants.interstageIdx, Constants.interstageIdx, Constants.kTimeoutMs);
-		elevatorMaster.config_kP(Constants.interstageIdx, Constants.interstageP, Constants.kTimeoutMs);		
-		elevatorMaster.config_kI(Constants.interstageIdx, Constants.interstageI, Constants.kTimeoutMs);	
-		elevatorMaster.config_kD(Constants.interstageIdx, Constants.interstageD, Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstageIdx, Constants.interstageF, Constants.kTimeoutMs);
+		elevatorMaster.config_kP(Constants.interstagePID, Constants.interstageP, Constants.kTimeoutMs);		
+		elevatorMaster.config_kI(Constants.interstagePID, Constants.interstageI, Constants.kTimeoutMs);	
+		elevatorMaster.config_kD(Constants.interstagePID, Constants.interstageD, Constants.kTimeoutMs);
+		elevatorMaster.config_kF(Constants.interstagePID, Constants.interstageF, Constants.kTimeoutMs);
 		
 		// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
 		// GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
@@ -61,13 +63,12 @@ public class Elevator
 
 	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
-		elevatorMaster.selectProfileSlot(Constants.interstageIdx, 0);
+		elevatorMaster.selectProfileSlot(Constants.interstagePID, 0);
 
-		elevatorMaster.config_IntegralZone(Constants.interstageIdx, Constants.interstageIdx, Constants.kTimeoutMs);
-		elevatorMaster.config_kP(Constants.interstageIdx, p, Constants.kTimeoutMs);		
-		elevatorMaster.config_kI(Constants.interstageIdx, i, Constants.kTimeoutMs);	
-		elevatorMaster.config_kD(Constants.interstageIdx, d, Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstageIdx, f, Constants.kTimeoutMs);
+		elevatorMaster.config_kP(Constants.interstagePID, p, Constants.kTimeoutMs);		
+		elevatorMaster.config_kI(Constants.interstagePID, i, Constants.kTimeoutMs);	
+		elevatorMaster.config_kD(Constants.interstagePID, d, Constants.kTimeoutMs);
+		elevatorMaster.config_kF(Constants.interstagePID, f, Constants.kTimeoutMs);
 		
 		// GearboxMaster.config_IntegralZone(Constants.carriagePIDIdx, Constants.carriageIZone, Constants.kTimeoutMs);
 		// GearboxMaster.config_kP(Constants.carriagePIDIdx, Constants.carriageP, Constants.kTimeoutMs);
@@ -82,67 +83,102 @@ public class Elevator
 
 	public enum ElevatorLevel
 	{
+        MANUAL,
 		BOTTOM,
-		HANDOFF,
-		LOW,
-		MIDDLE,
-		MAX
+        CARGOHANDOFF,
+        HATCHHANDOFF,
+		HATCHL2,
+		HATCHL3, //also cargo lvl3
+        CARGOL2,
+        CARGOSHIP,
+        STOWED
 	}
 
-	// public static void runElevator(Joysticks controller)
-	// {
-	// 	setElevatorEncoder();
-	// 	setManualOverride(controller.leftJoyStickY);
-	// 	//get joy input
-	// 	if(manualOverride)
-	// 		aimedState = WristPosition.MANUAL;
-	// 	else if(controller.dPadUp)
-	// 		aimedState = WristPosition.SCORE;
-	// 	else if(controller.dPadDown)
-	// 		aimedState = WristPosition.STOWED;
-	// 	else if(controller.dPadSide)
-	// 		aimedState = WristPosition.GROUND;
-
-	// 	//move to positions
-	// 	switch(aimedState)
-	// 	{
-	// 		case MANUAL:
-	// 			if(!manualOverride)
-	// 			{
-	// 				overrideValue = 0;
-	// 			}
-	// 			moveManual(overrideValue);
-	// 		case STOWED:
-	// 			closeClamp();
-	// 			moveToStowed();
-	// 			break;
-	// 		case SCORE:
-	// 			closeClamp();
-	// 			moveToScore();
-	// 			break;
-	// 		case GROUND:
-	// 			moveToGround();
-	// 			openClamp();
-	// 			break;
-	// 		default:
-	// 			break;
-	// 	}
-	// }
+	public static void runElevator(Joysticks controller)
+	{
+		setElevatorEncoder();
+		setManualOverride(controller.rightJoyStickY);
+		//get joy input
+		if(manualOverride)
+            aimedState = ElevatorLevel.MANUAL;
+        else if(BallShooter.cargoDetection())
+        {
+            if(controller.buttonA)
+                aimedState = ElevatorLevel.BOTTOM;
+            else if(controller.buttonB)
+                aimedState = ElevatorLevel.CARGOL2;
+            else if(controller.buttonY)
+                aimedState = ElevatorLevel.HATCHL3;
+            else if(controller.buttonX)
+                aimedState = ElevatorLevel.CARGOSHIP;
+        }
+        else
+        {
+            if(controller.buttonY)
+                aimedState = ElevatorLevel.BOTTOM;     //if hatch
+            else if(controller.buttonB)
+                aimedState = ElevatorLevel.HATCHL2;
+            else if(controller.buttonY)
+                aimedState = ElevatorLevel.HATCHL3;
+        }
+		// 	aimedState = ElevatorLevel.CARGOHANDOFF;
+		// else if(controller.dPadSide)
+		// 	aimedState = ElevatorLevel.HATCHHANDOFF;
+        // else if(controller.dPadSide)
+        //     aimedState = ElevatorLevel.STOWED;
+            
+		switch(aimedState)
+		{
+			case MANUAL:
+				if(!manualOverride)
+				{
+					overrideValue = 0;
+				}
+                moveManual(overrideValue);
+                break;
+            case BOTTOM:
+                moveToBottom();
+                break;
+            case CARGOHANDOFF:
+                moveToCargoHandoff();
+                break;
+            case HATCHHANDOFF:
+                moveToHatchHandoff();
+                break;
+            case HATCHL2:
+                moveToHatchL2();
+                break;
+            case HATCHL3:
+                moveToHatchL3();
+                break;
+            case CARGOL2:
+                moveToCargoL2();
+                break;
+            case CARGOSHIP:
+                moveToCargoShip();
+                break;
+			case STOWED:
+				moveToStowed();
+				break;
+			default:
+				break;
+		}
+	}
 	
 	public static void setManualOverride(double jValue)
 	{
-		if(Math.abs(jValue) < .05) //deadzone
+		if(Math.abs(jValue) > .05) //deadzone
 		{
-			manualOverride = false;
+			manualOverride = true;
+            overrideValue = jValue;
 		} 
 		else 
 		{
-			overrideValue = jValue;
-			manualOverride = true;
+			manualOverride = false;
 		}
 	}
 
-	public void moveToBottom()
+	public static void moveToBottom()
 	{
 		if(stateDetection(ElevatorLevel.BOTTOM))
 		{
@@ -151,53 +187,45 @@ public class Elevator
 		}
 		else
 		{
-			setOpenLoop(-.35);
+			setPosition(0);
 		}
 		
     }
     
-	private static boolean stateThreshold(double comparison, double input, double threshold)
-	{
-		if((comparison + threshold) > input && (comparison - threshold) > input)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+    public static void moveToCargoHandoff()
+    {
+        setPosition(Constants.elevatorrCargoHandoff);
+    }
+    
+    public static void moveToHatchHandoff()
+    {
+        setPosition(Constants.elevatorHatchHandoff);
+    }
 
-	public static boolean stateRecognizer(ElevatorLevel level)
-	{
-		int threshold = 25;
-		if(level == ElevatorLevel.LOW)
-		{
-			if(stateThreshold(Constants.elevatorLow, elevatorEncoderValue, threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.MIDDLE)
-		{
-			if(stateThreshold(Constants.elevatorMiddle, elevatorEncoderValue, threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.MAX)
-		{
-			if(stateThreshold(Constants.elevatorHigh, elevatorEncoderValue, threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.BOTTOM)
-			return beamSensor.get();
-		else
-			return false;
+    public static void moveToHatchL2()
+    {
+        setPosition(Constants.elevatorHatchL2);
+    }
 
-	}
+    public static void moveToHatchL3()
+    {
+        setPosition(Constants.elevatorHatchL3);
+    }
+
+    public static void moveToCargoL2()
+    {
+        setPosition(Constants.elevatorCargoL2);
+    }
+
+    public static void moveToCargoShip()
+    {
+        setPosition(Constants.elevatorCargoSHIPL2);
+    }
+
+    public static void moveToStowed()
+    {
+        setPosition(Constants.elevatorStowed);
+    }
 
 	public static int encoderState, manualAdjustment, manualEncoderValue;
 
@@ -205,13 +233,13 @@ public class Elevator
 	{
 		if(jValue > 0)
 		{
-			setOpenLoop(overrideValue * 0.65);
+			setOpenLoop(jValue * 0.5);
 			manualAdjustment = 50;
 			encoderState = 0;
 		}
 		else if(jValue < 0)
 		{
-			setOpenLoop(overrideValue * 0.2);
+			setOpenLoop(jValue * 0.5);
 			manualAdjustment = 0;
 			encoderState = 0;
 		}
@@ -241,9 +269,9 @@ public class Elevator
         elevatorMaster.set(ControlMode.MotionMagic, position);
     }
 
-	private static boolean positionThreshold(double comparison, double input, double threshold)
+	public static boolean positionThreshold(double constant)
 	{
-		if((comparison + threshold) > input && (comparison - threshold) > input)
+		if((constant + Constants.kElevatorPositionThreshold) > elevatorEncoderValue && (constant - Constants.kElevatorPositionThreshold) < elevatorEncoderValue)
 		{
 			return true;
 		}
@@ -255,45 +283,34 @@ public class Elevator
 
 	public static boolean stateDetection(ElevatorLevel level)
 	{
-		int threshold = 25;
-		if(level == ElevatorLevel.LOW)
+        switch(level)
 		{
-			if(positionThreshold(Constants.elevatorLow, elevatorEncoderValue, threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.MIDDLE)
-		{
-			if(positionThreshold(Constants.elevatorMiddle, elevatorEncoderValue, threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.MAX)
-		{
-			if(positionThreshold(Constants.elevatorHigh, elevatorEncoderValue, threshold))
-				return true;
-			else
-				return false;
-		}
-		else if(level == ElevatorLevel.BOTTOM)
-			return getLimitSwitch();
-		else
-			return false;
-
-	}
-
-	public static void resetEncoder()
-	{
-
+            case BOTTOM:
+                return getLimitSwitch();
+            case CARGOHANDOFF:
+                return positionThreshold(Constants.elevatorrCargoHandoff);
+            case HATCHHANDOFF:
+                return positionThreshold(Constants.elevatorHatchHandoff);
+            case HATCHL2:
+                return positionThreshold(Constants.elevatorHatchL2);
+            case HATCHL3:
+                return positionThreshold(Constants.elevatorHatchL3);
+            case CARGOL2:
+                return positionThreshold(Constants.elevatorHatchL3);
+            case CARGOSHIP:
+                return positionThreshold(Constants.elevatorCargoSHIPL2);
+			case STOWED:
+				return positionThreshold(Constants.elevatorStowed);
+            default:
+                return false;
+        }
 	}
 	
 	public static void setElevatorEncoder()
 	{
 		if(getLimitSwitch())
 		{
-			resetEncoder();
+			resetElevatorEncoder();
 		}
 		elevatorEncoderValue = elevatorMaster.getSelectedSensorPosition(0);
 		elevatorEncoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
@@ -302,7 +319,7 @@ public class Elevator
 
 	public static boolean getLimitSwitch()
 	{
-		if(beamSensor.get())
+		if(limitSwitch.get())
 		{
 			return false;
 		}
@@ -319,10 +336,10 @@ public class Elevator
 	
 	public static void resetElevatorEncoder()
 	{
-		elevatorMaster.setSelectedSensorPosition(0,Constants.interstageIdx, Constants.kTimeoutMs);
+		elevatorMaster.setSelectedSensorPosition(0,Constants.interstagePID, Constants.kTimeoutMs);
 	}
 	
-	public void stopElevator()
+	public static void stopElevator()
 	{
 		elevatorMaster.stopMotor();
 	}
@@ -334,7 +351,7 @@ public class Elevator
 
 	public static void testBannerSensor()
     {
-        if(beamSensor.get())
+        if(getLimitSwitch())
         {
             System.out.println("Banner Sensor Triggered!");
         }
