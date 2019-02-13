@@ -16,20 +16,10 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class Arm
 {
 	/**Motor controller of the arm, at 18 */
-	private WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXLeaderPin);
+	private WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);
 	/**Actual motor of the arm is following armSRX at 17 */
-	private CANSparkMax armNEO = new CANSparkMax(Constants.armNEOFollowerPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+	private CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-	/**
-	 * On the arm-ball-intake, detectes if the ball is present or not
-	 * <p>PIN NEEDED
-	 */
-	private DigitalInput ballSensor = new DigitalInput(Constants.armBallBannerSensor);
-
-
-	/**Motor that moves the arm-ball-intake rollers that suck the ball from ground intake
-	* <p>PIN NEEDED
-	*/
 	private VictorSPX ballHolderSPX = new VictorSPX(Constants.ballMotorPin);
 	/** Piston that holds the hatch in place on the arm-hatch intake / placer */
 	private Solenoid hatchHolderPiston;
@@ -78,12 +68,12 @@ public class Arm
 		armSRX.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
 
 		// PID for motors
-		armSRX.selectProfileSlot(Constants.armProfile1, 0);
-		armSRX.config_kP(Constants.armProfile1, Constants.armkP, Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armProfile1, Constants.armkI, Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armProfile1, Constants.armkD, Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armProfile1, Constants.armkF, Constants.kTimeoutMs);
-		armSRX.config_IntegralZone(Constants.armProfile1, Constants.armIZone, Constants.kTimeoutMs);
+		armSRX.selectProfileSlot(Constants.armIdx, 0);
+		armSRX.config_kP(Constants.armIdx, Constants.armkP, Constants.kTimeoutMs);
+		armSRX.config_kI(Constants.armIdx, Constants.armkI, Constants.kTimeoutMs);
+		armSRX.config_kD(Constants.armIdx, Constants.armkD, Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armIdx, Constants.armkF, Constants.kTimeoutMs);
+		armSRX.config_IntegralZone(Constants.armIdx, Constants.armIZone, Constants.kTimeoutMs);
 
 		//arm NEO Follower Code, acrual motor that follows the SRX controller
 		armNEO.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
@@ -109,7 +99,7 @@ public class Arm
 	 * 	<li>RobotStowed
 	 * 	<li>BallHandoff
 	 */
-	public void setArmPosition(ArmPosition positionInput)
+	private void setArmPosition(ArmPosition positionInput)
 	{
 		switch(positionInput)
 		{
@@ -362,23 +352,6 @@ public class Arm
 	{
 		ballHolderSPX.set(ControlMode.PercentOutput, power);
 	}
-	
-	/**
-	 * @param power [.15,1] how fast is the roller going to spin
-	 * stops motor if detects ball with ball sensor, otherwise runs motor inside
-	 * Used to suck a ball from the ground intake
-	 */
-	public void runBallHolderIn(double power)
-	{
-		if(this.getBallSensor())
-		{
-			this.stopBallHolderMotor();
-		}
-		else
-		{
-			this.setBallHolderPower(power);
-		}
-	}
 
 
 	/**
@@ -481,11 +454,6 @@ public class Arm
 		return this.currentState;
 	}
 
-	/**@return boolean for does the robot think there is a ball or not */
-	public boolean getBallSensor()
-	{
-		return this.ballSensor.get();
-	}
 
 	private boolean getReverseLimitSwitch()
 	{

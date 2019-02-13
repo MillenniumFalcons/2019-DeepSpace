@@ -14,28 +14,23 @@ import frc.robot.Constants;
 import frc.team3647inputs.*;
 
 
-public class Drivetrain extends Subsystem
+public class Drivetrain
 {
-    public void initDefaultCommand()
-	{
-        // Set the default command for a subsystem here.
-        // setDefaultCommand(new MySpecialCommand());
-	}
 	
-	public WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
-	public WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
+	public static WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
+	public static WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
 	
-	public VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
-	public VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
-	public VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
-    public VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
+	public static VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
+	public static VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
+	public static VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
+    public static VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
 
-    public double supposedAngle;
+    public static double supposedAngle;
 
-    public DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
+    public static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 
 
-    public void drivetrainInitialization()
+    public static void drivetrainInitialization()
 	{
 		
 		// Config left side PID settings
@@ -86,7 +81,7 @@ public class Drivetrain extends Subsystem
 	 * @param yValue joystick y value
 	 * @param gyro gyro object
 	 */
-    public void customArcadeDrive(double xValue, double yValue, Gyro gyro)
+    public static void customArcadeDrive(double xValue, double yValue, Gyro gyro)
 	{
 		if(yValue != 0 && Math.abs(xValue) < 0.15)
         {
@@ -106,21 +101,21 @@ public class Drivetrain extends Subsystem
 		}
 	}
     
-    public void setPercentOutput(double lOutput, double rOutput)
+    public static void setPercentOutput(double lOutput, double rOutput)
 	{
 		rightSRX.set(ControlMode.PercentOutput, rOutput);
 		leftSRX.set(ControlMode.PercentOutput, lOutput);
 	}
 
 	
-	public void stop()
+	public static void stop()
 	{
 		rightSRX.stopMotor();
 		leftSRX.stopMotor();
     }
 	
 	//USED BY AUTO FOR SOME REASON
-    public void setVelocity(double lSpeed, double rSpeed)
+    public static void setVelocity(double lSpeed, double rSpeed)
 	{
 		double targetVelocityRight = rSpeed * Constants.velocityConstant;
 		double targetVelocityLeft = lSpeed * Constants.velocityConstant;
@@ -128,19 +123,19 @@ public class Drivetrain extends Subsystem
 		leftSRX.set(ControlMode.Velocity, targetVelocityLeft);
 	}
 
-	public void testDrivetrainCurrent()
+	public static void testDrivetrainCurrent()
 	{
 		System.out.println("Left Motor Current: " + leftSRX.getOutputCurrent());
 		System.out.println("Right Motor Current:" + rightSRX.getOutputCurrent());
 	}
 	
-	public void enableCurrentLimiting(double amps)
+	public static void enableCurrentLimiting(double amps)
 	{
 		leftSRX.enableCurrentLimit(true);
 		rightSRX.enableCurrentLimit(true);
 	}
 	
-	public void setToBrake()
+	public static void setToBrake()
 	{
 		leftSRX.setNeutralMode(NeutralMode.Brake);
 		rightSRX.setNeutralMode(NeutralMode.Brake);
@@ -150,7 +145,7 @@ public class Drivetrain extends Subsystem
 		rightSPX2.setNeutralMode(NeutralMode.Brake);
 	}
 	
-	public void setToCoast()
+	public static void setToCoast()
 	{
 		leftSRX.setNeutralMode(NeutralMode.Coast);
 		rightSRX.setNeutralMode(NeutralMode.Coast);
@@ -160,7 +155,7 @@ public class Drivetrain extends Subsystem
 		rightSPX2.setNeutralMode(NeutralMode.Coast);
     }
     
-    private void curvatureDrive(double throttle, double turn)
+    private static void curvatureDrive(double throttle, double turn)
 	{
 		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
 	}

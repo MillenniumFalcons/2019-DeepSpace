@@ -8,17 +8,13 @@
 // import java.util.Arrays;
 
 
-// public class StateMachineKunal
+// public class StateMachine
 // {
-//     Elevator elevator = Robot.elevator;
-//     Arm arm = Robot.arm;
-//     IntakeBall intakeBall = Robot.intakeBall;
-//     IntakeHatch intakeHatch = Robot.intakeHatch;
 
-//     //Combined Robot.elevator and Robot.arm System
-//     public Enum[] currentState = new Enum[]{elevator.getCurrentState(), arm.getCurrentState(), intakeBall.getCurrentState(), intakeHatch.getCurrentState()};
+//     //Combined Robot.Elevator and Robot.arm System
+//     public Enum[] currentState = new Enum[]{Elevator.getCurrentState(), arm.getCurrentState(), intakeBall.getCurrentState(), intakeHatch.getCurrentState()};
     
-//     public Enum[] aimedState = new Enum[]{elevator.getAimedState(), arm.getAimedState(), intakeBall.getAimedState(), intakeHatch.getAimedState()};
+//     public Enum[] aimedState = new Enum[]{Elevator.getAimedState(), arm.getAimedState(), intakeBall.getAimedState(), intakeHatch.getAimedState()};
     
 
 
@@ -34,17 +30,17 @@
 
 //     public void homePosition()
 //     {
-//         if(elevatorInLowZone( elevator.getCurrentState() ) == true)
+//         if(ElevatorInLowZone( Elevator.getCurrentState() ) == true)
 //         {
-//             elevator.setElevatorPosition(ElevatorLevel.Home);
+//             Elevator.setElevatorPosition(ElevatorLevel.Home);
 //         }
-//         else if(elevator.getCurrentState() != ElevatorLevel.Home)
+//         else if(Elevator.getCurrentState() != ElevatorLevel.Home)
 //         {
 //             arm.runArm(ArmPosition.StraightForwards);
 //         }
 //         else if(currentState[0] !=  ElevatorLevel.Home && currentState[1] == ArmPosition.StraightForwards)
 //         {
-//             elevator.setElevatorPosition(ElevatorLevel.Home);
+//             Elevator.setElevatorPosition(ElevatorLevel.Home);
 //         }
 //         else if(currentState[0] ==  ElevatorLevel.Home && currentState[1] != ArmPosition.StraightForwards)
 //         {
@@ -123,7 +119,7 @@
 //     public void startHatchGroundIntake()
 //     {
 //         arm.runArm(ArmPosition.HatchIntakeMovement);                        //Change to appropriate Arm pos
-//         elevator.setElevatorPosition(ElevatorLevel.HatchIntakeMovement);    //Change to appropriate Elevator pos
+//         Elevator.setElevatorPosition(ElevatorLevel.HatchIntakeMovement);    //Change to appropriate Elevator pos
 //         intakeBall.closeIntake();
 //         intakeHatch.closeIntake();
 //         //hatch floor intake slightly out
@@ -132,7 +128,7 @@
 //     public void hatchGroundScore()
 //     {
 //         arm.runArm(ArmPosition.HatchHandoff);                       //Fix for appropriate Arm position
-//         elevator.setElevatorPosition(ElevatorLevel.HatchHandoff);   //Fix for appropriate Elevator position
+//         Elevator.setElevatorPosition(ElevatorLevel.HatchHandoff);   //Fix for appropriate Elevator position
 //         intakeBall.closeIntake();
 //         intakeHatch.setPosition(HatchPosition.LOADING);
 //         //hatch floor intake OUT HALF WAY
@@ -141,7 +137,7 @@
 //     public void hatchGroundIntake()
 //     {
 //         arm.runArm(ArmPosition.HatchIntakeMovement);                //Fix for appropriate Arm position
-//         elevator.setElevatorPosition(ElevatorLevel.HatchIntakeMovement);    //Fix for appropriate Elevator position
+//         Elevator.setElevatorPosition(ElevatorLevel.HatchIntakeMovement);    //Fix for appropriate Elevator position
 //         intakeBall.closeIntake();
 //         intakeHatch.closeIntake();
 //         //hatch floor intake OUT ALL THE WAY
@@ -150,14 +146,14 @@
 //     public void hatchHandoff()
 //     {
 //         arm.runArm(ArmPosition.HatchHandoff);
-//         elevator.setElevatorPosition(ElevatorLevel.HatchHandoff);
+//         Elevator.setElevatorPosition(ElevatorLevel.HatchHandoff);
 //         intakeBall.closeIntake();
 //         intakeHatch.setPosition(HatchPosition.LOADING);
 //         //hatch floor intake HALF WAY
 //     }
 
     
-//     private boolean elevatorInLowZone(ElevatorLevel level)
+//     private boolean ElevatorInLowZone(ElevatorLevel level)
 //     {
 //         //To detect if arm can spin freely or not
 //         //HatchLevel1,
@@ -199,7 +195,7 @@
 //         }
 //         else if(currentState[0] != aimedState[0] && currentState[1] == aimedState[1])
 //         {
-//             elevator.setElevatorPosition(level);
+//             Elevator.setElevatorPosition(level);
 //         }
 //         else if(currentState[0] == aimedState[0] && currentState[1] == aimedState[1])
 //         {
@@ -222,7 +218,7 @@
 //         }
 //         else if(currentState[0] != aimedState[0] && currentState[1] == aimedState[1])
 //         {
-//             elevator.setElevatorPosition(level);
+//             Elevator.setElevatorPosition(level);
 //         }
 //         else if(currentState[0] == aimedState[0] && currentState[1] == aimedState[1])
 //         {

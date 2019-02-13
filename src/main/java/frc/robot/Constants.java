@@ -58,11 +58,10 @@ public class Constants
 	public static final int armPIDIdx = 0;
 	public static final int kHatchWristPID = 0;
 
-	public static final int interstagePID = 0;
-	public static final int carriagePIDIdx = 1;
+	
 
 	//Arm PID Values
-	public static final int armPID = 0;
+	public static final int armIdx = 0;
 	public static final int armkP = 0;
 	public static final int armkI = 0;
 	public static final int armkD = 0;
@@ -76,7 +75,7 @@ public class Constants
 	public static final double interstageD = 0.7389;
 	public static final double interstageF = 0;
 
-	public static final int carriageIZone = 1; //TO BE CHANGED
+	public static final int carriageIdx = 1;
 	public static final double carriageP = 0.1;
 	public static final double carriageI = 0;
 	public static final double carriageD = 0;
@@ -132,6 +131,14 @@ public class Constants
 	public static int elevatorStowed;
 	public static int armMasterPin;
 	public static int elevatorBannerSensor;
+	public static double armEncoderStraightForwards;
+	public static double armEncoderStraightBackwards;
+	public static double armEncoderCargoLevel3Front;
+	public static double armEncoderCargoLevel3Back;
+	public static double armEncoderHatchHandoff;
+	public static double armEncoderHatchIntakeMovement;
+	public static double armEncoderRobotStowed;
+	public static double armEncoderBallHandoff;
 	
 	public static final int elevatorLow = 13400;
 	public static final int elevatorMiddle = 28000;
@@ -160,4 +167,11 @@ public class Constants
 
 	public static final double kZeta = 0;
 	public static final double kBeta = 0;
+
+	public static final double PFTurnkP = 1;
+	public static final double PFkA = 0;
+	public static final double PFkV = 0;
+	public static final double PFkD = 0;
+	public static final double PFkI = 0;
+	public static final double PFkP = 0;
 }

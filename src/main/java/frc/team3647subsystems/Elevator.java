@@ -1,4 +1,3 @@
-
 package frc.team3647subsystems;
 
 import frc.robot.*;
@@ -35,13 +34,13 @@ public class Elevator
 		elevatorMaster.setSensorPhase(true);
 
 		// Configure PID Values
-		elevatorMaster.selectProfileSlot(Constants.interstagePID, 0);
+		elevatorMaster.selectProfileSlot(Constants.interstageIdx, 0);
 
-		elevatorMaster.config_IntegralZone(Constants.interstagePID, Constants.interstageIdx, Constants.kTimeoutMs);
-		elevatorMaster.config_kP(Constants.interstagePID, Constants.interstageP, Constants.kTimeoutMs);		
-		elevatorMaster.config_kI(Constants.interstagePID, Constants.interstageI, Constants.kTimeoutMs);	
-		elevatorMaster.config_kD(Constants.interstagePID, Constants.interstageD, Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstagePID, Constants.interstageF, Constants.kTimeoutMs);
+		elevatorMaster.config_IntegralZone(Constants.interstageIdx, Constants.interstageIdx, Constants.kTimeoutMs);
+		elevatorMaster.config_kP(Constants.interstageIdx, Constants.interstageP, Constants.kTimeoutMs);		
+		elevatorMaster.config_kI(Constants.interstageIdx, Constants.interstageI, Constants.kTimeoutMs);	
+		elevatorMaster.config_kD(Constants.interstageIdx, Constants.interstageD, Constants.kTimeoutMs);
+		elevatorMaster.config_kF(Constants.interstageIdx, Constants.interstageF, Constants.kTimeoutMs);
 		
 		// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
 		// GearboxMaster.config_kP(Constants.carriagePIDX, Constants.carriageP, Constants.kTimeoutMs);
@@ -62,13 +61,13 @@ public class Elevator
 
 	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
-		elevatorMaster.selectProfileSlot(Constants.interstagePID, 0);
+		elevatorMaster.selectProfileSlot(Constants.interstageIdx, 0);
 
-		elevatorMaster.config_IntegralZone(Constants.interstagePID, Constants.interstageIdx, Constants.kTimeoutMs);
-		elevatorMaster.config_kP(Constants.interstagePID, p, Constants.kTimeoutMs);		
-		elevatorMaster.config_kI(Constants.interstagePID, i, Constants.kTimeoutMs);	
-		elevatorMaster.config_kD(Constants.interstagePID, d, Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstagePID, f, Constants.kTimeoutMs);
+		elevatorMaster.config_IntegralZone(Constants.interstageIdx, Constants.interstageIdx, Constants.kTimeoutMs);
+		elevatorMaster.config_kP(Constants.interstageIdx, p, Constants.kTimeoutMs);		
+		elevatorMaster.config_kI(Constants.interstageIdx, i, Constants.kTimeoutMs);	
+		elevatorMaster.config_kD(Constants.interstageIdx, d, Constants.kTimeoutMs);
+		elevatorMaster.config_kF(Constants.interstageIdx, f, Constants.kTimeoutMs);
 		
 		// GearboxMaster.config_IntegralZone(Constants.carriagePIDIdx, Constants.carriageIZone, Constants.kTimeoutMs);
 		// GearboxMaster.config_kP(Constants.carriagePIDIdx, Constants.carriageP, Constants.kTimeoutMs);
@@ -320,7 +319,7 @@ public class Elevator
 	
 	public static void resetElevatorEncoder()
 	{
-		elevatorMaster.setSelectedSensorPosition(0,Constants.interstagePID, Constants.kTimeoutMs);
+		elevatorMaster.setSelectedSensorPosition(0,Constants.interstageIdx, Constants.kTimeoutMs);
 	}
 	
 	public void stopElevator()
