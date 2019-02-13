@@ -219,7 +219,7 @@ public class Elevator
 
     public static void moveToCargoShip()
     {
-        setPosition(Constants.elevatorCargoSHIPL2);
+        setPosition(Constants.elevatorCargoShip);
     }
 
     public static void moveToStowed()
@@ -298,7 +298,7 @@ public class Elevator
             case CARGOL2:
                 return positionThreshold(Constants.elevatorHatchL3);
             case CARGOSHIP:
-                return positionThreshold(Constants.elevatorCargoSHIPL2);
+                return positionThreshold(Constants.elevatorCargoShip);
 			case STOWED:
 				return positionThreshold(Constants.elevatorStowed);
             default:

@@ -110,28 +110,28 @@ public class Arm
 				this.resetArmBackwards();
 				break;
 			case StraightForwards:
-				this.setPosition(Constants.armEncoderStraightForwards);
+				this.setPosition(Constants.armNEOFlatForwards);
 				break;
 			case StraightBackwards:
-				this.setPosition(Constants.armEncoderStraightBackwards);
+				this.setPosition(Constants.armNEOFlatBackwards);
 				break;
 			case CargoLevel3Front:
-				this.setPosition(Constants.armEncoderCargoLevel3Front);
+				this.setPosition(Constants.armNEOCargoL3Front);
 				break;
 			case CargoLevel3Back:
-				this.setPosition(Constants.armEncoderCargoLevel3Back);
+				this.setPosition(Constants.armNEOCargoL3Back);
 				break;
 			case HatchHandoff:
-				this.setPosition(Constants.armEncoderHatchHandoff);
+				this.setPosition(Constants.armNEOHatchHandoff);
 				break;
 			case HatchIntakeMovement:
-				this.setPosition(Constants.armEncoderHatchIntakeMovement);
+				this.setPosition(Constants.armNEOVerticalStowed);
 				break;
 			case RobotStowed:
-				this.setPosition(Constants.armEncoderRobotStowed);
+				this.setPosition(Constants.armNEOStowed);
 				break;
 			case BallHandoff:
-				this.setPosition(Constants.armEncoderBallHandoff);
+				this.setPosition(Constants.armNEOBallHandoff);
 				break;
 			default:
 				break;

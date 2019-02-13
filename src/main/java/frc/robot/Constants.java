@@ -127,23 +127,26 @@ public class Constants
 	//Arm Positions
 	//SRX MAG Encoder Positions
 	public static final int armEncoderThreshold = 25; // Threshold for arm positions in encoder values
-	public static int armSRXFlatForwards;
-	public static int armSRXFlatBackwards;
-	public static int armSRXCargoL3Front;
-	public static int armSRXCargoL3Back;
-	public static int armSRXHatchHandoff;
-	public static int armSRXStowed;
-	public static int armSRXCargoHandoff;
+	public static final int armSRXFlatForwards = 4290;
+	public static final int armSRXFlatBackwards = 21650;
+	public static final int armSRXCargoL3Front = 24970;
+	public static final int armSRXCargoL3Back = 1680;
+	public static final int armSRXHatchHandoff = 1700;
+	public static final int armSRXStowed = 11000;
+	public static final int armSRXVerticalStowed = 12860;
+	public static final int armSRXCargoHandoff = 8570;
+	public static final int armSRXFwdLimitSwitch = 26150;
 
 	//NEO Hall Effect SEnsor Positions
-	public static double armEncoderStraightForwards;
-	public static double armEncoderStraightBackwards;
-	public static double armEncoderCargoLevel3Front;
-	public static double armEncoderCargoLevel3Back;
-	public static double armEncoderHatchHandoff;
-	public static double armEncoderHatchIntakeMovement;
-	public static double armEncoderRobotStowed;
-	public static double armEncoderBallHandoff;
+	public static final double armNEOFlatForwards = 12.666;
+	public static final double armNEOFlatBackwards = 63.406;
+	public static final double armNEOCargoL3Front = 72.811;
+	public static final double armNEOCargoL3Back = 4.976;
+	public static final double armNEOHatchHandoff = 5.024;
+	public static final double armNEOStowed = 32.714;
+	public static final double armNEOVerticalStowed = 37.642;
+	public static final double armNEOBallHandoff = 25.071;
+	public static final double armNEOFwdLimitSwitch = 77.074;
 
 	//Elevator Positions
 	public static final int kElevatorPositionThreshold = 25; // Threshold for arm positions in encoder values
@@ -154,6 +157,7 @@ public class Constants
 	public static final int elevatorCargoL2 = 28000;
 	public static final int elevatorHatchL3 = 43000;
 	public static final int elevatorStowed = 11120;
+	public static final int elevatorVerticalStowed = 13350;
 	public static final int elevatorMinRotation = 17000; //Might want to combine with hatch lvl2
 
 	//Hatch Intake Positions
