@@ -1,3 +1,5 @@
+//Class not created by Kunal Singla
+
 package frc.team3647subsystems;
 
 import frc.robot.*;
@@ -28,7 +30,7 @@ public class HatchIntake
 	{
 		aimedState = WristPosition.STOWED;
 		//Motor & Sensor Direction
-		wristMotor.setInverted(true);
+		wristMotor.setInverted(false);
 		wristMotor.setSensorPhase(true);
 		//Current Limiting
 		wristMotor.configPeakCurrentLimit(Constants.kHatchWristPeakCurrent, Constants.kTimeoutMs);
@@ -64,6 +66,7 @@ public class HatchIntake
 		STOWED,
 		GROUND,
 		SCORE,
+		HANDOFF,
 		MANUAL
 	}
 	
@@ -90,16 +93,8 @@ public class HatchIntake
 			aimedState = WristPosition.STOWED;
 		else if(controller.dPadDown)
 			aimedState = WristPosition.GROUND;
+			//move to positions
 
-			if(controller.leftBumper)
-			{
-				openClamp();
-			}
-			else
-			{
-				closeClamp();
-			}
-		//move to positions
 		switch(aimedState)
 		{
 			case MANUAL:
@@ -108,6 +103,7 @@ public class HatchIntake
 					overrideValue = 0;
 				}
 				moveManual(overrideValue);
+				break;
 			case STOWED:
 				closeClamp();
 				moveToStowed();
@@ -120,8 +116,20 @@ public class HatchIntake
 				moveToGround();
 				//openClamp();
 				break;
+			case HANDOFF:
+				moveToHandoff();
+				break;
 			default:
 				break;
+		}
+			
+		if(controller.leftBumper)
+		{
+			openClamp();
+		}
+		else
+		{
+			closeClamp();
 		}
 	}	
 
@@ -149,7 +157,8 @@ public class HatchIntake
 		}
 		else
 		{
-			setOpenLoop(0.25);
+			//setPosition(0);
+			setOpenLoop(-0.25);
 		}
 	}
 
@@ -163,19 +172,24 @@ public class HatchIntake
 		setPosition(Constants.hatchIntakeScore);
 	}
 
+	public static void moveToHandoff()
+	{
+		setPosition(Constants.hatchIntakeHandoff);
+	}
+
 	public static int encoderState, manualAdjustment, manualEncoderValue;
 
 	public static void moveManual(double jValue)
 	{
 		if(jValue > 0)
 		{
-			setOpenLoop(overrideValue);
+			setOpenLoop(jValue * 0.5);
 			manualAdjustment = 50;
 			encoderState = 0;
 		}
 		else if(jValue < 0)
 		{
-			setOpenLoop(overrideValue);
+			setOpenLoop(jValue * 0.5);
 			manualAdjustment = 0;
 			encoderState = 0;
 		}
@@ -205,9 +219,9 @@ public class HatchIntake
 		wristMotor.set(ControlMode.MotionMagic, position);
 	}
 
-	public static boolean positionThreshold(double constant, double encoder, double threshold)
+	public static boolean positionThreshold(double constant)
 	{
-		if((constant + threshold) > encoder && (constant - threshold) < encoder)
+		if((constant + Constants.kWristPositionThreshold) > wristEncoderValue && (constant - Constants.kWristPositionThreshold) < wristEncoderValue)
 		{
 			return true;
 		}
@@ -221,22 +235,15 @@ public class HatchIntake
 	{
 		switch(level)
 		{
-			case SCORE:
-				if(positionThreshold(Constants.hatchIntakeScore, wristEncoderValue, 25))
-					return true;
-				else
-					return false;
-			case GROUND:
-				if(positionThreshold(Constants.hatchIntakeGround, wristEncoderValue, 25))
-					return true;
-				else
-					return false;
 			case STOWED:
 				return getLimitSwitch();
+			case SCORE:
+				return positionThreshold(Constants.hatchIntakeScore);
+			case GROUND:
+				return positionThreshold(Constants.hatchIntakeGround);
 			default:
 				return false;
 		}
-
 	}
 	
 	public static void setWristEncoder()
@@ -277,6 +284,11 @@ public class HatchIntake
 	public static void setEncoderValue(int encoderValue)
 	{
 		wristMotor.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+	}
+
+	public static void printPosition()
+	{
+		System.out.println("Encoder Value: " + wristEncoderValue);
 	}
 
 	public static void resetEncoder()

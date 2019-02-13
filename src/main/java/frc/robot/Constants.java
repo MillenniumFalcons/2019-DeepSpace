@@ -148,6 +148,7 @@ public class Constants
 	public static final int kWristPositionThreshold = 25;
 	public static final int hatchIntakeGround = 4075;
 	public static final int hatchIntakeScore = 1840;
+	public static final int hatchIntakeHandoff = 2500;
 
 	// Threshold for hatch position in encoder values
 	public static final int hatchIntakeEncoderThreshold = 25;
