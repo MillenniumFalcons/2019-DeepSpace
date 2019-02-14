@@ -1,5 +1,6 @@
 package frc.team3647inputs;
 
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,7 +19,7 @@ public class Joysticks
 	 * Main controller Variable
 	 */
 	public double leftTrigger, rightTrigger, leftJoyStickY, leftJoyStickX, rightJoyStickY, rightJoyStickX;
-	public boolean rightBumper, leftBumper, buttonA, buttonB, buttonY, buttonX, dPadDown, dPadSide, dPadUp;
+	public boolean rightBumper, leftBumper, buttonA, buttonB, buttonY, buttonX, dPadDown, dPadLeft, dPadRight, dPadUp;
 	
 	/**
 	 * Co-Driver Controller Variable
@@ -52,6 +53,7 @@ public class Joysticks
 		rightJoyStickY = 	-joystickThreshold(controller.getRawAxis(5));
 		dPadValue = dPad.getPOV();
 		setDPadValues();
+		System.out.println("Updating controller!");
 	}
 
 
@@ -84,7 +86,7 @@ public class Joysticks
 	}
 	
 	/**
-	 * Set co driver dPad values. 0 degrees = top, 180 = down, 90 || 270 = side
+	 * Set co driver dPad values. 0 degrees = top, 180 = down, 90 right 270 == left
 	 */
 	public void setDPadValues()
 	{
@@ -92,25 +94,36 @@ public class Joysticks
 		{
 			dPadUp = true;
 			dPadDown = false;
-			dPadSide = false;
+			dPadLeft = false;
+			dPadRight = false;
 		}
-		else if(dPadValue == 180)
+		if(dPadValue == 180)
 		{
 			dPadUp = false;
 			dPadDown = true;
-			dPadSide = false;
+			dPadLeft = false;
+			dPadRight = false;	
 		}
-		else if(dPadValue == 90 || dPadValue == 270)
+		if(dPadValue == 90)
 		{
 			dPadUp = false;
 			dPadDown = false;
-			dPadSide = true;
+			dPadLeft = false;
+			dPadRight = true;
 		}
-		else
+		if(dPadValue == 270)
 		{
 			dPadUp = false;
 			dPadDown = false;
-			dPadSide = false;
+			dPadLeft = true;
+			dPadRight = false;
+		}
+		if(dPadValue == -1)
+		{
+			dPadUp = false;
+			dPadDown = false;
+			dPadLeft = false;
+			dPadRight = false;
 		}
 	}
 	

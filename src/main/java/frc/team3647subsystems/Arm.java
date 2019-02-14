@@ -8,9 +8,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.team3647inputs.Joysticks;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
@@ -21,8 +23,6 @@ public class Arm
 	private CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 
 	private VictorSPX ballHolderSPX = new VictorSPX(Constants.ballMotorPin);
-	/** Piston that holds the hatch in place on the arm-hatch intake / placer */
-	private Solenoid hatchHolderPiston;
 
 	private int armVelocity;
 	// public int currentPosition;
@@ -39,7 +39,8 @@ public class Arm
 		HatchHandoff,
 		HatchIntakeMovement,
 		RobotStowed,
-		BallHandoff,
+		BallHandoff, 
+		VerticalStowed, START,
 	}
 
 	/**The current (encoder) state of the arm*/
@@ -78,8 +79,26 @@ public class Arm
 		//arm NEO Follower Code, acrual motor that follows the SRX controller
 		armNEO.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
 
-		//Instantiate the solenoid piston used to grab the hatches from the floor intake, and from feeding location
-		hatchHolderPiston = new Solenoid(5);
+
+		if(getForwardLimitSwitch())
+			stopMotor();
+		if(getReverseLimitSwitch())
+			stopMotor();
+	}
+
+	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
+	{
+		armSRX.selectProfileSlot(0, 0);
+
+		armSRX.config_kP(0, p, Constants.kTimeoutMs);		
+		armSRX.config_kI(0, i, Constants.kTimeoutMs);	
+		armSRX.config_kD(0, d, Constants.kTimeoutMs);
+		armSRX.config_kF(0, f, Constants.kTimeoutMs);
+		
+
+		//Motion Magic Constants
+		armSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+        armSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
 	}
 
 	/**
@@ -110,28 +129,28 @@ public class Arm
 				this.resetArmBackwards();
 				break;
 			case StraightForwards:
-				this.setPosition(Constants.armNEOFlatForwards);
+				this.setPosition(Constants.armSRXFlatForwards);
 				break;
 			case StraightBackwards:
-				this.setPosition(Constants.armNEOFlatBackwards);
+				this.setPosition(Constants.armSRXFlatBackwards);
 				break;
 			case CargoLevel3Front:
-				this.setPosition(Constants.armNEOCargoL3Front);
+				this.setPosition(Constants.armSRXCargoL3Front);
 				break;
 			case CargoLevel3Back:
-				this.setPosition(Constants.armNEOCargoL3Back);
+				this.setPosition(Constants.armSRXCargoL3Back);
 				break;
 			case HatchHandoff:
-				this.setPosition(Constants.armNEOHatchHandoff);
+				this.setPosition(Constants.armSRXHatchHandoff);
 				break;
 			case HatchIntakeMovement:
-				this.setPosition(Constants.armNEOVerticalStowed);
+				this.setPosition(Constants.armSRXVerticalStowed);
 				break;
 			case RobotStowed:
-				this.setPosition(Constants.armNEOStowed);
+				this.setPosition(Constants.armSRXStowed);
 				break;
 			case BallHandoff:
-				this.setPosition(Constants.armNEOBallHandoff);
+				this.setPosition(Constants.armSRXCargoHandoff);
 				break;
 			default:
 				break;
@@ -141,10 +160,42 @@ public class Arm
 	/**
 	 * The runArm methods attempts to get the arm to aimedState from current state using motion magic and stateRecognizer methods
 	 */
-	public void runArm(ArmPosition inputAimedState)
+	public void runArm(Joysticks controller)
 	{
-		switch(inputAimedState)
+		if(controller.buttonA)
+		aimedState = ArmPosition.CargoLevel3Back;
+
+		else if(controller.buttonB)
+			aimedState = ArmPosition.HatchHandoff;
+
+		else if(controller.leftBumper)
+			aimedState = ArmPosition.StraightForwards;
+
+		else if(controller.rightBumper)
+			aimedState = ArmPosition.BallHandoff;	
+
+		else if(controller.buttonY)
+			aimedState = ArmPosition.RobotStowed;
+		
+		else if(controller.dPadLeft)
+			aimedState = ArmPosition.VerticalStowed;
+
+		else if(controller.buttonX)
+			aimedState = ArmPosition.StraightBackwards;
+		
+		else if(controller.dPadRight)
+			aimedState = ArmPosition.CargoLevel3Front;
+
+		if(getForwardLimitSwitch())
+			stopMotor();
+		if(getReverseLimitSwitch())
+			stopMotor();
+
+		switch(aimedState)
 		{
+			case START:
+				resetArmBackwardsStart();
+				break;
 			case LimitSwitchForwards:
 				setArmPosition(ArmPosition.LimitSwitchForwards);
 				break;
@@ -204,7 +255,7 @@ public class Arm
 			// Makes encoder go to 0
 			resetEncoder();
 			// Holds the position
-			setPosition(0);
+			setPosition(Constants.armSRXFwdLimitSwitch);
 		}
 	}
 
@@ -215,16 +266,30 @@ public class Arm
 		if(!this.getReverseLimitSwitch())
 		{
 			//Rotates arm backwards
+			setPosition(0);
+		}
+		else
+		{
+			//Sets the encoder position as the necessary constant
+			armSRX.setSelectedSensorPosition(0); // Needs to be in constants!!
+			//Holds same position using motion magic
+			setPosition(0); //As well!!
+		}
+
+	}
+
+	private void resetArmBackwardsStart()
+	{
+		if(!this.getReverseLimitSwitch())
+		{
+			//Rotates arm backwards
 			moveArm(.25);
 		}
 		else
 		{
 			//Sets the encoder position as the necessary constant
-			setEncoderPosition(3072); // Needs to be in constants!!
-			//Holds same position using motion magic
-			setPosition(3072); //As well!!
+			armSRX.setSelectedSensorPosition(0); // Needs to be in constants!!
 		}
-
 	}
 
     public void moveArm(double speed)
@@ -371,29 +436,6 @@ public class Arm
 		this.setBallHolderPower(0);
 	}
 
-	/**
-	 * opens the hatch holder in order to grab hatches from ground intake and player station
-	 */
-	public void deployHatchHolderPiston()
-	{
-		hatchHolderPiston.set(true);
-	}
-
-	/**
-	 * @return boolean for is the piston deployed
-	 */
-	public boolean isHatchHolderPistonDeployed()
-	{
-		return hatchHolderPiston.get();
-	}
-
-	/**
-	 * closes the hatch holder in order to let the hatch stay on the velcro and score a point
-	 */
-	public void retractedHatchHolderPiston()
-	{
-		hatchHolderPiston.set(false);
-	}
 
 	/**Reset encoders checks if arm is at 0 position before resetting*/
 	public void resetEncoder()

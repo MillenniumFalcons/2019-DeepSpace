@@ -110,17 +110,17 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Drivetrain Current Limiting Constants
 	public static final int drivePeakCurrent = 35;			//Measured in Amps
-	public static final int drivePeakCurrentDuration = 200;	//Measured in Milliseconds
+	public static final int drivePeakCurrentDuration = 5000;	//Measured in Milliseconds
 	public static final int driveContinousCurrent = 30;		//Measured in Amps
 
 	//Elevator Current Limiting
-	public static int kElevatorPeakCurrent;
-	public static int kElevatorPeakCurrentDuration;
-	public static int kElevatorContinuousCurrent;
+	public static int kElevatorPeakCurrent = 50;
+	public static int kElevatorPeakCurrentDuration = 5000;
+	public static int kElevatorContinuousCurrent = 4;
 
 	//Hatch Current Limiting
 	public static final int kHatchWristPeakCurrent = 40;
-	public static int kHatchWristPeakCurrentDuration = 200;
+	public static int kHatchWristPeakCurrentDuration = 5000;
 	public static final int kHatchWristContinuousCurrent = 5;
 	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~POSITION & THRESHOLD VALUES FOR MECHANISMS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -155,7 +155,7 @@ public class Constants
 	public static final int elevatorCargoShip = 21000;
 	public static final int elevatorHatchL2 = 18000;
 	public static final int elevatorCargoL2 = 28000;
-	public static final int elevatorHatchL3 = 43000;
+	public static final int elevatorHatchL3 = 40000;
 	public static final int elevatorStowed = 11120;
 	public static final int elevatorVerticalStowed = 13350;
 	public static final int elevatorMinRotation = 17000; //Might want to combine with hatch lvl2

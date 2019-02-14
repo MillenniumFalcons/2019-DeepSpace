@@ -88,8 +88,10 @@ public class HatchIntake
 		//get joy input
 		if(manualOverride)
 			aimedState = WristPosition.MANUAL;
-		else if(controller.dPadSide)
+		else if(controller.dPadRight)
 			aimedState = WristPosition.SCORE;
+		else if(controller.dPadLeft)
+			aimedState = WristPosition.HANDOFF;
 		else if(controller.dPadUp)
 			aimedState = WristPosition.STOWED;
 		else if(controller.dPadDown)
