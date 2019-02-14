@@ -56,7 +56,7 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PID & MOTION MAGIC VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Arm PID Values
 	public static final int armPIDIdx = 0; //PID Slot Index
-	public static final int armIdx = 0;
+	public static final int armPID = 0;
 	public static final int armkP = 0;
 	public static final int armkI = 0;
 	public static final int armkD = 0;
@@ -126,7 +126,7 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~POSITION & THRESHOLD VALUES FOR MECHANISMS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Arm Positions
 	//SRX MAG Encoder Positions
-	public static final int armEncoderThreshold = 25; // Threshold for arm positions in encoder values
+	public static final int kArmSRXPositionThreshold = 25; // Threshold for arm positions in encoder values
 	public static final int armSRXFlatForwards = 4290;
 	public static final int armSRXFlatBackwards = 21650;
 	public static final int armSRXCargoL3Front = 24970;

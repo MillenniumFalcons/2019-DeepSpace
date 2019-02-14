@@ -88,7 +88,8 @@ public class Robot extends TimedRobot
         // System.out.println("Elevator sensor " + Elevator.elevatorEncoderValue);
         // System.out.println("Elevator aimed state: " + Elevator.aimedState);
         // Elevator.runElevator(mainController);
-        arm.runArm(mainController);
+        arm.setManualContrller(mainController);
+        arm.runArm();
         // if(mainController.rightTrigger > .15)
         //     Elevator.stopElevator();
         // Elevator.testElevatorCurrent();

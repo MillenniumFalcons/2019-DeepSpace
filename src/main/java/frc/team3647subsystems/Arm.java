@@ -4,315 +4,256 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.team3647inputs.Joysticks;
+import frc.robot.*;
+import frc.team3647inputs.*;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
 {
-	/**Motor controller of the arm, at 18 */
-	private WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);
-	/**Actual motor of the arm is following armSRX at 17 */
-	private CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+	public static ArmPosition currentState;
+	public static ArmPosition aimedState;
 
-	private VictorSPX ballHolderSPX = new VictorSPX(Constants.ballMotorPin);
+	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+	public static CANDigitalInput revNeoLimitSwitch; 
+	public static CANDigitalInput fwdNeoLimitSwitch;
 
-	private int armVelocity;
-	// public int currentPosition;
+	public static int armEncoderCCL, armEncoderValue, armEncoderVelocity;
 
-	/** All the positions the arm can be in*/
-	public enum ArmPosition
-	{
-		LimitSwitchForwards,
-		LimitSwitchBackWards,
-		StraightForwards,
-		StraightBackwards,
-		CargoLevel3Front,
-		CargoLevel3Back,
-		HatchHandoff,
-		HatchIntakeMovement,
-		RobotStowed,
-		BallHandoff, 
-		VerticalStowed, START,
-	}
-
-	/**The current (encoder) state of the arm*/
-	public ArmPosition currentState;
-	/**The desired (encoder) state of the arm*/
-	public ArmPosition aimedState;
+	public static double overrideValue;
+    public static boolean manualOverride;
 	
-	/**Is the arm functioning with override*/
-    private boolean manualOverride;
-
-	private double overrideValue;
-	
-	/**Current encoder value of the arm */
-	private int encoderValue = getSelectedSensorPosition();
-	/**Previous encoder value of the arm */
-	private int prevEncoderValue;
-
-	/**
-	 * Initialize values for Arm such as PID profiles and Feedback Sensors
-	 */
-    public Arm()
+    public static void armInitialization()
     {		
-		// Config Sensors for Motors
-		//encoder for arm  motor
+		//Encoder for arm motor
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		armSRX.setSensorPhase(true); // if i set to false I might not need to invert gearbox motors
+		armSRX.setSensorPhase(true);
+
+		revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+		fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
 
 		// PID for motors
-		armSRX.selectProfileSlot(Constants.armIdx, 0);
-		armSRX.config_kP(Constants.armIdx, Constants.armkP, Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armIdx, Constants.armkI, Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armIdx, Constants.armkD, Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armIdx, Constants.armkF, Constants.kTimeoutMs);
-		armSRX.config_IntegralZone(Constants.armIdx, Constants.armIZone, Constants.kTimeoutMs);
-
+		armSRX.selectProfileSlot(Constants.armPID, 0);
+		armSRX.config_kP(Constants.armPID, Constants.armkP, Constants.kTimeoutMs);
+		armSRX.config_kI(Constants.armPID, Constants.armkI, Constants.kTimeoutMs);
+		armSRX.config_kD(Constants.armPID, Constants.armkD, Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armPID, Constants.armkF, Constants.kTimeoutMs);
+		armSRX.config_IntegralZone(Constants.armPID, Constants.armIZone, Constants.kTimeoutMs);
+		
 		//arm NEO Follower Code, acrual motor that follows the SRX controller
 		armNEO.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 18);
-
-
-		if(getForwardLimitSwitch())
-			stopMotor();
-		if(getReverseLimitSwitch())
-			stopMotor();
 	}
 
 	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
-		armSRX.selectProfileSlot(0, 0);
+		armSRX.selectProfileSlot(Constants.armPID, 0);
 
-		armSRX.config_kP(0, p, Constants.kTimeoutMs);		
-		armSRX.config_kI(0, i, Constants.kTimeoutMs);	
-		armSRX.config_kD(0, d, Constants.kTimeoutMs);
-		armSRX.config_kF(0, f, Constants.kTimeoutMs);
+		armSRX.config_kP(Constants.armPID, p, Constants.kTimeoutMs);		
+		armSRX.config_kI(Constants.armPID, i, Constants.kTimeoutMs);	
+		armSRX.config_kD(Constants.armPID, d, Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armPID, f, Constants.kTimeoutMs);
 		
-
 		//Motion Magic Constants
 		armSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
         armSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
 	}
-
-	/**
-	 * 
-	 * @param positionInput 
-	 * <ul>
-	 * 	<li>LimitSwitchForwards
-	 * 	<li>LimitSwitchBackWards
-	 * 	<li>StraightForwards
-	 * 	<li>StraightBackwards
-	 * 	<li>StraightBackwards
-	 * 	<li>StraightBackwards
-	 * 	<li>CargoLevel3Front
-	 * 	<li>CargoLevel3Back
-	 * 	<li>HatchHandoff
-	 * 	<li>HatchIntakeMovement
-	 * 	<li>RobotStowed
-	 * 	<li>BallHandoff
-	 */
-	private void setArmPosition(ArmPosition positionInput)
+	
+	public enum ArmPosition
 	{
-		switch(positionInput)
-		{
-			case LimitSwitchForwards:
-				this.resetArmForwards();
-				break;
-			case LimitSwitchBackWards:
-				this.resetArmBackwards();
-				break;
-			case StraightForwards:
-				this.setPosition(Constants.armSRXFlatForwards);
-				break;
-			case StraightBackwards:
-				this.setPosition(Constants.armSRXFlatBackwards);
-				break;
-			case CargoLevel3Front:
-				this.setPosition(Constants.armSRXCargoL3Front);
-				break;
-			case CargoLevel3Back:
-				this.setPosition(Constants.armSRXCargoL3Back);
-				break;
-			case HatchHandoff:
-				this.setPosition(Constants.armSRXHatchHandoff);
-				break;
-			case HatchIntakeMovement:
-				this.setPosition(Constants.armSRXVerticalStowed);
-				break;
-			case RobotStowed:
-				this.setPosition(Constants.armSRXStowed);
-				break;
-			case BallHandoff:
-				this.setPosition(Constants.armSRXCargoHandoff);
-				break;
-			default:
-				break;
-		}
+		FWDLIMITSWITCH,
+		REVLIMITSWITCH,
+		FLATFORWARDS,
+		FLATBACKWARDS,
+		CARGOL3FRONT,
+		CARGOL3BACK,
+		HATCHHANDOFF,
+		STOWED,
+		VERTICALSTOWED,
+		CARGOHANDOFF,
+		MANUAL
 	}
 
-	/**
-	 * The runArm methods attempts to get the arm to aimedState from current state using motion magic and stateRecognizer methods
-	 */
-	public void runArm(Joysticks controller)
+	public static void setManualContrller(Joysticks controller)
 	{
-		if(controller.buttonA)
-		aimedState = ArmPosition.CargoLevel3Back;
-
-		else if(controller.buttonB)
-			aimedState = ArmPosition.HatchHandoff;
-
-		else if(controller.leftBumper)
-			aimedState = ArmPosition.StraightForwards;
-
-		else if(controller.rightBumper)
-			aimedState = ArmPosition.BallHandoff;	
-
+		setManualOverride(controller.leftJoyStickY);
+		if(manualOverride)
+			aimedState = ArmPosition.MANUAL;
+		else if(controller.buttonA)
+			aimedState = ArmPosition.VERTICALSTOWED;
 		else if(controller.buttonY)
-			aimedState = ArmPosition.RobotStowed;
-		
-		else if(controller.dPadLeft)
-			aimedState = ArmPosition.VerticalStowed;
-
+			aimedState = ArmPosition.STOWED;
+		 else if(controller.buttonB)
+			aimedState = ArmPosition.HATCHHANDOFF;
 		else if(controller.buttonX)
-			aimedState = ArmPosition.StraightBackwards;
-		
-		else if(controller.dPadRight)
-			aimedState = ArmPosition.CargoLevel3Front;
+			aimedState = ArmPosition.CARGOHANDOFF;
+		 else if(controller.leftBumper)
+			aimedState = ArmPosition.FLATBACKWARDS;
+		 else if(controller.rightBumper)
+			aimedState = ArmPosition.FLATFORWARDS;	
+		 else if(controller.dPadRight)
+			aimedState = ArmPosition.FWDLIMITSWITCH;
+		else if(controller.dPadLeft)
+			aimedState = ArmPosition.REVLIMITSWITCH;
+		 else if(controller.dPadLeft)
+			aimedState = ArmPosition.CARGOL3BACK;
+		 else if(controller.dPadRight)
+			aimedState = ArmPosition.CARGOL3FRONT;
+	}
 
-		if(getForwardLimitSwitch())
-			stopMotor();
-		if(getReverseLimitSwitch())
-			stopMotor();
+
+	public static void runArm()
+	{
+		setArmEncoder();
+
+ 		if(getFwdLimitSwitch())
+			stopArm();
+		if(getRevLimitSwitch())
+			stopArm();
 
 		switch(aimedState)
 		{
-			case START:
-				resetArmBackwardsStart();
+			case MANUAL:
+				if(!manualOverride)
+				{
+					overrideValue = 0;
+				}
+				moveManual(overrideValue);
+			case FWDLIMITSWITCH:
+				moveToFwdLimitSwitch();
 				break;
-			case LimitSwitchForwards:
-				setArmPosition(ArmPosition.LimitSwitchForwards);
+			case REVLIMITSWITCH:
+				moveToRevLimitSwitch();
 				break;
-			case LimitSwitchBackWards:
-				setArmPosition(ArmPosition.HatchHandoff);
+			case FLATFORWARDS:
+				moveToFlatForwards();
 				break;
-			case StraightForwards:
-				setArmPosition(ArmPosition.BallHandoff);
+			case FLATBACKWARDS:
+				moveToFlatBackwards();
 				break;
-			case StraightBackwards:
-				setArmPosition(ArmPosition.HatchIntakeMovement);
+			case CARGOL3FRONT:
+				moveToCargoL3Front();
 				break;
-			case CargoLevel3Front:
-				setArmPosition(ArmPosition.RobotStowed);
+			case CARGOL3BACK:
+				moveToCargoL3Back();
 				break;
-			case CargoLevel3Back:
-				setArmPosition(ArmPosition.CargoLevel3Back);
+			case HATCHHANDOFF:
+				moveToHatchHanoff();
 				break;
-			case HatchHandoff:
-				setArmPosition(ArmPosition.HatchHandoff);
+			case STOWED:
+				moveToStowed();
 				break;
-			case HatchIntakeMovement:
-				setArmPosition(ArmPosition.HatchIntakeMovement);
+			case VERTICALSTOWED:
+				moveToVerticalStowed();
 				break;
-			case RobotStowed:
-				setArmPosition(ArmPosition.RobotStowed);
-				break;
-			case BallHandoff:
-				setArmPosition(ArmPosition.BallHandoff);
+			case CARGOHANDOFF:
+				moveToCargoHandoff();
 				break;
 			default:
 				break;
 		}
 	}
 
-
-	/**Use Motion Magic to hold elevator at encoder position
-	 * @param position : encoder value for position
-	 */
-    private void setPosition(double position)
-    {
-		//Motion Magic
-        armSRX.set(ControlMode.MotionMagic, position);
-	}
-	
-	/**Reset arm encoders using the front limit switch */
-	private void resetArmForwards()
+	public static void setManualOverride(double jValue)
 	{
-		//checks if limit switch is reached
-		if(!this.getForwardLimitSwitch())
+		if(Math.abs(jValue) > .05) //deadzone
+		{
+			manualOverride = true;
+            overrideValue = jValue;
+		} 
+		else 
+		{
+			manualOverride = false;
+		}
+	}
+
+	public static void moveToFwdLimitSwitch()
+	{
+		if(!getFwdLimitSwitch())
 		{
 			// rotates arm forwards
-			moveArm(-.25);
+			setOpenLoop(.25);
 		}
 		else
 		{
-			// Makes encoder go to 0
-			resetEncoder();
-			// Holds the position
+			setEncoderValue(Constants.armSRXFwdLimitSwitch);
 			setPosition(Constants.armSRXFwdLimitSwitch);
 		}
 	}
 
-	/**Set arm encoders using the rear limit switch */
-	private void resetArmBackwards()
+	public static void moveToRevLimitSwitch()
 	{
-		// Checks if limit switch is reached
-		if(!this.getReverseLimitSwitch())
+		if(!getRevLimitSwitch())
 		{
-			//Rotates arm backwards
+			setOpenLoop(-.25);
+		}
+		else
+		{
+			resetArmEncoder();
 			setPosition(0);
 		}
-		else
-		{
-			//Sets the encoder position as the necessary constant
-			armSRX.setSelectedSensorPosition(0); // Needs to be in constants!!
-			//Holds same position using motion magic
-			setPosition(0); //As well!!
-		}
-
 	}
 
-	private void resetArmBackwardsStart()
+	public static void moveToFlatForwards()
 	{
-		if(!this.getReverseLimitSwitch())
-		{
-			//Rotates arm backwards
-			moveArm(.25);
-		}
-		else
-		{
-			//Sets the encoder position as the necessary constant
-			armSRX.setSelectedSensorPosition(0); // Needs to be in constants!!
-		}
+		setPosition(Constants.armSRXFlatForwards);
 	}
 
-    public void moveArm(double speed)
-    {
-		//Percent Output [-1,1]
-        armSRX.set(ControlMode.PercentOutput, speed);
-    }    
+	public static void moveToFlatBackwards()
+	{
+		setPosition(Constants.armSRXFlatBackwards);
+	}
 
-    public int encoderState;
-	public int manualEncoderValue;
-	public int manualAdjustment;
+	public static void moveToCargoL3Front()
+	{
+		setPosition(Constants.armSRXCargoL3Front);
+	}
 
-    public void moveManual(double jValue)
+	public static void moveToCargoL3Back()
+	{
+		setPosition(Constants.armSRXCargoL3Back);
+	}
+
+	public static void moveToHatchHanoff()
+	{
+		setPosition(Constants.armSRXHatchHandoff);
+	}
+	
+	public static void moveToStowed()
+	{
+		setPosition(Constants.armSRXStowed);
+	}
+
+	public static void moveToVerticalStowed()
+	{
+		setPosition(Constants.armSRXVerticalStowed);
+	}
+
+	public static void moveToCargoHandoff()
+	{
+		setPosition(Constants.armSRXCargoHandoff);
+	}
+
+	public static int encoderState, manualAdjustment, manualEncoderValue;
+
+    public static void moveManual(double jValue)
 	{
 		if(jValue > 0)
 		{
-			moveArm(overrideValue * 0.65);
-			manualAdjustment = 1500;
+			setOpenLoop(overrideValue * 0.5);
+			manualAdjustment = 0;
 			encoderState = 0;
 		}
 		else if(jValue < 0)
 		{
-			moveArm(overrideValue * 0.2);
+			setOpenLoop(overrideValue * 0.5);
 			manualAdjustment = 0;
 			encoderState = 0;
 		}
@@ -321,7 +262,7 @@ public class Arm
 			switch(encoderState)
 			{
 				case 0:
-					manualEncoderValue = encoderValue + manualAdjustment;
+					manualEncoderValue = armEncoderValue + manualAdjustment;
 					encoderState = 1;
 					break;
 				case 1:
@@ -329,195 +270,121 @@ public class Arm
 					break;
 			}
 		}
-    }
-    
-	/* **********************FIX THIS METHOD*********************** */
-	public boolean reachedDefaultPos()
-	{
-		return false;
 	}
-	/* **********************FIX THIS METHOD*********************** */
 
-	public void setManualOverride(double jValue)
+	public static void setOpenLoop(double power)
 	{
-        if(Math.abs(jValue) <.2 )
+		//Percent Output
+		armSRX.set(ControlMode.PercentOutput, power);
+	}
+
+	public static void setPosition(int position)
+	{
+		armSRX.set(ControlMode.MotionMagic, position);
+	}
+
+	public static boolean positionThreshold(double constant)
+	{
+		if((constant + Constants.kArmSRXPositionThreshold) > armEncoderValue && (constant - Constants.kElevatorPositionThreshold) < armEncoderValue)
 		{
-			this.manualOverride = false;
+			return true;
 		}
 		else
 		{
-            this.overrideValue = jValue;
-			this.manualOverride = true;
+			return false;
 		}
 	}
 
-	public void printArmEncoders()
-    {
-        System.out.println("Elevator Encoder Value: " + encoderValue + "Elevator Velocity: " + armVelocity);
+	public static ArmPosition livePosition()
+	{
+		return ArmPosition.FLATBACKWARDS;
 	}
 
-	public void bannerSensorTriggered()
-    {
-        if(this.reachedDefaultPos())
-        {
-            System.out.println("Banner Sensor Triggered!");
-        }
-        else
-        {
-            System.out.println("Banner Sensor Not Triggered!");
-        }
-    }
-
-    public void printArmCurrent()
-    {
-        System.out.println("Right Elevator Current:" + armSRX.getOutputCurrent());
+	public static boolean stateDetection(ArmPosition position)
+	{
+		switch(position)
+		{
+			case MANUAL:
+				return manualOverride;
+			case FWDLIMITSWITCH:
+				return getFwdLimitSwitch();
+			case REVLIMITSWITCH:
+				return getRevLimitSwitch();
+			case FLATFORWARDS:
+				return positionThreshold(Constants.armSRXFlatForwards);
+			case FLATBACKWARDS:
+				return positionThreshold(Constants.armSRXFlatBackwards);
+			case CARGOL3FRONT:
+				return positionThreshold(Constants.armSRXCargoL3Front);
+			case CARGOL3BACK:
+				return positionThreshold(Constants.armSRXCargoL3Back);
+			case HATCHHANDOFF:
+				return positionThreshold(Constants.armSRXHatchHandoff);
+			case STOWED:
+				return positionThreshold(Constants.armSRXStowed);
+			case VERTICALSTOWED:
+				return positionThreshold(Constants.armSRXVerticalStowed);
+			case CARGOHANDOFF:
+				return positionThreshold(Constants.armSRXCargoHandoff);
+			default:
+				return false;
+		}
 	}
 
-	/**
-	 * @param position in ArmPosition
-	 * @return a boolean is param-position the current state of the arm
-	 */
+	public static void setArmEncoder()
+	{
+		if(getRevLimitSwitch())
+		{
+			resetArmEncoder();
+		}
+		else if(getFwdLimitSwitch())
+		{
+			setEncoderValue(Constants.armSRXFwdLimitSwitch);
+		}
+		armEncoderValue = armSRX.getSelectedSensorPosition(0);
+		armEncoderVelocity = armSRX.getSelectedSensorVelocity(0);
+		armEncoderCCL = armSRX.getClosedLoopError(0);
+	}
+
+	public static boolean getRevLimitSwitch()
+	{
+		return revNeoLimitSwitch.get();
+		//return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+	}
+
+	public static boolean getFwdLimitSwitch()
+	{
+		return fwdNeoLimitSwitch.get();
+		//return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+	}
+
+	public static void setEncoderValue(int encoderValue)
+	{
+		armSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+	}
+
+	public static void resetArmEncoder()
+	{
+		armSRX.setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
+	}
 	
-
-	public boolean isManualOverride()
+	public static void stopArm()
 	{
-		return manualOverride;
+		armSRX.stopMotor();
 	}
-
-	/**
-	 * sets previous encoder to current encoder then updates current encoder
-	 */
-	private void updateEncoder()
-	{
-		this.prevEncoderValue = this.encoderValue;
-		this.encoderValue = this.getSelectedSensorPosition();
-	}
-
-	/**
-	 * getter for raw encoder straight from SRX motor controller
-	 */
-	public int getSelectedSensorPosition()
-	{
-		return this.armSRX.getSelectedSensorPosition(Constants.armPIDIdx);
-	}
-
-	/**
-	 * @param pos the encoder value you want the current position to be 
-	 * <li>(0 is usually to reset the encoder once reached limit sensor)
-	 */
-	public void setEncoderPosition(int pos)
-	{
-		armSRX.setSelectedSensorPosition(pos, Constants.armPIDIdx, Constants.kTimeoutMs);
-	}
-
-	/**
-	 * @param power [-1,1] how fast is ball arm intake roller going to spin
-	 */
-	public void setBallHolderPower(double power)
-	{
-		ballHolderSPX.set(ControlMode.PercentOutput, power);
-	}
-
-
-	/**
-	 * @param power [.15,1] how fast are the rollers going to spin out
-	 * will be used to shoot the ball to cargo ship and rocket ship
-	 *  */
-	public void runBallHolderOut(double power)
-	{
-		this.setBallHolderPower(-power);
-	}
-
-	/**
-	 * used to stop ball intake rollers when ball detected in the sensors
-	 */
-	private void stopBallHolderMotor()
-	{
-		this.setBallHolderPower(0);
-	}
-
-
-	/**Reset encoders checks if arm is at 0 position before resetting*/
-	public void resetEncoder()
-	{
-		// Updates the encoder
-		this.updateEncoder();
-		if(getReverseLimitSwitch())
-		{
-			// Reset encoder using SRX methods
-            armSRX.getSensorCollection().setQuadraturePosition(0, 10);
-		}
-		this.armVelocity = getVelocity();
-	}
-
-	/**updates the encoder value for the arm then returns it */
-	public int getEncoder()
-	{
-		this.updateEncoder();
-		return this.encoderValue;
-	}
-
-	/**Updates the encoder value for the arm then return the previous one */
-	public int getPrevEndcoder()
-	{
-		this.updateEncoder();
-		return this.prevEncoderValue;
-	}
-
-
-
-	/**Stops armSRX, stops arm */
-	public void stopMotor()
-	{
-		this.armSRX.stopMotor();
-	}
-
-	/**@return selected sensor (in raw sensor units) per 100ms. See Phoenix-Documentation for how to interpret. */
-	public int getVelocity()
-	{
-		return this.armSRX.getSelectedSensorVelocity(0);
-	}
-
-	/**@param aimedState : the state we wish the arm to be in */
-	public void setAimedState(ArmPosition aimedState)
-	{
-		this.aimedState = aimedState;
-	}
-
-	/**@return aimedState gets the state we wish the arm to be in */
-	public ArmPosition getAimedState()
-	{
-		return this.aimedState;
-	}
-
-	/**@return gets the current state of the arm */
-	public ArmPosition getCurrentState()
-	{
-		return this.currentState;
-	}
-
-
-	private boolean getReverseLimitSwitch()
-	{
-		if(armSRX.getSensorCollection().isRevLimitSwitchClosed())
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-    }
-    
-    private boolean getForwardLimitSwitch()
+	
+	public static void testArmEncoders()
     {
-        if(armSRX.getSensorCollection().isFwdLimitSwitchClosed())
-        {
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+        System.out.println("Arm Encoder Value: " + armEncoderValue + "Arm Velocity: " + armEncoderVelocity);
+	}
+
+	public static void testArmLimitSwitches()
+	{
+		System.out.println("Rev Limit Switch: " + getRevLimitSwitch() + "Fwd Limit Swtich: " + getFwdLimitSwitch());
+	}
+
+    public static void printArmCurrent()
+    {
+        System.out.println("ArmCurrent:" + armNEO.getOutputCurrent());
 	}
 }

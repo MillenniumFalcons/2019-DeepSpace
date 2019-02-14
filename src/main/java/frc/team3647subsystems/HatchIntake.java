@@ -238,10 +238,14 @@ public class HatchIntake
 	{
 		switch(level)
 		{
+			case MANUAL:
+				return manualOverride;
 			case STOWED:
 				return getLimitSwitch();
 			case SCORE:
 				return positionThreshold(Constants.hatchIntakeScore);
+			case HANDOFF:
+				return positionThreshold(Constants.hatchIntakeHandoff);
 			case GROUND:
 				return positionThreshold(Constants.hatchIntakeGround);
 			default:
