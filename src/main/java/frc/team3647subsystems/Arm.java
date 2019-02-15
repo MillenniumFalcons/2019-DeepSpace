@@ -9,8 +9,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.*;
@@ -39,14 +41,6 @@ public class Arm
 		armSRX.setInverted(false);
 		armNEO.restoreFactoryDefaults();
 
-		// SparkMaxPIDController = armNEO.getPIDController();
-		// SparkMaxPIDController.setP(.00005);
-		// SparkMaxPIDController.setI(0);
-		// SparkMaxPIDController.setD(0);
-		// SparkMaxPIDController.setOutputRange(-1, 1);
-		// SparkMaxPIDController.setSmartMotionMaxAccel(500, 0);
-		// SparkMaxPIDController.setSmartMotionMaxVelocity(500, 0);
-
 
 		revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
 		fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
@@ -62,9 +56,17 @@ public class Arm
 
 		//arm NEO Follower Code, acrual motor that follows the SRX controller
 		//armNEO.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, Constants.armSRXPin);
+		Notifier followerThread = new Notifier(()->
+		{
+			armNEO.set(armSRX.getMotorOutputPercent());
+		});
+		followerThread.startPeriodic(0.01);
+
+		armNEO.setIdleMode(IdleMode.kBrake);
+	
 	}
 
-	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
+	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
 		armSRX.selectProfileSlot(Constants.armPID, 0);
 		armSRX.config_kP(Constants.armPID, p, Constants.kTimeoutMs);		
@@ -125,7 +127,6 @@ public class Arm
 
 	public static void runArm()
 	{
-		armNEO.set(armSRX.getMotorOutputPercent());
 		setArmEncoder();
 		//updateLivePosition();
 		if(aimedState != null)
@@ -249,7 +250,7 @@ public class Arm
 		if(!getFwdLimitSwitch())
 		{
 			// rotates arm forwards
-			setOpenLoop(.1);
+			setOpenLoop(.2);
 		}
 		else
 		{
@@ -263,13 +264,13 @@ public class Arm
 	{
 		if(!getRevLimitSwitch())
 		{
-			setOpenLoop(-.1);
+			setOpenLoop(-.2);
 		}
 		else
 		{
 			resetArmEncoder();
-			//setPosition(0);
-			stopArm();
+			setPosition(0);
+			//stopArm();
 		}
 	}
 
@@ -357,7 +358,7 @@ public class Arm
 	{
 		System.out.println("Going to encoder position: " + position);
 		//SparkMaxPIDController.setReference(position, ControlType.kSmartMotion);
-		armSRX.set(ControlMode.Position, position);
+		armSRX.set(ControlMode.MotionMagic, position);
 	}
 
 	public static boolean positionThreshold(double constant)

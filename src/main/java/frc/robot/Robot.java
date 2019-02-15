@@ -19,8 +19,8 @@ public class Robot extends TimedRobot
 	public static double kI = 0;
 	public static double kD = 0;
 	public static double kF = 0;
-	public static int mVel = 500;
-	public static int mAccel = 1000;
+	public static int mVel = 300;
+	public static int mAccel = 150;
     
  
     @Override
@@ -29,7 +29,7 @@ public class Robot extends TimedRobot
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
         //gyro = new Gyro();
-        //TestFunctions.shuffleboard();
+        TestFunctions.shuffleboard();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Robot extends TimedRobot
         // Arm.moveManual(coController.rightJoyStickY);
 
         //TestFunctions.updatePIDFMM();
-        //arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+        //Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
 
         // System.out.println("Elevator sensor " + Elevator.getLimitSwitch());
         // System.out.println("Elevator sensor " + Elevator.elevatorEncoderValue);
@@ -97,9 +97,9 @@ public class Robot extends TimedRobot
         Arm.runArm();
         Arm.armNEO.set(Arm.armSRX.getMotorOutputPercent());
         //Arm.armSRX.set(ControlMode.PercentOutput, );
-        //Arm.testArmEncoders();
+        Arm.testArmEncoders();
 		//System.out.println("Is NEO following: " + Arm.armNEO.isFollower());
-        System.out.println(Arm.currentState + " AIMED STATE: " + Arm.aimedState);
+        //System.out.println(Arm.currentState + " AIMED STATE: " + Arm.aimedState);
         //Arm.printPercentOutput();
         //System.out.println("CCL: " + Arm.armEncoderCCL);
 
