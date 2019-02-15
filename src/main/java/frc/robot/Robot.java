@@ -86,8 +86,8 @@ public class Robot extends TimedRobot
         // HatchGrabber.runHatchGrabber(coController.rightBumper);
         // Arm.moveManual(coController.rightJoyStickY);
 
-        //TestFunctions.updatePIDFMM();
-        //Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+        TestFunctions.updatePIDFMM();
+        Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
 
         // System.out.println("Elevator sensor " + Elevator.getLimitSwitch());
         // System.out.println("Elevator sensor " + Elevator.elevatorEncoderValue);

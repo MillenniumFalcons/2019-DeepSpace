@@ -58,7 +58,7 @@ public class Constants
 	public static final int armPID = 0;
 	public static final double armkP = .8;
 	public static final double armkI = 0;
-	public static final double armkD = 30;
+	public static final double armkD = 8;
 	public static final double armkF = 0;
 
 	//Arm motion magic
