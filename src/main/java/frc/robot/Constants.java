@@ -160,7 +160,7 @@ public class Constants
 	public static final int elevatorHatchL3 = 40000;
 	public static final int elevatorStowed = 11120;
 	public static final int elevatorVerticalStowed = 13350;
-	public static final int elevatorMinRotation = 17000; //Might want to combine with hatch lvl2
+	public static final int elevatorMinRotation = 19000; //Might want to combine with hatch lvl2
 
 	//Hatch Intake Positions
 	public static final int kWristPositionThreshold = 25;
