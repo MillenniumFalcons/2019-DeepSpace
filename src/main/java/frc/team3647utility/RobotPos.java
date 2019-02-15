@@ -10,7 +10,7 @@ public class RobotPos
     public Elevator.ElevatorLevel eLevel;
     public Arm.ArmPosition armPos;
 
-    public enum movement
+    public enum Movement
     {
         ARRIVED,
         MOVEELEV,
@@ -29,28 +29,79 @@ public class RobotPos
         Notifier robotPosThread = new Notifier(() ->
         {
             eLevel = Elevator.currentState;
-            armPos = Arm.currentState;
+            armPos = armPos;
         });
         robotPosThread.startPeriodic(0.01);
     }
 
-    public movement movementCheck(Elevator.ElevatorLevel elevatorDesired, Arm.ArmPosition armDesired)
+    public Movement movementCheck(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
-        if(elevatorDesired == eLevel && armDesired == armPos)
+        if(eLevel == posData.eLevel && armPos == posData.armPos)
         {
-            return movement.ARRIVED;
+            return Movement.ARRIVED;
         }
-        else if(elevatorDesired != eLevel && armDesired == armPos)
+        else if(eLevel != posData.eLevel && armPos == posData.armPos)
         {
-            return movement.MOVEELEV;
+            return Movement.MOVEELEV;
         }
-        else if(elevatorDesired == eLevel && armDesired != armPos) //NEED TO SET A THREHSOLD HERE FOR WHEN ARM CAN MOVE WITHOUT SAFEZ
+        else if(eLevel == posData.eLevel && armPos != posData.armPos) //NEED TO SET A THREHSOLD HERE FOR WHEN ARM CAN MOVE WITHOUT SAFEZ
         {
-            return movement.MOVEARM;
+            switch(scoringPos)
+            {
+                case HATCHL1FORWARDS:
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 1000))
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;
+                case HATCHL1BACKWARDS:
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 1000))
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;
+                case STOWED:
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;    
+                case HATCHHANDOFF:
+                    if(Arm.armEncoderValue > Constants.armSRXHatchHandoff)
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;                
+                case CARGOHANDOFF:
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;
+                case VERTICALSTOWED:
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;
+                default:
+                    return Movement.MOVEARM;
+            }
         }
         else
         {
-            return movement.SAFEZMOVE;
+            switch(scoringPos)
+            {
+                case HATCHL1FORWARDS:
+                        return Movement.SAFEZMOVE;
+                case HATCHL1BACKWARDS:
+                        return Movement.SAFEZMOVE;
+                case STOWED:
+                        return Movement.SAFEZMOVE;                    
+                case CARGOHANDOFF:
+                        return Movement.SAFEZMOVE;
+                case VERTICALSTOWED:
+                        return Movement.SAFEZMOVE;
+                default:
+                    if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation)
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;
+            }
         }
     }
 
@@ -66,8 +117,8 @@ public class RobotPos
 		}
     }
 
-    public RobotPos getPos()
+    public RobotPos getRobotPos()
     {
-        return new RobotPos(Elevator.currentState, Arm.currentState);
+        return new RobotPos(eLevel, armPos);
     }
 }

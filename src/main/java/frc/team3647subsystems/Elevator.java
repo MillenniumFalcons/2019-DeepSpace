@@ -86,7 +86,6 @@ public class Elevator
 	public enum ElevatorLevel
 	{
 		MANUAL,
-		MOVING,
 		BOTTOM,
         CARGOHANDOFF,
         HATCHHANDOFF,
@@ -203,7 +202,7 @@ public class Elevator
     
     public static void moveToCargoHandoff()
     {
-		setPosition(Constants.elevatorrCargoHandoff);
+		setPosition(Constants.elevatorCargoHandoff);
     }
     
     public static void moveToHatchHandoff()
@@ -307,7 +306,7 @@ public class Elevator
 			currentState = ElevatorLevel.BOTTOM;
 			lastState = ElevatorLevel.BOTTOM;
 		}
-		else if(positionThreshold(Constants.elevatorrCargoHandoff))
+		else if(positionThreshold(Constants.elevatorCargoHandoff))
 		{
 			currentState = ElevatorLevel.CARGOHANDOFF;
 			lastState = ElevatorLevel.CARGOHANDOFF;
@@ -353,7 +352,7 @@ public class Elevator
 			lastState = ElevatorLevel.VERTICALSTOWED;
 		}
 		else
-			currentState = ElevatorLevel.MOVING;
+			currentState = ElevatorLevel.MANUAL;
 	}
 
 	public static boolean stateDetection(ElevatorLevel level)
@@ -365,7 +364,7 @@ public class Elevator
             case BOTTOM:
                 return getLimitSwitch();
             case CARGOHANDOFF:
-                return positionThreshold(Constants.elevatorrCargoHandoff);
+                return positionThreshold(Constants.elevatorCargoHandoff);
             case HATCHHANDOFF:
                 return positionThreshold(Constants.elevatorHatchHandoff);
             case HATCHL2:

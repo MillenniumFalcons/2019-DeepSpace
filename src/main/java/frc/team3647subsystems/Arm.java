@@ -14,12 +14,10 @@ import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
 import frc.robot.*;
 import frc.team3647inputs.*;
-import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Arm
 {
-	public static ArmPosition currentState;
-	public static ArmPosition aimedState;
+	public static ArmPosition currentState, lastState, aimedState;
 
 	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);
 	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -33,6 +31,7 @@ public class Arm
 	
     public static void armInitialization()
     {		
+		aimedState = ArmPosition.REVLIMITSWITCH;
 		//Encoder for arm motor
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		armSRX.setSensorPhase(true);
@@ -78,7 +77,7 @@ public class Arm
 		STOWED,
 		VERTICALSTOWED,
 		CARGOHANDOFF,
-		MANUAL
+		MANUAL,
 	}
 
 	public static void setManualContrller(Joysticks controller)
@@ -112,6 +111,7 @@ public class Arm
 	public static void runArm()
 	{
 		setArmEncoder();
+		updateLivePosition();
 
  		if(getFwdLimitSwitch())
 			stopArm();
@@ -159,6 +159,62 @@ public class Arm
 			default:
 				break;
 		}
+	}
+
+	public static void updateLivePosition()
+	{
+		if(getRevLimitSwitch())
+		{
+			currentState = ArmPosition.REVLIMITSWITCH;
+			lastState = ArmPosition.REVLIMITSWITCH;
+		}
+		else if(getFwdLimitSwitch())
+		{
+			currentState = ArmPosition.FWDLIMITSWITCH;
+			lastState = ArmPosition.REVLIMITSWITCH;
+		}
+		else if(positionThreshold(Constants.armSRXCargoHandoff))
+		{
+			currentState = ArmPosition.CARGOHANDOFF;
+			lastState = ArmPosition.CARGOHANDOFF;
+		}
+		else if(positionThreshold(Constants.armSRXHatchHandoff))
+		{
+			currentState = ArmPosition.HATCHHANDOFF;
+			currentState = ArmPosition.HATCHHANDOFF;
+		}
+		else if(positionThreshold(Constants.armSRXFlatForwards))
+		{
+			currentState = ArmPosition.FLATFORWARDS;
+			lastState = ArmPosition.FLATFORWARDS;
+		}
+		else if(positionThreshold(Constants.armSRXFlatBackwards))
+		{
+			currentState = ArmPosition.FLATBACKWARDS;
+			lastState = ArmPosition.FLATBACKWARDS;
+		}
+		else if(positionThreshold(Constants.armSRXCargoL3Front))
+		{
+			currentState = ArmPosition.CARGOL3FRONT;
+			lastState = ArmPosition.CARGOL3FRONT;
+		}
+		else if(positionThreshold(Constants.armSRXCargoL3Back))
+		{
+			currentState = ArmPosition.CARGOL3BACK;
+			lastState = ArmPosition.CARGOL3BACK;
+		}
+		else if(positionThreshold(Constants.armSRXStowed))
+		{
+			currentState = ArmPosition.STOWED;
+			lastState = ArmPosition.STOWED;
+		}
+		else if(positionThreshold(Constants.armSRXVerticalStowed))
+		{
+			currentState = ArmPosition.VERTICALSTOWED;
+			lastState = ArmPosition.VERTICALSTOWED;
+		}
+		else
+			currentState = ArmPosition.MANUAL;
 	}
 
 	public static void setManualOverride(double jValue)

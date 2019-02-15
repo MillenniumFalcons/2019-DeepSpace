@@ -151,7 +151,7 @@ public class Constants
 	//Elevator Positions
 	public static final int kElevatorPositionThreshold = 25; // Threshold for arm positions in encoder values
 	public static final int elevatorHatchHandoff = 6000;
-	public static final int elevatorrCargoHandoff = 6000; //need to test this and hatch handoff levels, might be able to combine
+	public static final int elevatorCargoHandoff = 6000; //need to test this and hatch handoff levels, might be able to combine
 	public static final int elevatorCargoShip = 21000;
 	public static final int elevatorHatchL2 = 18000;
 	public static final int elevatorCargoL2 = 28000;
