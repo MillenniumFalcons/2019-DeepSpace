@@ -1,12 +1,14 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.Arm.ArmPosition;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Robot extends TimedRobot 
 {
@@ -70,7 +72,8 @@ public class Robot extends TimedRobot
         //BallIntake.ballIntakeinitialization();
         //BallShooter.ballShooterinitialization();
         Arm.armInitialization();
-       //Elevator.elevatorInitialization();
+        Elevator.elevatorInitialization();
+        SeriesStateMachine.seriesStateMachineInitialization();
        //Arm.aimedState = ArmPosition.REVLIMITSWITCH;
 
     }
@@ -86,20 +89,25 @@ public class Robot extends TimedRobot
         // HatchGrabber.runHatchGrabber(coController.rightBumper);
         // Arm.moveManual(coController.rightJoyStickY);
 
-        TestFunctions.updatePIDFMM();
-        Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+        //TestFunctions.updatePIDFMM();
+        //Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
 
         // System.out.println("Elevator sensor " + Elevator.getLimitSwitch());
         // System.out.println("Elevator sensor " + Elevator.elevatorEncoderValue);
         // System.out.println("Elevator aimed state: " + Elevator.aimedState);
-        // Elevator.runElevator(mainController);
-        Arm.setManualController(mainController);
-        Arm.runArm();
-        Arm.armNEO.set(Arm.armSRX.getMotorOutputPercent());
+        //Elevator.runElevator();
+        //Elevator.setManualController(mainController);
+        //Arm.setManualController(mainController);
+        //Arm.runArm();
+        System.out.println("ARM CS: " + Arm.currentState + " Arm AS: " + Arm.aimedState);
+        System.out.println("ELEV CS: " + Elevator.currentState + " Elev AS: " + Elevator.aimedState);
+        SeriesStateMachine.runSeriesStateMachine(mainController);
+        System.out.println("Button b pressed " + mainController.buttonB);
+        //Arm.armNEO.set(Arm.armSRX.getMotorOutputPercent());
         //Arm.armSRX.set(ControlMode.PercentOutput, );
-        Arm.printArmEncoders();
+        //Arm.printArmEncoders();
+        Elevator.printElevatorEncoders();
 		//System.out.println("Is NEO following: " + Arm.armNEO.isFollower());
-        //System.out.println(Arm.currentState + " AIMED STATE: " + Arm.aimedState);
         //Arm.printPercentOutput();
         //System.out.println("CCL: " + Arm.armEncoderCCL);
 
@@ -116,6 +124,12 @@ public class Robot extends TimedRobot
 
 
     }
+    @Override
+    public void disabledPeriodic() {
+        Arm.armSRX.setNeutralMode(NeutralMode.Coast);
+    }
+
+    
 
     public void updateJoysticks()
     {

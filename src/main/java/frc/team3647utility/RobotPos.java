@@ -29,30 +29,31 @@ public class RobotPos
 
     public Movement movementCheck(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
-        if(eLevel == posData.eLevel && armPos == posData.armPos) 
+        //System.out.println("E level: " + eLevel + " Arm Level: " + armPos);
+        if(Elevator.currentState == posData.eLevel && Arm.currentState == posData.armPos) 
         {
             return Movement.ARRIVED;
         }
-        else if(eLevel != posData.eLevel && armPos == posData.armPos)//if arm is correct pos, elevator can ALWAYS move
+        else if(Elevator.currentState != posData.eLevel && Arm.currentState == posData.armPos)//if arm is correct pos, elevator can ALWAYS move
         {
             return Movement.MOVEELEV;
         }
-        else if(eLevel == posData.eLevel && armPos != posData.armPos)//check if arm can move without moving elevator
+        else if(Elevator.currentState == posData.eLevel && Arm.currentState != posData.armPos)//check if arm can move without moving elevator
         {
             switch(scoringPos)
             {
                 case HATCHL1FORWARDS:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 500))
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 800))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
                 case HATCHL1BACKWARDS:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 500))
+                    if(threshold(Constants.armSRXFlatBackwards, Arm.armEncoderValue, 500))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
                 case STOWED:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                    if(threshold(Constants.armSRXStowed, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;    
@@ -62,7 +63,7 @@ public class RobotPos
                     else
                         return Movement.SAFEZMOVE;                
                 case CARGOHANDOFF:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                    if(threshold(Constants.armSRXCargoHandoff, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
@@ -90,7 +91,7 @@ public class RobotPos
                 case VERTICALSTOWED:
                         return Movement.SAFEZMOVE;
                 default:
-                    if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation)
+                    if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation)
                         return Movement.FREEMOVE;
                     else
                         return Movement.SAFEZMOVE;

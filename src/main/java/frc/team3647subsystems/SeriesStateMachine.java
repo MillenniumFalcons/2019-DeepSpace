@@ -30,10 +30,21 @@ public class SeriesStateMachine
         STOWED, //ARM HIT, Hatch intake is stowed
         VERTICALSTOWED //ARM HIT
     }
+
+    public static void seriesStateMachineInitialization()
+    {
+        robotState = new RobotPos(Elevator.currentState, Arm.currentState);   
+        hatchL1Backwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATBACKWARDS);        
+        hatchL1Forwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATFORWARDS);
+        
+    }
+
     
     public static void runSeriesStateMachine(Joysticks controller)
     {
-        robotState.setRobotPos(Arm.currentState, Elevator.currentState);
+        if(Arm.currentState != null && Elevator.currentState != null)
+            robotState.setRobotPos(Arm.currentState, Elevator.currentState);
+        
         Elevator.runElevator();
         Arm.runArm();
 
@@ -49,7 +60,6 @@ public class SeriesStateMachine
 
     public static void hatchL1Fowards()
     {
-        hatchL1Forwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATFORWARDS);
         switch(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards))
         {
             case ARRIVED:
@@ -79,8 +89,7 @@ public class SeriesStateMachine
 
     public static void hatchL1Backwards()
     {
-        hatchL1Backwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATBACKWARDS);
-        switch(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Backwards))
+        switch(robotState.movementCheck(ScoringPosition.HATCHL1BACKWARDS, hatchL1Backwards))
         {
             case ARRIVED:
                 System.out.println("Arrived at hatchL1Backwards");
@@ -109,21 +118,24 @@ public class SeriesStateMachine
 
     public static void safetyRotateArm(Arm.ArmPosition pos)
     {
-        switch(state)
-        {
-            case 0:
-                if(robotState.eLevel == Elevator.ElevatorLevel.MINROTATE)
+        // switch(state)
+        // {
+        //     case 0:
+                if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation-100)
                 {
                     state = 1;
+                    Arm.aimedState = pos;
                 }
                 else
                 {
                     Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
+                    Arm.aimedState = null;
+                //}
+                //break;
+            //case 1:
+                    //Arm.aimedState = pos;
                 }
-                break;
-            case 1:
-                    Arm.aimedState = pos;
-                break;
-        }
+                //break;
+       // }
     }
 }

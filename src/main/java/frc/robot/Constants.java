@@ -56,9 +56,9 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PID & MOTION MAGIC VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Arm PID Values
 	public static final int armPID = 0;
-	public static final double armkP = .8;
-	public static final double armkI = 0;
-	public static final double armkD = 8;
+	public static final double armkP = .75;
+	public static final double armkI = 0.00017;
+	public static final double armkD = 45;
 	public static final double armkF = 0;
 
 	//Arm motion magic
@@ -79,8 +79,8 @@ public class Constants
 	public static final double carriageF = 0;
 	
 	//Elevator Motion Magic
-	public static final int kElevatorCruiseVelocity = 8500;
-	public static final int kElevatorAcceleration = 29500;
+	public static final int kElevatorCruiseVelocity = 5000;
+	public static final int kElevatorAcceleration = 30000;
 	
 	//Hatch Intake PID Values 
 	public static final int kHatchWristPID = 0; //PID Slot Index
@@ -128,7 +128,7 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~POSITION & THRESHOLD VALUES FOR MECHANISMS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Arm Positions
 	//SRX MAG Encoder Positions
-	public static final int kArmSRXPositionThreshold = 25; // Threshold for arm positions in encoder values
+	public static final int kArmSRXPositionThreshold = 800; // Threshold for arm positions in encoder values
 	public static final int armSRXFlatForwards = 4290;
 	public static final int armSRXFlatBackwards = 21650;
 	public static final int armSRXCargoL3Front = 24970;
@@ -151,7 +151,7 @@ public class Constants
 	public static final double armNEOFwdLimitSwitch = 77.074;
 
 	//Elevator Positions
-	public static final int kElevatorPositionThreshold = 25; // Threshold for arm positions in encoder values
+	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values
 	public static final int elevatorHatchHandoff = 6000;
 	public static final int elevatorCargoHandoff = 6000; //need to test this and hatch handoff levels, might be able to combine
 	public static final int elevatorCargoShip = 21000;

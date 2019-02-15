@@ -34,6 +34,9 @@ public class Arm
 	
     public static void armInitialization()
     {		
+		currentState = null;
+		aimedState = null;
+		lastState = null;
 		//Encoder for arm motor
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		armSRX.setSensorPhase(true);
@@ -64,7 +67,7 @@ public class Arm
 			armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
 		});
 		// Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
-		followerThread.startPeriodic(0.01);
+		followerThread.startPeriodic(0.005);
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -231,7 +234,7 @@ public class Arm
 			lastState = ArmPosition.VERTICALSTOWED;
 		}
 		else
-			currentState = ArmPosition.MANUAL;
+			currentState = null;
 	}
 
 	public static void setManualOverride(double jValue)
@@ -375,7 +378,7 @@ public class Arm
 
 	public static boolean positionThreshold(double constant)
 	{
-		if((constant + Constants.kArmSRXPositionThreshold) > armEncoderValue && (constant - Constants.kElevatorPositionThreshold) < armEncoderValue)
+		if((constant + Constants.kArmSRXPositionThreshold) > armEncoderValue && (constant - Constants.kArmSRXPositionThreshold) < armEncoderValue)
 		{
 			return true;
 		}

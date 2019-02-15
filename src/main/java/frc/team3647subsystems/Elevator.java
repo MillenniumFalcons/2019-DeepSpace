@@ -32,8 +32,9 @@ public class Elevator
     
     public static void elevatorInitialization()
 	{
-		aimedState = ElevatorLevel.BOTTOM;
-
+		currentState = null;
+		aimedState = null;
+		lastState = null;
         //Config Sensors for encoder
         elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		elevatorMaster.setSensorPhase(true);
@@ -93,28 +94,30 @@ public class Elevator
 	public static void setManualController(Joysticks controller)
 	{
 		setManualOverride(controller.rightJoyStickY);
-		if(manualOverride)
-			aimedState = ElevatorLevel.MANUAL;
-		else if(BallShooter.cargoDetection())
-		{
+		// if(manualOverride)
+		// 	aimedState = ElevatorLevel.MANUAL;
+		// else if(BallShooter.cargoDetection())
+		// {
+		// 	if(controller.buttonA)
+		// 		aimedState = ElevatorLevel.BOTTOM;
+		// 	else if(controller.buttonB)
+		// 		aimedState = ElevatorLevel.CARGOL2;
+		// 	else if(controller.buttonY)
+		// 		aimedState = ElevatorLevel.HATCHL3;
+		// 	else if(controller.buttonX)
+		// 		aimedState = ElevatorLevel.CARGOSHIP;
+		// }
+		// else
+		// {
 			if(controller.buttonA)
-				aimedState = ElevatorLevel.BOTTOM;
-			else if(controller.buttonB)
-				aimedState = ElevatorLevel.CARGOL2;
-			else if(controller.buttonY)
-				aimedState = ElevatorLevel.HATCHL3;
-			else if(controller.buttonX)
-				aimedState = ElevatorLevel.CARGOSHIP;
-		}
-		else
-		{
-			if(controller.buttonY)
 				aimedState = ElevatorLevel.BOTTOM;     //if hatch
 			else if(controller.buttonB)
 				aimedState = ElevatorLevel.HATCHL2;
 			else if(controller.buttonY)
 				aimedState = ElevatorLevel.HATCHL3;
-		}
+			else if(controller.buttonX)
+				aimedState = ElevatorLevel.MINROTATE;
+		//}
 	}
 
 	public static void runElevator()
@@ -183,7 +186,8 @@ public class Elevator
 		}
 		else
 		{
-			setPosition(0);
+			//setPosition(0);
+			setOpenLoop(-.25);
 		}
     }
     
