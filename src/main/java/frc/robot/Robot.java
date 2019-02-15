@@ -1,24 +1,26 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.Arm.ArmPosition;
 
 public class Robot extends TimedRobot 
 {
    
-    Joysticks mainController;
+    public static Joysticks mainController;
     Joysticks coController;
     public static Gyro gyro;
-    public static Arm arm = new Arm();
 
-	public static double kP = 0;
+	public static double kP = 0.5;
 	public static double kI = 0;
 	public static double kD = 0;
-	public static double kF = .35;
-	public static int mVel = 0;
-	public static int mAccel = 0;
+	public static double kF = 0;
+	public static int mVel = 500;
+	public static int mAccel = 1000;
     
  
     @Override
@@ -27,7 +29,7 @@ public class Robot extends TimedRobot
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
         //gyro = new Gyro();
-        TestFunctions.shuffleboard();
+        //TestFunctions.shuffleboard();
     }
 
     @Override
@@ -67,8 +69,9 @@ public class Robot extends TimedRobot
         //HatchIntake.hatchIntakeInitialization();
         //BallIntake.ballIntakeinitialization();
         //BallShooter.ballShooterinitialization();
-       // Arm.armInitialization();
-       Elevator.elevatorInitialization();
+        Arm.armInitialization();
+       //Elevator.elevatorInitialization();
+       //Arm.aimedState = ArmPosition.REVLIMITSWITCH;
 
     }
 
@@ -82,14 +85,24 @@ public class Robot extends TimedRobot
         // HatchIntake.printPosition();
         // HatchGrabber.runHatchGrabber(coController.rightBumper);
         // Arm.moveManual(coController.rightJoyStickY);
-        TestFunctions.updatePIDFMM();
-        arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+
+        //TestFunctions.updatePIDFMM();
+        //arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+
         // System.out.println("Elevator sensor " + Elevator.getLimitSwitch());
         // System.out.println("Elevator sensor " + Elevator.elevatorEncoderValue);
         // System.out.println("Elevator aimed state: " + Elevator.aimedState);
         // Elevator.runElevator(mainController);
-        arm.setManualContrller(mainController);
-        arm.runArm();
+        Arm.setManualController(mainController);
+        Arm.runArm();
+        Arm.armNEO.set(Arm.armSRX.getMotorOutputPercent());
+        //Arm.armSRX.set(ControlMode.PercentOutput, );
+        //Arm.testArmEncoders();
+		//System.out.println("Is NEO following: " + Arm.armNEO.isFollower());
+        System.out.println(Arm.currentState + " AIMED STATE: " + Arm.aimedState);
+        //Arm.printPercentOutput();
+        //System.out.println("CCL: " + Arm.armEncoderCCL);
+
         // if(mainController.rightTrigger > .15)
         //     Elevator.stopElevator();
         // Elevator.testElevatorCurrent();

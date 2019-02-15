@@ -55,13 +55,15 @@ public class Constants
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PID & MOTION MAGIC VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Arm PID Values
-	public static final int armPIDIdx = 0; //PID Slot Index
 	public static final int armPID = 0;
-	public static final int armkP = 0;
-	public static final int armkI = 0;
-	public static final int armkD = 0;
-	public static final int armkF = 0;
-	public static final int armIZone = 0;
+	public static final double armkP = 0.05;
+	public static final double armkI = 0;
+	public static final double armkD = 0.0;
+	public static final double armkF = 0;
+
+	//Arm motion magic
+	public static final int kArmSRXCruiseVelocity = 500;
+	public static final int kArmSRXAcceleration = 500;
 	
 	//Elevator PID Values
 	public static final int interstagePID = 0; //PID Slot Index
@@ -183,4 +185,5 @@ public class Constants
 	public static final double PFkD = 0;
 	public static final double PFkI = 0;
 	public static final double PFkP = 0;
+
 }

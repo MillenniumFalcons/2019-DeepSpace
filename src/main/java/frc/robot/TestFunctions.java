@@ -53,12 +53,12 @@ public class TestFunctions
 
     public static void updatePIDFMM()
     {        
-        Robot.kP = SmartDashboard.getNumber("kP", 0.3473);
-        Robot.kI = SmartDashboard.getNumber("kI", 0.00005);
-        Robot.kD = SmartDashboard.getNumber("kD", 0.7389);
+        Robot.kP = SmartDashboard.getNumber("kP", 0);
+        Robot.kI = SmartDashboard.getNumber("kI", 0);
+        Robot.kD = SmartDashboard.getNumber("kD", 0);
         Robot.kF = SmartDashboard.getNumber("kF", 0);
-        Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 8500);
-        Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 29500);
+        Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 500);
+        Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 1000);
      }
 
 
@@ -66,9 +66,9 @@ public class TestFunctions
     {
         // SmartDashboard.delete("Left SRX Velocity RPM");
         // SmartDashboard.delete("Right SRX Velocity RPM");
-        SmartDashboard.putNumber("kP", 0.35);
-        SmartDashboard.putNumber("kI", 0.00005);
-        SmartDashboard.putNumber("kD", 0.7389);
+        SmartDashboard.putNumber("kP", 0);
+        SmartDashboard.putNumber("kI", 0);
+        SmartDashboard.putNumber("kD", 0);
         SmartDashboard.putNumber("kF", 0);
 
         // SmartDashboard.putNumber("kP2", 0.1);

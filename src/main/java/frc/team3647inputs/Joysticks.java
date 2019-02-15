@@ -53,7 +53,7 @@ public class Joysticks
 		rightJoyStickY = 	-joystickThreshold(controller.getRawAxis(5));
 		dPadValue = dPad.getPOV();
 		setDPadValues();
-		System.out.println("Updating controller!");
+		// System.out.println("Updating controller!");
 	}
 
 
@@ -135,7 +135,7 @@ public class Joysticks
 	 */
 	public static double joystickThreshold(double jValue)
 	{
-		if(jValue < .15 && jValue > -.15)
+		if(jValue < .05 && jValue > -.05)
 		{
 			return 0;
 		}
