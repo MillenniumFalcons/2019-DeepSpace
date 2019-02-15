@@ -23,11 +23,11 @@ public class SeriesStateMachine
         CARGOSHIPBACKWARD,
         CARGOL2FORWARDS,
         CARGOL2BACKWARDS,
-        CARGOL3FORWARDS,
-        CARGOL3BACKWARDS,
+        CARGOL3FORWARDS, // Move elevator first
+        CARGOL3BACKWARDS, // move elevator first
         HATCHHANDOFF, //ARM HIT
-        CARGOHANDOFF, //ARM HIT
-        STOWED, //ARM HIT
+        CARGOHANDOFF, //ARM HIT, make sure cargo ground intake is deployed
+        STOWED, //ARM HIT, Hatch intake is stowed
         VERTICALSTOWED //ARM HIT
     }
     

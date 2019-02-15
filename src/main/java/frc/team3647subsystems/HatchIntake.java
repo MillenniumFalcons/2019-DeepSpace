@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class HatchIntake 
 {
-	public static WristPosition currentState;
-	public static WristPosition aimedState;
+	public static WristPosition currentState, aimedState;
+	
 	public static Solenoid clampSolenoid = new Solenoid(Constants.hatchIntakeSolinoidPin);
 	public static WPI_TalonSRX wristMotor = new WPI_TalonSRX(Constants.hatchMotorPin);
 	public static DigitalInput limitSwitch = new DigitalInput(Constants.hatchLimitSwitchPin);
@@ -32,6 +32,7 @@ public class HatchIntake
 		//Motor & Sensor Direction
 		wristMotor.setInverted(false);
 		wristMotor.setSensorPhase(true);
+		
 		//Current Limiting
 		wristMotor.configPeakCurrentLimit(Constants.kHatchWristPeakCurrent, Constants.kTimeoutMs);
 		wristMotor.configPeakCurrentDuration(Constants.kHatchWristPeakCurrentDuration);
@@ -136,23 +137,9 @@ public class HatchIntake
 		}
 	}	
 
-
-	public static void setManualOverride(double jValue)
-	{
-		if(Math.abs(jValue) > .05) //deadzone
-		{
-			manualOverride = true;
-			overrideValue = jValue;
-		} 
-		else 
-		{
-			manualOverride = false;
-		}
-	}
-
 	public static void moveToStowed()
 	{
-		if(stateDetection(WristPosition.STOWED))
+		if(getLimitSwitch())
 		{
 			//System.out.println("Hatch Intake Stowed");
 			stopWrist();
@@ -165,6 +152,7 @@ public class HatchIntake
 		}
 	}
 
+	//Motion Magic movement-------------------------------------
 	public static void moveToGround()
 	{
 		setPosition(Constants.hatchIntakeGround);
@@ -180,7 +168,27 @@ public class HatchIntake
 		setPosition(Constants.hatchIntakeHandoff);
 	}
 
-	public static int encoderState, manualAdjustment, manualEncoderValue;
+	public static void setPosition(int position)
+	{
+		wristMotor.set(ControlMode.MotionMagic, position);
+	}
+	//----------------------------------------------------------
+
+	//Manual movement-------------------------------------------
+	public static void setManualOverride(double jValue)
+	{
+		if(Math.abs(jValue) > .05) //deadzone
+		{
+			manualOverride = true;
+			overrideValue = jValue;
+		} 
+		else 
+		{
+			manualOverride = false;
+		}
+	}
+
+	private static int encoderState, manualAdjustment, manualEncoderValue;
 
 	public static void moveManual(double jValue)
 	{
@@ -216,11 +224,7 @@ public class HatchIntake
 		wristMotor.set(ControlMode.PercentOutput, power);
 
 	}
-
-	public static void setPosition(int position)
-	{
-		wristMotor.set(ControlMode.MotionMagic, position);
-	}
+	//---------------------------------------------------------
 
 	public static boolean positionThreshold(double constant)
 	{
@@ -234,25 +238,7 @@ public class HatchIntake
 		}
 	}
 
-	public static boolean stateDetection(WristPosition level)
-	{
-		switch(level)
-		{
-			case MANUAL:
-				return manualOverride;
-			case STOWED:
-				return getLimitSwitch();
-			case SCORE:
-				return positionThreshold(Constants.hatchIntakeScore);
-			case HANDOFF:
-				return positionThreshold(Constants.hatchIntakeHandoff);
-			case GROUND:
-				return positionThreshold(Constants.hatchIntakeGround);
-			default:
-				return false;
-		}
-	}
-	
+	// Encoder methods------------------------------------------
 	public static void setWristEncoder()
 	{
 		if(getLimitSwitch())
@@ -264,44 +250,35 @@ public class HatchIntake
 		wristEncoderCCL = wristMotor.getClosedLoopError(0);
 	}
 
-	public static boolean getLimitSwitch()
-	{
-		if(limitSwitch.get())
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-
-	public static boolean detectHatch()
-	{
-		if(hatchBeamBreak.get())
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
 	public static void setEncoderValue(int encoderValue)
 	{
 		wristMotor.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
 	}
+	//----------------------------------------------------------
+
+	public static void resetEncoder()
+	{
+		wristMotor.setSelectedSensorPosition(0, Constants.kHatchWristPID, Constants.kTimeoutMs);
+	}
+
+	public static boolean getLimitSwitch()
+	{
+		return limitSwitch.get();
+	}
+
+	public static boolean detectHatch()
+	{
+		return hatchBeamBreak.get();
+	}
+
+
 
 	public static void printPosition()
 	{
 		System.out.println("Encoder Value: " + wristEncoderValue);
 	}
 
-	public static void resetEncoder()
-	{
-		wristMotor.setSelectedSensorPosition(0, Constants.kHatchWristPID, Constants.kTimeoutMs);
-	}
+
 
 	public static void stopWrist()
 	{

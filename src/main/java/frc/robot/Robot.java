@@ -97,7 +97,7 @@ public class Robot extends TimedRobot
         Arm.runArm();
         Arm.armNEO.set(Arm.armSRX.getMotorOutputPercent());
         //Arm.armSRX.set(ControlMode.PercentOutput, );
-        Arm.testArmEncoders();
+        Arm.printArmEncoders();
 		//System.out.println("Is NEO following: " + Arm.armNEO.isFollower());
         //System.out.println(Arm.currentState + " AIMED STATE: " + Arm.aimedState);
         //Arm.printPercentOutput();
