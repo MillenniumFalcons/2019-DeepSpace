@@ -24,7 +24,6 @@ public class Arm
 
 	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);
 	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
-	public static CANPIDController SparkMaxPIDController;
 	public static CANDigitalInput revNeoLimitSwitch; 
 	public static CANDigitalInput fwdNeoLimitSwitch;
 
@@ -39,7 +38,10 @@ public class Arm
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		armSRX.setSensorPhase(true);
 		armSRX.setInverted(false);
+
 		armNEO.restoreFactoryDefaults();
+		armNEO.setIdleMode(IdleMode.kBrake);
+		armNEO.enableVoltageCompensation(12);//max voltage of 12v to scale output better
 
 
 		// Reverse and forward limit switch from the NEO
@@ -58,13 +60,11 @@ public class Arm
 		// The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
 		Notifier followerThread = new Notifier(()->
 		{
-			armNEO.set(armSRX.getMotorOutputPercent());
+			//armNEO.set(armSRX.getMotorOutputPercent()); //set straight %output
+			armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
 		});
 		// Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
 		followerThread.startPeriodic(0.01);
-
-		armNEO.setIdleMode(IdleMode.kBrake);
-	
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -97,10 +97,10 @@ public class Arm
 
 	public static void setManualController(Joysticks controller)
 	{
-		//setManualOverride(controller.leftJoyStickY);
-		// if(manualOverride)
-		// 	aimedState = ArmPosition.MANUAL;
-	/*	else */if(controller.buttonA)
+		setManualOverride(controller.leftJoyStickY);
+		if(manualOverride)
+			aimedState = ArmPosition.MANUAL;
+		else if(controller.buttonA)
 			aimedState = ArmPosition.VERTICALSTOWED;
 		else if(controller.buttonY)
 			aimedState = ArmPosition.STOWED;
@@ -117,10 +117,7 @@ public class Arm
 		else if(controller.dPadLeft)
 			aimedState = ArmPosition.REVLIMITSWITCH;
 		 else if(controller.dPadUp)
-		 {
 			aimedState = ArmPosition.CARGOL3BACK;
-			System.out.println("DPAD UP");
-		 }
 		 else if(controller.dPadDown)
 			aimedState = ArmPosition.CARGOL3FRONT;
 	}
@@ -132,18 +129,18 @@ public class Arm
 	public static void runArm()
 	{
 		setArmEncoder();
-		//updateLivePosition();
-		if(aimedState != null)
+		updateLivePosition();
+		if(aimedState != null) //check if aimed state has a value
 		{
 			switch(aimedState)
 			{
-				// case MANUAL:
-				// 	if(!manualOverride)
-				// 	{
-				// 		overrideValue = 0;
-				// 	}
-				// 	moveManual(overrideValue);
-				// 	break;
+				case MANUAL:
+					if(!manualOverride)
+					{
+						overrideValue = 0;
+					}
+					moveManual(overrideValue);
+					break;
 				case FWDLIMITSWITCH:
 					moveToFwdLimitSwitch();
 					break;
@@ -175,6 +172,7 @@ public class Arm
 					moveToCargoHandoff();
 					break;
 				default:
+					System.out.println("Unreachable Arm Position");
 					break;
 			}
 		}

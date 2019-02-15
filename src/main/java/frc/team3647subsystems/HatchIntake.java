@@ -28,7 +28,6 @@ public class HatchIntake
 
 	public static void hatchIntakeInitialization()
 	{
-		aimedState = WristPosition.STOWED;
 		//Motor & Sensor Direction
 		wristMotor.setInverted(false);
 		wristMotor.setSensorPhase(true);
@@ -98,33 +97,35 @@ public class HatchIntake
 		else if(controller.dPadDown)
 			aimedState = WristPosition.GROUND;
 			//move to positions
-
-		switch(aimedState)
+		if(aimedState != null)
 		{
-			case MANUAL:
-				if(!manualOverride)
-				{
-					overrideValue = 0;
-				}
-				moveManual(overrideValue);
-				break;
-			case STOWED:
-				closeClamp();
-				moveToStowed();
-				break;
-			case SCORE:
-				//closeClamp();
-				moveToScore();
-				break;
-			case GROUND:
-				moveToGround();
-				//openClamp();
-				break;
-			case HANDOFF:
-				moveToHandoff();
-				break;
-			default:
-				break;
+			switch(aimedState)
+			{
+				case MANUAL:
+					if(!manualOverride)
+					{
+						overrideValue = 0;
+					}
+					moveManual(overrideValue);
+					break;
+				case STOWED:
+					closeClamp();
+					moveToStowed();
+					break;
+				case SCORE:
+					//closeClamp();
+					moveToScore();
+					break;
+				case GROUND:
+					moveToGround();
+					//openClamp();
+					break;
+				case HANDOFF:
+					moveToHandoff();
+					break;
+				default:
+					break;
+			}
 		}
 			
 		if(controller.leftBumper)

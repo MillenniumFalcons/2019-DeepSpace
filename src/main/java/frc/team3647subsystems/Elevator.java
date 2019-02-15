@@ -121,47 +121,51 @@ public class Elevator
 	{
 		setElevatorEncoder();
 		updateLivePosition();   
-		switch(aimedState)
+		if(aimedState != null)
 		{
-			case MANUAL:
-				if(!manualOverride)
-				{
-					overrideValue = 0;
-				}
-                moveManual(overrideValue);
-                break;
-            case BOTTOM:
-                moveToBottom();
-                break;
-            case CARGOHANDOFF:
-                moveToCargoHandoff();
-                break;
-            case HATCHHANDOFF:
-                moveToHatchHandoff();
-                break;
-            case HATCHL2:
-                moveToHatchL2();
-                break;
-            case HATCHL3:
-                moveToHatchL3();
-                break;
-            case CARGOL2:
-                moveToCargoL2();
-                break;
-            case CARGOSHIP:
-                moveToCargoShip();
-                break;
-			case STOWED:
-				moveToStowed();
-				break;
-			case VERTICALSTOWED:
-				moveToVerticalStowed();
-				break;
-			case MINROTATE:
-				moveToMinRotate();
-				break;
-			default:
-				break;
+			switch(aimedState) //check if aimed state has a value
+			{
+				case MANUAL:
+					if(!manualOverride)
+					{
+						overrideValue = 0;
+					}
+					moveManual(overrideValue);
+					break;
+				case BOTTOM:
+					moveToBottom();
+					break;
+				case CARGOHANDOFF:
+					moveToCargoHandoff();
+					break;
+				case HATCHHANDOFF:
+					moveToHatchHandoff();
+					break;
+				case HATCHL2:
+					moveToHatchL2();
+					break;
+				case HATCHL3:
+					moveToHatchL3();
+					break;
+				case CARGOL2:
+					moveToCargoL2();
+					break;
+				case CARGOSHIP:
+					moveToCargoShip();
+					break;
+				case STOWED:
+					moveToStowed();
+					break;
+				case VERTICALSTOWED:
+					moveToVerticalStowed();
+					break;
+				case MINROTATE:
+					moveToMinRotate();
+					break;
+				default:
+					System.out.println("Unreachable Arm Position");
+					break;
+			}
 		}
 	}
 	
