@@ -69,13 +69,13 @@ public class Constants
 	public static final int interstagePID = 0; //PID Slot Index
 	public static final double interstageP = 8.5;
 	public static final double interstageI = 0.00004;
-	public static final double interstageD = 400;
+	public static final double interstageD = 350;
 	public static final double interstageF = 0;
 	
 	public static final int carriageIdx = 1; //PID Slot Index
-	public static final double carriageP = 0.1;
-	public static final double carriageI = 0;
-	public static final double carriageD = 0;
+	public static final double carriageP = 8;
+	public static final double carriageI = 0.00004;
+	public static final double carriageD = 80;
 	public static final double carriageF = 0;
 	
 	//Elevator Motion Magic

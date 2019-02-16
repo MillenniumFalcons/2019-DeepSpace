@@ -53,33 +53,17 @@ public class TestFunctions
 
     public static void updatePIDFMM()
     {        
-<<<<<<< HEAD
         Robot.kP = SmartDashboard.getNumber("kP", 8);
         Robot.kI = SmartDashboard.getNumber("kI", 0.00005);
         Robot.kD = SmartDashboard.getNumber("kD", 28);
         Robot.kF = SmartDashboard.getNumber("kF", 0);
         Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 5000);
         Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 10000);
-=======
-        Robot.kPleft = SmartDashboard.getNumber("kPleft", 0);
-        Robot.kIleft = SmartDashboard.getNumber("kIleft", 0);
-        Robot.kDleft = SmartDashboard.getNumber("kDleft", 0);
-        Robot.kFleft = SmartDashboard.getNumber("kFleft", 0.26);
-
-        Robot.kPright = SmartDashboard.getNumber("kPright", 0);
-        Robot.kIright = SmartDashboard.getNumber("kIright", 0);
-        Robot.kDright = SmartDashboard.getNumber("kDright", 0);
-        Robot.kFright = SmartDashboard.getNumber("kFright", 0.26);
-
-        Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 1000);
-        Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 1000);
->>>>>>> c8c0efb7850b56a5edaeefbfd09246a8776fc4a0
      }
 
 
     public static void shuffleboard()
     {
-<<<<<<< HEAD
         // SmartDashboard.delete("Left SRX Velocity RPM");
         // SmartDashboard.delete("Right SRX Velocity RPM");
         SmartDashboard.putNumber("kP",8 ); //0.3473
@@ -94,30 +78,6 @@ public class TestFunctions
 
         SmartDashboard.putNumber("MM Acceleration", 30000);
         SmartDashboard.putNumber("MM Velocity", 5000);   
-=======
-        SmartDashboard.delete("kP");
-        SmartDashboard.delete("kI");
-        SmartDashboard.delete("kD");
-        SmartDashboard.delete("kF");
-
-        SmartDashboard.delete("kP2");
-        SmartDashboard.delete("kI2");
-        SmartDashboard.delete("kD2");
-        SmartDashboard.delete("kF2");
-
-        SmartDashboard.putNumber("kPright", 0);
-        SmartDashboard.putNumber("kIright", 0);
-        SmartDashboard.putNumber("kDright", 0);
-        SmartDashboard.putNumber("kFright", 0.26);
-
-        SmartDashboard.putNumber("kPleft", 0);
-        SmartDashboard.putNumber("kIleft", 0);
-        SmartDashboard.putNumber("kDleft", 0);
-        SmartDashboard.putNumber("kFleft", 0.26);
-
-        SmartDashboard.putNumber("MM Acceleration", 1000);
-        SmartDashboard.putNumber("MM Velocity", 1000);   
->>>>>>> c8c0efb7850b56a5edaeefbfd09246a8776fc4a0
     }
 
 //     public double rpmEquation(double srxVel)
