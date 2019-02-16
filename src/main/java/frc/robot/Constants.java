@@ -93,19 +93,20 @@ public class Constants
 	
 	//Drive PID Slot
 	public static final int drivePIDIdx = 0;
+	public static final int velocityPIDIdx = 0;
 	
 	//Left Drivetrain PIDF Values
-	public static final double lDrivekP = 0.3;
+	public static final double lDrivekP = 0.1;
 	public static final double lDrivekI = 0;
 	public static final double lDrivekD = 0.1;
 	public static final double lDrivekF = 0;
 	
 	//Right Drivetrain PIDF Values
-	public static final double rDrivekP = 0.3;
+	public static final double rDrivekP = 0.1;
 	public static final double rDrivekI = 0;
 	public static final double rDrivekD = 0.1;
 	public static final double rDrivekF = 0;
-	public static final double velocityConstant = 1550; //Explanation for velocityConstant
+	public static final double velocityConstant = 4250; //Explanation for velocityConstant
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Drivetrain Current Limiting Constants
