@@ -99,7 +99,7 @@ public class RobotPos
         }
     }
 
-    public boolean threshold(int constant, int currentValue, int threshold)
+    private boolean threshold(int constant, int currentValue, int threshold)
     {
         if((constant + threshold) > currentValue && (constant - threshold) < currentValue)
 		{

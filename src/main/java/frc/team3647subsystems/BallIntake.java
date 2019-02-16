@@ -42,7 +42,15 @@ public class BallIntake
 			retractIntake();
 		}
 	}
-	
+	// For state machine
+	public static void runIntake()
+	{
+		if(!BallShooter.cargoDetection())
+		{
+			intakeCargo();
+			BallShooter.intakeCargo();
+		}
+	}
 	public static void runIntake(boolean joyValue)
 	{
 		if(joyValue)
