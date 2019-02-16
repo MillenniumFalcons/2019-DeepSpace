@@ -13,7 +13,7 @@ public class HatchGrabber
 	{
 		if(joyvalue)
 		{
-			if(hatchCylinder.get() == false)
+			if(!hatchCylinder.get())
 			{
 				grabHatch();
 				Timer.delay(.1);

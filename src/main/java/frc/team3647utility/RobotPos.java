@@ -1,65 +1,59 @@
 package frc.team3647utility;
 
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.Arm.ArmPosition;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.robot.*;
 
 import edu.wpi.first.wpilibj.Notifier;
 
 public class RobotPos
 {
-    public Elevator.ElevatorLevel eLevel;
-    public Arm.ArmPosition armPos;
+    public ElevatorLevel eLevel;
+    public ArmPosition armPos;
 
     public enum Movement
     {
         ARRIVED,
         MOVEELEV,
         MOVEARM,
-        SAFEZMOVE
+        SAFEZMOVE,
+        FREEMOVE
     }
 
-    public RobotPos(Elevator.ElevatorLevel eLevel, Arm.ArmPosition armPos)
+    public RobotPos(ElevatorLevel eLevel, ArmPosition armPos)
     {
         this.eLevel = eLevel;
         this.armPos = armPos;
     }
 
-    public void initRobotPos()
-    {
-        Notifier robotPosThread = new Notifier(() ->
-        {
-            eLevel = Elevator.currentState;
-            armPos = armPos;
-        });
-        robotPosThread.startPeriodic(0.01);
-    }
-
     public Movement movementCheck(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
-        if(eLevel == posData.eLevel && armPos == posData.armPos)
+        //System.out.println("E level: " + eLevel + " Arm Level: " + armPos);
+        if(Elevator.currentState == posData.eLevel && Arm.currentState == posData.armPos) 
         {
             return Movement.ARRIVED;
         }
-        else if(eLevel != posData.eLevel && armPos == posData.armPos)
+        else if(Elevator.currentState != posData.eLevel && Arm.currentState == posData.armPos)//if arm is correct pos, elevator can ALWAYS move
         {
             return Movement.MOVEELEV;
         }
-        else if(eLevel == posData.eLevel && armPos != posData.armPos) //NEED TO SET A THREHSOLD HERE FOR WHEN ARM CAN MOVE WITHOUT SAFEZ
+        else if(Elevator.currentState == posData.eLevel && Arm.currentState != posData.armPos)//check if arm can move without moving elevator
         {
             switch(scoringPos)
             {
                 case HATCHL1FORWARDS:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 1000))
+                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 800))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
                 case HATCHL1BACKWARDS:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 1000))
+                    if(threshold(Constants.armSRXFlatBackwards, Arm.armEncoderValue, 500))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
                 case STOWED:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                    if(threshold(Constants.armSRXStowed, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;    
@@ -69,7 +63,7 @@ public class RobotPos
                     else
                         return Movement.SAFEZMOVE;                
                 case CARGOHANDOFF:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
+                    if(threshold(Constants.armSRXCargoHandoff, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
@@ -97,15 +91,15 @@ public class RobotPos
                 case VERTICALSTOWED:
                         return Movement.SAFEZMOVE;
                 default:
-                    if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation)
-                        return Movement.MOVEARM;
+                    if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation)
+                        return Movement.FREEMOVE;
                     else
                         return Movement.SAFEZMOVE;
             }
         }
     }
 
-    public static boolean threshold(int constant, int currentValue, int threshold)
+    public boolean threshold(int constant, int currentValue, int threshold)
     {
         if((constant + threshold) > currentValue && (constant - threshold) < currentValue)
 		{
@@ -115,6 +109,12 @@ public class RobotPos
 		{
 			return false;
 		}
+    }
+
+    public void setRobotPos(ArmPosition armPos, ElevatorLevel eLevel)
+    {
+        this.armPos = armPos;
+        this.eLevel = eLevel;
     }
 
     public RobotPos getRobotPos()
