@@ -66,13 +66,13 @@ public class Constants
 	public static final int kArmSRXAcceleration = 8000;
 	
 	//Elevator PID Values
-	public static final int interstagePID = 0; //PID Slot Index
+	public static final int interstageSlotIdx = 0; //PID Slot Index
 	public static final double interstageP = 8.5;
 	public static final double interstageI = 0.00004;
 	public static final double interstageD = 350;
 	public static final double interstageF = 0;
 	
-	public static final int carriageIdx = 1; //PID Slot Index
+	public static final int carriageSlotIdx = 1; //PID Slot Index
 	public static final double carriageP = 8;
 	public static final double carriageI = 0.00004;
 	public static final double carriageD = 80;
@@ -94,21 +94,18 @@ public class Constants
 	public static final int kHatchWristAcceleration = 2500;
 	
 	//Drive PID Slot
-	public static final int drivePIDIdx = 0;
-	public static final int velocityPIDIdx = 0;
+	public static final int driveSlotIdx = 0;
+	public static final int velocitySlotIdx = 1;
 	
-	//Left Drivetrain PIDF Values
-	public static final double lDrivekP = 0.1;
-	public static final double lDrivekI = 0;
-	public static final double lDrivekD = 0.1;
-	public static final double lDrivekF = 0;
-	
-	//Right Drivetrain PIDF Values
-	public static final double rDrivekP = 0.1;
-	public static final double rDrivekI = 0;
-	public static final double rDrivekD = 0.1;
-	public static final double rDrivekF = 0;
-	public static final double velocityConstant = 4250; //Explanation for velocityConstant
+	// Left and Right Drivetrain Percent PIDF Values (in that order)
+	public static final double[] leftPercentPIDF  = { 0.1, 0, 0.1, 0 };
+	public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
+
+	// Left and Right Drivetrain Velocity PIDF Values (in that order)
+	public static final double[] leftVelocityPIDF  = { 0.25, 0, 0.1, 0.27 };
+	public static final double[] rightVelocityPIDF = { 0.35, 0, 0.1, 0.27 };
+
+	public static final double velocityConstant = 1000; //Explanation for velocityConstant
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Drivetrain Current Limiting Constants
@@ -178,8 +175,8 @@ public class Constants
 	public static final double kWheelBase = 0;
 	public static final double kMaxVelocity = 0;
 
-	public static final double kZeta = 0;
-	public static final double kBeta = 0;
+	public static final double kZeta = .1;
+	public static final double kBeta = 0.2;
 
 	public static final double PFTurnkP = 1;
 	public static final double PFkA = 0;

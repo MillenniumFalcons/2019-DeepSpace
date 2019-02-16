@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() 
     {
+        Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
         driveSignal = new DriveSignal();
         trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
         // System.out.println(trajectory.segments[1].x);
@@ -84,52 +85,58 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() 
     {
-        HatchGrabber.runHatchGrabber(coController.rightBumper);
+        // HatchGrabber.runHatchGrabber(coController.rightBumper);
     }
 
     @Override
     public void testInit() 
     {
-        //HatchIntake.hatchIntakeInitialization();
-        //BallIntake.ballIntakeinitialization();
-        //BallShooter.ballShooterinitialization();
-        Arm.armInitialization();
-        Elevator.elevatorInitialization();
-        SeriesStateMachine.seriesStateMachineInitialization();
-       //Arm.setToBrake();
-
-
+        // HatchIntake.hatchIntakeInitialization();
+        // BallIntake.ballIntakeinitialization();
+        // BallShooter.ballShooterinitialization();
+        // Arm.armInitialization();
+        // Elevator.elevatorInitialization();
+        // SeriesStateMachine.seriesStateMachineInitialization();
+        // Arm.setToBrake();
+        TestFunctions.shuffleboard();
     }
 
     @Override
     public void testPeriodic()
     {
-       // gyro.printAngles();
-        //Drivetrain.customArcadeDrive(mainController.leftJoyStickY, mainController.rightJoyStickX, gyro);
-        // BallIntake.runSmartBallIntake(coController.leftTrigger, coController.leftBumper);
+        // System.out.println(mainController.rightJoyStickY);
+        // gyro.printAngles();
+        Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+        // BallIntake.runSmartBallIntake(coController.leftTrigger,
+        // coController.leftBumper);
         // HatchIntake.runHatchIntakeWrist(coController);
         // HatchIntake.printPosition();
-        // 
+        Drivetrain.velocityDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+        double[] left = {0,0,0,0};
+        double[] right = {0,0,0,0};
+        Drivetrain.selectPIDF(1, right, left);
         // Arm.moveManual(coController.rightJoyStickY);
-        //TestFunctions.updatePIDFMM();
-        //Elevator.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
-        //Elevator.setManualController(mainController);
-        //Arm.setManualController(mainController);
-        Elevator.runElevator();
-        Arm.runArm();
-        
-        // System.out.println("ARM CS: " + Arm.currentState + " Arm AS: " + Arm.aimedState);
-        // System.out.println("ELEV CS: " + Elevator.currentState + " Elev AS: " + Elevator.aimedState);
-        SeriesStateMachine.runSeriesStateMachine(mainController);
-        Elevator.printElevatorEncoders();
-        Arm.printArmEncoders();
+        TestFunctions.updatePIDFMM();
+        System.out.println(Drivetrain.leftSRX.getSelectedSensorVelocity());
+        // Elevator.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+        // Elevator.setManualController(mainController);
+        // Arm.setManualController(mainController);
+        // Elevator.runElevator();
+        // Arm.runArm();
+
+        // System.out.println("ARM CS: " + Arm.currentState + " Arm AS: " +
+        // Arm.aimedState);
+        // System.out.println("ELEV CS: " + Elevator.currentState + " Elev AS: " +
+        // Elevator.aimedState);
+        // SeriesStateMachine.runSeriesStateMachine(mainController);
+        // Elevator.printElevatorEncoders();
+        // Arm.printArmEncoders();
     }
     @Override
-    public void disabledInit() {
+    public void disabledInit() 
+    {
         Arm.armSRX.setNeutralMode(NeutralMode.Coast);
     }
-
-    
 
     public void updateJoysticks()
     {
