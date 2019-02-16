@@ -43,10 +43,10 @@ public class Drivetrain
 
 		// // Config left side PID Values
 		// leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		// leftSRX.config_kF(Constants.drivePIDIdx, Constants.lDrivekF, Constants.kTimeoutMs);
 		// leftSRX.config_kP(Constants.drivePIDIdx, Constants.lDrivekP, Constants.kTimeoutMs);
 		// leftSRX.config_kI(Constants.drivePIDIdx, Constants.lDrivekI, Constants.kTimeoutMs);
 		// leftSRX.config_kD(Constants.drivePIDIdx, Constants.lDrivekD, Constants.kTimeoutMs);
+		// leftSRX.config_kF(Constants.drivePIDIdx, Constants.lDrivekF, Constants.kTimeoutMs);
 
 		// Config right side PID settings
 		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
@@ -56,12 +56,12 @@ public class Drivetrain
 		rightSRX.configPeakOutputForward(1, Constants.kTimeoutMs);
 		rightSRX.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
-		// // Config right side PID Values
+		// Config right side PID Values
 		// rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		// rightSRX.config_kF(Constants.drivePIDIdx, Constants.rDrivekF, Constants.kTimeoutMs);
 		// rightSRX.config_kP(Constants.drivePIDIdx, Constants.rDrivekP, Constants.kTimeoutMs);
 		// rightSRX.config_kI(Constants.drivePIDIdx, Constants.rDrivekI, Constants.kTimeoutMs);
 		// rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
+		// rightSRX.config_kF(Constants.drivePIDIdx, Constants.rDrivekF, Constants.kTimeoutMs);
 
 		// Set up followers
 		leftSPX1.follow(leftSRX);
@@ -73,7 +73,37 @@ public class Drivetrain
 		rightSRX.setInverted(true);
 		rightSPX1.setInverted(true);
 		rightSPX2.setInverted(true);
-    }
+
+		setToBrake();
+	}
+	
+	public static void configurePIDFMM(double p, double i, double d, double f, double p2, double i2, double d2, double f2, int vel, int accel)
+	{
+		int slot = Constants.velocityPIDIdx;
+
+		//PID SLOT
+		rightSRX.selectProfileSlot(slot, 0);
+		leftSRX.selectProfileSlot(slot, 0);
+
+		//PID
+		rightSRX.config_kP(slot, p, Constants.kTimeoutMs);		
+		rightSRX.config_kI(slot, i, Constants.kTimeoutMs);	
+		rightSRX.config_kD(slot, d, Constants.kTimeoutMs);
+		rightSRX.config_kF(slot, f, Constants.kTimeoutMs);
+
+		leftSRX.config_kP(slot, p2, Constants.kTimeoutMs);		
+		leftSRX.config_kI(slot, i2, Constants.kTimeoutMs);	
+		leftSRX.config_kD(slot, d2, Constants.kTimeoutMs);
+		leftSRX.config_kF(slot, f2, Constants.kTimeoutMs);
+		
+
+		//Motion Magic Constants
+		rightSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+		rightSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+		
+		leftSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+        leftSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+	}
 
 	/**
 	 * Method to control robot
@@ -83,12 +113,13 @@ public class Drivetrain
 	 */
     public static void customArcadeDrive(double xValue, double yValue, Gyro gyro)
 	{
-		if(yValue != 0 && Math.abs(xValue) < 0.15)
+		if(yValue != 0 && Math.abs(xValue) < 0.05)
         {
 			setPercentOutput(yValue, yValue);
 	 	}
-		else if(yValue == 0 && Math.abs(xValue) < 0.15)
+		else if(yValue == 0 && Math.abs(xValue) < 0.05)
 		{
+			resetEncoders();
 			gyro.resetAngle();
 			stop();
 			supposedAngle = gyro.getYaw();
@@ -112,7 +143,28 @@ public class Drivetrain
 	{
 		rightSRX.stopMotor();
 		leftSRX.stopMotor();
-    }
+	}
+	
+	public static void velocityDrive(double xValue, double yValue, Gyro gyro)
+	{
+		if(yValue != 0 && Math.abs(xValue) < 0.05)
+        {
+			setVelocity(yValue, yValue);
+	 	}
+		else if(yValue == 0 && Math.abs(xValue) < 0.05)
+		{
+			resetEncoders();
+			gyro.resetAngle();
+			stop();
+			supposedAngle = gyro.getYaw();
+		}
+		else
+		{
+			gyro.resetAngle();
+			curvatureDrive(xValue, yValue);
+			supposedAngle = gyro.getYaw();
+		}
+	}
 	
 	//USED BY AUTO FOR SOME REASON
     public static void setVelocity(double lSpeed, double rSpeed)
@@ -158,6 +210,12 @@ public class Drivetrain
     private static void curvatureDrive(double throttle, double turn)
 	{
 		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
+	}
+
+	public static void resetEncoders()
+	{
+		leftSRX.setSelectedSensorPosition(0);
+		rightSRX.setSelectedSensorPosition(0);
 	}
 
 }
