@@ -67,9 +67,9 @@ public class Constants
 	
 	//Elevator PID Values
 	public static final int interstagePID = 0; //PID Slot Index
-	public static final double interstageP = 0.3473;
-	public static final double interstageI = 0.0005;
-	public static final double interstageD = 0.7389;
+	public static final double interstageP = 8.5;
+	public static final double interstageI = 0.00004;
+	public static final double interstageD = 400;
 	public static final double interstageF = 0;
 	
 	public static final int carriageIdx = 1; //PID Slot Index
@@ -80,7 +80,7 @@ public class Constants
 	
 	//Elevator Motion Magic
 	public static final int kElevatorCruiseVelocity = 5000;
-	public static final int kElevatorAcceleration = 30000;
+	public static final int kElevatorAcceleration = 10000;
 	
 	//Hatch Intake PID Values 
 	public static final int kHatchWristPID = 0; //PID Slot Index
@@ -158,9 +158,10 @@ public class Constants
 	public static final int elevatorHatchL2 = 18000;
 	public static final int elevatorCargoL2 = 28000;
 	public static final int elevatorHatchL3 = 40000;
-	public static final int elevatorStowed = 11120;
-	public static final int elevatorVerticalStowed = 13350;
+	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
+	public static final int elevatorVerticalStowed = 14350;
 	public static final int elevatorMinRotation = 19000; //Might want to combine with hatch lvl2
+	public static final int elevatorStartingStowed = 10700;
 
 	//Hatch Intake Positions
 	public static final int kWristPositionThreshold = 25;

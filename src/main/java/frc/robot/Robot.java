@@ -30,14 +30,14 @@ public class Robot extends TimedRobot
     {
         mainController = new Joysticks(0);
         coController = new Joysticks(1);
-        //gyro = new Gyro();
+        gyro = new Gyro();
         TestFunctions.shuffleboard();
     }
 
     @Override
     public void robotPeriodic() 
     {
-        //gyro.updateGyro();
+        gyro.updateGyro();
         updateJoysticks();
     }
     
@@ -74,58 +74,36 @@ public class Robot extends TimedRobot
         Arm.armInitialization();
         Elevator.elevatorInitialization();
         SeriesStateMachine.seriesStateMachineInitialization();
-       //Arm.aimedState = ArmPosition.REVLIMITSWITCH;
+       //Arm.setToBrake();
+
 
     }
 
     @Override
     public void testPeriodic()
     {
-        // gyro.printAngles();
+       // gyro.printAngles();
         //Drivetrain.customArcadeDrive(mainController.leftJoyStickY, mainController.rightJoyStickX, gyro);
         // BallIntake.runSmartBallIntake(coController.leftTrigger, coController.leftBumper);
         // HatchIntake.runHatchIntakeWrist(coController);
         // HatchIntake.printPosition();
         // HatchGrabber.runHatchGrabber(coController.rightBumper);
         // Arm.moveManual(coController.rightJoyStickY);
-
         //TestFunctions.updatePIDFMM();
-        //Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
-
-        // System.out.println("Elevator sensor " + Elevator.getLimitSwitch());
-        // System.out.println("Elevator sensor " + Elevator.elevatorEncoderValue);
-        // System.out.println("Elevator aimed state: " + Elevator.aimedState);
-        //Elevator.runElevator();
+        //Elevator.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
         //Elevator.setManualController(mainController);
         //Arm.setManualController(mainController);
-        //Arm.runArm();
-        System.out.println("ARM CS: " + Arm.currentState + " Arm AS: " + Arm.aimedState);
-        System.out.println("ELEV CS: " + Elevator.currentState + " Elev AS: " + Elevator.aimedState);
+        Elevator.runElevator();
+        Arm.runArm();
+        
+        // System.out.println("ARM CS: " + Arm.currentState + " Arm AS: " + Arm.aimedState);
+        // System.out.println("ELEV CS: " + Elevator.currentState + " Elev AS: " + Elevator.aimedState);
         SeriesStateMachine.runSeriesStateMachine(mainController);
-        System.out.println("Button b pressed " + mainController.buttonB);
-        //Arm.armNEO.set(Arm.armSRX.getMotorOutputPercent());
-        //Arm.armSRX.set(ControlMode.PercentOutput, );
-        //Arm.printArmEncoders();
         Elevator.printElevatorEncoders();
-		//System.out.println("Is NEO following: " + Arm.armNEO.isFollower());
-        //Arm.printPercentOutput();
-        //System.out.println("CCL: " + Arm.armEncoderCCL);
-
-        // if(mainController.rightTrigger > .15)
-        //     Elevator.stopElevator();
-        // Elevator.testElevatorCurrent();
-
-        // System.out.println("dPad Up: " + mainController.dPadUp);
-        // System.out.println("dPad down: " + mainController.dPadDown);
-        // System.out.println("dPad left: " + mainController.dPadLeft);
-        // System.out.println("dPad right: " + mainController.dPadRight);
-
-        // System.out.println("POV: " + mainController.dPadValue);
-
-
+        Arm.printArmEncoders();
     }
     @Override
-    public void disabledPeriodic() {
+    public void disabledInit() {
         Arm.armSRX.setNeutralMode(NeutralMode.Coast);
     }
 

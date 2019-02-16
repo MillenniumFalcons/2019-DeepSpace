@@ -29,7 +29,7 @@ public class RobotPos
 
     public Movement movementCheck(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
-        //System.out.println("E level: " + eLevel + " Arm Level: " + armPos);
+        System.out.println("CHECKING MOVEMENT: \nElev level: " + posData.eLevel + " \nArm Level: " + posData.armPos);
         if(Elevator.currentState == posData.eLevel && Arm.currentState == posData.armPos) 
         {
             return Movement.ARRIVED;

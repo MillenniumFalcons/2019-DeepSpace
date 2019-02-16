@@ -58,9 +58,11 @@ public class Elevator
 		GearboxSPX2.setInverted(false);
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
+
+		setEncoderValue(Constants.elevatorStartingStowed);
 	}
 
-	public void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
+	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
 		elevatorMaster.selectProfileSlot(Constants.interstagePID, 0);
 
@@ -93,7 +95,7 @@ public class Elevator
 
 	public static void setManualController(Joysticks controller)
 	{
-		setManualOverride(controller.rightJoyStickY);
+		//setManualOverride(controller.rightJoyStickY);
 		// if(manualOverride)
 		// 	aimedState = ElevatorLevel.MANUAL;
 		// else if(BallShooter.cargoDetection())
@@ -126,6 +128,7 @@ public class Elevator
 		updateLivePosition();   
 		if(aimedState != null)
 		{
+			System.out.println("Elevator moving to: " + aimedState);
 			switch(aimedState) //check if aimed state has a value
 			{
 				case MANUAL:
@@ -166,7 +169,7 @@ public class Elevator
 					moveToMinRotate();
 					break;
 				default:
-					System.out.println("Unreachable Arm Position");
+					System.out.println("Unreachable ELEVATOR Position");
 					break;
 			}
 		}
@@ -187,7 +190,7 @@ public class Elevator
 		else
 		{
 			//setPosition(0);
-			setOpenLoop(-.25);
+			setOpenLoop(-.15);
 		}
     }
     
@@ -338,7 +341,7 @@ public class Elevator
 			currentState = ElevatorLevel.CARGOSHIP;
 			lastState = ElevatorLevel.CARGOSHIP;
 		}
-		else if(positionThreshold(Constants.elevatorStowed))
+		else if(positionThreshold(Constants.elevatorStowed) || positionThreshold(Constants.elevatorStartingStowed))
 		{
 			currentState = ElevatorLevel.STOWED;
 			lastState = ElevatorLevel.STOWED;

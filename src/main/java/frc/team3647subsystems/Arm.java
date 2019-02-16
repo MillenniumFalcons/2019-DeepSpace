@@ -457,6 +457,10 @@ public class Arm
 	}
 	//----------------------------------------------------------
 	
+	public static void setToBrake()
+	{
+		armNEO.setIdleMode(IdleMode.kBrake);
+	}
 	public static void printArmEncoders()
     {
         System.out.println("\nArm Encoder Value: " + armEncoderValue + "\nArm Velocity: " + armEncoderVelocity);
