@@ -43,13 +43,13 @@ public class Drivetrain
 
 		// // Config left side PID Values
 		// leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		// leftSRX.config_kP(Constants.drivePIDIdx, Constants.lDrivekP, Constants.kTimeoutMs);
-		// leftSRX.config_kI(Constants.drivePIDIdx, Constants.lDrivekI, Constants.kTimeoutMs);
-		// leftSRX.config_kD(Constants.drivePIDIdx, Constants.lDrivekD, Constants.kTimeoutMs);
-		// leftSRX.config_kF(Constants.drivePIDIdx, Constants.lDrivekF, Constants.kTimeoutMs);
+		// leftSRX.config_kP(Constants.drivePIDIdx, Constants.leftPercentPIDF[0], Constants.kTimeoutMs);
+		// leftSRX.config_kI(Constants.drivePIDIdx, Constants.leftPercentPIDF[1], Constants.kTimeoutMs);
+		// leftSRX.config_kD(Constants.drivePIDIdx, Constants.leftPercentPIDF[2], Constants.kTimeoutMs);
+		// leftSRX.config_kF(Constants.drivePIDIdx, Constants.leftPercentPIDF[3], Constants.kTimeoutMs);
 
 		// Config right side PID settings
-		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.drivePIDIdx, Constants.kTimeoutMs);
+		rightSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.driveSlotIdx, Constants.kTimeoutMs);
 		rightSRX.setSensorPhase(true);
 		rightSRX.configNominalOutputForward(0, Constants.kTimeoutMs);
 		rightSRX.configNominalOutputReverse(0, Constants.kTimeoutMs);
@@ -58,10 +58,10 @@ public class Drivetrain
 
 		// Config right side PID Values
 		// rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-		// rightSRX.config_kP(Constants.drivePIDIdx, Constants.rDrivekP, Constants.kTimeoutMs);
-		// rightSRX.config_kI(Constants.drivePIDIdx, Constants.rDrivekI, Constants.kTimeoutMs);
-		// rightSRX.config_kD(Constants.drivePIDIdx, Constants.rDrivekD, Constants.kTimeoutMs);
-		// rightSRX.config_kF(Constants.drivePIDIdx, Constants.rDrivekF, Constants.kTimeoutMs);
+		// rightSRX.config_kP(Constants.drivePIDIdx, Constants.rightPercentPIDF[0], Constants.kTimeoutMs);
+		// rightSRX.config_kI(Constants.drivePIDIdx, Constants.rightPercentPIDF[1], Constants.kTimeoutMs);
+		// rightSRX.config_kD(Constants.drivePIDIdx, Constants.rightPercentPIDF[2], Constants.kTimeoutMs);
+		// rightSRX.config_kF(Constants.drivePIDIdx, Constants.rightPercentPIDF[3], Constants.kTimeoutMs);
 
 		// Set up followers
 		leftSPX1.follow(leftSRX);
@@ -77,32 +77,31 @@ public class Drivetrain
 		setToBrake();
 	}
 	
-	public static void configurePIDFMM(double p, double i, double d, double f, double p2, double i2, double d2, double f2, int vel, int accel)
+	public static void selectPIDF(int slot, double[] right, double[] left)
 	{
-		int slot = Constants.velocityPIDIdx;
 
 		//PID SLOT
 		rightSRX.selectProfileSlot(slot, 0);
 		leftSRX.selectProfileSlot(slot, 0);
 
 		//PID
-		rightSRX.config_kP(slot, p, Constants.kTimeoutMs);		
-		rightSRX.config_kI(slot, i, Constants.kTimeoutMs);	
-		rightSRX.config_kD(slot, d, Constants.kTimeoutMs);
-		rightSRX.config_kF(slot, f, Constants.kTimeoutMs);
+		rightSRX.config_kP(slot, right[0], Constants.kTimeoutMs);		
+		rightSRX.config_kI(slot, right[1], Constants.kTimeoutMs);	
+		rightSRX.config_kD(slot, right[2], Constants.kTimeoutMs);
+		rightSRX.config_kF(slot, right[3], Constants.kTimeoutMs);
 
-		leftSRX.config_kP(slot, p2, Constants.kTimeoutMs);		
-		leftSRX.config_kI(slot, i2, Constants.kTimeoutMs);	
-		leftSRX.config_kD(slot, d2, Constants.kTimeoutMs);
-		leftSRX.config_kF(slot, f2, Constants.kTimeoutMs);
+		leftSRX.config_kP(slot, left[0], Constants.kTimeoutMs);		
+		leftSRX.config_kI(slot, left[1], Constants.kTimeoutMs);	
+		leftSRX.config_kD(slot, left[2], Constants.kTimeoutMs);
+		leftSRX.config_kF(slot, left[3], Constants.kTimeoutMs);
 		
 
 		//Motion Magic Constants
-		rightSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
-		rightSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+		// rightSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+		// rightSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
 		
-		leftSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
-        leftSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+		// leftSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+        // leftSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
 	}
 
 	/**
@@ -113,11 +112,12 @@ public class Drivetrain
 	 */
     public static void customArcadeDrive(double xValue, double yValue, Gyro gyro)
 	{
-		if(yValue != 0 && Math.abs(xValue) < 0.05)
+		double threshold = 0.09;
+		if(yValue != 0 && Math.abs(xValue) < threshold)
         {
 			setPercentOutput(yValue, yValue);
 	 	}
-		else if(yValue == 0 && Math.abs(xValue) < 0.05)
+		else if(yValue == 0 && Math.abs(xValue) < threshold)
 		{
 			resetEncoders();
 			gyro.resetAngle();
@@ -147,11 +147,12 @@ public class Drivetrain
 	
 	public static void velocityDrive(double xValue, double yValue, Gyro gyro)
 	{
-		if(yValue != 0 && Math.abs(xValue) < 0.05)
+		double threshold = 0.09;
+		if(yValue != 0 && Math.abs(xValue) < threshold)
         {
 			setVelocity(yValue, yValue);
 	 	}
-		else if(yValue == 0 && Math.abs(xValue) < 0.05)
+		else if(yValue == 0 && Math.abs(xValue) < threshold)
 		{
 			resetEncoders();
 			gyro.resetAngle();

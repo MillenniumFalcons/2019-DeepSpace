@@ -135,7 +135,7 @@ public class Joysticks
 	 */
 	public static double joystickThreshold(double jValue)
 	{
-		if(jValue < .05 && jValue > -.05)
+		if(Math.abs(jValue) < .09)
 		{
 			return 0;
 		}

@@ -13,7 +13,7 @@ public class RamseteFollower
 {
 
     // Should be greater than zero and this increases correction
-    private double b = Constants.kZeta;//1.5;
+    private double b = Constants.kBeta;//1.5;
 
     // Should be between zero and one and this increases dampening
     private double zeta = Constants.kZeta; //0.7;
