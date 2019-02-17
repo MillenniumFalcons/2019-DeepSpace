@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class HatchIntake 
@@ -86,16 +85,23 @@ public class HatchIntake
 		setWristEncoder();
 		setManualOverride(controller.leftJoyStickY);
 		//get joy input
-		if(manualOverride)
-			aimedState = WristPosition.MANUAL;
-		else if(controller.dPadRight)
-			aimedState = WristPosition.SCORE;
-		else if(controller.dPadLeft)
-			aimedState = WristPosition.HANDOFF;
-		else if(controller.dPadUp)
-			aimedState = WristPosition.STOWED;
-		else if(controller.dPadDown)
-			aimedState = WristPosition.GROUND;
+		// if(manualOverride)
+		// 	aimedState = WristPosition.MANUAL;
+		// else if(controller.leftJoyStickX > .15)
+		// 	aimedState = WristPosition.SCORE;
+		// else if(controller.leftJoyStickX < -.15)
+		// 	aimedState = WristPosition.HANDOFF;
+		// else if(controller.leftJoyStickY > .15)
+		// 	aimedState = WristPosition.STOWED;
+		// else if(controller.leftJoyStickY < -.15)
+		// 	aimedState = WristPosition.GROUND;
+
+		if(controller.leftBumper && clampSolenoid.get())
+			closeClamp();
+		else if(controller.leftBumper &&  !clampSolenoid.get())
+			openClamp();
+			
+		
 			//move to positions
 		if(aimedState != null)
 		{

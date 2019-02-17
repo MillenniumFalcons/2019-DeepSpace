@@ -1,6 +1,8 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
+import frc.team3647inputs.Joysticks;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.*;
@@ -30,21 +32,17 @@ public class BallShooter
 		setOpenLoop(1);
 	}
 	
-	public static void intakeCargo()
+	public static void intakeCargo(double power)
 	{
-		setOpenLoop(-0.75);
+		setOpenLoop(-power);
 	}
 
-	public static void runShooter(boolean joyValue)
+	public static void runSmartShooter(Joysticks controller)
 	{
-		if(joyValue)
-		{
+		if(cargoDetection() && controller.rightTrigger > .15)
 			shootBall();
-		}
-		else
-		{
-			stopMotor();
-		}
+		else if(!cargoDetection() && controller.rightTrigger > .15)
+			intakeCargo(controller.rightTrigger);
 	}
 	
 	public static boolean cargoDetection()

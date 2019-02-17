@@ -2,20 +2,15 @@ package frc.team3647subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
-import frc.robot.*;
 import frc.team3647inputs.*;
 
 public class Arm
@@ -269,7 +264,7 @@ public class Arm
 	{
 		if(!getRevLimitSwitch())
 		{
-			setOpenLoop(-.2);
+			setOpenLoop(-.3);
 		}
 		else
 		{

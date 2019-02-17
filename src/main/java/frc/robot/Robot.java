@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -41,18 +40,18 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() 
     {
-        mainController = new Joysticks(0);
-        coController = new Joysticks(1);
-        gyro = new Gyro();
-        TestFunctions.shuffleboard();
-        Drivetrain.drivetrainInitialization();
+        // mainController = new Joysticks(0);
+        // coController = new Joysticks(1);
+        // gyro = new Gyro();
+        // TestFunctions.shuffleboard();
+        // Drivetrain.drivetrainInitialization();
     }
 
     @Override
     public void robotPeriodic() 
     {
-        gyro.updateGyro();
-        updateJoysticks();
+        // gyro.updateGyro();
+        // updateJoysticks();
     }
 
     @Override
@@ -91,46 +90,23 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() 
     {
-        // HatchIntake.hatchIntakeInitialization();
-        // BallIntake.ballIntakeinitialization();
-        // BallShooter.ballShooterinitialization();
         // Arm.armInitialization();
         // Elevator.elevatorInitialization();
         // SeriesStateMachine.seriesStateMachineInitialization();
-        // Arm.setToBrake();
-        TestFunctions.shuffleboard();
     }
 
     @Override
     public void testPeriodic()
     {
-        // System.out.println(mainController.rightJoyStickY);
-        // gyro.printAngles();
-        Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
-        // BallIntake.runSmartBallIntake(coController.leftTrigger,
-        // coController.leftBumper);
+        // HatchGrabber.runHatchGrabber(coController.rightBumper);
         // HatchIntake.runHatchIntakeWrist(coController);
-        // HatchIntake.printPosition();
-        Drivetrain.velocityDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
-        double[] left = {0,0,0,0};
-        double[] right = {0,0,0,0};
-        Drivetrain.selectPIDF(1, right, left);
-        // Arm.moveManual(coController.rightJoyStickY);
-        TestFunctions.updatePIDFMM();
-        System.out.println(Drivetrain.leftSRX.getSelectedSensorVelocity());
-        // Elevator.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
-        // Elevator.setManualController(mainController);
-        // Arm.setManualController(mainController);
-        // Elevator.runElevator();
         // Arm.runArm();
-
-        // System.out.println("ARM CS: " + Arm.currentState + " Arm AS: " +
-        // Arm.aimedState);
-        // System.out.println("ELEV CS: " + Elevator.currentState + " Elev AS: " +
-        // Elevator.aimedState);
-        // SeriesStateMachine.runSeriesStateMachine(mainController);
+        // Elevator.runElevator();
+        // SeriesStateMachine.runSeriesStateMachine(coController);
         // Elevator.printElevatorEncoders();
         // Arm.printArmEncoders();
+        System.out.println("LIMF: " + Canifier.cargoBeamBreak());
+
     }
     @Override
     public void disabledInit() 
@@ -140,7 +116,7 @@ public class Robot extends TimedRobot {
 
     public void updateJoysticks()
     {
-        mainController.setMainContollerValues();
+        // mainController.setMainContollerValues();
         // coController.setMainContollerValues();
     }
 }

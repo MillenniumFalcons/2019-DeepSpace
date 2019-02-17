@@ -19,8 +19,8 @@ private static double prevRightVelocity, maxRightVelocity;
 private static double prevLeftAccel, maxLeftAccel;
 private static double prevRightAccel, maxRightAccel;
 
-private static double prevLeftJerk, maxLeftJerk;
-private static double prevRightJerk, maxRightJerk;
+private static double maxLeftJerk;
+private static double maxRightJerk;
 
 public static void initializeVelAccel()
 {

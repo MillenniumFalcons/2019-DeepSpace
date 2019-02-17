@@ -4,7 +4,7 @@ import frc.robot.Constants;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Segment;
 
-@SuppressWarnings("FieldCanBeLocal")
+//@SuppressWarnings("FieldCanBeLocal")
 /**
  * Ramsete implementation by Brian for Team 321 based on Aaron's implementation
  * with help from Prateek and all on the FIRST programming discord server

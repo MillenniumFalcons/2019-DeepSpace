@@ -86,7 +86,8 @@ public class Elevator
         HATCHHANDOFF,
 		HATCHL2,
 		HATCHL3, //also cargo lvl3
-        CARGOL2,
+		CARGOL2,
+		CARGO1,
         CARGOSHIP,
 		STOWED,
 		MINROTATE,
@@ -111,7 +112,7 @@ public class Elevator
 		updateLivePosition();   
 		if(aimedState != null)
 		{
-			System.out.println("Elevator moving to: " + aimedState);
+			//System.out.println("Elevator moving to: " + aimedState);
 			switch(aimedState) //check if aimed state has a value
 			{
 				case MANUAL:
@@ -136,6 +137,9 @@ public class Elevator
 				case HATCHL3:
 					moveToHatchL3();
 					break;
+				case CARGO1:
+					moveToCargoL1();
+					break;
 				case CARGOL2:
 					moveToCargoL2();
 					break;
@@ -158,6 +162,8 @@ public class Elevator
 		}
 	}
 	
+	
+
 	// Motion Magic based movement------------------------------
 	private static void setPosition(int position)
 	{
@@ -196,7 +202,10 @@ public class Elevator
     {
         setPosition(Constants.elevatorHatchL3);
     }
-
+	private static void moveToCargoL1() 
+	{
+		setPosition(Constants.elevatorCargoL1);
+	}
     private static void moveToCargoL2()
     {
         setPosition(Constants.elevatorCargoL2);
@@ -224,7 +233,7 @@ public class Elevator
 	//----------------------------------------------------------
 
 	//Manual movement-------------------------------------------
-	private static void setManualOverride(double jValue)
+	public static void setManualOverride(double jValue)
 	{
 		if(Math.abs(jValue) > .05) //deadzone
 		{

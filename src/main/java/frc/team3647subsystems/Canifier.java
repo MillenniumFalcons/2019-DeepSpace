@@ -18,25 +18,11 @@ public class Canifier
 
     public static boolean cargoBeamBreak()
     {
-        if(can.getGeneralInput(GeneralPin.LIMF))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return can.getGeneralInput(GeneralPin.LIMF);
     }
 
     public static boolean hatchGrabberSensor()
     {
-        if(can.getGeneralInput(GeneralPin.LIMR))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return can.getGeneralInput(GeneralPin.LIMR);
     }
 }

@@ -45,7 +45,7 @@ public class Constants
 	public static final int hatchGrabberSolinoidPin = 5;
 
 	//CANifier Pin
-	public static final int canifierPin = 19;
+	public static final int canifierPin = 0;
 	
 	// AirCompressor Pin
 	public static final int CompressorPCMPin = 0;
@@ -154,6 +154,7 @@ public class Constants
 	public static final int elevatorCargoHandoff = 6000; //need to test this and hatch handoff levels, might be able to combine
 	public static final int elevatorCargoShip = 21000;
 	public static final int elevatorHatchL2 = 18000;
+	public static final int elevatorCargoL1 = 2000; // need to check
 	public static final int elevatorCargoL2 = 28000;
 	public static final int elevatorHatchL3 = 40000;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
@@ -184,5 +185,6 @@ public class Constants
 	public static final double PFkD = 0;
 	public static final double PFkI = 0;
 	public static final double PFkP = 0;
+	
 
 }

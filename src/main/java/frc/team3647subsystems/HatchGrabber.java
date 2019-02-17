@@ -1,8 +1,6 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.*;
 
 public class HatchGrabber

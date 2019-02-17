@@ -5,7 +5,7 @@ import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.robot.*;
 
-import edu.wpi.first.wpilibj.Notifier;
+//import edu.wpi.first.wpilibj.Notifier;
 
 public class RobotPos
 {
@@ -29,7 +29,7 @@ public class RobotPos
 
     public Movement movementCheck(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
-        System.out.println("CHECKING MOVEMENT: \nElev level: " + posData.eLevel + " \nArm Level: " + posData.armPos);
+        System.out.println("CHECKING MOVEMENT to: " + scoringPos);
         if(Elevator.currentState == posData.eLevel && Arm.currentState == posData.armPos) 
         {
             return Movement.ARRIVED;
