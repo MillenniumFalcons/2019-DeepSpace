@@ -45,6 +45,9 @@ public class HatchIntake
 		//Motion Magic Constants
 		wristMotor.configMotionAcceleration(Constants.kHatchWristAcceleration, Constants.kTimeoutMs);
 		wristMotor.configMotionCruiseVelocity(Constants.kHatchWristCruiseVelocity, Constants.kTimeoutMs);
+
+		aimedState = null;
+		resetEncoder();
 	}
 
 	public void configPIDFVA(double p, double i, double d, double f, int vel, int accel) //for configuring PID values
@@ -82,19 +85,19 @@ public class HatchIntake
 
 	public static void runHatchIntakeWrist(Joysticks controller)
 	{
-		setWristEncoder();
-		setManualOverride(controller.leftJoyStickY);
+		//setWristEncoder();
+		//setManualOverride(controller.leftJoyStickY);
 		//get joy input
-		// if(manualOverride)
-		// 	aimedState = WristPosition.MANUAL;
-		// else if(controller.leftJoyStickX > .15)
-		// 	aimedState = WristPosition.SCORE;
-		// else if(controller.leftJoyStickX < -.15)
-		// 	aimedState = WristPosition.HANDOFF;
-		// else if(controller.leftJoyStickY > .15)
-		// 	aimedState = WristPosition.STOWED;
-		// else if(controller.leftJoyStickY < -.15)
-		// 	aimedState = WristPosition.GROUND;
+		if(manualOverride)
+			aimedState = WristPosition.MANUAL;
+		else if(controller.leftJoyStickX > .15)
+			aimedState = WristPosition.SCORE;
+		else if(controller.leftJoyStickX < -.15)
+			aimedState = WristPosition.HANDOFF;
+		else if(controller.leftJoyStickY > .15)
+			aimedState = WristPosition.STOWED;
+		else if(controller.leftJoyStickY < -.15)
+			aimedState = WristPosition.GROUND;
 
 		if(controller.leftBumper && clampSolenoid.get())
 			closeClamp();
@@ -107,15 +110,15 @@ public class HatchIntake
 		{
 			switch(aimedState)
 			{
-				case MANUAL:
-					if(!manualOverride)
-					{
-						overrideValue = 0;
-					}
-					moveManual(overrideValue);
-					break;
+				// case MANUAL:
+				// 	if(!manualOverride)
+				// 	{
+				// 		overrideValue = 0;
+				// 	}
+				// 	moveManual(overrideValue);
+				// 	break;
 				case STOWED:
-					closeClamp();
+					//closeClamp();
 					moveToStowed();
 					break;
 				case SCORE:
@@ -146,17 +149,17 @@ public class HatchIntake
 
 	public static void moveToStowed()
 	{
-		if(getLimitSwitch())
-		{
+		// if(getLimitSwitch())
+		// {
 			//System.out.println("Hatch Intake Stowed");
-			stopWrist();
-			resetEncoder();
-		}
-		else
-		{
-			//setPosition(0);
-			setOpenLoop(-0.25);
-		}
+			// stopWrist();
+			// resetEncoder();
+		// }
+		// else
+		// {
+			setPosition(0);
+			//setOpenLoop(-0.25);
+		//}
 	}
 
 	//Motion Magic movement-------------------------------------
@@ -248,10 +251,10 @@ public class HatchIntake
 	// Encoder methods------------------------------------------
 	public static void setWristEncoder()
 	{
-		if(getLimitSwitch())
-		{
-			resetEncoder();
-		}
+		// if(getLimitSwitch())
+		// {
+		// 	resetEncoder();
+		// }
 		wristEncoderValue = wristMotor.getSelectedSensorPosition(0);
 		wristEncoderVelocity = wristMotor.getSelectedSensorVelocity(0);
 		wristEncoderCCL = wristMotor.getClosedLoopError(0);
@@ -282,7 +285,7 @@ public class HatchIntake
 
 	public static void printPosition()
 	{
-		System.out.println("Encoder Value: " + wristEncoderValue);
+		System.out.println("Encoder Value: " + wristMotor.getSelectedSensorPosition(0));
 	}
 
 

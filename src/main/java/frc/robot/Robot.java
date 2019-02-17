@@ -40,18 +40,18 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() 
     {
-        // mainController = new Joysticks(0);
-        // coController = new Joysticks(1);
-        // gyro = new Gyro();
-        // TestFunctions.shuffleboard();
-        // Drivetrain.drivetrainInitialization();
+        mainController = new Joysticks(0);
+        coController = new Joysticks(1);
+        gyro = new Gyro();
+        TestFunctions.shuffleboard();
+        Drivetrain.drivetrainInitialization();
     }
 
     @Override
     public void robotPeriodic() 
     {
-        // gyro.updateGyro();
-        // updateJoysticks();
+        gyro.updateGyro();
+        updateJoysticks();
     }
 
     @Override
@@ -90,22 +90,26 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() 
     {
-        // Arm.armInitialization();
-        // Elevator.elevatorInitialization();
-        // SeriesStateMachine.seriesStateMachineInitialization();
+        Arm.armInitialization();
+        Elevator.elevatorInitialization();
+        SeriesStateMachine.seriesStateMachineInitialization();
+        HatchIntake.hatchIntakeInitialization();
     }
 
     @Override
     public void testPeriodic()
     {
         // HatchGrabber.runHatchGrabber(coController.rightBumper);
-        // HatchIntake.runHatchIntakeWrist(coController);
+        HatchIntake.runHatchIntakeWrist(coController);
         // Arm.runArm();
         // Elevator.runElevator();
         // SeriesStateMachine.runSeriesStateMachine(coController);
         // Elevator.printElevatorEncoders();
         // Arm.printArmEncoders();
-        System.out.println("LIMF: " + Canifier.cargoBeamBreak());
+        // System.out.println("LIMF: " + Canifier.cargoBeamBreak());
+        // BallShooter.intakeCargo(coController.leftTrigger);
+            //BallShooter.intakeCargo(coController.leftTrigger);
+        HatchIntake.printPosition();
 
     }
     @Override
@@ -116,7 +120,7 @@ public class Robot extends TimedRobot {
 
     public void updateJoysticks()
     {
-        // mainController.setMainContollerValues();
-        // coController.setMainContollerValues();
+        mainController.setMainContollerValues();
+        coController.setMainContollerValues();
     }
 }

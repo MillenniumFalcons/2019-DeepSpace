@@ -11,6 +11,7 @@ public class SeriesStateMachine
 {
     private static RobotPos robotState;
 
+    private static boolean hasCargo = false;
     //Hatch scoring positions
     private static RobotPos hatchL1Forwards, hatchL1Backwards, hatchL2Forwards, hatchL2Backwards, hatchL3Forwards, hatchL3Backwards;
 
@@ -110,7 +111,7 @@ public class SeriesStateMachine
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
         //If the robot has a ball:
-        if(BallShooter.cargoDetection())
+        if(BallShooter.cargoDetection() || hasCargo)
         {
             if(controller.buttonA)
                 aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
@@ -129,7 +130,7 @@ public class SeriesStateMachine
             else if(controller.dPadUp)
                 aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
         }
-        else if(!BallShooter.cargoDetection())
+        else if(!BallShooter.cargoDetection() || !hasCargo)
         {
             if(controller.buttonA)
                 aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
@@ -154,13 +155,13 @@ public class SeriesStateMachine
         
         if(controller.leftTrigger > .15)
         {
-            
             if(!arrivedAtMidPos)
             {
+                ballIntakeTimer.reset();
                 ballIntakeTimer.start();
                 aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
             }
-            else if(arrivedAtMidPos)
+            else if(cargoGroundIntakeExtended && ballIntakeTimer.get() > 1.5)
             {
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
             }
@@ -168,7 +169,10 @@ public class SeriesStateMachine
         else
         {
             arrivedAtMidPos = false;
-            ballIntakeTimer.reset();
+        }
+        if(controller.rightTrigger > .15)
+        {
+            BallShooter.shootBall();
         }
 
 
@@ -235,8 +239,7 @@ public class SeriesStateMachine
                     groundHatchIntakeHandoff();
                     break;
                 case CARGOHANDOFF:
-                    if(ballIntakeTimer.get() > 5)
-                        cargoHandoff(controller);
+                    cargoHandoff(controller);
                     break;
                 case STOWED:
                     stowed();
@@ -569,6 +572,7 @@ public class SeriesStateMachine
                 System.out.println("Arrived at cargoL2Forwards");
                 Arm.aimedState = cargoL2Forwards.armPos;
                 Elevator.aimedState = cargoL2Forwards.eLevel;
+                BallIntake.retractIntake();
                 break;
             case MOVEELEV:
                 System.out.println("Moving Elevator to: " + cargoL2Forwards.eLevel);
@@ -716,12 +720,14 @@ public class SeriesStateMachine
                 System.out.println("Arrived at cargoHandoff");
                 Arm.aimedState = cargoHandoff.armPos;
                 Elevator.aimedState = cargoHandoff.eLevel;
+
                 BallIntake.runIntake(controller.leftTrigger);
-                if(BallShooter.cargoDetection())
+                if(controller.leftTrigger < .15)
                 {
                     BallIntake.stopMotor();
                     BallShooter.stopMotor();
                     aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+                    hasCargo = true;
                 }
                 break;
             case MOVEELEV:
@@ -901,7 +907,7 @@ public class SeriesStateMachine
             stowed();
     }
 
-    private static boolean arrivedAtMidPos=false;
+    private static boolean arrivedAtMidPos=false, cargoGroundIntakeExtended=false;
     public static void extendCargoGroundIntake()
     {
         if(!arrivedAtMidPos)
@@ -911,7 +917,10 @@ public class SeriesStateMachine
                 arrivedAtMidPos = true;
         }
         if(arrivedAtMidPos)
+        {
             BallIntake.extendIntake();
+            cargoGroundIntakeExtended = true;
+        }
         
     }
 

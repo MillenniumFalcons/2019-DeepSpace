@@ -43,7 +43,7 @@ public class BallIntake
 		}
 	}
 	// For state machine
-	public static void runIntake(double power)
+	public static void runSmartIntake(double power)
 	{
 		if(!BallShooter.cargoDetection())
 		{
@@ -51,18 +51,10 @@ public class BallIntake
 			BallShooter.intakeCargo(power);
 		}
 	}
-	public static void runIntake(boolean joyValue)
+	public static void runIntake(double power)
 	{
-		if(joyValue)
-		{
-			extendIntake();
-			intakeCargo(.75);
-		}
-		else
-		{
-			stopMotor();
-			retractIntake();
-		}
+			intakeCargo(power);
+			BallShooter.intakeCargo(power);
 	}
 	
 	public static void setOpenLoop(double speed)
