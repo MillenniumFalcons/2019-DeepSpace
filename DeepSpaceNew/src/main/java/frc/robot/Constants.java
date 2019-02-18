@@ -41,11 +41,11 @@ public class Constants
 
 	//Solinoid Pins
 	public static final int ballIntakeSolinoidPin = 0;
-	public static final int hatchIntakeSolinoidPin = 7;
-	public static final int hatchGrabberSolinoidPin = 5;
+	public static final int hatchIntakeSolinoidPin = 1;
+	public static final int hatchGrabberSolinoidPin = 2;
 
 	//CANifier Pin
-	public static final int canifierPin = 19;
+	public static final int canifierPin = 0;
 	
 	// AirCompressor Pin
 	public static final int CompressorPCMPin = 0;
@@ -56,13 +56,10 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PID & MOTION MAGIC VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Arm PID Values
 	public static final int armPID = 0;
-	public static final double armkP = .75;
-	public static final double armkI = 0.00017;
-	public static final double armkD = 45;
-	public static final double armkF = 0;
+	public static final double[] armPIDF = {1,0,20,0};
 
 	//Arm motion magic
-	public static final int kArmSRXCruiseVelocity = 3500;
+	public static final int kArmSRXCruiseVelocity = 3250;
 	public static final int kArmSRXAcceleration = 8000;
 	
 	//Elevator PID Values
@@ -144,15 +141,16 @@ public class Constants
 
 	//Elevator Positions
 	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values
+	public static final int elevatorCargoL1 = 6000; // need to check
 	public static final int elevatorHatchHandoff = 6000;
 	public static final int elevatorCargoHandoff = 6000; //need to test this and hatch handoff levels, might be able to combine
 	public static final int elevatorCargoShip = 21000;
-	public static final int elevatorHatchL2 = 18000;
+	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28000;
-	public static final int elevatorHatchL3 = 40000;
+	public static final int elevatorHatchL3 = 42000;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 14350;
-	public static final int elevatorMinRotation = 19000; //Might want to combine with hatch lvl2
+	public static final int elevatorMinRotation = 20000; //Might want to combine with hatch lvl2
 	public static final int elevatorStartingStowed = 10700;
 
 	//Hatch Intake Positions

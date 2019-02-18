@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3647autonomous.DriveSignal;
@@ -25,7 +26,7 @@ public class Robot extends TimedRobot
   // private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   Joysticks mainController;
-  Joysticks coController;
+  public static Joysticks coController;
   public static Gyro gyro;
 
   DriveSignal driveSignal;
@@ -110,6 +111,7 @@ public class Robot extends TimedRobot
   @Override
   public void teleopInit() 
   {
+    BallIntake.ballIntakeinitialization();
     Arm.armInitialization();
     Elevator.elevatorInitialization();
     SeriesStateMachine.seriesStateMachineInitialization();
@@ -122,29 +124,48 @@ public class Robot extends TimedRobot
   public void teleopPeriodic() 
   {
     Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
-    // HatchGrabber.runHatchGrabber(coController.rightBumper);
-    // Arm.runArm();
-    // Elevator.runElevator();
-    // HatchIntake.runHatchIntakeWrist(mainController);
-    // HatchIntake.runHatchClamp(coController.leftBumper);
-    // SeriesStateMachine.runSeriesStateMachine(coController);
+    HatchGrabber.runHatchGrabber(coController.rightBumper);
+    Arm.runArm();
+    Elevator.runElevator();
+    HatchIntake.runHatchIntakeWrist();
+    HatchIntake.runHatchIntakeClamp(coController.leftBumper);
+    SeriesStateMachine.runSeriesStateMachine(coController);
+  }
+
+  @Override
+  public void disabledInit() 
+  {
+    Arm.armNEO.setIdleMode(IdleMode.kCoast);
+    Drivetrain.setToCoast();
   }
 
 
   @Override
   public void testInit() 
   {
-    Elevator.elevatorInitialization();
-    TestFunctions.shuffleboard();
+    // Elevator.elevatorInitialization();
+    // Arm.armInitialization();
+    // TestFunctions.shuffleboard();
+    //BallIntake.ballIntakeinitialization();
+    BallShooter.ballShooterinitialization();
   }
   @Override
   public void testPeriodic() 
   {
-    Elevator.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
-    TestFunctions.updatePIDFMM();
-    Elevator.setManualController(mainController);
-    Elevator.runElevator();
-    Elevator.printElevatorEncoders();
+    // Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
+    // TestFunctions.updatePIDFMM();
+    // Arm.setManualController(mainController);
+    // Arm.runArm();
+    // Arm.printArmEncoders();
+    // if(coController.leftBumper)
+    // {
+    //   System.out.println("extend ball intake!");
+    //   BallIntake.extensionCylinder.set(true);
+    // }
+    // else
+    //   BallIntake.extensionCylinder.set(true);
+
+    System.out.println("Cargo sensor :" + BallShooter.cargoDetection());
   }
 
   public void updateJoysticks() 

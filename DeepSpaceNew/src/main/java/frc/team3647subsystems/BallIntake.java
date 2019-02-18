@@ -26,9 +26,9 @@ public class BallIntake
 			}
 			else
 			{
-				intakeCargo();
+				intakeCargo(.75);
 				extendIntake();
-				BallShooter.intakeCargo();
+				BallShooter.intakeCargo(.75);
 			}
 		}
 		else if(shootJValue)
@@ -42,19 +42,24 @@ public class BallIntake
 			retractIntake();
 		}
 	}
-	
-	public static void runIntake(boolean joyValue)
+	// For state machine
+	public static void runSmartIntake(double power)
 	{
-		if(joyValue)
+		if(!BallShooter.cargoDetection())
 		{
-			extendIntake();
-			intakeCargo();
+			intakeCargo(power);
+			BallShooter.intakeCargo(power);
 		}
 		else
 		{
+			BallShooter.stopMotor();
 			stopMotor();
-			retractIntake();
 		}
+	}
+	public static void runIntake(double power)
+	{
+			intakeCargo(power);
+			BallShooter.intakeCargo(power);
 	}
 	
 	public static void setOpenLoop(double speed)
@@ -77,9 +82,9 @@ public class BallIntake
 		extensionCylinder.set(false);
 	}
 
-	public static void intakeCargo()
+	public static void intakeCargo(double power)
 	{
-		setOpenLoop(0.5);
+		setOpenLoop(power);
 	}
 
 	public static void backOutIntake()

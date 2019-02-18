@@ -2,20 +2,16 @@ package frc.team3647subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants;
-import frc.robot.*;
+import frc.robot.Robot;
 import frc.team3647inputs.*;
 
 public class Arm
@@ -53,10 +49,10 @@ public class Arm
 
 		// PID for motors
 		armSRX.selectProfileSlot(Constants.armPID, 0);
-		armSRX.config_kP(Constants.armPID, Constants.armkP, Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armPID, Constants.armkI, Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armPID, Constants.armkD, Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armPID, Constants.armkF, Constants.kTimeoutMs);
+		armSRX.config_kP(Constants.armPID, Constants.armPIDF[0], Constants.kTimeoutMs);
+		armSRX.config_kI(Constants.armPID, Constants.armPIDF[1], Constants.kTimeoutMs);
+		armSRX.config_kD(Constants.armPID, Constants.armPIDF[2], Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armPID, Constants.armPIDF[3], Constants.kTimeoutMs);
 		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);	
 		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
 
@@ -269,13 +265,12 @@ public class Arm
 	{
 		if(!getRevLimitSwitch())
 		{
-			setOpenLoop(-.2);
+			setOpenLoop(-.3);
 		}
 		else
 		{
 			resetArmEncoder();
 			setPosition(0);
-			//stopArm();
 		}
 	}
 	//---------------------------------------
@@ -445,15 +440,16 @@ public class Arm
 	public static boolean getRevLimitSwitch()
 	{
 		//Limit switch connected to the NEO
+		// return Robot.coController.leftJoyStickPress;
+		// return armSRX.getSensorCollection().isRevLimitSwitchClosed();
 		return revNeoLimitSwitch.get();
-		//return armSRX.getSensorCollection().isRevLimitSwitchClosed();
 	}
 
 	public static boolean getFwdLimitSwitch()
 	{
 		//Limit switch connected to the NEO
 		return fwdNeoLimitSwitch.get();
-		//return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+		// return armSRX.getSensorCollection().isRevLimitSwitchClosed();
 	}
 	//----------------------------------------------------------
 	

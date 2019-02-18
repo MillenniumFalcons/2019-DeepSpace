@@ -81,10 +81,8 @@ public class HatchIntake
 		clampSolenoid.set(false);
 	}
 
-	public static void runHatchIntakeWrist(Joysticks controller)
+	public static void setManualControllerValues(Joysticks controller)
 	{
-		setWristEncoder();
-		setManualOverride(controller.leftJoyStickY);
 		//get joy input
 		if(manualOverride)
 			aimedState = WristPosition.MANUAL;
@@ -97,6 +95,10 @@ public class HatchIntake
 		else if(controller.dPadDown)
 			aimedState = WristPosition.GROUND;
 			//move to positions
+	}
+	public static void runHatchIntakeWrist()
+	{
+		setWristEncoder();
 		if(aimedState != null)
 		{
 			switch(aimedState)
@@ -109,7 +111,6 @@ public class HatchIntake
 					moveManual(overrideValue);
 					break;
 				case STOWED:
-					closeClamp();
 					moveToStowed();
 					break;
 				case SCORE:
@@ -128,7 +129,11 @@ public class HatchIntake
 			}
 		}
 			
-		if(controller.leftBumper)
+
+	}	
+	public static void runHatchIntakeClamp(boolean joyVal)
+	{
+		if(joyVal)
 		{
 			openClamp();
 		}
@@ -136,7 +141,7 @@ public class HatchIntake
 		{
 			closeClamp();
 		}
-	}	
+	}
 
 	public static void moveToStowed()
 	{

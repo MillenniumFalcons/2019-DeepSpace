@@ -1,32 +1,37 @@
 package frc.team3647subsystems;
 
-import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.*;
 import frc.team3647inputs.*;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
+import frc.team3647subsystems.HatchIntake.WristPosition;
 import frc.team3647utility.*;
 import frc.team3647utility.RobotPos.Movement;
 
 public class SeriesStateMachine
 {
-    public static RobotPos robotState;
+    private static RobotPos robotState;
 
+    private static boolean hasCargo = false;
     //Hatch scoring positions
-    public static RobotPos hatchL1Forwards, hatchL1Backwards, hatchL2Forwards, hatchL2Backwards, hatchL3Forwards, hatchL3Backwards;
+    private static RobotPos hatchL1Forwards, hatchL1Backwards, hatchL2Forwards, hatchL2Backwards, hatchL3Forwards, hatchL3Backwards;
 
     //Cargo scoring positions
-    public static RobotPos cargoshipForwards, cargoshipBackwards, cargoL2Forwards, cargoL2Backwards, cargoL3Forwards, cargoL3Backwards;
+    private static RobotPos cargoL1Forwards, cargoL1Backwards, cargoshipForwards, cargoshipBackwards, cargoL2Forwards, cargoL2Backwards, cargoL3Forwards, cargoL3Backwards;
 
     //handoff positions
-    public static RobotPos hatchHandoff, cargoHandoff;
+    private static RobotPos hatchHandoff, cargoHandoff;
 
     //Arm limit switch positions
     public static RobotPos revLimitSwitch, fwdLimitSwitch;
 
     //Stowed positions
-    public static RobotPos stowed, verticalStowed;
+    private static RobotPos stowed, verticalStowed;
 
     public static int state = 0;
-    public static ScoringPosition aimedRobotState;
+    private static ScoringPosition aimedRobotState;
+
+    private static Timer ballIntakeTimer;
 
     public enum ScoringPosition
     {
@@ -36,8 +41,10 @@ public class SeriesStateMachine
         HATCHL2BACKWARDS,
         HATCHL3FORWARDS,
         HATCHL3BACKWARDS,
-        CARGOSHIPFORWARDs,
-        CARGOSHIPBACKWARDs,
+        CARGOSHIPFORWARDS,
+        CARGOSHIPBACKWARDS,
+        CARGOL1FORWARDS,
+        CARGOL1BACKWARDS,
         CARGOL2FORWARDS,
         CARGOL2BACKWARDS,
         CARGOL3FORWARDS, // Move elevator first
@@ -48,11 +55,16 @@ public class SeriesStateMachine
         VERTICALSTOWED, //ARM HIT
         REVLIMITSWITCH,
         FWDLIMITSWITCH,
-        START
+        START,
+        HATCHINTAKEGROUND,
+        HATCHINTAKESCORE,
+        CARGOGROUNDINTAKE, 
+        HATCHINTAKESTOWED,
     }
 
     public static void seriesStateMachineInitialization()
     {
+        ballIntakeTimer = new Timer();
         robotState = new RobotPos(Elevator.currentState, Arm.currentState); 
 
         hatchL1Backwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATBACKWARDS);        
@@ -65,12 +77,14 @@ public class SeriesStateMachine
         hatchL3Backwards = new RobotPos(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.FLATBACKWARDS);
 
 
+        cargoL1Forwards = new RobotPos(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATBACKWARDS);
+        cargoL1Backwards = new RobotPos(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATFORWARDS);
 
-        cargoshipForwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.FLATFORWARDS);
-        cargoshipBackwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.FLATBACKWARDS);
+        cargoshipForwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.FLATBACKWARDS);
+        cargoshipBackwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.FLATFORWARDS);
 
-        cargoL2Forwards = new RobotPos(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATFORWARDS);
-        cargoL2Backwards = new RobotPos(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATBACKWARDS);
+        cargoL2Forwards = new RobotPos(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATBACKWARDS);
+        cargoL2Backwards = new RobotPos(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATFORWARDS);
 
         cargoL3Forwards = new RobotPos(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.CARGOL3FRONT);
         cargoL3Backwards = new RobotPos(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.CARGOL3BACK);
@@ -94,50 +108,94 @@ public class SeriesStateMachine
         System.out.println("AIMED STATE: " + aimedRobotState);
         System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
         System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
+        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
-        if(controller.buttonB)
+        if(!BallShooter.cargoDetection())
         {
-            aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+            if(controller.buttonA)
+                aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+            else if(controller.buttonX)
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+            else if(controller.buttonB)
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+            else if(controller.buttonY)
+                aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
+            else if(controller.dPadDown)
+                aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+            else if(controller.dPadLeft)
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+            else if(controller.dPadRight)
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+            else if(controller.dPadUp)
+                aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
         }
-        else if(controller.buttonX)
+        // If the robot has a ball:
+        else if(BallShooter.cargoDetection())
         {
-            aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-        }
-        else if(controller.buttonA)
-        {
-            aimedRobotState = ScoringPosition.VERTICALSTOWED;
-        }
-        else if(controller.buttonY)
-        {
-            aimedRobotState = ScoringPosition.STOWED;
-        }
-        else if(controller.rightBumper)
-        {
-            aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
-        }
-        else if(controller.leftBumper)
-        {
-            aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
-        }
-        else if(controller.dPadDown)
-        {
-            aimedRobotState = ScoringPosition.HATCHHANDOFF;
-        }
-        else if(controller.dPadLeft)
-        {
-            aimedRobotState = ScoringPosition.REVLIMITSWITCH;
-        }
-        else if(controller.dPadUp)
-        {
-            aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
-        }
-        else if(controller.dPadRight)
-        {
-            aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+            if(controller.buttonA)
+                aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
+            else if(controller.buttonX)
+                aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+            else if(controller.buttonB)
+                aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+            else if(controller.buttonY)
+                aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
+            else if(controller.dPadDown)
+                aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
+            else if(controller.dPadLeft)
+                aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
+            else if(controller.dPadRight)
+                aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
+            else if(controller.dPadUp)
+                aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
         }
 
+        if(controller.rightJoyStickPress)
+            aimedRobotState = ScoringPosition.STOWED;
+        
+        if(controller.leftTrigger > .15)
+        {
+            if(!arrivedAtMidPos)
+            {
+                ballIntakeTimer.reset();
+                ballIntakeTimer.start();
+                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
+            }
+            else if(cargoGroundIntakeExtended && ballIntakeTimer.get() > 1.5)
+            {
+                aimedRobotState = ScoringPosition.CARGOHANDOFF;
+            }
+        }
+        else
+        {
+            arrivedAtMidPos = false;
+        }
+        if(controller.rightTrigger > .15)
+        {
+            BallShooter.shootBall();
+        }
+        else
+        {
+            BallShooter.stopMotor();
+        }
+
+
+		// if(controller.leftJoyStickX > .7)
+		// 	aimedRobotState = ScoringPosition.HATCHINTAKESCORE;
+		// else if(controller.leftJoyStickX < -.7)
+		// 	aimedRobotState = ScoringPosition.HATCHHANDOFF;
+		// else if(controller.leftJoyStickY > .7)
+        //     aimedRobotState = ScoringPosition.HATCHINTAKEGROUND;
+        // else if(controller.leftJoyStickY < -.7)
+        //     aimedRobotState = ScoringPosition.HATCHINTAKESTOWED;
+            
+        if(controller.leftJoyStickPress)
+        {
+            aimedRobotState = ScoringPosition.STOWED;
+            HatchIntake.aimedState = WristPosition.STOWED;
+        }
 
         if(aimedRobotState != null)
         {
@@ -145,6 +203,7 @@ public class SeriesStateMachine
             {
                 case START:
                     initializeRobotPosition();
+                    break;
                 case HATCHL1FORWARDS:
                     hatchL1Forwards();
                     break;
@@ -158,15 +217,21 @@ public class SeriesStateMachine
                     hatchL2Backwards();
                     break;
                 case HATCHL3FORWARDS:
-                    hatchL3Backwards();
+                    hatchL3Forwards();
                     break;
                 case HATCHL3BACKWARDS:
                     hatchL3Backwards();
                     break;
-                case CARGOSHIPFORWARDs:
+                case CARGOL1FORWARDS:
+                    cargoL1Forwards();
+                    break;
+                case CARGOL1BACKWARDS:
+                    cargoL1Backwards();
+                    break;
+                case CARGOSHIPFORWARDS:
                     cargoshipForwards();
                     break;
-                case CARGOSHIPBACKWARDs:
+                case CARGOSHIPBACKWARDS:
                     cargoshipBackwards();
                     break;
                 case CARGOL2FORWARDS:
@@ -185,7 +250,7 @@ public class SeriesStateMachine
                     hatchHandoff();
                     break;
                 case CARGOHANDOFF:
-                    cargoHandoff();
+                    cargoHandoff(controller);
                     break;
                 case STOWED:
                     stowed();
@@ -196,11 +261,29 @@ public class SeriesStateMachine
                 case REVLIMITSWITCH:
                     revLimitSwitch();
                     break;
+                case FWDLIMITSWITCH:
+                    break;
+                case HATCHINTAKESCORE:
+                    groundHatchIntakeScore();
+                    break;
+                case CARGOGROUNDINTAKE:
+                    extendCargoGroundIntake();
+                    break;
+                case HATCHINTAKEGROUND:
+                    groundHatchIntakeDeploy();
+                    break;
+                case HATCHINTAKESTOWED:
+                    groundHatchIntakeStowed();
+                    break;
+
             }
         }
     }
+    
+
+
     // Hatch methods--------------------------------------------
-    public static void hatchL1Forwards()
+    private static void hatchL1Forwards()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards))
         {
@@ -229,7 +312,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void hatchL1Backwards()
+    private static void hatchL1Backwards()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHL1BACKWARDS, hatchL1Backwards))
         {
@@ -252,13 +335,13 @@ public class SeriesStateMachine
                 break;
             case FREEMOVE:
                 System.out.println("Running free move");
-                Arm.aimedState = hatchL1Backwards.armPos;
-                Elevator.aimedState = hatchL1Backwards.eLevel;
+                //Arm.aimedState = hatchL1Backwards.armPos;
+                //Elevator.aimedState = hatchL1Backwards.eLevel;
                 break;
         }
     }
 
-    public static void hatchL2Forwards()
+    private static void hatchL2Forwards()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHL2FORWARDS, hatchL2Forwards))
         {
@@ -287,7 +370,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void hatchL2Backwards()
+    private static void hatchL2Backwards()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHL2BACKWARDS, hatchL2Backwards))
         {
@@ -316,7 +399,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void hatchL3Forwards()
+    private static void hatchL3Forwards()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHL3FORWARDS, hatchL3Forwards))
         {
@@ -345,7 +428,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void hatchL3Backwards()
+    private static void hatchL3Backwards()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHL3BACKWARDS, hatchL3Backwards))
         {
@@ -377,9 +460,66 @@ public class SeriesStateMachine
 
     // Ball methods---------------------------------------------
 
-    public static void cargoshipForwards()
+    private static void cargoL1Forwards()
     {
-        switch(robotState.movementCheck(ScoringPosition.CARGOSHIPFORWARDs, cargoshipForwards))
+        switch(robotState.movementCheck(ScoringPosition.CARGOL1FORWARDS, cargoL1Forwards))
+        {
+            case ARRIVED:
+                System.out.println("Arrived at cargoshipForwards");
+                Arm.aimedState = cargoL1Forwards.armPos;
+                Elevator.aimedState = cargoL1Forwards.eLevel;
+                break;
+            case MOVEELEV:
+                System.out.println("Moving Elevator to: " + cargoL1Forwards.eLevel);
+                Elevator.aimedState = cargoL1Forwards.eLevel;
+                break;
+            case MOVEARM:
+                System.out.println("Moving Arm to: " + cargoL1Forwards.armPos);
+                Arm.aimedState = cargoL1Forwards.armPos;
+                break;
+            case SAFEZMOVE:
+                System.out.println("Running Safe Z");
+                safetyRotateArm(cargoL1Forwards.armPos);
+                break;
+            case FREEMOVE:
+                System.out.println("Running free move");
+                Arm.aimedState = cargoL1Forwards.armPos;
+                Elevator.aimedState = cargoL1Forwards.eLevel;
+                break;
+        }
+    }
+
+    private static void cargoL1Backwards()
+    {
+        switch(robotState.movementCheck(ScoringPosition.CARGOL1BACKWARDS, cargoL1Backwards))
+        {
+            case ARRIVED:
+                System.out.println("Arrived at cargoshipForwards");
+                Arm.aimedState = cargoL1Backwards.armPos;
+                Elevator.aimedState = cargoL1Backwards.eLevel;
+                break;
+            case MOVEELEV:
+                System.out.println("Moving Elevator to: " + cargoL1Backwards.eLevel);
+                Elevator.aimedState = cargoL1Backwards.eLevel;
+                break;
+            case MOVEARM:
+                System.out.println("Moving Arm to: " + cargoL1Backwards.armPos);
+                Arm.aimedState = cargoL1Backwards.armPos;
+                break;
+            case SAFEZMOVE:
+                System.out.println("Running Safe Z");
+                safetyRotateArm(cargoL1Backwards.armPos);
+                break;
+            case FREEMOVE:
+                System.out.println("Running free move");
+                Arm.aimedState = cargoL1Backwards.armPos;
+                Elevator.aimedState = cargoL1Backwards.eLevel;
+                break;
+        }
+    }
+    private static void cargoshipForwards()
+    {
+        switch(robotState.movementCheck(ScoringPosition.CARGOSHIPFORWARDS, cargoshipForwards))
         {
             case ARRIVED:
                 System.out.println("Arrived at cargoshipForwards");
@@ -406,9 +546,9 @@ public class SeriesStateMachine
         }
     }
 
-    public static void cargoshipBackwards()
+    private static void cargoshipBackwards()
     {
-        switch(robotState.movementCheck(ScoringPosition.CARGOSHIPBACKWARDs, cargoshipBackwards))
+        switch(robotState.movementCheck(ScoringPosition.CARGOSHIPBACKWARDS, cargoshipBackwards))
         {
             case ARRIVED:
                 System.out.println("Arrived at cargoshipBackwards");
@@ -435,7 +575,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void cargoL2Forwards()
+    private static void cargoL2Forwards()
     {
         switch(robotState.movementCheck(ScoringPosition.CARGOL2FORWARDS, cargoL2Forwards))
         {
@@ -443,6 +583,7 @@ public class SeriesStateMachine
                 System.out.println("Arrived at cargoL2Forwards");
                 Arm.aimedState = cargoL2Forwards.armPos;
                 Elevator.aimedState = cargoL2Forwards.eLevel;
+                BallIntake.retractIntake();
                 break;
             case MOVEELEV:
                 System.out.println("Moving Elevator to: " + cargoL2Forwards.eLevel);
@@ -464,7 +605,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void cargoL2Backwards()
+    private static void cargoL2Backwards()
     {
         switch(robotState.movementCheck(ScoringPosition.CARGOL2BACKWARDS, cargoL2Backwards))
         {
@@ -493,7 +634,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void cargoL3Forwards()
+    private static void cargoL3Forwards()
     {
         switch(robotState.movementCheck(ScoringPosition.CARGOL3FORWARDS, cargoL3Forwards))
         {
@@ -522,7 +663,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void cargoL3Backwards()
+    private static void cargoL3Backwards()
     {
         switch(robotState.movementCheck(ScoringPosition.CARGOL3FORWARDS, cargoL3Backwards))
         {
@@ -552,7 +693,7 @@ public class SeriesStateMachine
     }
     //----------------------------------------------------------
 
-    public static void hatchHandoff()
+    private static void hatchHandoff()
     {
         switch(robotState.movementCheck(ScoringPosition.HATCHHANDOFF, hatchHandoff))
         {
@@ -564,6 +705,7 @@ public class SeriesStateMachine
             case MOVEELEV:
                 System.out.println("Moving Elevator to: " + hatchHandoff.eLevel);
                 Elevator.aimedState = hatchHandoff.eLevel;
+                HatchIntake.aimedState = WristPosition.HANDOFF;
                 break;
             case MOVEARM:
                 System.out.println("Moving Arm to: " + hatchHandoff.armPos);
@@ -581,7 +723,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void cargoHandoff()
+    private static void cargoHandoff(Joysticks controller)
     {
         switch(robotState.movementCheck(ScoringPosition.CARGOHANDOFF, cargoHandoff))
         {
@@ -589,6 +731,15 @@ public class SeriesStateMachine
                 System.out.println("Arrived at cargoHandoff");
                 Arm.aimedState = cargoHandoff.armPos;
                 Elevator.aimedState = cargoHandoff.eLevel;
+
+                BallIntake.runIntake(Robot.coController.leftTrigger);
+                if(controller.leftTrigger < .15)
+                {
+                    BallIntake.stopMotor();
+                    BallShooter.stopMotor();
+                    aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+                    hasCargo = true;
+                }
                 break;
             case MOVEELEV:
                 System.out.println("Moving Elevator to: " + cargoHandoff.eLevel);
@@ -611,7 +762,7 @@ public class SeriesStateMachine
     }
 
     //Stowed methods--------------------------------------------
-    public static void stowed()
+    private static void stowed()
     {
         switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
         {
@@ -640,7 +791,7 @@ public class SeriesStateMachine
         }
     }
 
-    public static void verticalStowed()
+    private static void verticalStowed()
     {
         switch(robotState.movementCheck(ScoringPosition.STOWED, verticalStowed))
         {
@@ -670,7 +821,7 @@ public class SeriesStateMachine
     }
     //----------------------------------------------------------
 
-    public static void revLimitSwitch()
+    private static void revLimitSwitch()
     {
         switch(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch))
         {
@@ -701,47 +852,114 @@ public class SeriesStateMachine
 
     //Method will only run when robot initializes until reaching hatch level 1 forwards
     // Cannot run again
-    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false;
+    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false;
     public static void initializeRobotPosition()
     {
-        if(!ranOnce)
+        System.out.println("arrivedAtRevLimitSwitchOnce: " + arrivedAtRevLimitSwitchOnce);
+        System.out.println("arrivedAtFlatForwardsOnce: " + arrivedAtFlatForwardsOnce);
+        //System.out.println("Initialize robot pos: " + robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch));
+        if(!arrivedAtRevLimitSwitchOnce && !arrivedAtFlatForwardsOnce)
         {
-            if(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch) != Movement.ARRIVED && !arrivedAtRevLimitSwitchOnce)
-            {
-                revLimitSwitch();
-                if(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch) != Movement.ARRIVED)
-                    arrivedAtRevLimitSwitchOnce = true;
-            }
-            if(arrivedAtRevLimitSwitchOnce && robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards) != Movement.ARRIVED && !arrivedAtFlatForwardsOnce)
-            {
-                hatchL1Forwards();
-                if(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards) == Movement.ARRIVED)
-                    arrivedAtFlatForwardsOnce=true;
-            }
-            if(arrivedAtFlatForwardsOnce && arrivedAtRevLimitSwitchOnce)
-            {
-                ranOnce = true;
-                aimedRobotState = null;
-            }
+            System.out.println("Going to reverse limit switch from init robot");
+            revLimitSwitch();
+            if(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch) == Movement.ARRIVED || Arm.armEncoderValue == 0)
+                arrivedAtRevLimitSwitchOnce = true;
         }
-
+        
+        else if(arrivedAtRevLimitSwitchOnce && !arrivedAtFlatForwardsOnce)
+        {
+            System.out.println("Going to hatch level 1");
+            aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+            if(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards) == Movement.ARRIVED)
+                arrivedAtFlatForwardsOnce=true;
+        }
 
     }
 
-    public static void safetyRotateArm(Arm.ArmPosition pos)
+    public static void groundHatchIntakeDeploy()
+    {
+        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+        {
+            case ARRIVED:
+                HatchIntake.aimedState = WristPosition.GROUND;
+                break;
+            default:
+                stowed();
+                break;
+        }
+    }
+
+    public static void groundHatchIntakeScore()
+    {
+        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+        {
+            case ARRIVED:
+                HatchIntake.aimedState = WristPosition.SCORE;  
+                break;
+            default:
+                stowed();
+                break;
+        }            
+    }
+
+    public static void groundHatchIntakeHandoff()
+    {
+        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+        {
+            case ARRIVED:
+                aimedRobotState = ScoringPosition.HATCHHANDOFF;  
+                break;
+            default:
+                stowed();
+                break;
+        }
+    }
+
+    private static void groundHatchIntakeStowed() 
+    {
+        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+        {
+            case ARRIVED:
+                HatchIntake.aimedState = WristPosition.STOWED;
+                break;
+            default:
+                stowed();
+                break;
+        }
+    }
+
+    private static boolean arrivedAtMidPos=false, cargoGroundIntakeExtended=false;
+    public static void extendCargoGroundIntake()
+    {
+        if(!arrivedAtMidPos)
+        {
+            hatchL2Forwards();
+            if(robotState.movementCheck(ScoringPosition.HATCHL2FORWARDS, hatchL2Forwards) == Movement.ARRIVED)
+                arrivedAtMidPos = true;
+        }
+        if(arrivedAtMidPos)
+        {
+            BallIntake.extendIntake();
+            cargoGroundIntakeExtended = true;
+        }
+        
+    }
+
+    private static void safetyRotateArm(Arm.ArmPosition pos)
     {
         // switch(state)
         // {
         //     case 0:
         System.out.println("Safely rotating arm to: " + pos);
-                if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 100)
+                if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500)
                 {
                     state = 1;
                     Arm.aimedState = pos;
+                    //Elevator.aimedState  = ElevatorLevel.STOP;
                 }
                 else
                 {
-                    System.out.println("Moving elevator");
+                    System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
                     Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
                     Arm.aimedState = null;
                 //}

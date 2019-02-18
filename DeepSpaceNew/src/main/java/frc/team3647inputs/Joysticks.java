@@ -20,6 +20,7 @@ public class Joysticks
 	 */
 	public double leftTrigger, rightTrigger, leftJoyStickY, leftJoyStickX, rightJoyStickY, rightJoyStickX;
 	public boolean rightBumper, leftBumper, buttonA, buttonB, buttonY, buttonX, dPadDown, dPadLeft, dPadRight, dPadUp;
+	public boolean rightJoyStickPress, leftJoyStickPress;
 	
 	/**
 	 * Co-Driver Controller Variable
@@ -51,6 +52,8 @@ public class Joysticks
 		leftJoyStickY 	= 	joystickThreshold(-controller.getRawAxis(1));
 		rightJoyStickX = 	joystickThreshold(controller.getRawAxis(4));
 		rightJoyStickY = 	-joystickThreshold(controller.getRawAxis(5));
+		rightJoyStickPress = controller.getRawButton(8);
+		leftJoyStickPress = controller.getRawButton(9);
 		dPadValue = dPad.getPOV();
 		setDPadValues();
 		// System.out.println("Updating controller!");
