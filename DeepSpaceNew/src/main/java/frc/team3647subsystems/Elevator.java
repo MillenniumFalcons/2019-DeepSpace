@@ -389,7 +389,7 @@ public class Elevator
 	}
 	
 	//Encoder Methods-------------------------------------------
-	private static void setElevatorEncoder()
+	public static void setElevatorEncoder()
 	{
 		if(getLimitSwitch())
 		{

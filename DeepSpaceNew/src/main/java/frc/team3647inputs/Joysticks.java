@@ -25,7 +25,7 @@ public class Joysticks
 	/**
 	 * Co-Driver Controller Variable
 	 */
-	public int dPadValue; //dPad degree value
+	public int dPadValue = -1; //dPad degree value
 
 
 	public Joysticks(int controllerPin)

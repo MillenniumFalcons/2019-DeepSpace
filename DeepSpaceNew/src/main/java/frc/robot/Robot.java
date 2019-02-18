@@ -15,6 +15,8 @@ import frc.team3647autonomous.RamseteFollower;
 import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.Arm.ArmPosition;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 import jaci.pathfinder.Trajectory;
 
 
@@ -127,6 +129,7 @@ public class Robot extends TimedRobot
     HatchGrabber.runHatchGrabber(coController.rightBumper);
     Arm.runArm();
     Elevator.runElevator();
+    Elevator.printElevatorEncoders();
     HatchIntake.runHatchIntakeWrist();
     HatchIntake.runHatchIntakeClamp(coController.leftBumper);
     SeriesStateMachine.runSeriesStateMachine(coController);
@@ -144,28 +147,32 @@ public class Robot extends TimedRobot
   public void testInit() 
   {
     // Elevator.elevatorInitialization();
+    // Elevator.aimedState = ElevatorLevel.MINROTATE;
     // Arm.armInitialization();
     // TestFunctions.shuffleboard();
     //BallIntake.ballIntakeinitialization();
-    BallShooter.ballShooterinitialization();
+	// BallShooter.ballShooterinitialization();
+	// HatchIntake.hatchIntakeInitialization();
+  // BallShooter.ballShooterinitialization();
+  // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
+    
   }
   @Override
   public void testPeriodic() 
   {
-    // Arm.configurePIDFMM(kP, kI, kD, kF, mVel, mAccel);
-    // TestFunctions.updatePIDFMM();
-    // Arm.setManualController(mainController);
+	//   HatchIntake.setManualControllerValues(mainController);
+	//   HatchIntake.runHatchIntakeWrist();
+	//   HatchIntake.runHatchIntakeClamp(mainController.leftBumper);
+	//   HatchIntake.printPosition();
+	//   HatchIntake.printLimitSwitch();
+  // BallShooter.printBeamBreak();
+    // Elevator.printBannerSensor();
+    // Elevator.printElevatorEncoders();
+    // Elevator.setElevatorEncoder();
+    // Elevator.runElevator();
     // Arm.runArm();
-    // Arm.printArmEncoders();
-    // if(coController.leftBumper)
-    // {
-    //   System.out.println("extend ball intake!");
-    //   BallIntake.extensionCylinder.set(true);
-    // }
-    // else
-    //   BallIntake.extensionCylinder.set(true);
-
-    System.out.println("Cargo sensor :" + BallShooter.cargoDetection());
+    // System.out.println("dPad value: " + coController.dPadValue);
+    HatchGrabber.runHatchGrabber(coController.leftBumper);
   }
 
   public void updateJoysticks() 

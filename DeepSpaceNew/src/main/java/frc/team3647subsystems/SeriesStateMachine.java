@@ -182,14 +182,14 @@ public class SeriesStateMachine
         }
 
 
-		// if(controller.leftJoyStickX > .7)
-		// 	aimedRobotState = ScoringPosition.HATCHINTAKESCORE;
-		// else if(controller.leftJoyStickX < -.7)
-		// 	aimedRobotState = ScoringPosition.HATCHHANDOFF;
-		// else if(controller.leftJoyStickY > .7)
-        //     aimedRobotState = ScoringPosition.HATCHINTAKEGROUND;
-        // else if(controller.leftJoyStickY < -.7)
-        //     aimedRobotState = ScoringPosition.HATCHINTAKESTOWED;
+		if(controller.leftJoyStickX > .7)
+			aimedRobotState = ScoringPosition.HATCHINTAKESCORE;
+		else if(controller.leftJoyStickX < -.7)
+			aimedRobotState = ScoringPosition.HATCHHANDOFF;
+		else if(controller.leftJoyStickY > .7)
+            aimedRobotState = ScoringPosition.HATCHINTAKEGROUND;
+        else if(controller.leftJoyStickY < -.7)
+            aimedRobotState = ScoringPosition.HATCHINTAKESTOWED;
             
         if(controller.leftJoyStickPress)
         {
@@ -923,7 +923,7 @@ public class SeriesStateMachine
                 HatchIntake.aimedState = WristPosition.STOWED;
                 break;
             default:
-                stowed();
+                hatchL2Forwards();
                 break;
         }
     }

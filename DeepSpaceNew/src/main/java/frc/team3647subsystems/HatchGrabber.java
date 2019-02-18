@@ -10,7 +10,7 @@ public class HatchGrabber
     public static void runHatchGrabber(boolean joyvalue) 
 	{
 		if(joyvalue)
-				releaseHatch();
+			releaseHatch();
 		else
 			grabHatch();
     }

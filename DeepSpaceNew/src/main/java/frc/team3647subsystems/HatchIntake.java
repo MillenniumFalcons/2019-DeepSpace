@@ -4,6 +4,7 @@ package frc.team3647subsystems;
 
 import frc.robot.*;
 import frc.team3647inputs.Joysticks;
+import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -84,17 +85,16 @@ public class HatchIntake
 	public static void setManualControllerValues(Joysticks controller)
 	{
 		//get joy input
-		if(manualOverride)
-			aimedState = WristPosition.MANUAL;
-		else if(controller.dPadRight)
+		// if(manualOverride)
+		// 	aimedState = WristPosition.MANUAL;
+		if(controller.leftJoyStickX > .7)
 			aimedState = WristPosition.SCORE;
-		else if(controller.dPadLeft)
+		else if(controller.leftJoyStickX < -.7)
 			aimedState = WristPosition.HANDOFF;
-		else if(controller.dPadUp)
-			aimedState = WristPosition.STOWED;
-		else if(controller.dPadDown)
+		else if(controller.leftJoyStickY > .7)
 			aimedState = WristPosition.GROUND;
-			//move to positions
+        else if(controller.leftJoyStickY < -.7)
+			aimedState = WristPosition.STOWED;
 	}
 	public static void runHatchIntakeWrist()
 	{
@@ -269,7 +269,7 @@ public class HatchIntake
 
 	public static boolean getLimitSwitch()
 	{
-		return limitSwitch.get();
+		return !limitSwitch.get();
 	}
 
 	public static boolean detectHatch()
@@ -284,6 +284,10 @@ public class HatchIntake
 		System.out.println("Encoder Value: " + wristEncoderValue);
 	}
 
+	public static void printLimitSwitch()
+	{
+		System.out.println("Limitswitch: " + getLimitSwitch());
+	}
 
 
 	public static void stopWrist()

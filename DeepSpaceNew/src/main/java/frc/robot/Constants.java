@@ -28,7 +28,7 @@ public class Constants
 	public static final int ballMotorPin = 2;
 
 	//Ball Shooter
-	public static final int ballShooterPin = 14;
+	public static final int ballShooterPin = 15;
 
 	//Gyro Pin
 	public static final int gyroPin = 16;
@@ -64,7 +64,7 @@ public class Constants
 	
 	//Elevator PID Values
 	public static final int interstageSlotIdx = 0; //PID Slot Index
-	public static final double[] interstagePIDF = { 2.8, 0, 28, 0.1 };
+	public static final double[] interstagePIDF = { 2.8, 0, 28, 0.105 };
 	
 	public static final int carriageSlotIdx = 1; //PID Slot Index
 	public static final double[] carriagePIDF = { 9, 0.00004, 80, 0 };
@@ -157,7 +157,7 @@ public class Constants
 	public static final int kWristPositionThreshold = 25;
 	public static final int hatchIntakeGround = 4075;
 	public static final int hatchIntakeScore = 1840;
-	public static final int hatchIntakeHandoff = 2500;
+	public static final int hatchIntakeHandoff = 2000;
 	
 
 	/**************AUTONOMOUS CONSTANTS******************/
