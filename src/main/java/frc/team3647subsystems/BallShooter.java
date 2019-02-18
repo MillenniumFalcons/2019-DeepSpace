@@ -49,7 +49,7 @@ public class BallShooter
 	{
         if(beamBreak.get())
         {
-            return true;
+            return false;
         }
         else
         {

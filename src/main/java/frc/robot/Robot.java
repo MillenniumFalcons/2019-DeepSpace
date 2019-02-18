@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3647autonomous.DriveSignal;
 import frc.team3647autonomous.MotionProfileDirection;
@@ -14,7 +15,7 @@ import jaci.pathfinder.Trajectory;
 public class Robot extends TimedRobot {
 
     Joysticks mainController;
-    Joysticks coController;
+    public static Joysticks coController;
     public static Gyro gyro;
     // public static Arm arm = new Arm();
     
@@ -78,13 +79,23 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() 
     {
-
+        Arm.armInitialization();
+        Elevator.elevatorInitialization();
+        SeriesStateMachine.seriesStateMachineInitialization();
+        HatchIntake.hatchIntakeInitialization();
+        Drivetrain.drivetrainInitialization();   
     }
     
     @Override
     public void teleopPeriodic() 
     {
-        // HatchGrabber.runHatchGrabber(coController.rightBumper);
+       Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY , gyro);
+        HatchGrabber.runHatchGrabber(coController.rightBumper);
+        Arm.runArm();
+        Elevator.runElevator();
+        HatchIntake.runHatchIntakeWrist();
+        HatchIntake.runHatchClamp(coController.leftBumper);
+        SeriesStateMachine.runSeriesStateMachine(coController);
     }
 
     @Override
@@ -94,28 +105,31 @@ public class Robot extends TimedRobot {
         Elevator.elevatorInitialization();
         SeriesStateMachine.seriesStateMachineInitialization();
         HatchIntake.hatchIntakeInitialization();
+        Drivetrain.drivetrainInitialization();        
     }
 
     @Override
     public void testPeriodic()
     {
-        // HatchGrabber.runHatchGrabber(coController.rightBumper);
-        HatchIntake.runHatchIntakeWrist(coController);
-        // Arm.runArm();
-        // Elevator.runElevator();
-        // SeriesStateMachine.runSeriesStateMachine(coController);
+        HatchGrabber.runHatchGrabber(coController.rightBumper);
+        Arm.runArm();
+        Elevator.runElevator();
+        HatchIntake.runHatchIntakeWrist();
+        HatchIntake.runHatchClamp(coController.leftBumper);
+        SeriesStateMachine.runSeriesStateMachine(coController);
+        Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY , gyro);
         // Elevator.printElevatorEncoders();
         // Arm.printArmEncoders();
-        // System.out.println("LIMF: " + Canifier.cargoBeamBreak());
+        //System.out.println("LIMR: " + Canifier.cargoBeamBreak());
         // BallShooter.intakeCargo(coController.leftTrigger);
             //BallShooter.intakeCargo(coController.leftTrigger);
-        HatchIntake.printPosition();
-
+        // HatchIntake.printPosition();
     }
     @Override
     public void disabledInit() 
     {
         Arm.armSRX.setNeutralMode(NeutralMode.Coast);
+        Drivetrain.setToCoast();
     }
 
     public void updateJoysticks()

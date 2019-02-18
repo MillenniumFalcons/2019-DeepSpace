@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.team3647inputs.*;
 
 public class Arm
@@ -440,15 +441,15 @@ public class Arm
 	public static boolean getRevLimitSwitch()
 	{
 		//Limit switch connected to the NEO
-		return revNeoLimitSwitch.get();
-		//return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+		// return Robot.coController.leftJoyStickPress;
+		return armSRX.getSensorCollection().isRevLimitSwitchClosed();
 	}
 
 	public static boolean getFwdLimitSwitch()
 	{
 		//Limit switch connected to the NEO
 		return fwdNeoLimitSwitch.get();
-		//return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+		// return armSRX.getSensorCollection().isRevLimitSwitchClosed();
 	}
 	//----------------------------------------------------------
 	

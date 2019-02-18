@@ -16,13 +16,13 @@ public class Canifier
         can.setLEDOutput(b, LEDChannel.LEDChannelC);
     }
 
-    public static boolean cargoBeamBreak()
+    public static boolean hatchGrabberSensor()
     {
         return can.getGeneralInput(GeneralPin.LIMF);
     }
 
-    public static boolean hatchGrabberSensor()
+    public static boolean cargoBeamBreak()
     {
-        return can.getGeneralInput(GeneralPin.LIMR);
+        return !can.getGeneralInput(GeneralPin.LIMR);
     }
 }

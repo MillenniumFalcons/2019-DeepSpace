@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 
 public class HatchIntake 
 {
@@ -73,6 +74,22 @@ public class HatchIntake
 		MANUAL
 	}
 	
+	public static void runHatchClamp(boolean joyvalue) 
+	{
+		if(joyvalue)
+		{
+			if(!clampSolenoid.get())
+			{
+				openClamp();
+				Timer.delay(.1);
+			}
+			else
+			{
+				closeClamp();
+				Timer.delay(.1);
+			}
+		}
+    }
 	public static void openClamp()
 	{
 		clampSolenoid.set(true);
@@ -83,31 +100,35 @@ public class HatchIntake
 		clampSolenoid.set(false);
 	}
 
-	public static void runHatchIntakeWrist(Joysticks controller)
+	public static void setHatchIntakeWristController(Joysticks controller)
 	{
-		//setWristEncoder();
-		//setManualOverride(controller.leftJoyStickY);
-		//get joy input
 		if(manualOverride)
 			aimedState = WristPosition.MANUAL;
-		else if(controller.leftJoyStickX > .15)
+		else if(controller.leftJoyStickX > .5)
 			aimedState = WristPosition.SCORE;
-		else if(controller.leftJoyStickX < -.15)
+		else if(controller.leftJoyStickX < -.5)
 			aimedState = WristPosition.HANDOFF;
-		else if(controller.leftJoyStickY > .15)
+		else if(controller.leftJoyStickY > .5)
 			aimedState = WristPosition.STOWED;
-		else if(controller.leftJoyStickY < -.15)
+		else if(controller.leftJoyStickY < -.5)
 			aimedState = WristPosition.GROUND;
 
 		if(controller.leftBumper && clampSolenoid.get())
 			closeClamp();
 		else if(controller.leftBumper &&  !clampSolenoid.get())
 			openClamp();
+	}
+	public static void runHatchIntakeWrist()
+	{
+		//setWristEncoder();
+		//setManualOverride(controller.leftJoyStickY);
+		//get joy input
+
 			
-		
-			//move to positions
+		//move to positions
 		if(aimedState != null)
 		{
+			System.out.println("Moving hatch to " + aimedState);
 			switch(aimedState)
 			{
 				// case MANUAL:
@@ -136,30 +157,21 @@ public class HatchIntake
 					break;
 			}
 		}
-			
-		if(controller.leftBumper)
-		{
-			openClamp();
-		}
-		else
-		{
-			closeClamp();
-		}
 	}	
 
 	public static void moveToStowed()
 	{
-		// if(getLimitSwitch())
-		// {
-			//System.out.println("Hatch Intake Stowed");
-			// stopWrist();
-			// resetEncoder();
-		// }
-		// else
-		// {
-			setPosition(0);
-			//setOpenLoop(-0.25);
-		//}
+		if(getLimitSwitch())
+		{
+			System.out.println("Hatch Intake Stowed");
+			stopWrist();
+			resetEncoder();
+		}
+		else
+		{
+			setOpenLoop(-0.25);
+			//setPosition(0);
+		}
 	}
 
 	//Motion Magic movement-------------------------------------
@@ -175,6 +187,7 @@ public class HatchIntake
 
 	public static void moveToHandoff()
 	{
+		System.out.println("Moving wrist to hatchhandoff");
 		setPosition(Constants.hatchIntakeHandoff);
 	}
 
@@ -251,10 +264,10 @@ public class HatchIntake
 	// Encoder methods------------------------------------------
 	public static void setWristEncoder()
 	{
-		// if(getLimitSwitch())
-		// {
-		// 	resetEncoder();
-		// }
+		if(getLimitSwitch())
+		{
+			resetEncoder();
+		}
 		wristEncoderValue = wristMotor.getSelectedSensorPosition(0);
 		wristEncoderVelocity = wristMotor.getSelectedSensorVelocity(0);
 		wristEncoderCCL = wristMotor.getClosedLoopError(0);
@@ -273,7 +286,7 @@ public class HatchIntake
 
 	public static boolean getLimitSwitch()
 	{
-		return limitSwitch.get();
+		return !limitSwitch.get();
 	}
 
 	public static boolean detectHatch()

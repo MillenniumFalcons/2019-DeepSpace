@@ -41,8 +41,8 @@ public class Constants
 
 	//Solinoid Pins
 	public static final int ballIntakeSolinoidPin = 0;
-	public static final int hatchIntakeSolinoidPin = 7;
-	public static final int hatchGrabberSolinoidPin = 5;
+	public static final int hatchIntakeSolinoidPin = 1;
+	public static final int hatchGrabberSolinoidPin = 2;
 
 	//CANifier Pin
 	public static final int canifierPin = 0;
@@ -166,7 +166,7 @@ public class Constants
 	public static final int kWristPositionThreshold = 25;
 	public static final int hatchIntakeGround = 4075;
 	public static final int hatchIntakeScore = 1840;
-	public static final int hatchIntakeHandoff = 2500;
+	public static final int hatchIntakeHandoff = 2000;
 	
 
 	/**************AUTONOMOUS CONSTANTS******************/

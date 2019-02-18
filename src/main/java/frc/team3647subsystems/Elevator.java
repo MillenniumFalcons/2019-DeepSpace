@@ -81,6 +81,7 @@ public class Elevator
 	public enum ElevatorLevel
 	{
 		MANUAL,
+		STOP,
 		BOTTOM,
         CARGOHANDOFF,
         HATCHHANDOFF,
@@ -121,6 +122,9 @@ public class Elevator
 						overrideValue = 0;
 					}
 					moveManual(overrideValue);
+					break;
+				case STOP:
+					stopElevator();
 					break;
 				case BOTTOM:
 					moveToBottom();
@@ -411,7 +415,7 @@ public class Elevator
 		return limitSwitch.get();
 	}
 	
-	private static void stopElevator()
+	public static void stopElevator()
 	{
 		elevatorMaster.stopMotor();
 	}
