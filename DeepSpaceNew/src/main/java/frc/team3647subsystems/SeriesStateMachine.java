@@ -862,7 +862,7 @@ public class SeriesStateMachine
         {
             System.out.println("Going to reverse limit switch from init robot");
             revLimitSwitch();
-            if(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch) == Movement.ARRIVED || Arm.armEncoderValue == 0)
+            if(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch) == Movement.ARRIVED)
                 arrivedAtRevLimitSwitchOnce = true;
         }
         
