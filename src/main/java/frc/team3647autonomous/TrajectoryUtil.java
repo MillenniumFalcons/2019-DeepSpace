@@ -26,7 +26,7 @@ public class TrajectoryUtil
 
     public static Trajectory getTrajectoryFromName(String trajectoryName)
     {
-        File trajectoryFile = new File("/home/lvuser/paths/" + trajectoryName + "_source_Jaci.csv");
+        File trajectoryFile = new File("/home/lvuser/paths/" + trajectoryName + "_source.csv");
 
         Trajectory trajectory; // = trajectoryFile.exists() ? Pathfinder.readFromFile(trajectoryFile) : null;
         trajectory = Pathfinder.readFromCSV(trajectoryFile);
