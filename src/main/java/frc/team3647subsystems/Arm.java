@@ -271,7 +271,6 @@ public class Arm
 		{
 			resetArmEncoder();
 			setPosition(0);
-			//stopArm();
 		}
 	}
 	//---------------------------------------
@@ -442,7 +441,8 @@ public class Arm
 	{
 		//Limit switch connected to the NEO
 		// return Robot.coController.leftJoyStickPress;
-		return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+		// return armSRX.getSensorCollection().isRevLimitSwitchClosed();
+		return revNeoLimitSwitch.get();
 	}
 
 	public static boolean getFwdLimitSwitch()

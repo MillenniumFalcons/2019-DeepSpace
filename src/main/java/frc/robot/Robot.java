@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
         coController = new Joysticks(1);
         gyro = new Gyro();
         TestFunctions.shuffleboard();
-        Drivetrain.drivetrainInitialization();
+        // Drivetrain.drivetrainInitialization();
     }
 
     @Override
@@ -102,24 +102,25 @@ public class Robot extends TimedRobot {
     public void testInit() 
     {
         Arm.armInitialization();
-        Elevator.elevatorInitialization();
-        SeriesStateMachine.seriesStateMachineInitialization();
-        HatchIntake.hatchIntakeInitialization();
-        Drivetrain.drivetrainInitialization();        
+        // Elevator.elevatorInitialization();
+        // SeriesStateMachine.seriesStateMachineInitialization();
+        // HatchIntake.hatchIntakeInitialization();
+        // Drivetrain.drivetrainInitialization();        
     }
 
     @Override
     public void testPeriodic()
     {
-        HatchGrabber.runHatchGrabber(coController.rightBumper);
+        // HatchGrabber.runHatchGrabber(coController.rightBumper);
         Arm.runArm();
-        Elevator.runElevator();
-        HatchIntake.runHatchIntakeWrist();
-        HatchIntake.runHatchClamp(coController.leftBumper);
-        SeriesStateMachine.runSeriesStateMachine(coController);
-        Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY , gyro);
+        // Elevator.runElevator();
+        // HatchIntake.runHatchIntakeWrist();
+        // HatchIntake.runHatchClamp(coController.leftBumper);
+        // SeriesStateMachine.runSeriesStateMachine(coController);
+        // Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY , gyro);
         // Elevator.printElevatorEncoders();
-        // Arm.printArmEncoders();
+        Arm.printArmEncoders();
+        Arm.printArmLimitSwitches();
         //System.out.println("LIMR: " + Canifier.cargoBeamBreak());
         // BallShooter.intakeCargo(coController.leftTrigger);
             //BallShooter.intakeCargo(coController.leftTrigger);
