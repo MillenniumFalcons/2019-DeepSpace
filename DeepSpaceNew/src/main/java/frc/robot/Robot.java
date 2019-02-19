@@ -17,6 +17,7 @@ import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
+import frc.team3647utility.Units;
 import jaci.pathfinder.Trajectory;
 
 
@@ -83,11 +84,14 @@ public class Robot extends TimedRobot
 
     Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
     driveSignal = new DriveSignal();
-    trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
+    // trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
+    trajectory = TrajectoryUtil.getTrajectoryFromName("PlatformToRocket");
     // System.out.println(trajectory.segments[1].x);
     ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
   }
 
+  double left = 0;
+  double right = 0;
   @Override
   public void autonomousPeriodic() 
   {
@@ -105,20 +109,49 @@ public class Robot extends TimedRobot
     driveSignal = ramseteFollower.getNextDriveSignal();
     current = ramseteFollower.currentSegment();
 
-    System.out.println("Velocity: " + ramseteFollower.getVelocity().getLinear() + " X: " + current.x + " Y: " + current.y);
-    Drivetrain.setVelocity(driveSignal.getLeft(), driveSignal.getRight());
+    // System.out.println("Velocity: " + ramseteFollower.getVelocity().getLinear() + " X: " + current.x + " Y: " + current.y);
+    System.out.println("Left: " + driveSignal.getLeft() + " Right: " + driveSignal.getRight());
+    left = driveSignal.getLeft();
+    right = driveSignal.getRight();
+    Drivetrain.leftSRX.set(ControlMode.Velocity, Units.metersToEncoderTicks(left)/10);
+    Drivetrain.rightSRX.set(ControlMode.Velocity, Units.metersToEncoderTicks(right)/10);
+    // Drivetrain.setVelocity(driveSignal.getLeft(), driveSignal.getRight());
   }
 
 
   @Override
   public void teleopInit() 
   {
-    BallIntake.ballIntakeinitialization();
-    Arm.armInitialization();
-    Elevator.elevatorInitialization();
-    SeriesStateMachine.seriesStateMachineInitialization();
-    HatchIntake.hatchIntakeInitialization();
+    // BallIntake.ballIntakeinitialization();
+    // Arm.armInitialization();
+    // Elevator.elevatorInitialization();
+    // SeriesStateMachine.seriesStateMachineInitialization();
+    // HatchIntake.hatchIntakeInitialization();
     Drivetrain.drivetrainInitialization();
+  }
+
+  public void runPCJoy()
+  {
+    if(mainController.dPadUp)
+    {
+      Drivetrain.customArcadeDrive(0, .5, gyro);
+    }
+    else if(mainController.dPadDown)
+    {
+      Drivetrain.customArcadeDrive(0, -.5, gyro);
+    }
+    else if(mainController.dPadLeft)
+    {
+      Drivetrain.customArcadeDrive(-.5, 0, gyro);
+    }
+    else if(mainController.dPadRight)
+    {
+      Drivetrain.customArcadeDrive(.5, 0, gyro);
+    }
+    else
+    {
+      Drivetrain.stop();
+    }
   }
 
 
