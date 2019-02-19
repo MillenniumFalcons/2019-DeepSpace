@@ -19,6 +19,17 @@ public interface Units
         return m/0.0254;
     }
 
+    public static double metersToEncoderTicks(double meters)
+    {
+        return (meters * 4096) / (Math.PI * 0.152);
+    }
+
+    public static double feetToEncoderTicks(double feet)
+    {
+        return (feet * 4096) / (Math.PI * .5);
+    }
+
+
     public static double feetToMeters(double ft)
     {
         return inchesToMeters(ft*12);
