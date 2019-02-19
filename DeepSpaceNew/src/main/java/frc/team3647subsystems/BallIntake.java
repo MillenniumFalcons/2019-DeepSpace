@@ -56,10 +56,17 @@ public class BallIntake
 			stopMotor();
 		}
 	}
-	public static void runIntake(double power)
+	public static void runIntake()
 	{
-			intakeCargo(power);
-			BallShooter.intakeCargo(power);
+		if(BallShooter.cargoDetection())
+		{
+			intakeCargo(.2);
+		}
+		else
+		{
+			intakeCargo(.5);
+		}
+		BallShooter.intakeCargo(.5);
 	}
 	
 	public static void setOpenLoop(double speed)

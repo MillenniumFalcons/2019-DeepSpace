@@ -18,8 +18,8 @@ public class Arm
 {
 	public static ArmPosition currentState, lastState, aimedState;
 
-	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);
-	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+	public static WPI_TalonSRX armSRX;
+	public static CANSparkMax armNEO;
 	public static CANDigitalInput revNeoLimitSwitch; 
 	public static CANDigitalInput fwdNeoLimitSwitch;
 
@@ -29,7 +29,9 @@ public class Arm
     public static boolean manualOverride;
 	
     public static void armInitialization()
-    {		
+    {	
+		armSRX = new WPI_TalonSRX(Constants.armSRXPin);	
+		armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 		currentState = null;
 		aimedState = null;
 		lastState = null;
@@ -91,7 +93,8 @@ public class Arm
 		STOWED,
 		VERTICALSTOWED,
 		CARGOHANDOFF,
-		MANUAL,
+		MANUAL, 
+		STOPPED,
 	}
 
 	public static void setManualController(Joysticks controller)
@@ -127,6 +130,10 @@ public class Arm
 	 */
 	public static void runArm()
 	{
+		if(Math.abs(armEncoderVelocity) > 200 && BallShooter.cargoDetection())
+		{
+			BallShooter.intakeCargo(.1);
+		}
 		setArmEncoder();
 		updateLivePosition();
 		if(aimedState != null) //check if aimed state has a value
@@ -139,6 +146,9 @@ public class Arm
 						overrideValue = 0;
 					}
 					moveManual(overrideValue);
+					break;
+				case STOPPED:
+					Arm.stopArm();
 					break;
 				case FWDLIMITSWITCH:
 					moveToFwdLimitSwitch();
@@ -366,6 +376,7 @@ public class Arm
 	public static void stopArm()
 	{
 		armSRX.stopMotor();
+		armNEO.stopMotor();
 	}
 	//-------------------------------------------------
 

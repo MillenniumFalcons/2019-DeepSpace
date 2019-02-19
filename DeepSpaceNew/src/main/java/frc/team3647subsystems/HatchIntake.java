@@ -225,7 +225,7 @@ public class HatchIntake
 		}
 	}
 	
-	private static void setOpenLoop(double power)
+	public static void setOpenLoop(double power)
 	{
 		wristMotor.set(ControlMode.PercentOutput, power);
 

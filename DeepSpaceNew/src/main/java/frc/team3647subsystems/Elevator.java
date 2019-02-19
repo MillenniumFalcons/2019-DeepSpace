@@ -7,6 +7,7 @@ import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -18,12 +19,12 @@ public class Elevator
 	public static ElevatorLevel currentState, lastState, aimedState;
 	
 	// Sensor at bottom of elevator
-	public static DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin); 
+	public static DigitalInput limitSwitch;
 
 	// Elevator motors
-    private static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
-	private static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
-    private static VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
+    private static WPI_TalonSRX elevatorMaster;
+	private static VictorSPX GearboxSPX1;
+    private static VictorSPX GearboxSPX2;
 
 	public static int elevatorEncoderCCL, elevatorEncoderValue, elevatorEncoderVelocity;
 	
@@ -32,6 +33,11 @@ public class Elevator
     
     public static void elevatorInitialization()
 	{
+		limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
+		elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
+		GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
+		GearboxSPX2= new VictorSPX(Constants.ElevatorGearboxSPX2); //13
+
 		currentState = null;
 		aimedState = null;
 		lastState = null;
@@ -59,6 +65,7 @@ public class Elevator
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
 
+		elevatorMaster.setNeutralMode(NeutralMode.Brake);
 		setEncoderValue(Constants.elevatorStartingStowed);
 	}
 
@@ -92,7 +99,8 @@ public class Elevator
         CARGOSHIP,
 		STOWED,
 		MINROTATE,
-		VERTICALSTOWED
+		VERTICALSTOWED,
+		START
 	}
 
 	public static void setManualController(Joysticks controller)
@@ -129,6 +137,9 @@ public class Elevator
 					break;
 				case BOTTOM:
 					moveToBottom();
+					break;
+				case START:
+					moveToBottomStart();
 					break;
 				case CARGOHANDOFF:
 					moveToCargoHandoff();
@@ -174,7 +185,7 @@ public class Elevator
 	{
 		elevatorMaster.set(ControlMode.MotionMagic, position);
 	}
-	private static void moveToBottom()
+	private static void moveToBottomStart()
 	{
 		if(stateDetection(ElevatorLevel.BOTTOM))
 		{
@@ -186,7 +197,12 @@ public class Elevator
 			//setPosition(0);
 			setOpenLoop(-.15);
 		}
-    }
+	}
+	
+	private static void moveToBottom()
+	{
+		setPosition(0);
+	}
     
     private static void moveToCargoHandoff()
     {

@@ -125,14 +125,22 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic() 
   {
-    Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+    if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
+    {
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.55, mainController.leftJoyStickY * .6, gyro);
+    }
+    else
+    {
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);
+    }
+    
     HatchGrabber.runHatchGrabber(coController.rightBumper);
     Arm.runArm();
     Elevator.runElevator();
     Elevator.printElevatorEncoders();
     HatchIntake.runHatchIntakeWrist();
     HatchIntake.runHatchIntakeClamp(coController.leftBumper);
-    SeriesStateMachine.runSeriesStateMachine(coController);
+    SeriesStateMachine.runSeriesStateMachine(coController, mainController);
   }
 
   @Override
@@ -140,6 +148,9 @@ public class Robot extends TimedRobot
   {
     Arm.armNEO.setIdleMode(IdleMode.kCoast);
     Drivetrain.setToCoast();
+    Arm.aimedState = null;
+    Elevator.aimedState = null;
+    SeriesStateMachine.aimedRobotState = null;
   }
 
 
@@ -172,7 +183,9 @@ public class Robot extends TimedRobot
     // Elevator.runElevator();
     // Arm.runArm();
     // System.out.println("dPad value: " + coController.dPadValue);
-    HatchGrabber.runHatchGrabber(coController.leftBumper);
+    // HatchGrabber.runHatchGrabber(coController.leftBumper);
+    // Arm.printArmLimitSwitches();
+    AirCompressor.runCompressor();
   }
 
   public void updateJoysticks() 
