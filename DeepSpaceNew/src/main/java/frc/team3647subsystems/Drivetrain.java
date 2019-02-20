@@ -176,6 +176,13 @@ public class Drivetrain
 		leftSRX.set(ControlMode.Velocity, targetVelocityLeft);
 	}
 
+	public static void setAutoVelocity(double leftDriveSignal, double rightDriveSignal)
+	{
+		selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		rightSRX.set(ControlMode.Velocity, rightDriveSignal);
+		leftSRX.set(ControlMode.Velocity, leftDriveSignal);
+	}
+
 	public static void testDrivetrainCurrent()
 	{
 		System.out.println("Left Motor Current: " + leftSRX.getOutputCurrent());
@@ -217,6 +224,30 @@ public class Drivetrain
 	{
 		leftSRX.setSelectedSensorPosition(0);
 		rightSRX.setSelectedSensorPosition(0);
+	}
+
+	public static void runPCJoy(Joysticks controller, Gyro gyro)
+	{
+	  if(controller.dPadUp)
+	  {
+		Drivetrain.customArcadeDrive(0, .5, gyro);
+	  }
+	  else if(controller.dPadDown)
+	  {
+		Drivetrain.customArcadeDrive(0, -.5, gyro);
+	  }
+	  else if(controller.dPadLeft)
+	  {
+		Drivetrain.customArcadeDrive(-.5, 0, gyro);
+	  }
+	  else if(controller.dPadRight)
+	  {
+		Drivetrain.customArcadeDrive(.5, 0, gyro);
+	  }
+	  else
+	  {
+		Drivetrain.stop();
+	  }
 	}
 
 }

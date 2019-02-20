@@ -93,8 +93,8 @@ public class Constants
 	public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF  = { 0.25, 0, 0.1, 0.27 };
-	public static final double[] rightVelocityPIDF = { 0.35, 0, 0.1, 0.27 };
+	public static final double[] leftVelocityPIDF  = { 5, 0, 50, 0.26 };
+	public static final double[] rightVelocityPIDF = { 5, 0, 50, 0.26 };
 
 	public static final double velocityConstant = 1000; //Explanation for velocityConstant
 
@@ -163,18 +163,11 @@ public class Constants
 	/**************AUTONOMOUS CONSTANTS******************/
 	
 	public static final double kEncoderTicks = 4096;
-	public static final double kWheelDiameter = 6; //inches
-	public static final double kWheelBase = 0;
-	public static final double kMaxVelocity = 0;
+	public static final double kWheelDiameter = .152; //meters
+	public static final double kWheelBase = .7112;
+	public static final double kMaxVelocity = 2.24;
 
-	public static final double kBeta = 0.2;
-	public static final double kZeta = .3;
-
-	public static final double PFTurnkP = 1;
-	public static final double PFkA = 0;
-	public static final double PFkV = 0;
-	public static final double PFkD = 0;
-	public static final double PFkI = 0;
-	public static final double PFkP = 0;
+	public static final double kBeta = 0.1; // b > 0 Correction
+	public static final double kZeta = 0; // 0 < z < 1 Dampening
 
 }

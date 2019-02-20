@@ -51,46 +51,46 @@ public class TestFunctions
 
     public static void updatePIDFMM()
     {        
-        // Robot.kPright = SmartDashboard.getNumber("kPright", 0);
-        // Robot.kIright = SmartDashboard.getNumber("kIright", 0);
-        // Robot.kDright = SmartDashboard.getNumber("kDright", 0);
-        // Robot.kFright = SmartDashboard.getNumber("kFright", 0.26);
+        // Robot.PIDFright[0] = SmartDashboard.getNumber("kPright", 0);
+        // Robot.PIDFright[1] = SmartDashboard.getNumber("kIright", 0);
+        // Robot.PIDFright[2] = SmartDashboard.getNumber("kDright", 0);
+        // Robot.PIDFright[3] = SmartDashboard.getNumber("kFright", 0.26);
 
-        // Robot.kPleft = SmartDashboard.getNumber("kPleft", 0);
-        // Robot.kIleft = SmartDashboard.getNumber("kIleft", 0);
-        // Robot.kDleft = SmartDashboard.getNumber("kDleft", 0);
-        // Robot.kFleft = SmartDashboard.getNumber("kFleft", 0.26);
+        // Robot.PIDFleft[0] = SmartDashboard.getNumber("kPleft", 0);
+        // Robot.PIDFleft[1] = SmartDashboard.getNumber("kIleft", 0);
+        // Robot.PIDFleft[2] = SmartDashboard.getNumber("kDleft", 0);
+        // Robot.PIDFleft[3] = SmartDashboard.getNumber("kFleft", 0.26);
 
-        Robot.kP = SmartDashboard.getNumber("kP", 0.1);
-        Robot.kI= SmartDashboard.getNumber("kI", 0);
-        Robot.kD = SmartDashboard.getNumber("kD", 0);
-        Robot.kF = SmartDashboard.getNumber("kF", 0.0);
+        Robot.PIDF[0] = SmartDashboard.getNumber("kP", 0.1);
+        Robot.PIDF[1] = SmartDashboard.getNumber("kI", 0);
+        Robot.PIDF[2] = SmartDashboard.getNumber("kD", 0);
+        Robot.PIDF[3] = SmartDashboard.getNumber("kF", 0.0);
 
-        Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 1000);
-        Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 1000);
+        // Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 1000);
+        // Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 1000);
      }
 
 
     public static void shuffleboard()
     {
 
-        // SmartDashboard.putNumber("kPright", 0 ); //0.3473
-        // SmartDashboard.putNumber("kIright", 0); //0
-        // SmartDashboard.putNumber("kDright", 0); //0.7389
-        // SmartDashboard.putNumber("kFright", .26);
+        SmartDashboard.putNumber("kPright", 0); //0.3473
+        SmartDashboard.putNumber("kIright", 0); //0
+        SmartDashboard.putNumber("kDright", 0); //0.7389
+        SmartDashboard.putNumber("kFright", .26);
 
-        // SmartDashboard.putNumber("kPleft", 0);
-        // SmartDashboard.putNumber("kIleft", 0);
-        // SmartDashboard.putNumber("kDleft", 0);
-        // SmartDashboard.putNumber("kFleft", 0.26);
+        SmartDashboard.putNumber("kPleft", 0);
+        SmartDashboard.putNumber("kIleft", 0);
+        SmartDashboard.putNumber("kDleft", 0);
+        SmartDashboard.putNumber("kFleft", 0.26);
 
-        SmartDashboard.putNumber("kP", 0.1);
-        SmartDashboard.putNumber("kI", 0);
-        SmartDashboard.putNumber("kD", 0);
-        SmartDashboard.putNumber("kF", 0.0);
+        // SmartDashboard.putNumber("kP", 0.1);
+        // SmartDashboard.putNumber("kI", 0);
+        // SmartDashboard.putNumber("kD", 0);
+        // SmartDashboard.putNumber("kF", 0.0);
 
-        SmartDashboard.putNumber("MM Acceleration", 1000);
-        SmartDashboard.putNumber("MM Velocity", 1000);
+        // SmartDashboard.putNumber("MM Acceleration", 1000);
+        // SmartDashboard.putNumber("MM Velocity", 1000);
     }
 
     public static void antiTipping()
@@ -103,7 +103,7 @@ public class TestFunctions
 
     public static void dont()
     {
-        
+        //don't code here
     }
 
     public static boolean tipping()

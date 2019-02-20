@@ -33,24 +33,12 @@ public class Robot extends TimedRobot
   public static Joysticks coController;
   public static Gyro gyro;
 
-  DriveSignal driveSignal;
-  Trajectory trajectory;
-  RamseteFollower ramseteFollower;
-  Trajectory.Segment current;
-
-  public static double kPleft = 0.1;
-  public static double kIleft = 0;
-  public static double kDleft = 0;
-  public static double kFleft = 0;
-
-  public static double kPright = 0.1;
-  public static double kIright = 0;
-  public static double kDright = 0;
-  public static double kFright = 0;
+  
+  public static double[] PIDFleft = new double[4];
+  public static double[] PIDFright = new double[4];
+  public static double[] PIDF = new double[4];
   public static int mVel = 0;
   public static int mAccel = 0;
-
-  public static double kP = 0, kI = 0, kD = 0, kF = 0;
 
 
   @Override
@@ -76,47 +64,34 @@ public class Robot extends TimedRobot
   }
 
 
+  DriveSignal driveSignal;
+  Trajectory trajectory;
+  RamseteFollower ramseteFollower;
+  Trajectory.Segment current;
+
   @Override
   public void autonomousInit() 
   {
-    // m_autoSelected = m_chooser.getSelected();
-    // // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    // System.out.println("Auto selected: " + m_autoSelected);
-
-    Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+    // Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
     driveSignal = new DriveSignal();
-    // trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
-    trajectory = TrajectoryUtil.getTrajectoryFromName("PlatformToRocket");
-    // System.out.println(trajectory.segments[1].x);
+    trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
     ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
   }
 
-  double left = 0;
-  double right = 0;
+  double left;
+  double right;
+
   @Override
   public void autonomousPeriodic() 
   {
-    // switch (m_autoSelected) 
-    // {
-    // case kCustomAuto:
-    //   // Put custom auto code here
-    //   break;
-    // case kDefaultAuto:
-    // default:
-    //   // Put default auto code here
-    //   break;
-    // }
-
     driveSignal = ramseteFollower.getNextDriveSignal();
     current = ramseteFollower.currentSegment();
 
-    // System.out.println("Velocity: " + ramseteFollower.getVelocity().getLinear() + " X: " + current.x + " Y: " + current.y);
-    System.out.println("Left: " + driveSignal.getLeft() + " Right: " + driveSignal.getRight());
-    left = driveSignal.getLeft();
-    right = driveSignal.getRight();
-    Drivetrain.leftSRX.set(ControlMode.Velocity, Units.metersToEncoderTicks(left)/10);
-    Drivetrain.rightSRX.set(ControlMode.Velocity, Units.metersToEncoderTicks(right)/10);
-    // Drivetrain.setVelocity(driveSignal.getLeft(), driveSignal.getRight());
+    left = Units.metersToEncoderTicks(driveSignal.getLeft())/10;
+    right = Units.metersToEncoderTicks(driveSignal.getRight())/10;
+
+    System.out.println("{Left Drive Signal: " + left + " Right Drive Signal: " + right + "}");
+    // Drivetrain.setAutoVelocity(left, right);
   }
 
 
