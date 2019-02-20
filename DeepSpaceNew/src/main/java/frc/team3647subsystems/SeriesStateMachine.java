@@ -162,9 +162,13 @@ public class SeriesStateMachine
                 aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
         }
 
-        if(coController.rightJoyStickPress)
-            aimedRobotState = ScoringPosition.STOWED;
-        
+        if(coController.rightJoyStickX < -.7)
+        {
+            if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation)
+                BallIntake.retractIntake();
+            else
+                Elevator.aimedState = ElevatorLevel.MINROTATE;
+        }
         if(coController.leftTrigger > .15)
         {
             if(!arrivedAtMidPos)
@@ -1043,15 +1047,71 @@ public class SeriesStateMachine
        // }
     }
 
-    private static void fastSafetyRotateArm(Arm.ArmPosition pos)
+    private static void fastRotateArm(Arm.ArmPosition pos)
     {
-        Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
-        if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation / 2 && Elevator.elevatorEncoderVelocity > 200)
+        System.out.println("Rotating arm to: " + pos);
+        System.out.println("Elevator level: " + Elevator.currentState);
+        if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation - 500)
         {
+            System.out.println("Moving arm to " + pos + " because elevator encoder is above min level");
             Arm.aimedState = pos;
         }
+        // if elevator above minrotate/2 and is moving up, start moving arm to position
+        else if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation / 2 && Elevator.elevatorEncoderVelocity > 3500)
+        {
+            
+            switch(Elevator.aimedState)
+            {
+                case STOWED:
+                    Arm.aimedState = null;
+                    break;
+                case CARGOHANDOFF:
+                    Arm.aimedState = null;
+                    break;
+                case HATCHHANDOFF:
+                    Arm.aimedState = null;
+                    break;
+                default:
+                    System.out.println("moving arm because elevator level is above min rotate/2");
+                    Arm.aimedState = pos;
+                    break;
+            }
+        }
+        // IF elevator is above min rotating and is going down
+        else if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500 && Elevator.elevatorEncoderVelocity < 0)
+        {
+            //if aimed position is above min rotate
+            switch(Elevator.aimedState)
+            {
+                case MINROTATE:
+                    Arm.aimedState = pos;
+                    break;
+                case HATCHL2:
+                    Arm.aimedState = pos;
+                    break;
+                case HATCHL3:
+                    Arm.aimedState = pos;
+                    break;
+                case CARGOL2:
+                    Arm.aimedState = pos;
+                    break;
+                case CARGOSHIP:
+                    Arm.aimedState = pos;
+                    break;
+                default:
+                    //if aimed pos below min rotate but the elevator is 6000 encoder values above min rotate, rotate arm to aimed pos
+                    if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation + 6000)
+                        Arm.aimedState = pos;
+                    //if aimed pos below min rotate and elevator is less than 6000 encoder values away from min rotate, stop arm
+                    else
+                        Arm.aimedState = null;
+                    break;                
+            }
+        }
+        // Otherwise, move elevator to minrotate and stop arm.
         else
         {
+            Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
             Arm.aimedState = null;
         }
     }

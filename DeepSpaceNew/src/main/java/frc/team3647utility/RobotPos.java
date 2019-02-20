@@ -80,6 +80,7 @@ public class RobotPos
         {
             switch(scoringPos)
             {
+                //Change from SAFEZMOVE to only if statement
                 case HATCHL1FORWARDS:
                         return Movement.SAFEZMOVE;
                 case HATCHL1BACKWARDS:

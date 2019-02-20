@@ -136,11 +136,11 @@ public class Robot extends TimedRobot
   {
     if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
     {
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.55, mainController.leftJoyStickY * .6, gyro);
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.6, mainController.leftJoyStickY * .6, gyro);
     }
     else
     {
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
     }
     
     HatchGrabber.runHatchGrabber(coController.rightBumper);
