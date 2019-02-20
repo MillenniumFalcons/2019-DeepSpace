@@ -18,8 +18,8 @@ public class Arm
 {
 	public static ArmPosition currentState, lastState, aimedState;
 
-	public static WPI_TalonSRX armSRX;
-	public static CANSparkMax armNEO;
+	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);	
+	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	public static CANDigitalInput revNeoLimitSwitch; 
 	public static CANDigitalInput fwdNeoLimitSwitch;
 
@@ -30,8 +30,6 @@ public class Arm
 	
     public static void armInitialization()
     {	
-		armSRX = new WPI_TalonSRX(Constants.armSRXPin);	
-		armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 		currentState = null;
 		aimedState = null;
 		lastState = null;
@@ -339,6 +337,8 @@ public class Arm
 
     public static void moveManual(double jValue)
 	{
+		setArmEncoder();
+		updateLivePosition();
 		if(jValue > 0)
 		{
 			setOpenLoop(overrideValue * 0.5);

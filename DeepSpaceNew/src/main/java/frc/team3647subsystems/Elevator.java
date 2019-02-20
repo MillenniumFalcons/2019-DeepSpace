@@ -19,12 +19,12 @@ public class Elevator
 	public static ElevatorLevel currentState, lastState, aimedState;
 	
 	// Sensor at bottom of elevator
-	public static DigitalInput limitSwitch;
+	public static DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
 
 	// Elevator motors
-    private static WPI_TalonSRX elevatorMaster;
-	private static VictorSPX GearboxSPX1;
-    private static VictorSPX GearboxSPX2;
+    public static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
+	public static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
+    public static VictorSPX GearboxSPX2= new VictorSPX(Constants.ElevatorGearboxSPX2); //13
 
 	public static int elevatorEncoderCCL, elevatorEncoderValue, elevatorEncoderVelocity;
 	
@@ -33,11 +33,6 @@ public class Elevator
     
     public static void elevatorInitialization()
 	{
-		limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
-		elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
-		GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
-		GearboxSPX2= new VictorSPX(Constants.ElevatorGearboxSPX2); //13
-
 		currentState = null;
 		aimedState = null;
 		lastState = null;
@@ -269,8 +264,10 @@ public class Elevator
 
 	private static int encoderState, manualAdjustment, manualEncoderValue;
 
-	private static void moveManual(double jValue)
+	public static void moveManual(double jValue)
 	{
+		setElevatorEncoder();
+		updateLivePosition();
 		if(jValue > 0)
 		{
 			setOpenLoop(jValue * 0.5);
@@ -298,7 +295,7 @@ public class Elevator
 		}
 	}
 
-    private static void setOpenLoop(double power)
+    public static void setOpenLoop(double power)
     {
 		// Percent Output		
 		elevatorMaster.set(ControlMode.PercentOutput, power);

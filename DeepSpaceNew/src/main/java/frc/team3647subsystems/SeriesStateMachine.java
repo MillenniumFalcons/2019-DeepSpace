@@ -1042,4 +1042,17 @@ public class SeriesStateMachine
                 //break;
        // }
     }
+
+    private static void fastSafetyRotateArm(Arm.ArmPosition pos)
+    {
+        Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
+        if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation / 2 && Elevator.elevatorEncoderVelocity > 200)
+        {
+            Arm.aimedState = pos;
+        }
+        else
+        {
+            Arm.aimedState = null;
+        }
+    }
 }

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -122,37 +123,37 @@ public class Robot extends TimedRobot
   @Override
   public void teleopInit() 
   {
-    // BallIntake.ballIntakeinitialization();
-    // Arm.armInitialization();
-    // Elevator.elevatorInitialization();
-    // SeriesStateMachine.seriesStateMachineInitialization();
-    // HatchIntake.hatchIntakeInitialization();
+    BallIntake.ballIntakeinitialization();
+    Arm.armInitialization();
+    Elevator.elevatorInitialization();
+    SeriesStateMachine.seriesStateMachineInitialization();
+    HatchIntake.hatchIntakeInitialization();
     Drivetrain.drivetrainInitialization();
   }
 
-  public void runPCJoy()
-  {
-    if(mainController.dPadUp)
-    {
-      Drivetrain.customArcadeDrive(0, .5, gyro);
-    }
-    else if(mainController.dPadDown)
-    {
-      Drivetrain.customArcadeDrive(0, -.5, gyro);
-    }
-    else if(mainController.dPadLeft)
-    {
-      Drivetrain.customArcadeDrive(-.5, 0, gyro);
-    }
-    else if(mainController.dPadRight)
-    {
-      Drivetrain.customArcadeDrive(.5, 0, gyro);
-    }
-    else
-    {
-      Drivetrain.stop();
-    }
-  }
+  // public void runPCJoy()
+  // {
+  //   if(mainController.dPadUp)
+  //   {
+  //     Drivetrain.customArcadeDrive(0, .5, gyro);
+  //   }
+  //   else if(mainController.dPadDown)
+  //   {
+  //     Drivetrain.customArcadeDrive(0, -.5, gyro);
+  //   }
+  //   else if(mainController.dPadLeft)
+  //   {
+  //     Drivetrain.customArcadeDrive(-.5, 0, gyro);
+  //   }
+  //   else if(mainController.dPadRight)
+  //   {
+  //     Drivetrain.customArcadeDrive(.5, 0, gyro);
+  //   }
+  //   else
+  //   {
+  //     Drivetrain.stop();
+  //   }
+  // }
 
 
   @Override
@@ -179,27 +180,27 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit() 
   {
-    Arm.armNEO.setIdleMode(IdleMode.kCoast);
-    Drivetrain.setToCoast();
-    Arm.aimedState = null;
-    Elevator.aimedState = null;
-    SeriesStateMachine.aimedRobotState = null;
+    // Arm.armNEO.setIdleMode(IdleMode.kCoast);
+    // Drivetrain.setToCoast();
+    // Arm.aimedState = null;
+    // Elevator.aimedState = null;
+    // SeriesStateMachine.aimedRobotState = null;
   }
 
 
   @Override
   public void testInit() 
   {
-    // Elevator.elevatorInitialization();
+    //Elevator.elevatorInitialization();
     // Elevator.aimedState = ElevatorLevel.MINROTATE;
-    // Arm.armInitialization();
+    // Drivetrain.drivetrainInitialization();
     // TestFunctions.shuffleboard();
     //BallIntake.ballIntakeinitialization();
 	// BallShooter.ballShooterinitialization();
 	// HatchIntake.hatchIntakeInitialization();
   // BallShooter.ballShooterinitialization();
   // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-    
+  Elevator.elevatorInitialization();    
   }
   @Override
   public void testPeriodic() 
@@ -215,10 +216,13 @@ public class Robot extends TimedRobot
     // Elevator.setElevatorEncoder();
     // Elevator.runElevator();
     // Arm.runArm();
+    // Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);
+    Elevator.runElevator();
+    Elevator.printElevatorEncoders();
     // System.out.println("dPad value: " + coController.dPadValue);
     // HatchGrabber.runHatchGrabber(coController.leftBumper);
     // Arm.printArmLimitSwitches();
-    AirCompressor.runCompressor();
+    // AirCompressor.runCompressor();
   }
 
   public void updateJoysticks() 
