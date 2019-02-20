@@ -12,9 +12,9 @@ import java.util.Collections;
 public class TrajectoryUtil 
 {
 
-    public static Trajectory reversePath(Trajectory original)
+    public static Trajectory reversePath(Trajectory originalTrajectory)
     {
-        ArrayList<Segment> segments = new ArrayList<>(Arrays.asList(original.segments));
+        ArrayList<Segment> segments = new ArrayList<>(Arrays.asList(originalTrajectory.segments));
         Collections.reverse(segments);
 
         double distance = segments.get(0).position;

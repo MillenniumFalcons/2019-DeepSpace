@@ -8,15 +8,16 @@ import jaci.pathfinder.Trajectory.Segment;
 /**
  * Ramsete implementation by Brian for Team 321 based on Aaron's implementation
  * with help from Prateek and all on the FIRST programming discord server
+ * yeeted by Kunal for Team 3647 (with permission of course)
  */
 public class RamseteFollower 
 {
 
     // Should be greater than zero and this increases correction
-    private double b = Constants.kBeta;//1.5;
+    private double kBeta = Constants.kBeta; //1.5;
 
     // Should be between zero and one and this increases dampening
-    private double zeta = Constants.kZeta; //0.7;
+    private double kZeta = Constants.kZeta; //0.7;
 
     // Holds what segment we are on
     private int segmentIndex;
@@ -45,8 +46,8 @@ public class RamseteFollower
 
     public RamseteFollower(Trajectory trajectory, MotionProfileDirection direction) 
     {
-        this.trajectory = direction == MotionProfileDirection.FORWARD ? trajectory
-                : TrajectoryUtil.reversePath(trajectory);
+        //ternary operator, if direction is forward return trajectory, else return the reversed path
+        this.trajectory = direction == MotionProfileDirection.FORWARD ? trajectory : TrajectoryUtil.reversePath(trajectory);
 
         segmentIndex = 0;
         odometry = Odometry.getInstance();
@@ -58,8 +59,8 @@ public class RamseteFollower
     {
         this(trajectory, direction);
 
-        this.b = b;
-        this.zeta = zeta;
+        this.kBeta = b;
+        this.kZeta = zeta;
     }
 
     public Velocity getVelocity() 
@@ -139,13 +140,13 @@ public class RamseteFollower
         odometryError = (Math.cos(odometry.getTheta()) * (desiredY - odometry.getY()))
                 - (Math.sin(odometry.getTheta()) * (desiredX - odometry.getX()));
 
-        return desiredAngularVelocity + (b * desiredLinearVelocity * sinThetaErrorOverThetaError * odometryError)
+        return desiredAngularVelocity + (kBeta * desiredLinearVelocity * sinThetaErrorOverThetaError * odometryError)
                 + (k * thetaError);
     }
 
     private double calculateK(double desiredLinearVelocity, double desiredAngularVelocity) 
     {
-        return 2 * zeta * Math.sqrt(Math.pow(desiredAngularVelocity, 2) + (b * Math.pow(desiredLinearVelocity, 2)));
+        return 2 * kZeta * Math.sqrt(Math.pow(desiredAngularVelocity, 2) + (kBeta * Math.pow(desiredLinearVelocity, 2)));
     }
 
     private double boundHalfRadians(double radians) 
