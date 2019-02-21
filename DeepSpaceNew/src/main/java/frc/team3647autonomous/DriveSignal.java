@@ -36,4 +36,10 @@ public class DriveSignal
     {
         this.right = right;
     }
+
+    public void setBoth(double rightIn, double leftIn)
+    {
+        this.right = rightIn;
+        this.left = leftIn;
+    }
 }

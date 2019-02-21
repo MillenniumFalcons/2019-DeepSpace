@@ -2,27 +2,22 @@
 
 package frc.team3647subsystems;
 
+import frc.team3647autonomous.DriveSignal;
 import frc.team3647inputs.Limelight;
 import frc.team3647subsystems.Drivetrain;   //using Drivetrain class to move motors
 
 public class VisionController
 {
 
-    private double x, y, speed, area, sumError, prevError;
+    public double x, y, speed, area, sumError, prevError;
     //x is the tx degree value from Limelight Class
     //y is the ty degree value from Limelight Class
     //area is the ta value from Limelight Class. The ratio of the object area to the entire picture area, as a percent.
     //sumError is theglobal vairable to keep track of the sum of all the error values in the PID loop
     //prevError is the global variable to keep track of the previous error in the PID loop
-    Limelight limelight = new Limelight();
+    public Limelight limelight = new Limelight();
 
-    Drivetrain drivetrain;
-
-    public VisionController(Drivetrain input)
-    {
-        this.drivetrain = input;
-
-    }
+    public DriveSignal drivesignal = new DriveSignal();
 
 
     public void updateInputs()  //update Limelight Inputs
@@ -39,8 +34,8 @@ public class VisionController
 		double error = this.x / 27; //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
 		if(error > -errorThreshold && error < errorThreshold)   //checking if the error is within a threshold to stop the robot from moving
 		{
-			speed = 0;                              //setting global variable speed equal to zero
-			drivetrain.setVelocity(speed, speed);      //setting Drivetrain to 0 speed
+            speed = 0;                              //setting global variable speed equal to zero
+            drivesignal.setBoth(speed, speed);      //setting Drivetrain to 0 speed
 		}
 		else
 		{            
@@ -54,18 +49,18 @@ public class VisionController
         double error = this.x / 27;                                 //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
         if(this.area >= targetArea/2)                               //redundant "if" in order to make sure the robot stops
         {
-            drivetrain.setVelocity(0,0);                               //set drivetrain to 0 speed if target distance is unreached
+            drivesignal.setBoth(0, 0);    //set drivetrain to 0 speed if target distance is unreached
         }
 
 		if( (error > -errorThreshold) && (error < errorThreshold) ) //if error is in between the threshold execute following statements
 		{
             if(this.area < targetArea/2)
             {
-                drivetrain.setVelocity(defaultSpeed,defaultSpeed);     //set drivetrain to default speed if target distance is unreached
+                drivesignal.setBoth(defaultSpeed, defaultSpeed);     //set drivetrain to default speed if target distance is unreached
             }
             else
             {
-                drivetrain.setVelocity(0, 0);                          //set drivetrain to zero, stop robot if it has reached target distance
+                drivesignal.setBoth(0, 0);                          //set drivetrain to zero, stop robot if it has reached target distance
             }			
 		}
 		else
@@ -95,7 +90,7 @@ public class VisionController
 
         prevError = error; // update prevError to current Error
 
-        drivetrain.setVelocity(speed, -speed); // set motor speeds to opposite adjusted PID values
+        drivesignal.setBoth(speed, -speed); // set motor speeds to opposite adjusted PID values
     }
 
     public void bangBang(double speed, double threshold) //bang bang vision controller (simplest non-PID centering algorithm)
@@ -103,19 +98,19 @@ public class VisionController
         updateInputs();
         if (x > threshold && x < -threshold)    //if x is between threshold, drivetrain is set to zero speed
 		{
-			drivetrain.setVelocity(0, 0);
+			drivesignal.setBoth(0, 0);
 		}
 		else if (x > threshold)                 //if x is greater than threshold, then turn right
 		{
-			drivetrain.setVelocity(speed, -speed);
+			drivesignal.setBoth(speed, -speed);
 		}
 		else if(x < -threshold)                 //if x is less than -threshold, then turn left
 		{
-            drivetrain.setVelocity(-speed, speed);
+            drivesignal.setBoth(-speed, speed);
         }
         else                                    //if all else fails just stop the robot, redundant for safety
         {
-            drivetrain.setVelocity(0, 0);
+            drivesignal.setBoth(0, 0);
         }
     }
 

@@ -19,15 +19,25 @@ public class Limelight
         updateLimelight();
     }
 
+    public void setToDriver()
+    {
+        table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
+    }
+
+    public void setToVison()
+    {
+        table.getEntry("camMode").setNumber(0); //Limelight Network Table code to set camera mode to vision tracking
+    }
+
     public void updateLimelight()
     {
         NetworkTableEntry tx = table.getEntry("tx"); //setting the N.T. entry to the tx value from limelight N.T.
 		NetworkTableEntry ty = table.getEntry("ty"); //setting the N.T. entry to the ty value from limelight N.T.
         NetworkTableEntry ta = table.getEntry("ta"); //setting the N.T. entry to the ta value from limelight N.T.
         
-		x = tx.getDouble(0.0);      //x is set to tx, and setting the default value to 0 if not recieving values from limelight
-		y = ty.getDouble(0.0);      //y is set to ty, and setting the default value to 0 if not recieving values from limelight
-		area = ta.getDouble(0.0);   //area is set to ta, and setting the default value to 0 if not recieving values from limelight
+		x = tx.getDouble(-3647);      //x is set to tx, and setting the default value to -3647 if not recieving values from limelight
+		y = ty.getDouble(-3647);      //y is set to ty, and setting the default value to -3647 if not recieving values from limelight
+		area = ta.getDouble(-3647);   //area is set to ta, and setting the default value to -3647 if not recieving values from limelight
 
 		SmartDashboard.putNumber("LimelightX", x);          //adding the values to SmartDashboard
 		SmartDashboard.putNumber("LimelightY", y);          //adding the values to SmartDashboard

@@ -1,11 +1,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3647inputs.Joysticks;
+import frc.team3647inputs.Limelight;
 
 
 ///TO BE MOVED SOMETIME, ELSEWHERE
 public class TestFunctions
 {
+
+    public static Limelight limelight = new Limelight();
 //     /**
 //      * Button A = bottom; Button X = low; Button B = middle; Button Y = High
 //      * @param mainController
@@ -49,6 +53,41 @@ public class TestFunctions
 //         Robot.drivetrain.rightSRX.config_kD(Constants.drivePIDIdx, Robot.kD2, Constants.kTimeoutMs);
 //     }
 
+    public static void deletePIDFMM()
+    {
+        SmartDashboard.delete("kPright"); //0.3473
+        SmartDashboard.delete("kIright"); //0
+        SmartDashboard.delete("kDright"); //0.7389
+        SmartDashboard.delete("kFright");
+
+        SmartDashboard.delete("kPleft");
+        SmartDashboard.delete("kIleft");
+        SmartDashboard.delete("kDleft");
+        SmartDashboard.delete("kFleft");
+
+        // SmartDashboard.delete("kP", 0.45);
+        // SmartDashboard.delete("kI", 0.035);
+        // SmartDashboard.delete("kD", 0.9);
+        // SmartDashboard.delete("kF", 0.0);
+
+        SmartDashboard.delete("MM Acceleration");
+        SmartDashboard.delete("MM Velocity");
+
+    }
+    
+    public static void limelight(Joysticks controller)
+    {
+        limelight.updateLimelight();
+        if(controller.rightBumper)
+        {
+            limelight.setToDriver();
+        }
+        else if(controller.leftBumper)
+        {
+            limelight.setToVison();
+        }
+    }
+
     public static void updatePIDFMM()
     {        
         // Robot.PIDFright[0] = SmartDashboard.getNumber("kPright", 0);
@@ -61,9 +100,9 @@ public class TestFunctions
         // Robot.PIDFleft[2] = SmartDashboard.getNumber("kDleft", 0);
         // Robot.PIDFleft[3] = SmartDashboard.getNumber("kFleft", 0.26);
 
-        Robot.PIDF[0] = SmartDashboard.getNumber("kP", 0.1);
-        Robot.PIDF[1] = SmartDashboard.getNumber("kI", 0);
-        Robot.PIDF[2] = SmartDashboard.getNumber("kD", 0);
+        Robot.PIDF[0] = SmartDashboard.getNumber("kP", 0.45);
+        Robot.PIDF[1] = SmartDashboard.getNumber("kI", 0.035);
+        Robot.PIDF[2] = SmartDashboard.getNumber("kD", 0.9);
         Robot.PIDF[3] = SmartDashboard.getNumber("kF", 0.0);
 
         // Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 1000);
@@ -74,20 +113,20 @@ public class TestFunctions
     public static void shuffleboard()
     {
 
-        SmartDashboard.putNumber("kPright", 0); //0.3473
-        SmartDashboard.putNumber("kIright", 0); //0
-        SmartDashboard.putNumber("kDright", 0); //0.7389
-        SmartDashboard.putNumber("kFright", .26);
+        // SmartDashboard.putNumber("kPright", 0); //0.3473
+        // SmartDashboard.putNumber("kIright", 0); //0
+        // SmartDashboard.putNumber("kDright", 0); //0.7389
+        // SmartDashboard.putNumber("kFright", .26);
 
-        SmartDashboard.putNumber("kPleft", 0);
-        SmartDashboard.putNumber("kIleft", 0);
-        SmartDashboard.putNumber("kDleft", 0);
-        SmartDashboard.putNumber("kFleft", 0.26);
+        // SmartDashboard.putNumber("kPleft", 0);
+        // SmartDashboard.putNumber("kIleft", 0);
+        // SmartDashboard.putNumber("kDleft", 0);
+        // SmartDashboard.putNumber("kFleft", 0.26);
 
-        // SmartDashboard.putNumber("kP", 0.1);
-        // SmartDashboard.putNumber("kI", 0);
-        // SmartDashboard.putNumber("kD", 0);
-        // SmartDashboard.putNumber("kF", 0.0);
+        SmartDashboard.putNumber("kP", 0.45);
+        SmartDashboard.putNumber("kI", 0.035);
+        SmartDashboard.putNumber("kD", 0.9);
+        SmartDashboard.putNumber("kF", 0.0);
 
         // SmartDashboard.putNumber("MM Acceleration", 1000);
         // SmartDashboard.putNumber("MM Velocity", 1000);
