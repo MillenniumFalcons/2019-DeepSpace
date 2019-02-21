@@ -422,6 +422,45 @@ public class Elevator
 	{
 		elevatorMaster.setSelectedSensorPosition(0,Constants.interstageSlotIdx, Constants.kTimeoutMs);
 	}
+
+	public static int getStateEncoder(ElevatorLevel futureAimedState)
+	{
+		if(futureAimedState != null)
+		{
+			switch(aimedState) //check if aimed state has a value
+			{
+				case STOP:
+					return elevatorEncoderValue;
+				case BOTTOM:
+					return 0;
+				case START:
+					return 0;
+				case CARGOHANDOFF:
+					return Constants.elevatorCargoHandoff;
+				case HATCHHANDOFF:
+					return Constants.elevatorHatchHandoff;
+				case HATCHL2:
+					return Constants.elevatorHatchL2;
+				case HATCHL3:
+					return Constants.elevatorHatchL3;
+				case CARGO1:
+					return Constants.elevatorCargoL1;
+				case CARGOL2:
+					return Constants.elevatorCargoL2;
+				case CARGOSHIP:
+					return Constants.elevatorCargoShip;
+				case STOWED:
+					return Constants.elevatorStowed;
+				case VERTICALSTOWED:
+					return Constants.elevatorVerticalStowed;
+				case MINROTATE:
+					return Constants.elevatorMinRotation;
+				default:
+					return -1;
+			}
+		}
+		return -1;
+	}
 	//----------------------------------------------------------
 
 	private static boolean getLimitSwitch()
@@ -432,6 +471,11 @@ public class Elevator
 	public static void stopElevator()
 	{
 		elevatorMaster.stopMotor();
+	}
+
+	public static boolean isAboveMinRotate(int threshold)
+	{
+		return (elevatorEncoderValue >= Constants.elevatorMinRotation + threshold);
 	}
 	
 	public static void printElevatorEncoders()
