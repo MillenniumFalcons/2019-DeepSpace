@@ -184,6 +184,7 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic() 
   {
+
     if(mainController.rightBumper)
     {
       TestFunctions.vController.limelight.setToVison();
@@ -192,6 +193,7 @@ public class Robot extends TimedRobot
     }
     else
     {
+      TestFunctions.vController.limelight.pip();
       Drivetrain.customArcadeDrive(mainController.rightJoyStickX,mainController.leftJoyStickY, gyro);
       TestFunctions.vController.limelight.setToDriver();
     }

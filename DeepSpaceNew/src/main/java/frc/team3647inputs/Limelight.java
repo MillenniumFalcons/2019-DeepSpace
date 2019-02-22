@@ -29,8 +29,14 @@ public class Limelight
         table.getEntry("ledMode").setNumber(1);
     }
 
+    public void pip()
+    {
+        table.getEntry("stream").setNumber(2);
+    }
+
     public void setToVison()
     {
+        table.getEntry("ledMode").setNumber(0);
         table.getEntry("camMode").setNumber(0); //Limelight Network Table code to set camera mode to vision tracking
     }
 
