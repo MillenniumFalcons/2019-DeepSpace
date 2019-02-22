@@ -155,6 +155,10 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit() 
   {
+    TestFunctions.vController.limelight.setToVison();
+    TestFunctions.vController2.limelight.setToVison();
+    TestFunctions.vController.limelight.ledOff();
+    TestFunctions.vController2.limelight.ledOff();
     // Arm.armNEO.setIdleMode(IdleMode.kCoast);
     // Drivetrain.setToCoast();
     // Arm.aimedState = null;
@@ -180,12 +184,26 @@ public class Robot extends TimedRobot
   @Override
   public void testPeriodic() 
   {
-	//   HatchIntake.setManualControllerValues(mainController);
-	//   HatchIntake.runHatchIntakeWrist();
-	//   HatchIntake.runHatchIntakeClamp(mainController.leftBumper);
-	//   HatchIntake.printPosition();
-	//   HatchIntake.printLimitSwitch();
-  // BallShooter.printBeamBreak();
+    // if(mainController.rightBumper)
+    // {
+    //   TestFunctions.vController.limelight.setToVison();
+    //   TestFunctions.vController.center(1, 0.035, 0.15, 0.1);
+    //   Drivetrain.setPercentOutput(TestFunctions.vController.leftSpeed + mainController.leftJoyStickY, TestFunctions.vController.rightSpeed + mainController.leftJoyStickY);
+    // }
+    // else
+    // {
+    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX,mainController.leftJoyStickY, gyro);
+    //   TestFunctions.vController.limelight.setToDriver();
+    // }
+    
+    // System.out.println("RIGHT: " + TestFunctions.vController.rightSpeed + " LEFT: " + TestFunctions.vController.leftSpeed);
+    // System.out.println(TestFunctions.limelight.getX());
+    // HatchIntake.setManualControllerValues(mainController);
+    // HatchIntake.runHatchIntakeWrist();
+    // HatchIntake.runHatchIntakeClamp(mainController.leftBumper);
+    // HatchIntake.printPosition();
+    // HatchIntake.printLimitSwitch();
+    // BallShooter.printBeamBreak();
     // Elevator.printBannerSensor();
     // Elevator.printElevatorEncoders();
     // Elevator.setElevatorEncoder();

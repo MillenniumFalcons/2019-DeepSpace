@@ -13,15 +13,20 @@ public class Limelight
     public NetworkTable table;  // NetworkTable is the class used to grab values from the Limelight Network Table
 
 
-    public Limelight()  //used to initalize the main, important things
+    public Limelight(String orientation)  //used to initalize the main, important things
     {
-        table = NetworkTableInstance.getDefault().getTable("limelight");    //initializing the network table to grab values from limelight
+        table = NetworkTableInstance.getDefault().getTable("limelight-" + orientation);    //initializing the network table to grab values from limelight
         updateLimelight();
     }
 
     public void setToDriver()
     {
         table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
+    }
+
+    public void ledOff()
+    {
+        table.getEntry("ledMode").setNumber(1);
     }
 
     public void setToVison()
