@@ -192,8 +192,9 @@ public class Robot extends TimedRobot
     // Elevator.runElevator();
     // Arm.runArm();
     // Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);
-    Elevator.runElevator();
-    Elevator.printElevatorEncoders();
+    // Elevator.runElevator();
+    Elevator.setOpenLoop(mainController.leftJoyStickY * .5);
+    // Elevator.printElevatorEncoders();
     // System.out.println("dPad value: " + coController.dPadValue);
     // HatchGrabber.runHatchGrabber(coController.leftBumper);
     // Arm.printArmLimitSwitches();
