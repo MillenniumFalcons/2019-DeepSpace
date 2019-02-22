@@ -3,13 +3,16 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647inputs.Joysticks;
 import frc.team3647inputs.Limelight;
+import frc.team3647subsystems.VisionController;
 
 
 ///TO BE MOVED SOMETIME, ELSEWHERE
 public class TestFunctions
 {
 
-    public static Limelight limelight = new Limelight();
+    // public static Limelight limelight = new Limelight("top");
+    public static VisionController vController = new VisionController("top");
+    public static VisionController vController2 = new VisionController("bottom");
 //     /**
 //      * Button A = bottom; Button X = low; Button B = middle; Button Y = High
 //      * @param mainController
@@ -75,18 +78,18 @@ public class TestFunctions
 
     }
     
-    public static void limelight(Joysticks controller)
-    {
-        limelight.updateLimelight();
-        if(controller.rightBumper)
-        {
-            limelight.setToDriver();
-        }
-        else if(controller.leftBumper)
-        {
-            limelight.setToVison();
-        }
-    }
+    // public static void limelight(Joysticks controller)
+    // {
+    //     limelight.updateLimelight();
+    //     if(controller.rightBumper)
+    //     {
+    //         limelight.setToDriver();
+    //     }
+    //     else if(controller.leftBumper)
+    //     {
+    //         limelight.setToVison();
+    //     }
+    // }
 
     public static void updatePIDFMM()
     {        
