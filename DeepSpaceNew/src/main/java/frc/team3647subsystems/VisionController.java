@@ -107,22 +107,40 @@ public class VisionController
     public void bangBang(double speed, double threshold) //bang bang vision controller (simplest non-PID centering algorithm)
     {
         updateInputs();
-        if (x > threshold && x < -threshold)    //if x is between threshold, drivetrain is set to zero speed
-		{
-			drivesignal.setBoth(0, 0);
-		}
-		else if (x > threshold)                 //if x is greater than threshold, then turn right
-		{
-			drivesignal.setBoth(speed, -speed);
-		}
-		else if(x < -threshold)                 //if x is less than -threshold, then turn left
-		{
+        if (x > threshold && x < -threshold) //if x is between threshold, drivetrain is set to zero speed
+        {
+            drivesignal.setBoth(0, 0);
+        } else if (x > threshold) //if x is greater than threshold, then turn right
+        {
+            drivesignal.setBoth(speed, -speed);
+        } else if (x < -threshold) //if x is less than -threshold, then turn left
+        {
             drivesignal.setBoth(-speed, speed);
-        }
-        else                                    //if all else fails just stop the robot, redundant for safety
+        } else //if all else fails just stop the robot, redundant for safety
         {
             drivesignal.setBoth(0, 0);
         }
+    }
+    
+    public void disabledMode()
+    {
+        limelight.pip();
+        limelight.setToVison();
+        limelight.ledOff();
+    }
+    
+    public void centeringMode()
+    {
+        limelight.pip();
+        limelight.ledOn();
+        limelight.setToVison();
+    }
+
+    public void driverMode()
+    {
+        limelight.pip();
+        limelight.ledOff();
+        limelight.setToVison();
     }
 
     public double getPrevError()    //get prevError, because prevError is private

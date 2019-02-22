@@ -32,7 +32,7 @@ public class TrajectoryUtil
         trajectory = Pathfinder.readFromCSV(trajectoryFile);
         if(trajectory == null)
         {
-            System.out.println("FILE DOES NOT EXISTss");
+            System.out.println("FILE DOES NOT EXIST");
             // trajectoryFile = new File("C:\\Users\\brian\\OneDrive\\Projects\\FRC_2018_Offseason\\PathPlanner\\Trajectories\\" + trajectoryName + "\\" + trajectoryName + "_source_detailed.traj");
             // trajectory = trajectoryFile.exists() ? Pathfinder.readFromFile(trajectoryFile): null;
         }

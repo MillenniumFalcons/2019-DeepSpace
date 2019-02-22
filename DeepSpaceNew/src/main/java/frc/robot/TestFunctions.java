@@ -10,51 +10,8 @@ import frc.team3647subsystems.VisionController;
 public class TestFunctions
 {
 
-    // public static Limelight limelight = new Limelight("top");
     public static VisionController vController = new VisionController("top");
     public static VisionController vController2 = new VisionController("bottom");
-//     /**
-//      * Button A = bottom; Button X = low; Button B = middle; Button Y = High
-//      * @param mainController
-//      */
-//     public static void elevatorControllerMovement(Joysticks mainController)
-//     {
-//         if(mainController.buttonA)
-//         {
-//             Robot.elevator.setElevatorLevel(ElevatorLevel.BOTTOM);
-//         }
-//         else if(mainController.buttonX)
-//         {
-//             Robot.elevator.setElevatorLevel(ElevatorLevel.LOW);
-//         }
-//         else if(mainController.buttonB)
-//         {
-//             Robot.elevator.setElevatorLevel(ElevatorLevel.MIDDLE);
-//         }
-//         else if(mainController.buttonY)
-//         {
-//             Robot.elevator.setElevatorLevel(ElevatorLevel.MAX);
-//         }
-
-//     }
-
-
-//     public static void drivetrainPID()
-//     {
-// 		// Config left side PID Values
-// 		Robot.drivetrain.leftSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-// 		Robot.drivetrain.leftSRX.config_kF(Constants.drivePIDIdx, Robot.kF, Constants.kTimeoutMs);
-// 		Robot.drivetrain.leftSRX.config_kP(Constants.drivePIDIdx, Robot.kP, Constants.kTimeoutMs);
-// 		Robot.drivetrain.leftSRX.config_kI(Constants.drivePIDIdx, Robot.kI, Constants.kTimeoutMs);
-// 		Robot.drivetrain.leftSRX.config_kD(Constants.drivePIDIdx, Robot.kD, Constants.kTimeoutMs);
-
-// 		// Config right side PID Values
-// 		Robot.drivetrain.rightSRX.selectProfileSlot(Constants.drivePIDIdx, 0);
-// 		Robot.drivetrain.rightSRX.config_kF(Constants.drivePIDIdx, Robot.kF2, Constants.kTimeoutMs);
-// 		Robot.drivetrain.rightSRX.config_kP(Constants.drivePIDIdx, Robot.kP2, Constants.kTimeoutMs);
-// 		Robot.drivetrain.rightSRX.config_kI(Constants.drivePIDIdx, Robot.kI2, Constants.kTimeoutMs);
-//         Robot.drivetrain.rightSRX.config_kD(Constants.drivePIDIdx, Robot.kD2, Constants.kTimeoutMs);
-//     }
 
     public static void deletePIDFMM()
     {
@@ -77,19 +34,6 @@ public class TestFunctions
         SmartDashboard.delete("MM Velocity");
 
     }
-    
-    // public static void limelight(Joysticks controller)
-    // {
-    //     limelight.updateLimelight();
-    //     if(controller.rightBumper)
-    //     {
-    //         limelight.setToDriver();
-    //     }
-    //     else if(controller.leftBumper)
-    //     {
-    //         limelight.setToVison();
-    //     }
-    // }
 
     public static void updatePIDFMM()
     {        
@@ -113,7 +57,7 @@ public class TestFunctions
      }
 
 
-    public static void shuffleboard()
+    public static void shuffleboardInit()
     {
 
         // SmartDashboard.putNumber("kPright", 0); //0.3473
@@ -134,6 +78,8 @@ public class TestFunctions
         // SmartDashboard.putNumber("MM Acceleration", 1000);
         // SmartDashboard.putNumber("MM Velocity", 1000);
     }
+
+    /*********************************************/
 
     public static void antiTipping()
     {
@@ -161,46 +107,4 @@ public class TestFunctions
             return false;
     }
 
-//     public double rpmEquation(double srxVel)
-//     {
-//         return (((srxVel/4096)/.1)*60);
-
-//     }
-
-//     public static void updateControllers(Joysticks mainController, Joysticks coController)
-//     {
-//         mainController.setMainContollerValues();
-//         coController.setMainContollerValues();
-//     }
-
-//     //testing ball intake and drivetrain 01/26/2019
-//     /**
-//      * Either Controller bumper to actuate Ball Intake Pistons; Left and right trigger to actuate ball intake motors.
-//      * @param mainController
-//      */
-//     public static void testBallIntake(Joysticks mainController)
-//     {
-//         boolean ball = false;
-//         if(mainController.leftBumper)
-//         {
-//             if(ball == false)
-//             {
-//                 IntakeBall.openIntake();
-//                 ball = true;
-//             }
-//             if(mainController.rightTrigger > 0)
-//                 IntakeBall.setSpeed(.5);
-
-//             else if(mainController.leftTrigger > 0)
-//                 IntakeBall.setSpeed(-.5);
-                
-//             else
-//                 IntakeBall.setSpeed(0);
-//         }
-//         else
-//         {
-//             IntakeBall.closeIntake();
-//             ball = false;
-//         }
-//     }
  }

@@ -29,6 +29,11 @@ public class Limelight
         table.getEntry("ledMode").setNumber(1);
     }
 
+    public void ledOn()
+    {
+        table.getEntry("ledMode").setNumber(3);
+    }
+
     public void pip()
     {
         table.getEntry("stream").setNumber(2);
