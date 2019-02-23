@@ -115,10 +115,10 @@ public class SeriesStateMachine
     
     public static void runSeriesStateMachine(Joysticks coController, Joysticks mainController)
     {
-        System.out.println("AIMED STATE: " + aimedRobotState);
-        System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
-        System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
-        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
+        // System.out.println("AIMED STATE: " + aimedRobotState);
+        // System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
+        // System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
+        // System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
@@ -1023,6 +1023,8 @@ public class SeriesStateMachine
 
     private static void safetyRotateArm(Arm.ArmPosition pos)
     {
+        // Elevator.aimedState = ElevatorLevel.MINROTATE;
+        // Arm.aimedState = null;
         // switch(state)
         // {
         //     case 0:
@@ -1038,11 +1040,12 @@ public class SeriesStateMachine
                     System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
                     Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
                     Arm.aimedState = null;
+                }
                 //}
                 //break;
             //case 1:
                     //Arm.aimedState = pos;
-                }
+                
                 //break;
        // }
     }

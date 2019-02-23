@@ -103,7 +103,7 @@ public class Robot extends TimedRobot
     Elevator.elevatorInitialization();
     SeriesStateMachine.seriesStateMachineInitialization();
     HatchIntake.hatchIntakeInitialization();
-    Drivetrain.drivetrainInitialization();
+    // Drivetrain.drivetrainInitialization();
   }
 
   // public void runPCJoy()
@@ -134,19 +134,19 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic() 
   {
-    if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
-    {
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.6, mainController.leftJoyStickY * .6, gyro);
-    }
-    else
-    {
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
-    }
+    // if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
+    // {
+    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.6, mainController.leftJoyStickY * .6, gyro);
+    // }
+    // else
+    // {
+    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
+    // }
     
     HatchGrabber.runHatchGrabber(coController.rightBumper);
     Arm.runArm();
     Elevator.runElevator();
-    Elevator.printElevatorEncoders();
+    // Elevator.printElevatorEncoders();
     HatchIntake.runHatchIntakeWrist();
     HatchIntake.runHatchIntakeClamp(coController.leftBumper);
     SeriesStateMachine.runSeriesStateMachine(coController, mainController);
@@ -211,7 +211,8 @@ public class Robot extends TimedRobot
     // Arm.runArm();
     // Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);
     // Elevator.runElevator();
-    Elevator.setOpenLoop(mainController.leftJoyStickY * .5);
+    Elevator.setOpenLoop(mainController.leftJoyStickY * .8);
+    Elevator.elevatorMaster.enableCurrentLimit(false);
     // Elevator.printElevatorEncoders();
     // System.out.println("dPad value: " + coController.dPadValue);
     // HatchGrabber.runHatchGrabber(coController.leftBumper);

@@ -427,7 +427,7 @@ public class Elevator
 	{
 		if(futureAimedState != null)
 		{
-			switch(aimedState) //check if aimed state has a value
+			switch(futureAimedState) //check if aimed state has a value
 			{
 				case STOP:
 					return elevatorEncoderValue;

@@ -64,6 +64,7 @@ public class Arm
 		});
 		// Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
 		followerThread.startPeriodic(0.005);
+		armEncoderValue = 11000;
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -286,7 +287,7 @@ public class Arm
 	//MotionMagic movement-------------------
 	public static void setPosition(int position)
 	{
-		System.out.println("Going to encoder position: " + position);
+		// System.out.println("Going to encoder position: " + position);
 		// Motion Magic
 		armSRX.set(ControlMode.MotionMagic, position);
 	}

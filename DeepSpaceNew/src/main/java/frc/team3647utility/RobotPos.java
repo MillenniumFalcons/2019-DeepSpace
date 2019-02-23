@@ -29,7 +29,7 @@ public class RobotPos
 
     public Movement movementCheck(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
-        System.out.println("CHECKING MOVEMENT: \nElev level: " + posData.eLevel + " \nArm Level: " + posData.armPos);
+        // System.out.println("CHECKING MOVEMENT: \nElev level: " + posData.eLevel + " \nArm Level: " + posData.armPos);
         if(Elevator.currentState == posData.eLevel && Arm.currentState == posData.armPos) 
         {
             return Movement.ARRIVED;
@@ -82,25 +82,45 @@ public class RobotPos
             {
                 //Change from SAFEZMOVE to only if statement
                 case HATCHL1FORWARDS:
+                    if(Elevator.isAboveMinRotate(8000) && Elevator.elevatorEncoderVelocity < 3000)
+                        return Movement.FREEMOVE;
+                    else
                         return Movement.SAFEZMOVE;
                 case HATCHL1BACKWARDS:
+                    if(Elevator.isAboveMinRotate(8000) && Elevator.elevatorEncoderVelocity < 3000)
+                        return Movement.FREEMOVE;
+                    else
                         return Movement.SAFEZMOVE;
                 case STOWED:
+                    if(Elevator.isAboveMinRotate(8000) && Elevator.elevatorEncoderVelocity < 3000)
+                        return Movement.FREEMOVE;
+                    else
                         return Movement.SAFEZMOVE;                    
                 case CARGOHANDOFF:
+                    if(Elevator.isAboveMinRotate(8000) && Elevator.elevatorEncoderVelocity < 3000)
+                        return Movement.FREEMOVE;
+                    else
                         return Movement.SAFEZMOVE;
                 case VERTICALSTOWED:
+                    if(Elevator.isAboveMinRotate(8000) && Elevator.elevatorEncoderVelocity < 3000)
+                        return Movement.FREEMOVE;
+                    else
                         return Movement.SAFEZMOVE;
                 default:
-                    if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation)
-                        return Movement.FREEMOVE;
+                    if(Elevator.getStateEncoder(posData.eLevel) >= Constants.elevatorMinRotation)
+                        if(Elevator.isAboveMinRotate(0))
+                            return Movement.FREEMOVE;
+                        else if(Elevator.isAboveMinRotate(-6000) && Elevator.elevatorEncoderVelocity > 3000)
+                            return Movement.FREEMOVE;
+                        else
+                            return Movement.SAFEZMOVE;
                     else
                         return Movement.SAFEZMOVE;
             }
         }
     }
 
-    public static Movement movementCheckFast(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
+    public Movement movementCheckExperimental(SeriesStateMachine.ScoringPosition scoringPos, RobotPos posData)
     {
         // Both mechanisms are at the correct location
         if(Arm.currentState == posData.armPos && Elevator.currentState == posData.eLevel) // No movement
