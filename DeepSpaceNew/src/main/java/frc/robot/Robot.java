@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team3647autonomous.DriveSignal;
 import frc.team3647autonomous.MotionProfileDirection;
+import frc.team3647autonomous.Odometry;
 import frc.team3647autonomous.RamseteFollower;
 import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647inputs.*;
@@ -51,7 +52,7 @@ public class Robot extends TimedRobot
     mainController = new Joysticks(0);
     coController = new Joysticks(1);
     gyro = new Gyro();
-    TestFunctions.shuffleboardInit();
+    // TestFunctions.shuffleboardInit();
     Drivetrain.drivetrainInitialization();
   }
 
@@ -72,9 +73,14 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousInit() 
   {
+    gyro.resetAngle();
+    Drivetrain.drivetrainInitialization();
+    Drivetrain.resetEncoders();
     driveSignal = new DriveSignal();
-    trajectory = TrajectoryUtil.getTrajectoryFromName("PlatformToRightRocket");
+    trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
     ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
+    Odometry.getInstance().setInitialOdometry(trajectory);
+    Odometry.getInstance().odometryInit();
   }
 
   double left;
@@ -86,26 +92,32 @@ public class Robot extends TimedRobot
     driveSignal = ramseteFollower.getNextDriveSignal();
     current = ramseteFollower.currentSegment();
 
-    left = Units.metersToEncoderTicks(driveSignal.getLeft())/10;
-    right = Units.metersToEncoderTicks(driveSignal.getRight()) / 10;
+    right = Units.metersToEncoderTicks(driveSignal.getLeft())/10;
+    left = Units.metersToEncoderTicks(driveSignal.getRight()) / 10;
 
-    if (left > right)
-    {
-      System.out.println("Left Move More");
-    }
-    else if (left < right)
-    {
-      System.out.println("Right Move More");
-    }
-    else if (left == right)
-    {
-      System.out.println("Straight Move");
-    }
-    else
-    {
-      System.out.println("Something's broken!");
-    }
-    // Drivetrain.setAutoVelocity(left, right);
+    System.out.println("X: " + Odometry.getInstance().getX() + " Y: " + Odometry.getInstance().getY());
+
+    // if (left > right)
+    // {
+    //   System.out.println("Left Move More");
+    // }
+    // else if (left < right)
+    // {
+    //   System.out.println("Right Move More");
+    // }
+    // else if(left == 0 && right == 0)
+    // {
+    //   System.out.println("Stopped");
+    // }
+    // else if (left == right)
+    // {
+    //   System.out.println("Straight Move");
+    // }
+    // else
+    // {
+    //   System.out.println("Something's broken!");
+    // }
+    Drivetrain.setAutoVelocity(left, right);
   }
 
 
@@ -144,7 +156,7 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit() 
   {
-    TestFunctions.vController.disabledMode();
+    // TestFunctions.vController.disabledMode();
     // Arm.armNEO.setIdleMode(IdleMode.kCoast);
     // Drivetrain.setToCoast();
     // Arm.aimedState = null;
@@ -158,31 +170,34 @@ public class Robot extends TimedRobot
   {
     //Elevator.elevatorInitialization();
     // Elevator.aimedState = ElevatorLevel.MINROTATE;
-    // Drivetrain.drivetrainInitialization();
+    Drivetrain.drivetrainInitialization();
     // TestFunctions.shuffleboard();
     //BallIntake.ballIntakeinitialization();
 	// BallShooter.ballShooterinitialization();
 	// HatchIntake.hatchIntakeInitialization();
   // BallShooter.ballShooterinitialization();
   // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-  Elevator.elevatorInitialization();    
+  // Elevator.elevatorInitialization();    
   }
   @Override
   public void testPeriodic() 
   {
 
-    if(mainController.rightBumper)
-    {
-      TestFunctions.vController.centeringMode();
-      TestFunctions.vController.center(1, 0.035, 0.15, 0.1);
-      Drivetrain.setPercentOutput(TestFunctions.vController.leftSpeed + mainController.leftJoyStickY, TestFunctions.vController.rightSpeed + mainController.leftJoyStickY);
-    }
-    else
-    {
-      TestFunctions.vController.driverMode();
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX,mainController.leftJoyStickY, gyro);
-      TestFunctions.vController.limelight.setToDriver();
-    }
+    Drivetrain.velocityDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+
+    //Vision Code
+    // if(mainController.rightBumper)
+    // {
+    //   TestFunctions.vController.centeringMode();
+    //   TestFunctions.vController.center(1, 0.035, 0.15, 0.1);
+    //   Drivetrain.setPercentOutput(TestFunctions.vController.leftSpeed + mainController.leftJoyStickY, TestFunctions.vController.rightSpeed + mainController.leftJoyStickY);
+    // }
+    // else
+    // {
+    //   TestFunctions.vController.driverMode();
+    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX,mainController.leftJoyStickY, gyro);
+    //   TestFunctions.vController.limelight.setToDriver();
+    // }
     
     // System.out.println("RIGHT: " + TestFunctions.vController.rightSpeed + " LEFT: " + TestFunctions.vController.leftSpeed);
     // System.out.println(TestFunctions.limelight.getX());

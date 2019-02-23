@@ -147,6 +147,7 @@ public class Drivetrain
 	
 	public static void velocityDrive(double xValue, double yValue, Gyro gyro)
 	{
+		selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		double threshold = 0.09;
 		if(yValue != 0 && Math.abs(xValue) < threshold)
         {

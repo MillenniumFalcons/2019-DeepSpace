@@ -5,8 +5,8 @@ public class Constants
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PIN NUMBERS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //Drive Motor Pins
 	public static final int leftMasterPin = 9;
-	public static final int leftSlave1Pin = 10;	
-	public static final int leftSlave2Pin = 11;
+	public static final int leftSlave1Pin = 12;	//10
+	public static final int leftSlave2Pin = 13; //11
 
 	public static final int rightMasterPin = 4;
 	public static final int rightSlave1Pin = 5;	
@@ -14,8 +14,8 @@ public class Constants
 
 	//Elevator Motor Pins
 	public static final int ElevatorGearboxSRX = 8;		
-	public static final int ElevatorGearboxSPX1 = 12;	
-	public static final int ElevatorGearboxSPX2 = 13;		
+	public static final int ElevatorGearboxSPX1 = 10; //12
+	public static final int ElevatorGearboxSPX2 = 11; //13		
 
 	//Arm Motor Pins
 	public static final int armSRXPin = 18;	
@@ -96,7 +96,7 @@ public class Constants
 	public static final double[] leftVelocityPIDF  = { 5, 0, 50, 0.26 };
 	public static final double[] rightVelocityPIDF = { 5, 0, 50, 0.26 };
 
-	public static final double velocityConstant = 1000; //Explanation for velocityConstant
+	public static final double velocityConstant = 4200; //Explanation for velocityConstant
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//Drivetrain Current Limiting Constants
@@ -167,7 +167,7 @@ public class Constants
 	public static final double kWheelBase = .7112;
 	public static final double kMaxVelocity = 2.24;
 
-	public static final double kBeta = 0.1; // b > 0 Correction
-	public static final double kZeta = 0; // 0 < z < 1 Dampening
+	public static final double kBeta = 0.2; // b > 0 Correction
+	public static final double kZeta = 0.5; // 0 < z < 1 Dampening
 
 }
