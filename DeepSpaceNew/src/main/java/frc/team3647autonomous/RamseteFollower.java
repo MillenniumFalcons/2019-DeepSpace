@@ -1,6 +1,7 @@
 package frc.team3647autonomous;
 
 import frc.robot.Constants;
+import frc.team3647subsystems.Drivetrain;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Segment;
 
@@ -75,10 +76,9 @@ public class RamseteFollower
 
         desiredAngularVelocity = calculateDesiredAngular();
 
-        linearVelocity = calculateLinearVelocity(current.x, current.y, current.heading, current.velocity,
-                desiredAngularVelocity);
-        angularVelocity = calculateAngularVelocity(current.x, current.y, current.heading, current.velocity,
-                desiredAngularVelocity);
+        linearVelocity = calculateLinearVelocity(current.x, current.y, current.heading, current.velocity, desiredAngularVelocity);
+
+        angularVelocity = calculateAngularVelocity(current.x, current.y, current.heading, current.velocity, desiredAngularVelocity);
 
         return new Velocity(linearVelocity, angularVelocity);
     }
@@ -114,18 +114,26 @@ public class RamseteFollower
 
     private double calculateLinearVelocity(double desiredX, double desiredY, double desiredTheta,
             double desiredLinearVelocity, double desiredAngularVelocity) 
-            {
+    {
+        // System.out.println("DesiredLinearVelocity: " + desiredLinearVelocity);
+        System.out.println("Desired X: " + desiredX);
+        System.out.println("Actual X : " + odometry.getX());
+        // System.out.println("thetaError: " + thetaError);
         k = calculateK(desiredLinearVelocity, desiredAngularVelocity);
+
         thetaError = boundHalfRadians(desiredTheta - odometry.getTheta());
+
         odometryError = (Math.cos(odometry.getTheta()) * (desiredX - odometry.getX()))
                 + (Math.sin(odometry.getTheta()) * (desiredY - odometry.getY()));
+
         return (desiredLinearVelocity * Math.cos(thetaError)) + (k * odometryError);
     }
 
     private double calculateAngularVelocity(double desiredX, double desiredY, double desiredTheta,
             double desiredLinearVelocity, double desiredAngularVelocity) 
-            {
+    {
         k = calculateK(desiredLinearVelocity, desiredAngularVelocity);
+
         thetaError = boundHalfRadians(desiredTheta - odometry.getTheta());
 
         if (Math.abs(thetaError) < EPSILON) 
@@ -167,5 +175,27 @@ public class RamseteFollower
     public boolean isFinished() 
     {
         return segmentIndex >= trajectory.length();
+    }
+
+    public void printOdometry()
+    {
+        System.out.println("Segment index: " + segmentIndex);
+        // // System.out.println("Trajectory.length: " + trajectory.length());
+        // if(odometry.getX() < 3)
+        //     System.out.println(odometry.getX());
+        // else
+        //     System.out.println("PASSED 3");
+    }
+
+    public void printDeltaDist()
+    {
+        System.out.println("Delta position in meters: " + odometry.getDeltaPosition());
+    }
+
+    public void printCurrentEncoders()
+    {
+        System.out.println("Odometry encoder: " + odometry.getCurrentEncoderPosition());
+        System.out.println("Actual encoder left: " + Drivetrain.leftSRX.getSelectedSensorPosition(0));
+        System.out.println("Actual encoder right: " + Drivetrain.rightSRX.getSelectedSensorPosition(0));
     }
 }

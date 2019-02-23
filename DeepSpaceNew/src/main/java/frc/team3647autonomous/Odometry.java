@@ -40,7 +40,7 @@ public class Odometry
         Notifier odoThread = new Notifier(() ->                                     //create a notifier event
         {
             lastPosition = currentEncoderPosition;
-            currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.leftSRX.getSelectedSensorPosition(0)) / 2;
+            currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2;
             deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
             // difference in encoder ticks
             theta = Math.toRadians(Robot.gyro.getYaw()); // Gyro angle in Radians

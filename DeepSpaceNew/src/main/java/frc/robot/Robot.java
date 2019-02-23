@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -53,7 +54,9 @@ public class Robot extends TimedRobot
     coController = new Joysticks(1);
     gyro = new Gyro();
     // TestFunctions.shuffleboardInit();
-    Drivetrain.drivetrainInitialization();
+    // Drivetrain.drivetrainInitialization();
+
+    Drivetrain.initializeSmartDashboardVelAccel();
   }
 
 
@@ -92,11 +95,14 @@ public class Robot extends TimedRobot
     driveSignal = ramseteFollower.getNextDriveSignal();
     current = ramseteFollower.currentSegment();
 
-    right = Units.metersToEncoderTicks(driveSignal.getLeft())/10;
-    left = Units.metersToEncoderTicks(driveSignal.getRight()) / 10;
+    right = Units.metersToEncoderTicks(driveSignal.getRight());
+    left = Units.metersToEncoderTicks(driveSignal.getLeft());
 
-    System.out.println("X: " + Odometry.getInstance().getX() + " Y: " + Odometry.getInstance().getY());
+    ramseteFollower.printOdometry();
+    // ramseteFollower.printDeltaDist();
+    // ramseteFollower.printCurrentEncoders();
 
+    // System.out.println("Gyro Yaw: " + gyro.getYaw());
     // if (left > right)
     // {
     //   System.out.println("Left Move More");
@@ -118,6 +124,7 @@ public class Robot extends TimedRobot
     //   System.out.println("Something's broken!");
     // }
     Drivetrain.setAutoVelocity(left, right);
+    System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
   }
 
 
@@ -165,12 +172,19 @@ public class Robot extends TimedRobot
   }
 
 
+  private Timer secTimer;
   @Override
   public void testInit() 
   {
     //Elevator.elevatorInitialization();
     // Elevator.aimedState = ElevatorLevel.MINROTATE;
     Drivetrain.drivetrainInitialization();
+    Drivetrain.initializeVelAccel();
+    
+
+    secTimer = new Timer();
+    secTimer.reset();
+    secTimer.start();
     // TestFunctions.shuffleboard();
     //BallIntake.ballIntakeinitialization();
 	// BallShooter.ballShooterinitialization();
@@ -183,8 +197,12 @@ public class Robot extends TimedRobot
   public void testPeriodic() 
   {
 
-    Drivetrain.velocityDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
-
+    // Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+    if(secTimer.get() < 1)
+      Drivetrain.velAccel();
+    else
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+    // System.out.println("Gyro Yaw: " + gyro.getYaw());
     //Vision Code
     // if(mainController.rightBumper)
     // {

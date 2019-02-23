@@ -6,7 +6,7 @@ public interface Units
 {
     public static double ticksToMeters(double ticks)
     {
-        return (ticks / Constants.kEncoderTicks) * (inchesToMeters(Constants.kWheelDiameter * 3.14));
+        return (ticks / Constants.kEncoderTicks) * (Constants.kWheelDiameter * Math.PI);
     }
 
     public static double inchesToMeters(double in)
@@ -21,7 +21,7 @@ public interface Units
 
     public static double metersToEncoderTicks(double meters)
     {
-        return (meters * Constants.kEncoderTicks) / (Math.PI * 0.152);
+        return (meters * Constants.kEncoderTicks) / (Math.PI * Constants.kWheelDiameter );
     }
 
     public static double feetToEncoderTicks(double feet)
