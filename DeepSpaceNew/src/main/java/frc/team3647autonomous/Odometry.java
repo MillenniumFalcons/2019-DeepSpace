@@ -43,7 +43,7 @@ public class Odometry
             currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
             deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
             // difference in encoder ticks
-            theta = Math.toRadians(Pathfinder.boundHalfDegrees(Robot.gyro.getYaw())); // Gyro angle in Radians
+            theta = Math.toRadians(Robot.gyro.getYaw()); // Gyro angle in Radians
             x += Math.cos(theta) * deltaPosition; // Getting x position from cosine of the change in position
             y += Math.sin(theta) * deltaPosition; //Getting y position from sine of the change in position
             
