@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Robot;
 import frc.team3647subsystems.Drivetrain;
 import frc.team3647utility.Units;
+import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 
 public class Odometry 
@@ -39,14 +40,14 @@ public class Odometry
         lastPosition = 0;
         Notifier odoThread = new Notifier(() ->                                     //create a notifier event
         {
-            lastPosition = currentEncoderPosition;
-            currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2;
+            currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
             deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
             // difference in encoder ticks
-            theta = Math.toRadians(Robot.gyro.getYaw()); // Gyro angle in Radians
+            theta = Math.toRadians(Pathfinder.boundHalfDegrees(Robot.gyro.getYaw())); // Gyro angle in Radians
             x += Math.cos(theta) * deltaPosition; // Getting x position from cosine of the change in position
-            y += Math.sin(theta) * deltaPosition;                                 //Getting y position from sine of the change in position
-
+            y += Math.sin(theta) * deltaPosition; //Getting y position from sine of the change in position
+            
+            lastPosition = currentEncoderPosition;
         });
         odoThread.startPeriodic(0.01);                                              //run the notifier event periodically requeued every .01 seconds
     }
