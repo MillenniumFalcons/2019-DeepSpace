@@ -44,6 +44,7 @@ public class RamseteFollower
     private DriveSignal driveSignal;
     private double left, right;
 
+
     public RamseteFollower(Trajectory trajectory, MotionProfileDirection direction) 
     {
         //ternary operator, if direction is forward return trajectory, else return the reversed path

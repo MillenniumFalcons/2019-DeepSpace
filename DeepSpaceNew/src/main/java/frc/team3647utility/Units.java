@@ -21,12 +21,12 @@ public interface Units
 
     public static double metersToEncoderTicks(double meters)
     {
-        return (meters * 4096) / (Math.PI * 0.152);
+        return (meters * Constants.kEncoderTicks) / (Math.PI * 0.152);
     }
 
     public static double feetToEncoderTicks(double feet)
     {
-        return (feet * 4096) / (Math.PI * .5);
+        return (feet * Constants.kEncoderTicks) / (Math.PI * .5);
     }
 
 
