@@ -81,9 +81,9 @@ public class Robot extends TimedRobot
     Drivetrain.resetEncoders();
     driveSignal = new DriveSignal();
     trajectory = TrajectoryUtil.getTrajectoryFromName("StraightTenFeet");
-    ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
-    Odometry.getInstance().setInitialOdometry(trajectory);
-    Odometry.getInstance().odometryInit();
+    // ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
+    // Odometry.getInstance().setInitialOdometry(trajectory);
+    // Odometry.getInstance().odometryInit();
   }
 
   double left;
@@ -92,13 +92,13 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic() 
   {
-    driveSignal = ramseteFollower.getNextDriveSignal();
-    current = ramseteFollower.currentSegment();
+    // driveSignal = ramseteFollower.getNextDriveSignal();
+    // current = ramseteFollower.currentSegment();
 
-    right = Units.metersToEncoderTicks(driveSignal.getRight());
-    left = Units.metersToEncoderTicks(driveSignal.getLeft());
+    // right = Units.metersToEncoderTicks(driveSignal.getRight());
+    // left = Units.metersToEncoderTicks(driveSignal.getLeft());
 
-    ramseteFollower.printOdometry();
+    // ramseteFollower.printOdometry();
     // ramseteFollower.printDeltaDist();
     // ramseteFollower.printCurrentEncoders();
 
@@ -123,8 +123,8 @@ public class Robot extends TimedRobot
     // {
     //   System.out.println("Something's broken!");
     // }
-    Drivetrain.setAutoVelocity(left, right);
-    System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
+    // Drivetrain.setAutoVelocity(left, right);
+    // System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
     // System.out.println("Left ticks Vel: " + (left) + "\nRight Vel: " + (right));
   }
 
