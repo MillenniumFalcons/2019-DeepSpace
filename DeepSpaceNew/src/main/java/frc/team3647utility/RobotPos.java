@@ -76,6 +76,7 @@ public class RobotPos
                     return Movement.MOVEARM;
             }
         }
+        //Both have to move
         else
         {
             switch(scoringPos)

@@ -335,7 +335,8 @@ public class Drivetrain
 	// Running the motors at full speed in order to test max velocity and acceleration
 	private static void runMotorsMax()
 	{
-		setPercentOutput(1, 1);
+		leftSRX.set(ControlMode.Velocity, 3250);
+		rightSRX.set(ControlMode.Velocity, 3250);
 	}
 	/**
 	 * A method that calculates max acceleration and velocity for robot, requires running {@link #initializeVelAccel()} , as well

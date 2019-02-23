@@ -125,6 +125,7 @@ public class Robot extends TimedRobot
     // }
     Drivetrain.setAutoVelocity(left, right);
     System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
+    // System.out.println("Left ticks Vel: " + (left) + "\nRight Vel: " + (right));
   }
 
 
@@ -179,12 +180,12 @@ public class Robot extends TimedRobot
     //Elevator.elevatorInitialization();
     // Elevator.aimedState = ElevatorLevel.MINROTATE;
     Drivetrain.drivetrainInitialization();
-    Drivetrain.initializeVelAccel();
+    // Drivetrain.initializeVelAccel();
     
 
-    secTimer = new Timer();
-    secTimer.reset();
-    secTimer.start();
+    // secTimer = new Timer();
+    // secTimer.reset();
+    // secTimer.start();
     // TestFunctions.shuffleboard();
     //BallIntake.ballIntakeinitialization();
 	// BallShooter.ballShooterinitialization();
@@ -198,9 +199,9 @@ public class Robot extends TimedRobot
   {
 
     // Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
-    if(secTimer.get() < 1)
-      Drivetrain.velAccel();
-    else
+    // if(secTimer.get() < 1)
+    //   Drivetrain.velAccel();
+    // else
       Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
     // System.out.println("Gyro Yaw: " + gyro.getYaw());
     //Vision Code

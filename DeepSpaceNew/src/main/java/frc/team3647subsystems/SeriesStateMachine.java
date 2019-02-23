@@ -1033,7 +1033,7 @@ public class SeriesStateMachine
                 {
                     state = 1;
                     Arm.aimedState = pos;
-                    Elevator.aimedState  = null;
+                    // Elevator.aimedState  = null;
                 }
                 else
                 {
