@@ -54,8 +54,8 @@ public class Elevator
 		elevatorMaster.configMotionCruiseVelocity(Constants.kElevatorCruiseVelocity, Constants.kTimeoutMs);
         elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
 
-        GearboxSPX2.follow(elevatorMaster);
-        GearboxSPX1.follow(elevatorMaster);
+        // GearboxSPX2.follow(elevatorMaster);
+        // GearboxSPX1.follow(elevatorMaster);
 		GearboxSPX2.setInverted(false);
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
@@ -110,11 +110,12 @@ public class Elevator
 				aimedState = ElevatorLevel.MINROTATE;
 	}
 
-	public static void runElevator()
+	public static void runElevator(Joysticks controller)
 	{
 		System.out.println("Elevator aimedPos " + aimedState);
 		setElevatorEncoder();
-		updateLivePosition();   
+		updateLivePosition();
+		setManualOverride(controller.leftJoyStickY);   
 		if(aimedState != null)
 		{
 			//System.out.println("Elevator moving to: " + aimedState);
@@ -122,9 +123,7 @@ public class Elevator
 			{
 				case MANUAL:
 					if(!manualOverride)
-					{
 						overrideValue = 0;
-					}
 					moveManual(overrideValue);
 					break;
 				case STOP:
@@ -251,9 +250,10 @@ public class Elevator
 	//Manual movement-------------------------------------------
 	public static void setManualOverride(double jValue)
 	{
-		if(Math.abs(jValue) > .05) //deadzone
+		if(Math.abs(jValue) > .15) //deadzone
 		{
 			manualOverride = true;
+			aimedState = ElevatorLevel.MANUAL;
             overrideValue = jValue;
 		} 
 		else 
@@ -299,6 +299,9 @@ public class Elevator
     {
 		// Percent Output		
 		elevatorMaster.set(ControlMode.PercentOutput, power);
+		GearboxSPX1.set(ControlMode.PercentOutput, power);
+		GearboxSPX2.set(ControlMode.PercentOutput, power);
+
 	}
 	//----------------------------------------------------------
 

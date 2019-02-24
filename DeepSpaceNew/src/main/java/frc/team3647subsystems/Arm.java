@@ -26,7 +26,9 @@ public class Arm
 	public static int armEncoderCCL, armEncoderValue, armEncoderVelocity;
 
 	public static double overrideValue;
-    public static boolean manualOverride;
+	public static boolean manualOverride;
+	
+	static Notifier followerThread;
 	
     public static void armInitialization()
     {	
@@ -57,7 +59,7 @@ public class Arm
 		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
 
 		// The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
-		Notifier followerThread = new Notifier(()->
+		followerThread = new Notifier(()->
 		{
 			//armNEO.set(armSRX.getMotorOutputPercent()); //set straight %output
 			armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
@@ -94,6 +96,7 @@ public class Arm
 		CARGOHANDOFF,
 		MANUAL, 
 		STOPPED,
+		CLIMB
 	}
 
 	public static void setManualController(Joysticks controller)
@@ -127,23 +130,22 @@ public class Arm
 	/**
 	 * The main arm method, switches the aimedState variable to determine which position to move to next
 	 */
-	public static void runArm()
+	public static void runArm(Joysticks controller)
 	{
-		if(Math.abs(armEncoderVelocity) > 200 && BallShooter.cargoDetection())
-		{
-			BallShooter.intakeCargo(.1);
-		}
+		// if(Math.abs(armEncoderVelocity) > 200 && BallShooter.cargoDetection())
+		// {
+		// 	BallShooter.intakeCargo(.1);
+		// }
 		setArmEncoder();
 		updateLivePosition();
+		setManualOverride(controller.rightJoyStickY);
 		if(aimedState != null) //check if aimed state has a value
 		{
 			switch(aimedState)
 			{
 				case MANUAL:
 					if(!manualOverride)
-					{
 						overrideValue = 0;
-					}
 					moveManual(overrideValue);
 					break;
 				case STOPPED:
@@ -178,6 +180,9 @@ public class Arm
 					break;
 				case CARGOHANDOFF:
 					moveToCargoHandoff();
+					break;
+				case CLIMB:
+					moveToClimbPos();
 					break;
 				default:
 					System.out.println("Unreachable Arm Position");
@@ -247,7 +252,8 @@ public class Arm
 		if(Math.abs(jValue) > .1) //deadzone
 		{
 			manualOverride = true;
-            overrideValue = jValue;
+			overrideValue = jValue;
+			aimedState = ArmPosition.MANUAL;
 		} 
 		else 
 		{
@@ -330,6 +336,14 @@ public class Arm
 	public static void moveToCargoHandoff()
 	{
 		setPosition(Constants.armSRXCargoHandoff);
+	}
+
+	private static void moveToClimbPos()
+	{
+		if(SeriesStateMachine.inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
+			stopArm();
+		else
+			setPosition(Constants.armSRXClimb);
 	}
 	//-----------------------------------------
 
@@ -487,6 +501,11 @@ public class Arm
 	public static void printPercentOutput()
 	{
 		System.out.println("Elevator percent output: " + armSRX.getMotorOutputPercent());
+	}
+
+	public static void closeFollowerThread()
+	{
+		followerThread.stop();
 	}
 
 }

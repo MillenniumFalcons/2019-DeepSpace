@@ -22,7 +22,7 @@ public class Constants
 	public static final int armNEOPin = 17;
 
 	//Hatch Intake Motor Pins
-	public static final int hatchMotorPin = 3;		
+	public static final int shoppingCartMotorPin = 3;		
 
 	//Ball Intake
 	public static final int ballMotorPin = 2;
@@ -43,6 +43,7 @@ public class Constants
 	public static final int ballIntakeSolinoidPin = 0;
 	public static final int hatchIntakeSolinoidPin = 1;
 	public static final int hatchGrabberSolinoidPin = 2;
+	public static final int mopSolenoidPin = 3;
 
 	//CANifier Pin
 	public static final int canifierPin = 0;
@@ -125,8 +126,10 @@ public class Constants
 	public static final int armSRXHatchHandoff = 1700;
 	public static final int armSRXStowed = 11000;
 	public static final int armSRXVerticalStowed = 12860;
+	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
+	public static final int armSRXClimb = 19000;
 
 	//NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;
@@ -151,13 +154,15 @@ public class Constants
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 14350;
 	public static final int elevatorMinRotation = 20000; //Might want to combine with hatch lvl2
-	public static final int elevatorStartingStowed = 10700;
+	public static final int elevatorStartingStowed = 6000;
 
 	//Hatch Intake Positions
 	public static final int kWristPositionThreshold = 25;
 	public static final int hatchIntakeGround = 4075;
 	public static final int hatchIntakeScore = 1840;
 	public static final int hatchIntakeHandoff = 2000;
+
+	public static final int shoppingCartDeployed = 1840;
 	
 
 	/**************AUTONOMOUS CONSTANTS******************/

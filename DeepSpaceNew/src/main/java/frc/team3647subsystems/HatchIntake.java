@@ -18,7 +18,7 @@ public class HatchIntake
 	public static WristPosition currentState, aimedState;
 	
 	public static Solenoid clampSolenoid = new Solenoid(Constants.hatchIntakeSolinoidPin);
-	public static WPI_TalonSRX wristMotor = new WPI_TalonSRX(Constants.hatchMotorPin);
+	public static WPI_TalonSRX wristMotor = new WPI_TalonSRX(Constants.shoppingCartMotorPin);
 	public static DigitalInput limitSwitch = new DigitalInput(Constants.hatchLimitSwitchPin);
 	public static DigitalInput hatchBeamBreak = new DigitalInput(Constants.hatchIntakeBeamBreakPin);
 

@@ -5,7 +5,8 @@ import frc.robot.*;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
-import frc.team3647subsystems.HatchIntake.WristPosition;
+import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
+// import frc.team3647subsystems.ShoppingCart.WristPosition;
 import frc.team3647utility.*;
 import frc.team3647utility.RobotPos.Movement;
 
@@ -13,7 +14,7 @@ public class SeriesStateMachine
 {
     private static RobotPos robotState;
 
-    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false;
+    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false, intakeExtracted=false;
 
     //Hatch scoring positions
     private static RobotPos hatchL1Forwards, hatchL1Backwards, hatchL2Forwards, hatchL2Backwards, hatchL3Forwards, hatchL3Backwards;
@@ -21,6 +22,7 @@ public class SeriesStateMachine
     //Cargo scoring positions
     private static RobotPos cargoL1Forwards, cargoL1Backwards, cargoshipForwards, cargoshipBackwards, cargoL2Forwards, cargoL2Backwards, cargoL3Forwards, cargoL3Backwards;
 
+    private static RobotPos climbPos;
     //handoff positions
     private static RobotPos hatchHandoff, cargoHandoff;
 
@@ -68,7 +70,7 @@ public class SeriesStateMachine
         CLIMB,
     }
 
-    public static void seriesStateMachineInitialization()
+    public static void seriesStateMachineInit()
     {
         ballIntakeTimer = new Timer();
         robotState = new RobotPos(Elevator.currentState, Arm.currentState); 
@@ -106,10 +108,13 @@ public class SeriesStateMachine
 
         bottomStart = new RobotPos(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS);
 
+        climbPos = new RobotPos(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.CLIMB);
+
         aimedRobotState = ScoringPosition.START;
         arrivedAtRevLimitSwitchOnce=false;
         arrivedAtFlatForwardsOnce=false;
-        ranOnce = false;        
+        ranOnce = false;  
+        intakeExtracted = false;      
     }
 
     
@@ -162,16 +167,14 @@ public class SeriesStateMachine
                 aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
         }
 
-        if(coController.rightJoyStickX < -.7)
-        {
-            if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation)
-                BallIntake.retractIntake();
-            else
-                Elevator.aimedState = ElevatorLevel.MINROTATE;
-        }
+
         if(coController.leftTrigger > .15)
         {
-            if(!arrivedAtMidPos)
+            if(intakeExtracted)
+            {
+                aimedRobotState = ScoringPosition.CARGOHANDOFF;
+            }
+            else if(!arrivedAtMidPos)
             {
                 ballIntakeTimer.reset();
                 ballIntakeTimer.start();
@@ -186,6 +189,7 @@ public class SeriesStateMachine
         {
             arrivedAtMidPos = false;
         }
+        
         if(coController.rightTrigger > .15)
         {
             BallShooter.shootBall();
@@ -195,21 +199,12 @@ public class SeriesStateMachine
             BallShooter.stopMotor();
         }
 
-
-		if(coController.leftJoyStickX > .7)
-			aimedRobotState = ScoringPosition.HATCHINTAKESCORE;
-		else if(coController.leftJoyStickX < -.7)
-			aimedRobotState = ScoringPosition.HATCHHANDOFF;
-        else if(coController.leftJoyStickY > .7)
-            aimedRobotState = ScoringPosition.HATCHINTAKESTOWED;
-        else if(coController.leftJoyStickY < -.7)
-            aimedRobotState = ScoringPosition.HATCHINTAKEGROUND;
-            
+        if(coController.leftBumper)
+            retractCargoGroundIntake();            
             
         if(coController.leftJoyStickPress)
         {
             aimedRobotState = ScoringPosition.STOWED;
-            HatchIntake.aimedState = WristPosition.STOWED;
         }
 
         if(mainController.buttonX)
@@ -269,7 +264,7 @@ public class SeriesStateMachine
                     cargoL3Backwards();
                     break;
                 case HATCHHANDOFF:
-                    hatchHandoff();
+                    // hatchHandoff();
                     break;
                 case CARGOHANDOFF:
                     cargoHandoff(coController);
@@ -291,12 +286,12 @@ public class SeriesStateMachine
                 case CARGOGROUNDINTAKE:
                     extendCargoGroundIntake();
                     break;
-                case HATCHINTAKEGROUND:
-                    groundHatchIntakeDeploy();
-                    break;
-                case HATCHINTAKESTOWED:
-                    groundHatchIntakeStowed();
-                    break;
+                // case HATCHINTAKEGROUND:
+                //     groundHatchIntakeDeploy();
+                //     break;
+                // case HATCHINTAKESTOWED:
+                //     groundHatchIntakeStowed();
+                //     break;
                 case CLIMB:
                     climbing(mainController);
                     break;
@@ -305,21 +300,33 @@ public class SeriesStateMachine
         }
     }
     
-
-
-  
-
     private static void climbing(Joysticks mainController) 
     {
-        cargoL2Forwards();
-        if(mainController.leftTrigger > .15)
+        
+        if(inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
         {
-            HatchIntake.setOpenLoop(-mainController.leftTrigger);
+            ShoppingCart.deployShoppingCart();
+            Mop.deployMop();
+            Elevator.aimedState = null;
+            if(mainController.leftTrigger > .1)
+            {
+                Elevator.setOpenLoop(mainController.leftTrigger);
+            }
+            else if(mainController.rightTrigger > .1)
+            {
+                Elevator.setOpenLoop(-mainController.rightTrigger);
+            }
+            else
+            {
+                Elevator.setOpenLoop(0);
+            }
         }
-        if(mainController.rightTrigger > .15)
+        else
         {
-            HatchIntake.setOpenLoop(mainController.rightTrigger);
+            safetyRotateArm(ArmPosition.CLIMB);
         }
+
+        
     }
 
     // Hatch methods--------------------------------------------
@@ -623,7 +630,6 @@ public class SeriesStateMachine
                 System.out.println("Arrived at cargoL2Forwards");
                 Arm.aimedState = cargoL2Forwards.armPos;
                 Elevator.aimedState = cargoL2Forwards.eLevel;
-                BallIntake.retractIntake();
                 break;
             case MOVEELEV:
                 System.out.println("Moving Elevator to: " + cargoL2Forwards.eLevel);
@@ -733,35 +739,35 @@ public class SeriesStateMachine
     }
     //----------------------------------------------------------
 
-    private static void hatchHandoff()
-    {
-        switch(robotState.movementCheck(ScoringPosition.HATCHHANDOFF, hatchHandoff))
-        {
-            case ARRIVED:
-                System.out.println("Arrived at hatchHandoff");
-                Arm.aimedState = hatchHandoff.armPos;
-                Elevator.aimedState = hatchHandoff.eLevel;
-                break;
-            case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchHandoff.eLevel);
-                Elevator.aimedState = hatchHandoff.eLevel;
-                HatchIntake.aimedState = WristPosition.HANDOFF;
-                break;
-            case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchHandoff.armPos);
-                Arm.aimedState = hatchHandoff.armPos;
-                break;
-            case SAFEZMOVE:
-                System.out.println("Running Safe Z");
-                safetyRotateArm(hatchHandoff.armPos);
-                break;
-            case FREEMOVE:
-                System.out.println("Running free move");
-                Arm.aimedState = hatchHandoff.armPos;
-                Elevator.aimedState = hatchHandoff.eLevel;
-                break;
-        }
-    }
+    // private static void hatchHandoff()
+    // {
+    //     switch(robotState.movementCheck(ScoringPosition.HATCHHANDOFF, hatchHandoff))
+    //     {
+    //         case ARRIVED:
+    //             System.out.println("Arrived at hatchHandoff");
+    //             Arm.aimedState = hatchHandoff.armPos;
+    //             Elevator.aimedState = hatchHandoff.eLevel;
+    //             break;
+    //         case MOVEELEV:
+    //             System.out.println("Moving Elevator to: " + hatchHandoff.eLevel);
+    //             Elevator.aimedState = hatchHandoff.eLevel;
+    //             ShoppingCart.aimedState = WristPosition.HANDOFF;
+    //             break;
+    //         case MOVEARM:
+    //             System.out.println("Moving Arm to: " + hatchHandoff.armPos);
+    //             Arm.aimedState = hatchHandoff.armPos;
+    //             break;
+    //         case SAFEZMOVE:
+    //             System.out.println("Running Safe Z");
+    //             safetyRotateArm(hatchHandoff.armPos);
+    //             break;
+    //         case FREEMOVE:
+    //             System.out.println("Running free move");
+    //             Arm.aimedState = hatchHandoff.armPos;
+    //             Elevator.aimedState = hatchHandoff.eLevel;
+    //             break;
+    //     }
+    // }
 
     private static void cargoHandoff(Joysticks controller)
     {
@@ -952,25 +958,25 @@ public class SeriesStateMachine
 
     }
 
-    public static void groundHatchIntakeDeploy()
-    {
-        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
-        {
-            case ARRIVED:
-                HatchIntake.aimedState = WristPosition.GROUND;
-                break;
-            default:
-                stowed();
-                break;
-        }
-    }
+    // public static void groundHatchIntakeDeploy()
+    // {
+    //     switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+    //     {
+    //         case ARRIVED:
+    //             ShoppingCart.aimedState = WristPosition.GROUND;
+    //             break;
+    //         default:
+    //             stowed();
+    //             break;
+    //     }
+    // }
 
     public static void groundHatchIntakeScore()
     {
         switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
         {
             case ARRIVED:
-                HatchIntake.aimedState = WristPosition.SCORE;  
+                // ShoppingCart.aimedState = WristPosition.SCORE;  
                 break;
             default:
                 stowed();
@@ -991,18 +997,18 @@ public class SeriesStateMachine
         }
     }
 
-    private static void groundHatchIntakeStowed() 
-    {
-        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
-        {
-            case ARRIVED:
-                HatchIntake.aimedState = WristPosition.STOWED;
-                break;
-            default:
-                hatchL2Forwards();
-                break;
-        }
-    }
+    // private static void groundHatchIntakeStowed() 
+    // {
+    //     switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+    //     {
+    //         case ARRIVED:
+    //             ShoppingCart.aimedState = WristPosition.STOWED;
+    //             break;
+    //         default:
+    //             hatchL2Forwards();
+    //             break;
+    //     }
+    // }
 
     private static boolean arrivedAtMidPos=false, cargoGroundIntakeExtended=false;
     public static void extendCargoGroundIntake()
@@ -1017,8 +1023,20 @@ public class SeriesStateMachine
         {
             BallIntake.extendIntake();
             cargoGroundIntakeExtended = true;
+        }        
+    }
+
+    private static void retractCargoGroundIntake()
+    {
+        if(Elevator.isAboveMinRotate(-500))
+        {
+            BallIntake.retractIntake();
         }
-        
+        else
+        {
+            System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
+            Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
+        }
     }
 
     private static void safetyRotateArm(Arm.ArmPosition pos)
@@ -1117,5 +1135,12 @@ public class SeriesStateMachine
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
             Arm.aimedState = null;
         }
+    }
+
+    public static boolean inThreshold(int val,int actual, int threshold)
+    {
+        if((val > threshold - actual) && (val < threshold + actual))
+            return true;
+        return false;
     }
 }

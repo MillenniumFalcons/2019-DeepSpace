@@ -144,29 +144,27 @@ public class Robot extends TimedRobot
     BallIntake.ballIntakeinitialization();
     Arm.armInitialization();
     Elevator.elevatorInitialization();
-    SeriesStateMachine.seriesStateMachineInitialization();
-    HatchIntake.hatchIntakeInitialization();
-    // Drivetrain.drivetrainInitialization();
+    SeriesStateMachine.seriesStateMachineInit();
+    ShoppingCart.shoppingCartInit();
+    Drivetrain.drivetrainInitialization();
   }
 
   @Override
   public void teleopPeriodic() 
   {
-    // if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
-    // {
-    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.6, mainController.leftJoyStickY * .6, gyro);
-    // }
-    // else
-    // {
-    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
-    // }
+    if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
+    {
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.6, mainController.leftJoyStickY * .6, gyro);
+    }
+    else
+    {
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
+    }
     
+    Arm.runArm(coController);
+    Elevator.runElevator(coController);
     HatchGrabber.runHatchGrabber(coController.rightBumper);
-    Arm.runArm();
-    Elevator.runElevator();
-    // Elevator.printElevatorEncoders();
-    HatchIntake.runHatchIntakeWrist();
-    HatchIntake.runHatchIntakeClamp(coController.leftBumper);
+    ShoppingCart.runShoppingCart();
     SeriesStateMachine.runSeriesStateMachine(coController, mainController);
   }
 
@@ -201,17 +199,33 @@ public class Robot extends TimedRobot
 	// HatchIntake.hatchIntakeInitialization();
   // BallShooter.ballShooterinitialization();
   // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-  // Elevator.elevatorInitialization();    
+  Elevator.elevatorInitialization();
+  Elevator.elevatorMaster.enableCurrentLimit(true);
+  Elevator.elevatorMaster.configContinuousCurrentLimit(50);
+  // Arm.armInitialization()s; 
   }
   @Override
   public void testPeriodic() 
   {
-
+    Elevator.setOpenLoop(mainController.leftJoyStickY);
+    System.out.println("Controller power: " + mainController.leftJoyStickY);
+    System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
+    System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
+    System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
+    Elevator.elevatorMaster.enableCurrentLimit(true);
+    Drivetrain.customArcadeDrive(0, mainController.rightJoyStickY, gyro);
+    // Arm.armSRX.set(ControlMode.PercentOutput, -mainController.rightTrigger);
+    // Arm.setPosition(10000l);
+    // Arm.printArmEncoders();
     // Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
     // if(secTimer.get() < 1)
     //   Drivetrain.velAccel();
     // else
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+      // Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+      // if(mainController.leftBumper)
+      //   BallIntake.extendIntake();
+      // else
+      //   BallIntake.retractIntake();
     // System.out.println("Gyro Yaw: " + gyro.getYaw());
     //Vision Code
     // if(mainController.rightBumper)
@@ -242,8 +256,7 @@ public class Robot extends TimedRobot
     // Arm.runArm();
     // Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);
     // Elevator.runElevator();
-    // Elevator.setOpenLoop(mainController.leftJoyStickY * .8);
-    // Elevator.elevatorMaster.enableCurrentLimit(false);
+
     // Elevator.printElevatorEncoders();
     // System.out.println("dPad value: " + coController.dPadValue);
     // HatchGrabber.runHatchGrabber(coController.leftBumper);
