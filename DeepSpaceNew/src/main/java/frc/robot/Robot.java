@@ -80,7 +80,7 @@ public class Robot extends TimedRobot
     Drivetrain.drivetrainInitialization();
     Drivetrain.resetEncoders();
     driveSignal = new DriveSignal();
-    trajectory = TrajectoryUtil.getTrajectoryFromName("PlatformToRightRocket");
+    trajectory = TrajectoryUtil.getTrajectoryFromName("PlatformToLeftRocket");
     ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
     Odometry.getInstance().setInitialOdometry(trajectory);
     Odometry.getInstance().odometryInit();
