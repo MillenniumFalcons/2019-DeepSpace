@@ -80,7 +80,7 @@ public class Robot extends TimedRobot
     Drivetrain.drivetrainInitialization();
     Drivetrain.resetEncoders();
     driveSignal = new DriveSignal();
-    trajectory = TrajectoryUtil.getTrajectoryFromName("PlatformToLeftRocket");
+    trajectory = TrajectoryUtil.getTrajectoryFromName("RightPlatformToRightCargoShip");
     ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
     Odometry.getInstance().setInitialOdometry(trajectory);
     Odometry.getInstance().odometryInit();
@@ -100,12 +100,12 @@ public class Robot extends TimedRobot
     right = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
     left = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
 
-    if(ramseteFollower.isFinished() && !ranBackwardsOnce)
-    {
-      ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
-      Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
-      ranBackwardsOnce = true;
-    }
+    // if(ramseteFollower.isFinished() && !ranBackwardsOnce)
+    // {
+    //   ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
+    //   Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
+    //   ranBackwardsOnce = true;
+    // }
 
     // ramseteFollower.printOdometry();
     // ramseteFollower.printDeltaDist();
