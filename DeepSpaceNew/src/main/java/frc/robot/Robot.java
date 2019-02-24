@@ -84,10 +84,12 @@ public class Robot extends TimedRobot
     ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
     Odometry.getInstance().setInitialOdometry(trajectory);
     Odometry.getInstance().odometryInit();
+    ranBackwardsOnce = false;
   }
 
   double left;
   double right;
+  boolean ranBackwardsOnce = false;
 
   @Override
   public void autonomousPeriodic() 
@@ -97,6 +99,13 @@ public class Robot extends TimedRobot
 
     right = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
     left = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
+
+    if(ramseteFollower.isFinished() && !ranBackwardsOnce)
+    {
+      ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
+      Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
+      ranBackwardsOnce = true;
+    }
 
     // ramseteFollower.printOdometry();
     // ramseteFollower.printDeltaDist();
