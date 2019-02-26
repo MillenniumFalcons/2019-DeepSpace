@@ -1,17 +1,5 @@
 package frc.robot;
 
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-=======
->>>>>>> 2b51c8d0d7c45918034a9580bc3836fd688fedf3
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -150,15 +138,9 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit() 
   {
-<<<<<<< HEAD
-    TestFunctions.vController.disabledMode();
-    TestFunctions.vController2.disabledMode();
-    // 
-=======
     AutonomousSequences.limelightTop.disabledMode();
     // TestFunctions.vController.disabledMode();
     // Arm.armNEO.setIdleMode(IdleMode.kCoast);
->>>>>>> 2b51c8d0d7c45918034a9580bc3836fd688fedf3
     // Drivetrain.setToCoast();
     // Arm.aimedState = null;
     // Elevator.aimedState = null;
@@ -191,11 +173,7 @@ public class Robot extends TimedRobot
 	// HatchIntake.hatchIntakeInitialization();
   // BallShooter.ballShooterinitialization();
   // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-<<<<<<< HEAD
-    Elevator.elevatorInitialization();
-=======
   // Elevator.elevatorInitialization();
->>>>>>> 2b51c8d0d7c45918034a9580bc3836fd688fedf3
   // Elevator.elevatorMaster.enableCurrentLimit(true);
   // Elevator.elevatorMaster.configContinuousCurrentLimit(50);
   // Arm.armInitialization()s; 
@@ -203,25 +181,13 @@ public class Robot extends TimedRobot
   @Override
 public void testPeriodic() 
   {
-<<<<<<< HEAD
-
-    // Elevator.printBannerSensor();
-    // System.out.println(sensor.get());
-    //  Elevator.setOpenLoop(mainController.leftJoyStickY);
-
-=======
     // Elevator.setOpenLoop(mainController.leftJoyStickY);
->>>>>>> 2b51c8d0d7c45918034a9580bc3836fd688fedf3
     // System.out.println("Controller power: " + mainController.leftJoyStickY);
     // System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
     // System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
     // System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
     // Elevator.elevatorMaster.enableCurrentLimit(true);
-<<<<<<< HEAD
-    // Drivetrain.customArcadeDrive(0, mainController.rightJoyStickY, gyro);
-=======
     Drivetrain.customArcadeDrive(mainController.leftJoyStickX , mainController.rightJoyStickY, gyro);
->>>>>>> 2b51c8d0d7c45918034a9580bc3836fd688fedf3
     // Arm.armSRX.set(ControlMode.PercentOutput, -mainController.rightTrigger);
     // Arm.setPosition(10000l);
     // Arm.printArmEncoders();
