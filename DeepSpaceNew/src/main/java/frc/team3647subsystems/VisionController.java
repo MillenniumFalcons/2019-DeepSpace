@@ -2,9 +2,7 @@
 
 package frc.team3647subsystems;
 
-import frc.team3647autonomous.DriveSignal;
 import frc.team3647inputs.Limelight;
-import frc.team3647subsystems.Drivetrain;   //using Drivetrain class to move motors
 
 public class VisionController
 {
@@ -16,8 +14,6 @@ public class VisionController
     //sumError is theglobal vairable to keep track of the sum of all the error values in the PID loop
     //prevError is the global variable to keep track of the previous error in the PID loop
     public Limelight limelight;
-
-    public DriveSignal drivesignal = new DriveSignal();
 
     public VisionController(String orientation)
     {
@@ -58,18 +54,24 @@ public class VisionController
         double error = this.x / 27;                                 //error is x / 27. x is measured in degrees, where the max x is 27. We get a value from -1 to 1 to scale for speed output
         if(this.area >= targetArea/2)                               //redundant "if" in order to make sure the robot stops
         {
-            drivesignal.setBoth(0, 0);    //set drivetrain to 0 speed if target distance is unreached
+            //set drivetrain to 0 speed if target distance is reached
+            leftSpeed = 0;
+            rightSpeed = 0;
         }
 
 		if( (error > -errorThreshold) && (error < errorThreshold) ) //if error is in between the threshold execute following statements
 		{
             if(this.area < targetArea/2)
             {
-                drivesignal.setBoth(defaultSpeed, defaultSpeed);     //set drivetrain to default speed if target distance is unreached
+                leftSpeed = defaultSpeed;
+                rightSpeed = defaultSpeed;
+                //set drivetrain to default speed if target distance is unreached
             }
             else
             {
-                drivesignal.setBoth(0, 0);                          //set drivetrain to zero, stop robot if it has reached target distance
+                leftSpeed = 0;
+                rightSpeed = 0;
+                //set drivetrain to zero, stop robot if it has reached target distance
             }			
 		}
 		else
@@ -109,16 +111,23 @@ public class VisionController
         updateInputs();
         if (x > threshold && x < -threshold) //if x is between threshold, drivetrain is set to zero speed
         {
-            drivesignal.setBoth(0, 0);
-        } else if (x > threshold) //if x is greater than threshold, then turn right
+            leftSpeed = 0;
+            rightSpeed = 0;
+        } 
+        else if (x > threshold) //if x is greater than threshold, then turn right
         {
-            drivesignal.setBoth(speed, -speed);
-        } else if (x < -threshold) //if x is less than -threshold, then turn left
+            leftSpeed = -speed;
+            rightSpeed = speed;
+        } 
+        else if (x < -threshold) //if x is less than -threshold, then turn left
         {
-            drivesignal.setBoth(-speed, speed);
-        } else //if all else fails just stop the robot, redundant for safety
+            leftSpeed  =  speed;
+            rightSpeed = -speed;
+        } 
+        else //if all else fails just stop the robot, redundant for safety
         {
-            drivesignal.setBoth(0, 0);
+            leftSpeed  = 0;
+            rightSpeed = 0;
         }
     }
     
@@ -129,7 +138,7 @@ public class VisionController
         limelight.ledOff();
     }
     
-    public void centeringMode()
+    public void visionTargetingMode()
     {
         limelight.pip();
         limelight.ledOn();

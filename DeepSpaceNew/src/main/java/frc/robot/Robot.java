@@ -1,16 +1,10 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.DriveSignal;
 import frc.team3647autonomous.MotionProfileDirection;
 import frc.team3647autonomous.Odometry;
@@ -18,8 +12,6 @@ import frc.team3647autonomous.RamseteFollower;
 import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
-import frc.team3647subsystems.Arm.ArmPosition;
-import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647utility.Units;
 import jaci.pathfinder.Trajectory;
 
@@ -57,6 +49,7 @@ public class Robot extends TimedRobot
     // Drivetrain.drivetrainInitialization();
 
     Drivetrain.initializeSmartDashboardVelAccel();
+    Arm.armNEO.setIdleMode(IdleMode.kBrake);
   }
 
 
@@ -79,12 +72,15 @@ public class Robot extends TimedRobot
     gyro.resetAngle();
     Drivetrain.drivetrainInitialization();
     Drivetrain.resetEncoders();
-    driveSignal = new DriveSignal();
-    trajectory = TrajectoryUtil.getTrajectoryFromName("RightPlatformToRightCargoShip");
-    ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
-    Odometry.getInstance().setInitialOdometry(trajectory);
-    Odometry.getInstance().odometryInit();
-    ranBackwardsOnce = false;
+    AirCompressor.runCompressor();
+    // driveSignal = new DriveSignal();
+    // trajectory = TrajectoryUtil.getTrajectoryFromName("Level2RightToCargoRight");
+    // ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
+    // Odometry.getInstance().setInitialOdometry(trajectory);
+    // Odometry.getInstance().odometryInit();
+    // ranBackwardsOnce = false;
+    AutonomousSequences.autoInit("Level2RightToCargoRight");
+
   }
 
   double left;
@@ -94,47 +90,15 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic() 
   {
-    driveSignal = ramseteFollower.getNextDriveSignal();
-    current = ramseteFollower.currentSegment();
+    AutonomousSequences.level2RightToCargoShipRight();
+    // driveSignal = ramseteFollower.getNextDriveSignal();
+    // current = ramseteFollower.currentSegment();
 
-    right = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
-    left = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
-
-    // if(ramseteFollower.isFinished() && !ranBackwardsOnce)
-    // {
-    //   ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
-    //   Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
-    //   ranBackwardsOnce = true;
-    // }
-
-    // ramseteFollower.printOdometry();
-    // ramseteFollower.printDeltaDist();
-    // ramseteFollower.printCurrentEncoders();
-
-    // System.out.println("Gyro Yaw: " + gyro.getYaw());
-    // if (left > right)
-    // {
-    //   System.out.println("Left Move More");
-    // }
-    // else if (left < right)
-    // {
-    //   System.out.println("Right Move More");
-    // }
-    // else if(left == 0 && right == 0)
-    // {
-    //   System.out.println("Stopped");
-    // }
-    // else if (left == right)
-    // {
-    //   System.out.println("Straight Move");
-    // }
-    // else
-    // {
-    //   System.out.println("Something's broken!");
-    // }
-    Drivetrain.setAutoVelocity(left, right);
-    System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
-    System.out.println("Left ticks Vel: " + (left) + "\nRight Vel: " + (right));
+    // right = Units.metersToEncoderTicks(driveSignal.getRight() / 20);
+    // left = Units.metersToEncoderTicks(driveSignal.getLeft() / 20);
+    // Drivetrain.setAutoVelocity(left, right);
+    // System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
+    // System.out.println("Left ticks Vel: " + (left) + "\nRight Vel: " + (right));
   }
 
 
@@ -171,6 +135,7 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit() 
   {
+    AutonomousSequences.limelightTop.disabledMode();
     // TestFunctions.vController.disabledMode();
     // Arm.armNEO.setIdleMode(IdleMode.kCoast);
     // Drivetrain.setToCoast();
@@ -199,21 +164,21 @@ public class Robot extends TimedRobot
 	// HatchIntake.hatchIntakeInitialization();
   // BallShooter.ballShooterinitialization();
   // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-  Elevator.elevatorInitialization();
-  Elevator.elevatorMaster.enableCurrentLimit(true);
-  Elevator.elevatorMaster.configContinuousCurrentLimit(50);
+  // Elevator.elevatorInitialization();
+  // Elevator.elevatorMaster.enableCurrentLimit(true);
+  // Elevator.elevatorMaster.configContinuousCurrentLimit(50);
   // Arm.armInitialization()s; 
   }
   @Override
   public void testPeriodic() 
   {
-    Elevator.setOpenLoop(mainController.leftJoyStickY);
-    System.out.println("Controller power: " + mainController.leftJoyStickY);
-    System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
-    System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
-    System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
-    Elevator.elevatorMaster.enableCurrentLimit(true);
-    Drivetrain.customArcadeDrive(0, mainController.rightJoyStickY, gyro);
+    // Elevator.setOpenLoop(mainController.leftJoyStickY);
+    // System.out.println("Controller power: " + mainController.leftJoyStickY);
+    // System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
+    // System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
+    // System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
+    // Elevator.elevatorMaster.enableCurrentLimit(true);
+    Drivetrain.customArcadeDrive(mainController.leftJoyStickX , mainController.rightJoyStickY, gyro);
     // Arm.armSRX.set(ControlMode.PercentOutput, -mainController.rightTrigger);
     // Arm.setPosition(10000l);
     // Arm.printArmEncoders();
