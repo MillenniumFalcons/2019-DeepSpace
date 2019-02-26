@@ -12,13 +12,15 @@ import frc.robot.*;
 import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 /**
  * Add your docs here.
  */
 public class ShoppingCart 
 {
-    public static WPI_TalonSRX shoppingCartMotor = new WPI_TalonSRX(Constants.shoppingCartMotorPin);
+	private static WPI_TalonSRX shoppingCartMotor = new WPI_TalonSRX(Constants.shoppingCartMotorPin);
+	private static VictorSPX shoppingCartSPX; // motor for shopping cart wheels
     public static ShoppingCartPosition currentState, aimedState;
     public static int shoppingCartEncoderCCL, shoppingCartEncoderValue, shoppingCartEncoderVelocity;
 	public static double overrideValue;
@@ -185,6 +187,7 @@ public class ShoppingCart
 	public static void resetEncoder()
 	{
 		shoppingCartMotor.setSelectedSensorPosition(0, Constants.kHatchWristPID, Constants.kTimeoutMs);
+		shoppingCartEncoderValue = 0;
     }
     
     public static void printPosition()

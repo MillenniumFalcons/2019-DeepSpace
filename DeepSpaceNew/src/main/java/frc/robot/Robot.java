@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -145,7 +146,7 @@ public class Robot extends TimedRobot
     Arm.armInitialization();
     Elevator.elevatorInitialization();
     SeriesStateMachine.seriesStateMachineInit();
-    ShoppingCart.shoppingCartInit();
+    // ShoppingCart.shoppingCartInit();
     Drivetrain.drivetrainInitialization();
   }
 
@@ -161,32 +162,42 @@ public class Robot extends TimedRobot
       Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
     }
     
-    Arm.runArm(coController);
-    Elevator.runElevator(coController);
+    Arm.runArm();
+    Elevator.runElevator();
     HatchGrabber.runHatchGrabber(coController.rightBumper);
     ShoppingCart.runShoppingCart();
     SeriesStateMachine.runSeriesStateMachine(coController, mainController);
+    Elevator.printBannerSensor();
+    Elevator.printElevatorEncoders();
+    System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);
   }
 
   @Override
   public void disabledInit() 
   {
-    // TestFunctions.vController.disabledMode();
-    // Arm.armNEO.setIdleMode(IdleMode.kCoast);
+    TestFunctions.vController.disabledMode();
+    TestFunctions.vController2.disabledMode();
+    // 
     // Drivetrain.setToCoast();
     // Arm.aimedState = null;
     // Elevator.aimedState = null;
     // SeriesStateMachine.aimedRobotState = null;
   }
 
+  @Override
+  public void disabledPeriodic() 
+  {
+    Arm.armNEO.setIdleMode(IdleMode.kCoast);
+  }
 
-  private Timer secTimer;
+
+  // private Timer secTimer;
+  
   @Override
   public void testInit() 
   {
-    //Elevator.elevatorInitialization();
     // Elevator.aimedState = ElevatorLevel.MINROTATE;
-    Drivetrain.drivetrainInitialization();
+    // Drivetrain.drivetrainInitialization();
     // Drivetrain.initializeVelAccel();
     
 
@@ -199,21 +210,25 @@ public class Robot extends TimedRobot
 	// HatchIntake.hatchIntakeInitialization();
   // BallShooter.ballShooterinitialization();
   // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-  Elevator.elevatorInitialization();
-  Elevator.elevatorMaster.enableCurrentLimit(true);
-  Elevator.elevatorMaster.configContinuousCurrentLimit(50);
+    Elevator.elevatorInitialization();
+  // Elevator.elevatorMaster.enableCurrentLimit(true);
+  // Elevator.elevatorMaster.configContinuousCurrentLimit(50);
   // Arm.armInitialization()s; 
   }
   @Override
-  public void testPeriodic() 
+public void testPeriodic() 
   {
-    Elevator.setOpenLoop(mainController.leftJoyStickY);
-    System.out.println("Controller power: " + mainController.leftJoyStickY);
-    System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
-    System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
-    System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
-    Elevator.elevatorMaster.enableCurrentLimit(true);
-    Drivetrain.customArcadeDrive(0, mainController.rightJoyStickY, gyro);
+
+    // Elevator.printBannerSensor();
+    // System.out.println(sensor.get());
+    //  Elevator.setOpenLoop(mainController.leftJoyStickY);
+
+    // System.out.println("Controller power: " + mainController.leftJoyStickY);
+    // System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
+    // System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
+    // System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
+    // Elevator.elevatorMaster.enableCurrentLimit(true);
+    // Drivetrain.customArcadeDrive(0, mainController.rightJoyStickY, gyro);
     // Arm.armSRX.set(ControlMode.PercentOutput, -mainController.rightTrigger);
     // Arm.setPosition(10000l);
     // Arm.printArmEncoders();
@@ -250,8 +265,8 @@ public class Robot extends TimedRobot
     // HatchIntake.printLimitSwitch();
     // BallShooter.printBeamBreak();
     // Elevator.printBannerSensor();
-    // Elevator.printElevatorEncoders();
-    // Elevator.setElevatorEncoder();
+    Elevator.printElevatorEncoders();
+    Elevator.setElevatorEncoder();
     // Elevator.runElevator();
     // Arm.runArm();
     // Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.7, mainController.leftJoyStickY, gyro);

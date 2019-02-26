@@ -14,7 +14,14 @@ public class SeriesStateMachine
 {
     private static RobotPos robotState;
 
-    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false, intakeExtracted=false;
+    // Variables to control initialization
+    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false;
+
+    //control ball ground intake
+    private static boolean intakeExtracted=false;
+
+    // Variables to control climb
+    private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false;
 
     //Hatch scoring positions
     private static RobotPos hatchL1Forwards, hatchL1Backwards, hatchL2Forwards, hatchL2Backwards, hatchL3Forwards, hatchL3Backwards;
@@ -110,107 +117,114 @@ public class SeriesStateMachine
 
         climbPos = new RobotPos(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.CLIMB);
 
-        aimedRobotState = ScoringPosition.START;
+        aimedRobotState = null;
         arrivedAtRevLimitSwitchOnce=false;
         arrivedAtFlatForwardsOnce=false;
         ranOnce = false;  
-        intakeExtracted = false;      
+        intakeExtracted = false; 
+         
+        // Variables to control climb
+        shoppingCartDeployed=false;
+        mopDeploy=false;
+        extendedIntakeOnce=false;
+
+
     }
 
     
     public static void runSeriesStateMachine(Joysticks coController, Joysticks mainController)
     {
-        // System.out.println("AIMED STATE: " + aimedRobotState);
+        System.out.println("AIMED STATE: " + aimedRobotState);
         // System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
         // System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
         // System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
-        if(Arm.currentState != null && Elevator.currentState != null)
-            robotState.setRobotPos(Arm.currentState, Elevator.currentState);
+        // if(Arm.currentState != null && Elevator.currentState != null)
+        //     robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
-        if(!BallShooter.cargoDetection())
-        {
-            if(coController.buttonA)
-                aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
-            else if(coController.buttonX)
-                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-            else if(coController.buttonB)
-                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-            else if(coController.buttonY)
-                aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
-            else if(coController.dPadDown)
-                aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-            else if(coController.dPadLeft)
-                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
-            else if(coController.dPadRight)
-                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
-            else if(coController.dPadUp)
-                aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
-        }
-        // If the robot has a ball:
-        else if(BallShooter.cargoDetection())
-        {
-            if(coController.buttonA)
-                aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
-            else if(coController.buttonX)
-                aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
-            else if(coController.buttonB)
-                aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
-            else if(coController.buttonY)
-                aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
-            else if(coController.dPadDown)
-                aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
-            else if(coController.dPadLeft)
-                aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
-            else if(coController.dPadRight)
-                aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
-            else if(coController.dPadUp)
-                aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
-        }
+        // if(!BallShooter.cargoDetection())
+        // {
+        //     if(coController.buttonA)
+        //         aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+        //     else if(coController.buttonX)
+        //         aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+        //     else if(coController.buttonB)
+        //         aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+        //     else if(coController.buttonY)
+        //         aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
+        //     else if(coController.dPadDown)
+        //         aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+        //     else if(coController.dPadLeft)
+        //         aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+        //     else if(coController.dPadRight)
+        //         aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+        //     else if(coController.dPadUp)
+        //         aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
+        // }
+        // // If the robot has a ball:
+        // else if(BallShooter.cargoDetection())
+        // {
+        //     if(coController.buttonA)
+        //         aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
+        //     else if(coController.buttonX)
+        //         aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+        //     else if(coController.buttonB)
+        //         aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+        //     else if(coController.buttonY)
+        //         aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
+        //     else if(coController.dPadDown)
+        //         aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
+        //     else if(coController.dPadLeft)
+        //         aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
+        //     else if(coController.dPadRight)
+        //         aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
+        //     else if(coController.dPadUp)
+        //         aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
+        // }
 
 
-        if(coController.leftTrigger > .15)
-        {
-            if(intakeExtracted)
-            {
-                aimedRobotState = ScoringPosition.CARGOHANDOFF;
-            }
-            else if(!arrivedAtMidPos)
-            {
-                ballIntakeTimer.reset();
-                ballIntakeTimer.start();
-                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
-            }
-            else if(cargoGroundIntakeExtended && ballIntakeTimer.get() > .7)
-            {
-                aimedRobotState = ScoringPosition.CARGOHANDOFF;
-            }
-        }
-        else
-        {
-            arrivedAtMidPos = false;
-        }
+        // if(coController.leftBumper)
+        //     retractCargoGroundIntake();
+
+        // if(coController.leftTrigger > .15)
+        // {
+        //     if(intakeExtracted || (cargoGroundIntakeExtended && ballIntakeTimer.get() > .7))
+        //     {
+        //         aimedRobotState = ScoringPosition.CARGOHANDOFF;
+        //     }
+        //     else if(!arrivedAtMidPos)
+        //     {
+        //         ballIntakeTimer.reset();
+        //         ballIntakeTimer.start();
+        //         aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
+        //     }
+        // }
+        // else
+        // {
+        //     arrivedAtMidPos = false;
+        // }
         
-        if(coController.rightTrigger > .15)
-        {
-            BallShooter.shootBall();
-        }
-        else
-        {
-            BallShooter.stopMotor();
-        }
+        // if(coController.rightTrigger > .15)
+        // {
+        //     BallShooter.shootBall();
+        // }
+        // else
+        // {
+        //     BallShooter.stopMotor();
+        // }
 
-        if(coController.leftBumper)
-            retractCargoGroundIntake();            
+           
             
-        if(coController.leftJoyStickPress)
-        {
-            aimedRobotState = ScoringPosition.STOWED;
-        }
+        // if(coController.leftJoyStickPress)
+        // {
+        //     aimedRobotState = ScoringPosition.STOWED;
+        // }
 
-        if(mainController.buttonX)
-        {
-            aimedRobotState = ScoringPosition.CLIMB;
-        }
+        // if(mainController.buttonX)
+        // {
+        //     aimedRobotState = ScoringPosition.CLIMB;
+        // }
+
+        
         if(aimedRobotState != null)
         {
             switch(aimedRobotState)
@@ -299,14 +313,27 @@ public class SeriesStateMachine
             }
         }
     }
+
     
     private static void climbing(Joysticks mainController) 
     {
-        
         if(inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
         {
-            ShoppingCart.deployShoppingCart();
-            Mop.deployMop();
+
+            if(!extendedIntakeOnce)
+            {
+                BallIntake.extendIntake();
+                ShoppingCart.deployShoppingCart();
+            }
+            else if(inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 500) && !extendedIntakeOnce)
+            {
+                BallIntake.retractIntake();
+                extendedIntakeOnce = true;
+            }
+            else if(extendedIntakeOnce)
+            {
+                Mop.deployMop();
+            }
             Elevator.aimedState = null;
             if(mainController.leftTrigger > .1)
             {
@@ -1041,102 +1068,23 @@ public class SeriesStateMachine
 
     private static void safetyRotateArm(Arm.ArmPosition pos)
     {
-        // Elevator.aimedState = ElevatorLevel.MINROTATE;
-        // Arm.aimedState = null;
-        // switch(state)
-        // {
-        //     case 0:
-        System.out.println("Safely rotating arm to: " + pos);
-                if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500)
-                {
-                    state = 1;
-                    Arm.aimedState = pos;
-                    // Elevator.aimedState  = null;
-                }
-                else
-                {
-                    System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
-                    Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
-                    Arm.aimedState = null;
-                }
-                //}
-                //break;
-            //case 1:
-                    //Arm.aimedState = pos;
-                
-                //break;
-       // }
-    }
 
-    private static void fastRotateArm(Arm.ArmPosition pos)
-    {
-        System.out.println("Rotating arm to: " + pos);
-        System.out.println("Elevator level: " + Elevator.currentState);
-        if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation - 500)
+        System.out.println("Safely rotating arm to: " + pos);
+        if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500)
         {
-            System.out.println("Moving arm to " + pos + " because elevator encoder is above min level");
+            state = 1;
             Arm.aimedState = pos;
+            // Elevator.aimedState  = null;
         }
-        // if elevator above minrotate/2 and is moving up, start moving arm to position
-        else if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation / 2 && Elevator.elevatorEncoderVelocity > 3500)
-        {
-            
-            switch(Elevator.aimedState)
-            {
-                case STOWED:
-                    Arm.aimedState = null;
-                    break;
-                case CARGOHANDOFF:
-                    Arm.aimedState = null;
-                    break;
-                case HATCHHANDOFF:
-                    Arm.aimedState = null;
-                    break;
-                default:
-                    System.out.println("moving arm because elevator level is above min rotate/2");
-                    Arm.aimedState = pos;
-                    break;
-            }
-        }
-        // IF elevator is above min rotating and is going down
-        else if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500 && Elevator.elevatorEncoderVelocity < 0)
-        {
-            //if aimed position is above min rotate
-            switch(Elevator.aimedState)
-            {
-                case MINROTATE:
-                    Arm.aimedState = pos;
-                    break;
-                case HATCHL2:
-                    Arm.aimedState = pos;
-                    break;
-                case HATCHL3:
-                    Arm.aimedState = pos;
-                    break;
-                case CARGOL2:
-                    Arm.aimedState = pos;
-                    break;
-                case CARGOSHIP:
-                    Arm.aimedState = pos;
-                    break;
-                default:
-                    //if aimed pos below min rotate but the elevator is 6000 encoder values above min rotate, rotate arm to aimed pos
-                    if(Elevator.elevatorEncoderValue > Constants.elevatorMinRotation + 6000)
-                        Arm.aimedState = pos;
-                    //if aimed pos below min rotate and elevator is less than 6000 encoder values away from min rotate, stop arm
-                    else
-                        Arm.aimedState = null;
-                    break;                
-            }
-        }
-        // Otherwise, move elevator to minrotate and stop arm.
         else
         {
+            System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
             Arm.aimedState = null;
         }
     }
 
+    
     public static boolean inThreshold(int val,int actual, int threshold)
     {
         if((val > threshold - actual) && (val < threshold + actual))

@@ -54,8 +54,8 @@ public class Elevator
 		elevatorMaster.configMotionCruiseVelocity(Constants.kElevatorCruiseVelocity, Constants.kTimeoutMs);
         elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
 
-        // GearboxSPX2.follow(elevatorMaster);
-        // GearboxSPX1.follow(elevatorMaster);
+        GearboxSPX2.follow(elevatorMaster);
+        GearboxSPX1.follow(elevatorMaster);
 		GearboxSPX2.setInverted(false);
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
@@ -110,21 +110,21 @@ public class Elevator
 				aimedState = ElevatorLevel.MINROTATE;
 	}
 
-	public static void runElevator(Joysticks controller)
+	public static void runElevator()
 	{
 		System.out.println("Elevator aimedPos " + aimedState);
 		setElevatorEncoder();
 		updateLivePosition();
-		setManualOverride(controller.leftJoyStickY);   
+		// setManualOverride(controller.leftJoyStickY);   
 		if(aimedState != null)
 		{
 			//System.out.println("Elevator moving to: " + aimedState);
 			switch(aimedState) //check if aimed state has a value
 			{
 				case MANUAL:
-					if(!manualOverride)
-						overrideValue = 0;
-					moveManual(overrideValue);
+					// if(!manualOverride)
+					// 	overrideValue = 0;
+					// moveManual(overrideValue);
 					break;
 				case STOP:
 					stopElevator();
@@ -175,13 +175,13 @@ public class Elevator
 	
 
 	// Motion Magic based movement------------------------------
-	private static void setPosition(int position)
+	public static void setPosition(int position)
 	{
 		elevatorMaster.set(ControlMode.MotionMagic, position);
 	}
 	private static void moveToBottomStart()
 	{
-		if(stateDetection(ElevatorLevel.BOTTOM))
+		if(getLimitSwitch())
 		{
 			stopElevator();
 			resetElevatorEncoder();

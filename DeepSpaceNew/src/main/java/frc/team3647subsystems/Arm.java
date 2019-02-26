@@ -130,7 +130,7 @@ public class Arm
 	/**
 	 * The main arm method, switches the aimedState variable to determine which position to move to next
 	 */
-	public static void runArm(Joysticks controller)
+	public static void runArm()
 	{
 		// if(Math.abs(armEncoderVelocity) > 200 && BallShooter.cargoDetection())
 		// {
@@ -138,15 +138,15 @@ public class Arm
 		// }
 		setArmEncoder();
 		updateLivePosition();
-		setManualOverride(controller.rightJoyStickY);
+		// setManualOverride(controller.rightJoyStickY);
 		if(aimedState != null) //check if aimed state has a value
 		{
 			switch(aimedState)
 			{
 				case MANUAL:
-					if(!manualOverride)
-						overrideValue = 0;
-					moveManual(overrideValue);
+					// if(!manualOverride)
+					// 	overrideValue = 0;
+					// moveManual(overrideValue);
 					break;
 				case STOPPED:
 					Arm.stopArm();

@@ -43,7 +43,7 @@ public class Constants
 	public static final int ballIntakeSolinoidPin = 0;
 	public static final int hatchIntakeSolinoidPin = 1;
 	public static final int hatchGrabberSolinoidPin = 2;
-	public static final int mopSolenoidPin = 3;
+	public static final int mopSolenoidPin = 1;
 
 	//CANifier Pin
 	public static final int canifierPin = 0;
@@ -68,7 +68,7 @@ public class Constants
 	public static final double[] interstagePIDF = { 2.8, 0, 28, 0.105 };
 	
 	public static final int carriageSlotIdx = 1; //PID Slot Index
-	public static final double[] carriagePIDF = { 9, 0.00004, 80, 0 };
+	public static final double[] carriagePIDF = { 11, 0.00004, 80, 0 };
 	
 	//Elevator Motion Magic
 	public static final int kElevatorCruiseVelocity = 6500;
@@ -154,7 +154,7 @@ public class Constants
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 14350;
 	public static final int elevatorMinRotation = 20000; //Might want to combine with hatch lvl2
-	public static final int elevatorStartingStowed = 6000;
+	public static final int elevatorStartingStowed = 5000;
 
 	//Hatch Intake Positions
 	public static final int kWristPositionThreshold = 25;
@@ -162,7 +162,7 @@ public class Constants
 	public static final int hatchIntakeScore = 1840;
 	public static final int hatchIntakeHandoff = 2000;
 
-	public static final int shoppingCartDeployed = 1840;
+	public static final int shoppingCartDeployed = 1700;
 	
 
 	/**************AUTONOMOUS CONSTANTS******************/
