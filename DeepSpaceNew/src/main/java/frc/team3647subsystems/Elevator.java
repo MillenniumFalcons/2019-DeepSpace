@@ -299,8 +299,6 @@ public class Elevator
     {
 		// Percent Output		
 		elevatorMaster.set(ControlMode.PercentOutput, power);
-		GearboxSPX1.set(ControlMode.PercentOutput, power);
-		GearboxSPX2.set(ControlMode.PercentOutput, power);
 
 	}
 	//----------------------------------------------------------

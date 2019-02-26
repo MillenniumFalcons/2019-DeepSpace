@@ -135,94 +135,182 @@ public class SeriesStateMachine
     public static void runSeriesStateMachine(Joysticks coController, Joysticks mainController)
     {
         System.out.println("AIMED STATE: " + aimedRobotState);
-        // System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
-        // System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
-        // System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
-        // if(Arm.currentState != null && Elevator.currentState != null)
-        //     robotState.setRobotPos(Arm.currentState, Elevator.currentState);
+        System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
+        System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
+        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
+        if(Arm.currentState != null && Elevator.currentState != null)
+            robotState.setRobotPos(Arm.currentState, Elevator.currentState);
+        System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
+        System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
+        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
+        if(Arm.currentState != null && Elevator.currentState != null)
+            robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
-        // if(!BallShooter.cargoDetection())
-        // {
-        //     if(coController.buttonA)
-        //         aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
-        //     else if(coController.buttonX)
-        //         aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-        //     else if(coController.buttonB)
-        //         aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-        //     else if(coController.buttonY)
-        //         aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
-        //     else if(coController.dPadDown)
-        //         aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-        //     else if(coController.dPadLeft)
-        //         aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
-        //     else if(coController.dPadRight)
-        //         aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
-        //     else if(coController.dPadUp)
-        //         aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
-        // }
-        // // If the robot has a ball:
-        // else if(BallShooter.cargoDetection())
-        // {
-        //     if(coController.buttonA)
-        //         aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
-        //     else if(coController.buttonX)
-        //         aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
-        //     else if(coController.buttonB)
-        //         aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
-        //     else if(coController.buttonY)
-        //         aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
-        //     else if(coController.dPadDown)
-        //         aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
-        //     else if(coController.dPadLeft)
-        //         aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
-        //     else if(coController.dPadRight)
-        //         aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
-        //     else if(coController.dPadUp)
-        //         aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
-        // }
+        if(!BallShooter.cargoDetection())
+        {
+            if(coController.buttonA)
+                aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+            else if(coController.buttonX)
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+            else if(coController.buttonB)
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+            else if(coController.buttonY)
+                aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
+            else if(coController.dPadDown)
+                aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+            else if(coController.dPadLeft)
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+            else if(coController.dPadRight)
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+            else if(coController.dPadUp)
+                aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
+        }
+        // If the robot has a ball:
+        else if(BallShooter.cargoDetection())
+        {
+            if(coController.buttonA)
+                aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
+            else if(coController.buttonX)
+                aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+            else if(coController.buttonB)
+                aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+            else if(coController.buttonY)
+                aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
+            else if(coController.dPadDown)
+                aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
+            else if(coController.dPadLeft)
+                aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
+            else if(coController.dPadRight)
+                aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
+            else if(coController.dPadUp)
+                aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
+        }
 
 
-        // if(coController.leftBumper)
-        //     retractCargoGroundIntake();
+        if(coController.leftBumper)
+            retractCargoGroundIntake();
 
-        // if(coController.leftTrigger > .15)
-        // {
-        //     if(intakeExtracted || (cargoGroundIntakeExtended && ballIntakeTimer.get() > .7))
-        //     {
-        //         aimedRobotState = ScoringPosition.CARGOHANDOFF;
-        //     }
-        //     else if(!arrivedAtMidPos)
-        //     {
-        //         ballIntakeTimer.reset();
-        //         ballIntakeTimer.start();
-        //         aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
-        //     }
-        // }
-        // else
-        // {
-        //     arrivedAtMidPos = false;
-        // }
+        if(coController.leftTrigger > .15)
+        {
+            if(intakeExtracted || (cargoGroundIntakeExtended && ballIntakeTimer.get() > .7))
+            {
+                aimedRobotState = ScoringPosition.CARGOHANDOFF;
+            }
+            else if(!arrivedAtMidPos)
+            {
+                ballIntakeTimer.reset();
+                ballIntakeTimer.start();
+                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
+            }
+        }
+        else
+        {
+            arrivedAtMidPos = false;
+        }
         
-        // if(coController.rightTrigger > .15)
-        // {
-        //     BallShooter.shootBall();
-        // }
-        // else
-        // {
-        //     BallShooter.stopMotor();
-        // }
+        if(coController.rightTrigger > .15)
+        {
+            BallShooter.shootBall();
+        }
+        else
+        {
+            BallShooter.stopMotor();
+        }
 
            
             
-        // if(coController.leftJoyStickPress)
-        // {
-        //     aimedRobotState = ScoringPosition.STOWED;
-        // }
+        if(coController.leftJoyStickPress)
+        {
+            aimedRobotState = ScoringPosition.STOWED;
+        }
 
-        // if(mainController.buttonX)
-        // {
-        //     aimedRobotState = ScoringPosition.CLIMB;
-        // }
+        if(mainController.buttonX)
+        {
+            aimedRobotState = ScoringPosition.CLIMB;
+        }
+        
+        if(!BallShooter.cargoDetection())
+        {
+            if(coController.buttonA)
+                aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+            else if(coController.buttonX)
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+            else if(coController.buttonB)
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+            else if(coController.buttonY)
+                aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
+            else if(coController.dPadDown)
+                aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+            else if(coController.dPadLeft)
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+            else if(coController.dPadRight)
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+            else if(coController.dPadUp)
+                aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
+        }
+        // If the robot has a ball:
+        else if(BallShooter.cargoDetection())
+        {
+            if(coController.buttonA)
+                aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
+            else if(coController.buttonX)
+                aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+            else if(coController.buttonB)
+                aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+            else if(coController.buttonY)
+                aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
+            else if(coController.dPadDown)
+                aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
+            else if(coController.dPadLeft)
+                aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
+            else if(coController.dPadRight)
+                aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
+            else if(coController.dPadUp)
+                aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
+        }
+
+
+        if(coController.leftBumper)
+            retractCargoGroundIntake();
+
+        if(coController.leftTrigger > .15)
+        {
+            if(intakeExtracted || (cargoGroundIntakeExtended && ballIntakeTimer.get() > .7))
+            {
+                aimedRobotState = ScoringPosition.CARGOHANDOFF;
+            }
+            else if(!arrivedAtMidPos)
+            {
+                ballIntakeTimer.reset();
+                ballIntakeTimer.start();
+                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
+            }
+        }
+        else
+        {
+            arrivedAtMidPos = false;
+        }
+        
+        if(coController.rightTrigger > .15)
+        {
+            BallShooter.shootBall();
+        }
+        else
+        {
+            BallShooter.stopMotor();
+        }
+
+           
+            
+        if(coController.leftJoyStickPress)
+        {
+            aimedRobotState = ScoringPosition.STOWED;
+        }
+
+        if(mainController.buttonX)
+        {
+            aimedRobotState = ScoringPosition.CLIMB;
+        }
 
         
         if(aimedRobotState != null)
@@ -981,8 +1069,7 @@ public class SeriesStateMachine
                 ranOnce = true;
                 aimedRobotState = null;
             }
-}
-
+        }
     }
 
     // public static void groundHatchIntakeDeploy()

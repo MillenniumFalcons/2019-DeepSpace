@@ -22,7 +22,8 @@ public class Constants
 	public static final int armNEOPin = 17;
 
 	//Hatch Intake Motor Pins
-	public static final int shoppingCartMotorPin = 3;		
+	public static final int shoppingCartMotorPin = 3;
+	public static final int shoppinCartSPXPin = 1;		
 
 	//Ball Intake
 	public static final int ballMotorPin = 2;
@@ -174,5 +175,6 @@ public class Constants
 
 	public static final double kBeta = 1.5; // b > 0 Correction
 	public static final double kZeta = 0.8; // 0 < z < 1 Dampening
+	
 
 }
