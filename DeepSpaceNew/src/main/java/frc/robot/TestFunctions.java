@@ -10,8 +10,7 @@ import frc.team3647subsystems.VisionController;
 public class TestFunctions
 {
 
-    public static VisionController vController = new VisionController("top");
-    public static VisionController vController2 = new VisionController("bottom");
+   
 
     public static void deletePIDFMM()
     {

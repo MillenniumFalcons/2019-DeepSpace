@@ -173,6 +173,6 @@ public class Constants
 	public static final double kMaxVelocity = 2.24;
 
 	public static final double kBeta = 1.5; // b > 0 Correction
-	public static final double kZeta = 0.7; // 0 < z < 1 Dampening
+	public static final double kZeta = 0.8; // 0 < z < 1 Dampening
 
 }
