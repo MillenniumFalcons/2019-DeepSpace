@@ -493,4 +493,11 @@ public class Elevator
     {
         System.out.println("Elevator Current: " + elevatorMaster.getOutputCurrent());
 	}
+
+	public static void disableElevator()
+	{
+		aimedState = null;
+		elevatorMaster.setNeutralMode(NeutralMode.Coast);
+		stopElevator();
+	}
 }

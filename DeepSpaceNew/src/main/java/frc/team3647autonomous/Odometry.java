@@ -13,6 +13,7 @@ public class Odometry
     private volatile double currentEncoderPosition, lastPosition, deltaPosition;
 
     private static Odometry instance;
+    private Notifier odoThread;
 
     private Odometry()
     {
@@ -38,7 +39,7 @@ public class Odometry
     public void odometryInit()
     {
         lastPosition = 0;
-        Notifier odoThread = new Notifier(() ->                                     //create a notifier event
+        odoThread = new Notifier(() ->                                     //create a notifier event
         {
             currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
             deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
@@ -137,5 +138,10 @@ public class Odometry
     public String toString()
     {
         return "X Position: " + x + " Y Position: " + y + " Heading: " + theta;
+    }
+
+    public void closeOdoThread()
+    {
+        odoThread.close();
     }
 }

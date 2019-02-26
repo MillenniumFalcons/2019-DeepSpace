@@ -141,11 +141,11 @@ public class Robot extends TimedRobot
     AutonomousSequences.limelightTop.disabledMode();
     AutonomousSequences.limelightBottom.disabledMode();
     // TestFunctions.vController.disabledMode();
-    // Arm.armNEO.setIdleMode(IdleMode.kCoast);
-    // Drivetrain.setToCoast();
-    // Arm.aimedState = null;
-    // Elevator.aimedState = null;
-    // SeriesStateMachine.aimedRobotState = null;
+    Arm.disableArm();
+    Drivetrain.setToCoast();
+    Odometry.getInstance().closeOdoThread();
+    Elevator.aimedState = null;
+    SeriesStateMachine.aimedRobotState = null;
   }
 
   @Override

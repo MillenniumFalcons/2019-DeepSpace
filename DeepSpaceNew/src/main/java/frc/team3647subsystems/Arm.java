@@ -508,4 +508,10 @@ public class Arm
 		followerThread.stop();
 	}
 
+	public static void disableArm()
+	{
+		stopArm();
+		armNEO.setIdleMode(IdleMode.kCoast);
+		closeFollowerThread();
+	}
 }
