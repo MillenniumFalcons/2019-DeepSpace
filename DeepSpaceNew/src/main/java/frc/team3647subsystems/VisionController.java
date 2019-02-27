@@ -2,6 +2,7 @@
 
 package frc.team3647subsystems;
 
+import frc.team3647inputs.Joysticks;
 import frc.team3647inputs.Limelight;
 
 public class VisionController
@@ -113,22 +114,33 @@ public class VisionController
         {
             leftSpeed = 0;
             rightSpeed = 0;
-        } 
-        else if (x > threshold) //if x is greater than threshold, then turn right
+        } else if (x > threshold) //if x is greater than threshold, then turn right
         {
             leftSpeed = -speed;
             rightSpeed = speed;
-        } 
-        else if (x < -threshold) //if x is less than -threshold, then turn left
+        } else if (x < -threshold) //if x is less than -threshold, then turn left
         {
-            leftSpeed  =  speed;
+            leftSpeed = speed;
             rightSpeed = -speed;
-        } 
-        else //if all else fails just stop the robot, redundant for safety
+        } else //if all else fails just stop the robot, redundant for safety
         {
-            leftSpeed  = 0;
+            leftSpeed = 0;
             rightSpeed = 0;
         }
+    }
+    
+    public boolean centered(double threshold)
+    {
+        if (Math.abs(this.x) < 0.1)
+            return true;
+        else
+            return false;
+    }
+    
+    public void driverCenter(double kp, double ki, double kd, double errorThreshold, Joysticks mainController)
+    {
+        visionTargetingMode();
+        center(kp, ki, kd, errorThreshold);
     }
     
     public void disabledMode()

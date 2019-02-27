@@ -12,6 +12,7 @@ import frc.team3647autonomous.RamseteFollower;
 import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647utility.Units;
 import jaci.pathfinder.Trajectory;
 
@@ -23,7 +24,7 @@ public class Robot extends TimedRobot
   // private String m_autoSelected;
   // private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  Joysticks mainController;
+  public static Joysticks mainController;
   public static Joysticks coController;
   public static Gyro gyro;
 
@@ -73,6 +74,9 @@ public class Robot extends TimedRobot
     Drivetrain.drivetrainInitialization();
     Drivetrain.resetEncoders();
     AirCompressor.runCompressor();
+    SeriesStateMachine.seriesStateMachineInit();
+    Arm.armInitialization();
+    Elevator.elevatorInitialization();
     // driveSignal = new DriveSignal();
     // trajectory = TrajectoryUtil.getTrajectoryFromName("Level2RightToCargoRight");
     // ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
@@ -90,6 +94,9 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic() 
   {
+    Elevator.runElevator();
+    Arm.runArm();
+    SeriesStateMachine.runSeriesStateMachine();
     AutonomousSequences.level2RightToCargoShipRight();
     // driveSignal = ramseteFollower.getNextDriveSignal();
     // current = ramseteFollower.currentSegment();
@@ -118,18 +125,36 @@ public class Robot extends TimedRobot
   {
     if(mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
     {
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.6, mainController.leftJoyStickY * .6, gyro);
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
+    }
+    else if(Arm.armEncoderValue > Constants.armSRXVerticalStowed && mainController.rightBumper)
+    {
+      double joyY = mainController.leftJoyStickY;
+      AutonomousSequences.limelightBottom.visionTargetingMode();
+      AutonomousSequences.limelightBottom.center(1, .035, 0.15, 0.1);
+      Drivetrain.setPercentOutput(AutonomousSequences.limelightBottom.leftSpeed + joyY, AutonomousSequences.limelightBottom.rightSpeed + joyY);
+    }
+    else if(Arm.armEncoderValue < Constants.armSRXVerticalStowed && mainController.rightBumper)
+    {
+      double joyY = mainController.leftJoyStickY;
+      //top
+      AutonomousSequences.limelightTop.driverCenter(1, .035, 0.15, 0.1, mainController);
+      AutonomousSequences.limelightBottom.center(1, .035, 0.15, 0.1);
+      Drivetrain.setPercentOutput(AutonomousSequences.limelightTop.leftSpeed + joyY, AutonomousSequences.limelightTop.rightSpeed + joyY);
     }
     else
     {
-      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * 0.65, mainController.leftJoyStickY, gyro);
+      AutonomousSequences.limelightBottom.disabledMode();
+      AutonomousSequences.limelightTop.disabledMode();
+      Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
     }
     
     Arm.runArm();
     Elevator.runElevator();
     HatchGrabber.runHatchGrabber(coController.rightBumper);
     // ShoppingCart.runShoppingCart();
-    SeriesStateMachine.runSeriesStateMachine(coController, mainController);
+    SeriesStateMachine.setControllers(mainController, coController);
+    SeriesStateMachine.runSeriesStateMachine();
     Elevator.printBannerSensor();
     Elevator.printElevatorEncoders();
     System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);

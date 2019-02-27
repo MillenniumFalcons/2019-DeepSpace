@@ -12,13 +12,15 @@ import frc.team3647utility.RobotPos.Movement;
 
 public class SeriesStateMachine
 {
-    private static RobotPos robotState;
+    public static RobotPos robotState;
 
     // Variables to control initialization
     private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false;
+    public static boolean initializedRobot = false;
 
     //control ball ground intake
-    private static boolean intakeExtracted=false;
+    private static boolean intakeExtracted = false;
+    
 
     // Variables to control climb
     private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false;
@@ -80,9 +82,9 @@ public class SeriesStateMachine
     public static void seriesStateMachineInit()
     {
         ballIntakeTimer = new Timer();
-        robotState = new RobotPos(Elevator.currentState, Arm.currentState); 
+        robotState = new RobotPos(Elevator.currentState, Arm.currentState);
 
-        hatchL1Backwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATBACKWARDS);        
+        hatchL1Backwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATBACKWARDS);
         hatchL1Forwards = new RobotPos(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATFORWARDS);
 
         hatchL2Forwards = new RobotPos(Elevator.ElevatorLevel.HATCHL2, Arm.ArmPosition.FLATFORWARDS);
@@ -90,7 +92,6 @@ public class SeriesStateMachine
 
         hatchL3Forwards = new RobotPos(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.FLATFORWARDS);
         hatchL3Backwards = new RobotPos(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.FLATBACKWARDS);
-
 
         cargoL1Forwards = new RobotPos(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATBACKWARDS);
         cargoL1Backwards = new RobotPos(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATFORWARDS);
@@ -118,30 +119,23 @@ public class SeriesStateMachine
         climbPos = new RobotPos(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.CLIMB);
 
         aimedRobotState = null;
-        arrivedAtRevLimitSwitchOnce=false;
-        arrivedAtFlatForwardsOnce=false;
-        ranOnce = false;  
-        intakeExtracted = false; 
-         
+        arrivedAtRevLimitSwitchOnce = false;
+        initializedRobot = false;
+        arrivedAtFlatForwardsOnce = false;
+        ranOnce = false;
+        intakeExtracted = false;
+
         // Variables to control climb
-        shoppingCartDeployed=false;
-        mopDeploy=false;
-        extendedIntakeOnce=false;
+        shoppingCartDeployed = false;
+        mopDeploy = false;
+        extendedIntakeOnce = false;
 
         aimedRobotState = ScoringPosition.START;
 
     }
 
-    
-    public static void runSeriesStateMachine(Joysticks coController, Joysticks mainController)
+    public static void setControllers(Joysticks mainController, Joysticks coController)
     {
-        System.out.println("AIMED STATE: " + aimedRobotState);
-        System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
-        System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
-        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
-        if(Arm.currentState != null && Elevator.currentState != null)
-            robotState.setRobotPos(Arm.currentState, Elevator.currentState);
-
         if(!BallShooter.cargoDetection())
         {
             if(coController.buttonA)
@@ -186,7 +180,6 @@ public class SeriesStateMachine
         if(coController.leftBumper)
         {
             retractCargoGroundIntake();
-            ballIntakeTimer.reset();
         }
         
         if(coController.leftTrigger > .15)
@@ -225,6 +218,16 @@ public class SeriesStateMachine
         {
             aimedRobotState = ScoringPosition.CLIMB;
         }
+    }
+    
+    public static void runSeriesStateMachine()
+    {
+        System.out.println("AIMED STATE: " + aimedRobotState);
+        System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
+        System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
+        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
+        if(Arm.currentState != null && Elevator.currentState != null)
+            robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
         
         if(aimedRobotState != null)
@@ -283,7 +286,7 @@ public class SeriesStateMachine
                     // hatchHandoff();
                     break;
                 case CARGOHANDOFF:
-                    cargoHandoff(coController);
+                    cargoHandoff();
                     break;
                 case STOWED:
                     stowed();
@@ -309,7 +312,7 @@ public class SeriesStateMachine
                 //     groundHatchIntakeStowed();
                 //     break;
                 case CLIMB:
-                    climbing(mainController);
+                    climbing();
                     break;
 
             }
@@ -317,7 +320,7 @@ public class SeriesStateMachine
     }
 
     
-    private static void climbing(Joysticks mainController) 
+    private static void climbing() 
     {
         if(inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
         {
@@ -337,13 +340,13 @@ public class SeriesStateMachine
                 Mop.deployMop();
             }
             Elevator.aimedState = null;
-            if(mainController.leftTrigger > .1)
+            if(Robot.mainController.leftTrigger > .1)
             {
-                Elevator.setOpenLoop(mainController.leftTrigger);
+                Elevator.setOpenLoop(Robot.mainController.leftTrigger);
             }
-            else if(mainController.rightTrigger > .1)
+            else if(Robot.mainController.rightTrigger > .1)
             {
-                Elevator.setOpenLoop(-mainController.rightTrigger);
+                Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
             }
             else
             {
@@ -798,7 +801,7 @@ public class SeriesStateMachine
     //     }
     // }
 
-    private static void cargoHandoff(Joysticks controller)
+    private static void cargoHandoff()
     {
         switch(robotState.movementCheck(ScoringPosition.CARGOHANDOFF, cargoHandoff))
         {
@@ -808,7 +811,7 @@ public class SeriesStateMachine
                 Elevator.aimedState = cargoHandoff.eLevel;
 
                 BallIntake.runIntake();
-                if(controller.leftTrigger < .15)
+                if(Robot.coController.leftTrigger < .15)
                 {
                     BallIntake.stopMotor();
                     BallShooter.stopMotor();
@@ -981,6 +984,7 @@ public class SeriesStateMachine
             if(arrivedAtFlatForwardsOnce && arrivedAtRevLimitSwitchOnce)
             {
                 ranOnce = true;
+                initializedRobot = true;
                 aimedRobotState = null;
             }
 }
@@ -1046,7 +1050,7 @@ public class SeriesStateMachine
         if(!arrivedAtMidPos)
         {
             hatchL2Forwards();
-            if(robotState.movementCheck(ScoringPosition.HATCHL2FORWARDS, hatchL2Forwards) == Movement.ARRIVED)
+            if(Elevator.isAboveMinRotate(0))
                 arrivedAtMidPos = true;
         }
         if(arrivedAtMidPos)

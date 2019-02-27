@@ -90,7 +90,7 @@ public class TestFunctions
 
     public static void dont()
     {
-        //don't code here
+        //put code here
     }
 
     public static boolean tipping()
