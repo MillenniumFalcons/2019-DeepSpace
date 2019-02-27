@@ -128,6 +128,7 @@ public class SeriesStateMachine
         mopDeploy=false;
         extendedIntakeOnce=false;
 
+        aimedRobotState = ScoringPosition.START;
 
     }
 
@@ -1084,7 +1085,7 @@ public class SeriesStateMachine
         {
             System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
-            Arm.aimedState = null;
+            Arm.aimedState = ArmPosition.STOPPED;
         }
     }
 

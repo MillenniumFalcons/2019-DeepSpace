@@ -128,7 +128,7 @@ public class Robot extends TimedRobot
     Arm.runArm();
     Elevator.runElevator();
     HatchGrabber.runHatchGrabber(coController.rightBumper);
-    ShoppingCart.runShoppingCart();
+    // ShoppingCart.runShoppingCart();
     SeriesStateMachine.runSeriesStateMachine(coController, mainController);
     Elevator.printBannerSensor();
     Elevator.printElevatorEncoders();
@@ -140,19 +140,21 @@ public class Robot extends TimedRobot
   {
     AutonomousSequences.limelightTop.disabledMode();
     AutonomousSequences.limelightBottom.disabledMode();
-    // TestFunctions.vController.disabledMode();
-    Arm.disableArm();
-    Drivetrain.setToCoast();
-    Odometry.getInstance().closeOdoThread();
-    Elevator.aimedState = null;
-    SeriesStateMachine.aimedRobotState = null;
+    // // TestFunctions.vController.disabledMode();
+    // Arm.disableArm();
+    // Drivetrain.setToCoast();
+    // Odometry.getInstance().closeOdoThread();
+    // Elevator.aimedState = null;
+    // SeriesStateMachine.aimedRobotState = null;
   }
 
   @Override
   public void disabledPeriodic() 
   {
-    Arm.armNEO.setIdleMode(IdleMode.kBrake);
-    Drivetrain.setToCoast();
+    // Arm.armNEO.setIdleMode(IdleMode.kBrake);
+    // Drivetrain.setToCoast();
+    AutonomousSequences.limelightTop.disabledMode();
+    AutonomousSequences.limelightBottom.disabledMode();
   }
 
 
@@ -161,38 +163,39 @@ public class Robot extends TimedRobot
   @Override
   public void testInit() 
   {
-    // Elevator.aimedState = ElevatorLevel.MINROTATE;
-    Drivetrain.drivetrainInitialization();
-    // Drivetrain.initializeVelAccel();
+  //   // Elevator.aimedState = ElevatorLevel.MINROTATE;
+  //   Drivetrain.drivetrainInitialization();
+  //   // Drivetrain.initializeVelAccel();
     
 
-    // secTimer = new Timer();
-    // secTimer.reset();
-    // secTimer.start();
-    // TestFunctions.shuffleboard();
-    //BallIntake.ballIntakeinitialization();
-	// BallShooter.ballShooterinitialization();
-	// HatchIntake.hatchIntakeInitialization();
-  // BallShooter.ballShooterinitialization();
-  // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-  Elevator.elevatorInitialization();
-  Elevator.elevatorMaster.enableCurrentLimit(true);
-  Elevator.elevatorMaster.configContinuousCurrentLimit(50);
+  //   // secTimer = new Timer();
+  //   // secTimer.reset();
+  //   // secTimer.start();
+  //   // TestFunctions.shuffleboard();
+  //   //BallIntake.ballIntakeinitialization();
+	// // BallShooter.ballShooterinitialization();
+	// // HatchIntake.hatchIntakeInitialization();
+  // // BallShooter.ballShooterinitialization();
+  // // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
+    // Elevator.elevatorInitialization();
+    // Elevator.elevatorMaster.enableCurrentLimit(true);
+    // Elevator.elevatorMaster.configContinuousCurrentLimit(50);
   // Arm.armInitialization()s; 
   }
   @Override
 public void testPeriodic() 
   {
-    // Elevator.setOpenLoop(mainController.leftJoyStickY);
-    // // System.out.println("Controller power: " + mainController.leftJoyStickY);
-    // // System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
-    // // System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
-    // // System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
-    Elevator.elevatorMaster.enableCurrentLimit(true);
-    Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
-    ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
+    // // Elevator.setOpenLoop(mainController.leftJoyStickY);
+    // // // System.out.println("Controller power: " + mainController.leftJoyStickY);
+    // // // System.out.println("Elevator power: " + Elevator.elevatorMaster.getMotorOutputPercent());
+    // // // System.out.println("Elevator voltage: " + Elevator.elevatorMaster.getMotorOutputVoltage());
+    // // // System.out.println("Elevator currnet: " + Elevator.elevatorMaster.getOutputCurrent());
+    // Elevator.elevatorMaster.enableCurrentLimit(true);
+    // Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
+    // ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
 
-    Elevator.setOpenLoop(mainController.rightJoyStickY);
+    // Elevator.setOpenLoop(mainController.rightJoyStickY);
+    BallShooter.printBeamBreak();
 
 
   }
