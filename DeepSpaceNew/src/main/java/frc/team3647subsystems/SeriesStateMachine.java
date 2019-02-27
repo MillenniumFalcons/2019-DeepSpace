@@ -191,13 +191,15 @@ public class SeriesStateMachine
         
         if(coController.leftTrigger > .15)
         {
-            if(cargoGroundIntakeExtended && ballIntakeTimer.get() > .7)
+            if(!arrivedAtMidPos)
+            {
+                ballIntakeTimer.reset();
+                ballIntakeTimer.start();
+                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
+            }
+            else if(prevCargoIntakeExtended || ballIntakeTimer.get() > 1)
             {
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
-            }
-            else if(!arrivedAtMidPos)
-            {
-                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
             }
         }
         else
@@ -807,12 +809,13 @@ public class SeriesStateMachine
                 Arm.aimedState = cargoHandoff.armPos;
                 Elevator.aimedState = cargoHandoff.eLevel;
 
+                prevCargoIntakeExtended = true;
                 BallIntake.runIntake();
                 if(controller.leftTrigger < .15)
                 {
                     BallIntake.stopMotor();
                     BallShooter.stopMotor();
-                    aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+                    aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
                 }
                 break;
             case MOVEELEV:
@@ -1040,7 +1043,7 @@ public class SeriesStateMachine
     //     }
     // }
 
-    private static boolean arrivedAtMidPos=false, cargoGroundIntakeExtended=false;
+    private static boolean arrivedAtMidPos=false, prevCargoIntakeExtended=false;
     public static void extendCargoGroundIntake()
     {
         if(!arrivedAtMidPos)
@@ -1053,7 +1056,6 @@ public class SeriesStateMachine
         {
             BallIntake.extendIntake();
             ballIntakeTimer.start();
-            cargoGroundIntakeExtended = true;
         }        
     }
 
