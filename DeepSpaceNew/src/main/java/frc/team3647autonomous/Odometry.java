@@ -140,7 +140,7 @@ public class Odometry
         return "X Position: " + x + " Y Position: " + y + " Heading: " + theta;
     }
 
-    public void closeOdoThread()
+    public void closeNotifier()
     {
         odoThread.close();
     }

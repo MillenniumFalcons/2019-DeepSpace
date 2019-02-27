@@ -96,7 +96,9 @@ public class Arm
 		CARGOHANDOFF,
 		MANUAL, 
 		STOPPED,
-		CLIMB
+		CLIMB,
+		VISIONF,
+		VISIONB
 	}
 
 	public static void setManualController(Joysticks controller)
@@ -336,6 +338,11 @@ public class Arm
 	public static void moveToCargoHandoff()
 	{
 		setPosition(Constants.armSRXCargoHandoff);
+	}
+
+	public static void moveToVisionF()
+	{
+		setPosition(Constants.armSRXForwardVision);
 	}
 
 	private static void moveToClimbPos()
