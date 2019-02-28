@@ -96,16 +96,16 @@ public class Robot extends TimedRobot
 		Elevator.elevatorInitialization();
 		SeriesStateMachine.seriesStateMachineInit();
 		ShoppingCart.shoppingCartInit();
-    	Drivetrain.drivetrainInitialization();
+		Drivetrain.drivetrainInitialization();
 
-		teleopNotifier = new Notifier(() ->
-		{
+		teleopNotifier = new Notifier(() -> {
 			Arm.armNEOFollow();
 		});
 		teleopNotifier.startPeriodic(.01);
 
 	}
 
+	//Teleop Code
 	@Override
 	public void teleopPeriodic() 
 	{
