@@ -150,30 +150,26 @@ public class VisionController
 
 	public void disabledMode() 
 	{
-		limelight.pip();
 		limelight.setToVison();
 		limelight.ledOff();
 	}
 
 	public void driverFlipped()
 	{
-		limelight.pip();
 		limelight.flipped();
 		limelight.ledOff();
 	}
 
 	public void visionTargetingMode() 
 	{
-		limelight.pip();
 		limelight.ledOn();
 		limelight.setToVison();
 	}
 
 	public void driverMode() 
 	{
-		limelight.pip();
 		limelight.ledOff();
-		limelight.setToVison();
+		limelight.setToDriver();
 	}
 
 	public double getPrevError() // get prevError, because prevError is private

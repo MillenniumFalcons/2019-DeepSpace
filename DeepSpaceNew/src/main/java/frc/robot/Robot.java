@@ -130,6 +130,7 @@ public class Robot extends TimedRobot
 		} 
 		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed && mainController.rightBumper) 
 		{
+      System.out.println("VISION MODE FOR BOTTOM LIMELIGHT");
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightBottom.visionTargetingMode();
       AutonomousSequences.limelightBottom.center(0.1);
@@ -140,6 +141,7 @@ public class Robot extends TimedRobot
 		} 
 		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed && mainController.rightBumper) 
 		{
+      System.out.println("VISION MODE FOR TOP LIMELIGHT");
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightTop.visionTargetingMode();
       AutonomousSequences.limelightTop.center(0.1);
@@ -147,11 +149,26 @@ public class Robot extends TimedRobot
 			double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
 			double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
 			Drivetrain.setPercentOutput(leftIn, rightIn);
-		} 
+    }
+    // else if(Arm.armEncoderValue > Constants.armSRXVerticalStowed)
+    // {
+    //   System.out.println("DRIVER MODE FOR BOTTOM LIMELIGHT. TOP FLIP");
+    //   AutonomousSequences.limelightBottom.driverMode();
+    //   AutonomousSequences.limelightTop.driverFlipped();
+    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+    // }
+    // else if(Arm.armEncoderValue < Constants.armSRXVerticalStowed)
+    // {
+    //   System.out.println("DRIVER MODE FOR TOP LIMELIGHT. BOTTOM FLIP");
+    //   AutonomousSequences.limelightTop.driverMode();
+    //   AutonomousSequences.limelightBottom.driverFlipped();
+    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+    // }
 		else 
 		{
-			AutonomousSequences.limelightBottom.disabledMode();
-			AutonomousSequences.limelightTop.disabledMode();
+      System.out.println("BORK");
+			AutonomousSequences.limelightBottom.driverMode();
+			AutonomousSequences.limelightTop.driverMode();
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
 		}
 
@@ -225,15 +242,10 @@ public class Robot extends TimedRobot
 		// // // System.out.println("Elevator currnet: " +
 		// Elevator.elevatorMaster.getOutputCurrent());
 		// Elevator.elevatorMaster.enableCurrentLimit(true);
-		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
+		Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
 		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
 
 		// Elevator.setOpenLoop(mainController.rightJoyStickY);
-    BallShooter.printBeamBreak();
-    if(mainController.rightTrigger > .5)
-      BallShooter.shootBall();
-    else
-      BallShooter.stopMotor();
 
 	}
 

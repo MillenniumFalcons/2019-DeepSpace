@@ -22,12 +22,13 @@ public class Limelight
     public void flipped()
     {
         table.getEntry("pipeline").setNumber(1);
+        table.getEntry("camMode").setNumber(1);
     }
 
-    public void setToDriver()
-    {
-        table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
-    }
+    // public void setToDriver()
+    // {
+    //     table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
+    // }
 
     public void ledOff()
     {
@@ -39,13 +40,14 @@ public class Limelight
         table.getEntry("ledMode").setNumber(3);
     }
 
-    public void pip()
+    public void setToDriver()
     {
-        table.getEntry("stream").setNumber(1);
+        table.getEntry("camMode").setNumber(0);
     }
 
     public void setToVison()
     {
+        table.getEntry("pipeline").setNumber(0);
         table.getEntry("ledMode").setNumber(0);
         table.getEntry("camMode").setNumber(0); //Limelight Network Table code to set camera mode to vision tracking
     }
