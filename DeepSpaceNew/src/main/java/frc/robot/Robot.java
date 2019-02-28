@@ -32,6 +32,7 @@ public class Robot extends TimedRobot
 	public static double[] PIDF = new double[4];
 	public static int mVel = 0;
 	public static int mAccel = 0;
+	private Timer autoTimer;
 
 	@Override
 	public void robotInit() 
@@ -48,6 +49,7 @@ public class Robot extends TimedRobot
 
 		Drivetrain.initializeSmartDashboardVelAccel();
 		Arm.armNEO.setIdleMode(IdleMode.kBrake);
+		autoTimer = new Timer();
 	}
 
 	@Override
@@ -61,6 +63,7 @@ public class Robot extends TimedRobot
 	Trajectory trajectory;
 	RamseteFollower ramseteFollower;
 	Trajectory.Segment current;
+	
 
 	@Override
 	public void autonomousInit() 
@@ -80,19 +83,21 @@ public class Robot extends TimedRobot
 		// Odometry.getInstance().odometryInit();
 		// ranBackwardsOnce = false;
 		AutonomousSequences.autoInit("Level2RightToCargoRight");
+		autoTimer.reset();
+		autoTimer.start();
 
 	}
 
-	double left;
-	double right;
-	boolean ranBackwardsOnce = false;
 
 	@Override
 	public void autonomousPeriodic() 
 	{
-		Elevator.runElevator();
-		Arm.runArm();
-		SeriesStateMachine.runSeriesStateMachine();
+		if(autoTimer.get() > 3)
+		{
+			SeriesStateMachine.runSeriesStateMachine();
+			Elevator.runElevator();
+			Arm.runArm();
+		}
 		AutonomousSequences.level2RightToCargoShipRight();
 		// driveSignal = ramseteFollower.getNextDriveSignal();
 		// current = ramseteFollower.currentSegment();

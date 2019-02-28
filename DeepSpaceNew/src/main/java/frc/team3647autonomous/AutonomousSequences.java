@@ -52,8 +52,7 @@ public class AutonomousSequences
 		switch (autoStep) 
 		{
 		case 0:
-			if (Elevator.currentState == ElevatorLevel.BOTTOM && Arm.currentState == ArmPosition.FLATFORWARDS)
-				autoStep = 1;
+			autoStep = 1;
 		case 1:
 			limelightTop.disabledMode();
 			ramsetePeriodic();
