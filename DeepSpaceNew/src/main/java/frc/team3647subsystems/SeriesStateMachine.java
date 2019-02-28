@@ -185,14 +185,17 @@ public class SeriesStateMachine
         
         if(coController.leftTrigger > .15)
         {
+            System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
             if(!arrivedAtMidPos)
             {
+                System.out.println("Going to midPos");
                 ballIntakeTimer.reset();
                 ballIntakeTimer.start();
                 aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
             }
             else if(prevCargoIntakeExtended || ballIntakeTimer.get() > 1)
             {
+                System.out.println("Going to cargoHandoff");
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
             }
         }
@@ -975,7 +978,7 @@ public class SeriesStateMachine
                     if(Arm.getRevLimitSwitch())
                     {
                         arrivedAtRevLimitSwitchOnce = true;
-                        initStep = 2;
+                        initStep = 1;
                     }
                     break;  
                 case 1:
@@ -1055,7 +1058,6 @@ public class SeriesStateMachine
         if(arrivedAtMidPos)
         {
             BallIntake.extendIntake();
-            ballIntakeTimer.start();
         }        
     }
 
@@ -1065,6 +1067,7 @@ public class SeriesStateMachine
         {
             BallIntake.retractIntake();
             ballIntakeTimer.reset();
+            prevCargoIntakeExtended = false;
         }
         else
         {
