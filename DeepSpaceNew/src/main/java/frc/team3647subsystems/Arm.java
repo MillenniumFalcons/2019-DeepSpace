@@ -58,14 +58,14 @@ public class Arm
 		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);	
 		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
 
-		// The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
-		followerThread = new Notifier(()->
-		{
-			//armNEO.set(armSRX.getMotorOutputPercent()); //set straight %output
-			armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
-		});
-		// Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
-		followerThread.startPeriodic(0.01);
+		// // The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
+		// followerThread = new Notifier(()->
+		// {
+		// 	//armNEO.set(armSRX.getMotorOutputPercent()); //set straight %output
+		// 	armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
+		// });
+		// // Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
+		// followerThread.startPeriodic(0.01);
 		armEncoderValue = 11000;
 	}
 
@@ -101,6 +101,10 @@ public class Arm
 		VISIONB
 	}
 
+	public static void armNEOFollow()
+	{
+		armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
+	}
 	public static void setManualController(Joysticks controller)
 	{
 		setManualOverride(controller.leftJoyStickY);
@@ -298,6 +302,7 @@ public class Arm
 		// System.out.println("Going to encoder position: " + position);
 		// Motion Magic
 		armSRX.set(ControlMode.MotionMagic, position);
+		// BallShooter.intakeMotor.set(ControlMode.PercentOutput, -.4);
 	}
 
 	public static void moveToFlatForwards()
@@ -348,7 +353,10 @@ public class Arm
 	private static void moveToClimbPos()
 	{
 		if(SeriesStateMachine.inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
+		{
+			aimedState = null;
 			stopArm();
+		}
 		else
 			setPosition(Constants.armSRXClimb);
 	}

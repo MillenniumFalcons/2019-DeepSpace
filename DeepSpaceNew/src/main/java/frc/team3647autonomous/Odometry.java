@@ -39,18 +39,30 @@ public class Odometry
     public void odometryInit()
     {
         lastPosition = 0;
-        odoThread = new Notifier(() ->                                     //create a notifier event
-        {
-            currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
-            deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
-            // difference in encoder ticks
-            theta = Math.toRadians(Robot.gyro.getYaw()); // Gyro angle in Radians
-            x += Math.cos(theta) * deltaPosition; // Getting x position from cosine of the change in position
-            y += Math.sin(theta) * deltaPosition; //Getting y position from sine of the change in position
+        // odoThread = new Notifier(() ->                                     //create a notifier event
+        // {
+        //     currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
+        //     deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
+        //     // difference in encoder ticks
+        //     theta = Math.toRadians(Robot.gyro.getYaw()); // Gyro angle in Radians
+        //     x += Math.cos(theta) * deltaPosition; // Getting x position from cosine of the change in position
+        //     y += Math.sin(theta) * deltaPosition; //Getting y position from sine of the change in position
             
-            lastPosition = currentEncoderPosition;
-        });
-        odoThread.startPeriodic(0.01);                                              //run the notifier event periodically requeued every .01 seconds
+        //     lastPosition = currentEncoderPosition;
+        // });
+        // odoThread.startPeriodic(0.01);                                              //run the notifier event periodically requeued every .01 seconds
+    }
+
+    public void runOdometry()
+    {
+        currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
+        deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
+        // difference in encoder ticks
+        theta = Math.toRadians(Robot.gyro.getYaw()); // Gyro angle in Radians
+        x += Math.cos(theta) * deltaPosition; // Getting x position from cosine of the change in position
+        y += Math.sin(theta) * deltaPosition; //Getting y position from sine of the change in position
+        
+        lastPosition = currentEncoderPosition;
     }
 
     public double getX() 

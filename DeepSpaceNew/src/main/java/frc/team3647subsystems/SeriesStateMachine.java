@@ -47,7 +47,7 @@ public class SeriesStateMachine
     public static int state = 0;
     public static ScoringPosition aimedRobotState;
 
-    private static Timer ballIntakeTimer;
+    private static Timer ballIntakeTimer, climbTimer;
 
     public enum ScoringPosition
     {
@@ -118,7 +118,7 @@ public class SeriesStateMachine
         bottomStart = new RobotPos(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS);
 
         climbPos = new RobotPos(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.CLIMB);
-
+        climbTimer = new Timer();
         aimedRobotState = null;
         arrivedAtRevLimitSwitchOnce = false;
         initializedRobot = false;
@@ -130,6 +130,7 @@ public class SeriesStateMachine
         shoppingCartDeployed = false;
         mopDeploy = false;
         extendedIntakeOnce = false;
+        cT = 0;
 
         aimedRobotState = ScoringPosition.START;
 
@@ -185,17 +186,17 @@ public class SeriesStateMachine
         
         if(coController.leftTrigger > .15)
         {
-            System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
+            //System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
             if(!arrivedAtMidPos)
             {
-                System.out.println("Going to midPos");
+                //System.out.println("Going to midPos");
                 ballIntakeTimer.reset();
                 ballIntakeTimer.start();
                 aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
             }
             else if(prevCargoIntakeExtended || ballIntakeTimer.get() > 1)
             {
-                System.out.println("Going to cargoHandoff");
+                //System.out.println("Going to cargoHandoff");
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
             }
         }
@@ -228,10 +229,10 @@ public class SeriesStateMachine
     
     public static void runSeriesStateMachine()
     {
-        System.out.println("AIMED STATE: " + aimedRobotState);
-        System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
-        System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
-        System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
+        //System.out.println("AIMED STATE: " + aimedRobotState);
+        //System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
+        //System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
+        //System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
@@ -325,42 +326,55 @@ public class SeriesStateMachine
         }
     }
 
-    
+    private static int cT = 0;
     private static void climbing() 
     {
         if(inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
         {
-
+            System.out.println("Arm reached Position");
+            
+            // climbTimer.start();
             if(!extendedIntakeOnce)
             {
+                System.out.println("Extending intake!");
                 BallIntake.extendIntake();
-                ShoppingCart.deployShoppingCart();
+                // if(cT == 0)
+                // {
+                //     climbTimer.reset();
+                //     climbTimer.start();
+                //     cT = 1;
+                // }
+                // if(climbTimer.get() > .7)
+                    ShoppingCart.deployShoppingCart();
             }
             else if(inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 500) && !extendedIntakeOnce)
             {
+                System.out.println("Shopping cart deployed");
                 BallIntake.retractIntake();
                 extendedIntakeOnce = true;
             }
             else if(extendedIntakeOnce)
             {
                 Mop.deployMop();
-            }
-            Elevator.aimedState = null;
-            if(Robot.mainController.leftTrigger > .1)
-            {
-                Elevator.setOpenLoop(Robot.mainController.leftTrigger);
-            }
-            else if(Robot.mainController.rightTrigger > .1)
-            {
-                Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
-            }
-            else
-            {
-                Elevator.setOpenLoop(0);
-            }
+                Elevator.aimedState = null;
+                if(Robot.mainController.leftTrigger > .1)
+                {
+                    Elevator.setOpenLoop(Robot.mainController.leftTrigger);
+                }
+                else if(Robot.mainController.rightTrigger > .1)
+                {
+                    Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
+                }
+                else
+                {
+                    Elevator.setOpenLoop(0);
+                }
+                System.out.println("running climb mode");
+            }   
         }
         else
         {
+            System.out.println("Rotating arm to climb");
             safetyRotateArm(ArmPosition.CLIMB);
         }
 
@@ -373,24 +387,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at hatchL1Forwards");
+                //System.out.println("Arrived at hatchL1Forwards");
                 Arm.aimedState = hatchL1Forwards.armPos;
                 Elevator.aimedState = hatchL1Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL1Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL1Forwards.eLevel);
                 Elevator.aimedState = hatchL1Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchL1Forwards.armPos);
+                //System.out.println("Moving Arm to: " + hatchL1Forwards.armPos);
                 Arm.aimedState = hatchL1Forwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(hatchL1Forwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running Freemove");
+                //System.out.println("Running Freemove");
                 Arm.aimedState = hatchL1Forwards.armPos;
                 Elevator.aimedState = hatchL1Forwards.eLevel;
                 break;
@@ -402,24 +416,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.HATCHL1BACKWARDS, hatchL1Backwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at hatchL1Backwards");
+                //System.out.println("Arrived at hatchL1Backwards");
                 Arm.aimedState = hatchL1Backwards.armPos;
                 Elevator.aimedState = hatchL1Backwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL1Backwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL1Backwards.eLevel);
                 Elevator.aimedState = hatchL1Backwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchL1Backwards.armPos);
+                //System.out.println("Moving Arm to: " + hatchL1Backwards.armPos);
                 Arm.aimedState = hatchL1Backwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(hatchL1Backwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 //Arm.aimedState = hatchL1Backwards.armPos;
                 //Elevator.aimedState = hatchL1Backwards.eLevel;
                 break;
@@ -431,24 +445,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.HATCHL2FORWARDS, hatchL2Forwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at hatchL2Forwards");
+                //System.out.println("Arrived at hatchL2Forwards");
                 Arm.aimedState = hatchL2Forwards.armPos;
                 Elevator.aimedState = hatchL2Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL2Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL2Forwards.eLevel);
                 Elevator.aimedState = hatchL2Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchL2Forwards.armPos);
+                //System.out.println("Moving Arm to: " + hatchL2Forwards.armPos);
                 Arm.aimedState = hatchL2Forwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(hatchL2Forwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = hatchL2Forwards.armPos;
                 Elevator.aimedState = hatchL2Forwards.eLevel;
                 break;
@@ -460,24 +474,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.HATCHL2BACKWARDS, hatchL2Backwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at hatchL2Backwards");
+                //System.out.println("Arrived at hatchL2Backwards");
                 Arm.aimedState = hatchL2Backwards.armPos;
                 Elevator.aimedState = hatchL2Backwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL2Backwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL2Backwards.eLevel);
                 Elevator.aimedState = hatchL2Backwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchL2Backwards.armPos);
+                //System.out.println("Moving Arm to: " + hatchL2Backwards.armPos);
                 Arm.aimedState = hatchL2Backwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(hatchL2Backwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = hatchL2Backwards.armPos;
                 Elevator.aimedState = hatchL2Backwards.eLevel;
                 break;
@@ -489,24 +503,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.HATCHL3FORWARDS, hatchL3Forwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at hatchL3Forwards");
+                //System.out.println("Arrived at hatchL3Forwards");
                 Arm.aimedState = hatchL3Forwards.armPos;
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchL3Forwards.armPos);
+                //System.out.println("Moving Arm to: " + hatchL3Forwards.armPos);
                 Arm.aimedState = hatchL3Forwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(hatchL3Forwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = hatchL3Forwards.armPos;
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
@@ -518,24 +532,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.HATCHL3BACKWARDS, hatchL3Backwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at hatchL3Backwards");
+                //System.out.println("Arrived at hatchL3Backwards");
                 Arm.aimedState = hatchL3Backwards.armPos;
                 Elevator.aimedState = hatchL3Backwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL3Backwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL3Backwards.eLevel);
                 Elevator.aimedState = hatchL3Backwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + hatchL3Backwards.armPos);
+                //System.out.println("Moving Arm to: " + hatchL3Backwards.armPos);
                 Arm.aimedState = hatchL3Backwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(hatchL3Backwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = hatchL3Backwards.armPos;
                 Elevator.aimedState = hatchL3Backwards.eLevel;
                 break;
@@ -550,24 +564,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOL1FORWARDS, cargoL1Forwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoshipForwards");
+                //System.out.println("Arrived at cargoshipForwards");
                 Arm.aimedState = cargoL1Forwards.armPos;
                 Elevator.aimedState = cargoL1Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoL1Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + cargoL1Forwards.eLevel);
                 Elevator.aimedState = cargoL1Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoL1Forwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoL1Forwards.armPos);
                 Arm.aimedState = cargoL1Forwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoL1Forwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoL1Forwards.armPos;
                 Elevator.aimedState = cargoL1Forwards.eLevel;
                 break;
@@ -579,24 +593,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOL1BACKWARDS, cargoL1Backwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoshipForwards");
+                //System.out.println("Arrived at cargoshipForwards");
                 Arm.aimedState = cargoL1Backwards.armPos;
                 Elevator.aimedState = cargoL1Backwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoL1Backwards.eLevel);
+                //System.out.println("Moving Elevator to: " + cargoL1Backwards.eLevel);
                 Elevator.aimedState = cargoL1Backwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoL1Backwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoL1Backwards.armPos);
                 Arm.aimedState = cargoL1Backwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoL1Backwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoL1Backwards.armPos;
                 Elevator.aimedState = cargoL1Backwards.eLevel;
                 break;
@@ -607,24 +621,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOSHIPFORWARDS, cargoshipForwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoshipForwards");
+                //System.out.println("Arrived at cargoshipForwards");
                 Arm.aimedState = cargoshipForwards.armPos;
                 Elevator.aimedState = cargoshipForwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoshipForwards.eLevel);
+                //System.out.println("Moving Elevator to: " + cargoshipForwards.eLevel);
                 Elevator.aimedState = cargoshipForwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoshipForwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoshipForwards.armPos);
                 Arm.aimedState = cargoshipForwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoshipForwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoshipForwards.armPos;
                 Elevator.aimedState = cargoshipForwards.eLevel;
                 break;
@@ -636,24 +650,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOSHIPBACKWARDS, cargoshipBackwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoshipBackwards");
+                //System.out.println("Arrived at cargoshipBackwards");
                 Arm.aimedState = cargoshipBackwards.armPos;
                 Elevator.aimedState = cargoshipBackwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoshipBackwards.eLevel);
+                //System.out.println("Moving Elevator to: " + cargoshipBackwards.eLevel);
                 Elevator.aimedState = cargoshipBackwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoshipBackwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoshipBackwards.armPos);
                 Arm.aimedState = cargoshipBackwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoshipBackwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoshipBackwards.armPos;
                 Elevator.aimedState = cargoshipBackwards.eLevel;
                 break;
@@ -665,24 +679,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOL2FORWARDS, cargoL2Forwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoL2Forwards");
+                //System.out.println("Arrived at cargoL2Forwards");
                 Arm.aimedState = cargoL2Forwards.armPos;
                 Elevator.aimedState = cargoL2Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoL2Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + cargoL2Forwards.eLevel);
                 Elevator.aimedState = cargoL2Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoL2Forwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoL2Forwards.armPos);
                 Arm.aimedState = cargoL2Forwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoL2Forwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoL2Forwards.armPos;
                 Elevator.aimedState = cargoL2Forwards.eLevel;
                 break;
@@ -694,24 +708,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOL2BACKWARDS, cargoL2Backwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoL2Backwards");
+                //System.out.println("Arrived at cargoL2Backwards");
                 Arm.aimedState = cargoL2Backwards.armPos;
                 Elevator.aimedState = cargoL2Backwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoL2Backwards.eLevel);
+                //System.out.println("Moving Elevator to: " + cargoL2Backwards.eLevel);
                 Elevator.aimedState = cargoL2Backwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoL2Backwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoL2Backwards.armPos);
                 Arm.aimedState = cargoL2Backwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoL2Backwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoL2Backwards.armPos;
                 Elevator.aimedState = cargoL2Backwards.eLevel;
                 break;
@@ -723,24 +737,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOL3FORWARDS, cargoL3Forwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoL3Forwards");
+                //System.out.println("Arrived at cargoL3Forwards");
                 Arm.aimedState = cargoL3Forwards.armPos;
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoL3Forwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoL3Forwards.armPos);
                 Arm.aimedState = cargoL3Forwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoL3Forwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoL3Forwards.armPos;
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
@@ -752,24 +766,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOL3FORWARDS, cargoL3Backwards))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoL3Backwards");
+                //System.out.println("Arrived at cargoL3Backwards");
                 Arm.aimedState = cargoL3Backwards.armPos;
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
+                //System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoL3Backwards.armPos);
+                //System.out.println("Moving Arm to: " + cargoL3Backwards.armPos);
                 Arm.aimedState = cargoL3Backwards.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoL3Backwards.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoL3Backwards.armPos;
                 Elevator.aimedState = hatchL3Forwards.eLevel;
                 break;
@@ -782,25 +796,25 @@ public class SeriesStateMachine
     //     switch(robotState.movementCheck(ScoringPosition.HATCHHANDOFF, hatchHandoff))
     //     {
     //         case ARRIVED:
-    //             System.out.println("Arrived at hatchHandoff");
+    //             //System.out.println("Arrived at hatchHandoff");
     //             Arm.aimedState = hatchHandoff.armPos;
     //             Elevator.aimedState = hatchHandoff.eLevel;
     //             break;
     //         case MOVEELEV:
-    //             System.out.println("Moving Elevator to: " + hatchHandoff.eLevel);
+    //             //System.out.println("Moving Elevator to: " + hatchHandoff.eLevel);
     //             Elevator.aimedState = hatchHandoff.eLevel;
     //             ShoppingCart.aimedState = WristPosition.HANDOFF;
     //             break;
     //         case MOVEARM:
-    //             System.out.println("Moving Arm to: " + hatchHandoff.armPos);
+    //             //System.out.println("Moving Arm to: " + hatchHandoff.armPos);
     //             Arm.aimedState = hatchHandoff.armPos;
     //             break;
     //         case SAFEZMOVE:
-    //             System.out.println("Running Safe Z");
+    //             //System.out.println("Running Safe Z");
     //             safetyRotateArm(hatchHandoff.armPos);
     //             break;
     //         case FREEMOVE:
-    //             System.out.println("Running free move");
+    //             //System.out.println("Running free move");
     //             Arm.aimedState = hatchHandoff.armPos;
     //             Elevator.aimedState = hatchHandoff.eLevel;
     //             break;
@@ -812,7 +826,7 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.CARGOHANDOFF, cargoHandoff))
         {
             case ARRIVED:
-                System.out.println("Arrived at cargoHandoff");
+                //System.out.println("Arrived at cargoHandoff");
                 Arm.aimedState = cargoHandoff.armPos;
                 Elevator.aimedState = cargoHandoff.eLevel;
 
@@ -826,19 +840,19 @@ public class SeriesStateMachine
                 }
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + cargoHandoff.eLevel);
+                ////System.out.println("Moving Elevator to: " + cargoHandoff.eLevel);
                 Elevator.aimedState = cargoHandoff.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + cargoHandoff.armPos);
+                //System.out.println("Moving Arm to: " + cargoHandoff.armPos);
                 Arm.aimedState = cargoHandoff.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(cargoHandoff.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = cargoHandoff.armPos;
                 Elevator.aimedState = cargoHandoff.eLevel;
                 break;
@@ -851,24 +865,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
         {
             case ARRIVED:
-                System.out.println("Arrived at stowed");
+                //System.out.println("Arrived at stowed");
                 Arm.aimedState = stowed.armPos;
                 Elevator.aimedState = stowed.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + stowed.eLevel);
+                //System.out.println("Moving Elevator to: " + stowed.eLevel);
                 Elevator.aimedState = stowed.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + stowed.armPos);
+                //System.out.println("Moving Arm to: " + stowed.armPos);
                 Arm.aimedState = stowed.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(stowed.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = stowed.armPos;
                 Elevator.aimedState = stowed.eLevel;
                 break;
@@ -880,24 +894,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.STOWED, verticalStowed))
         {
             case ARRIVED:
-                System.out.println("Arrived at verticalStowed");
+                //System.out.println("Arrived at verticalStowed");
                 Arm.aimedState = verticalStowed.armPos;
                 Elevator.aimedState = verticalStowed.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + verticalStowed.eLevel);
+                //System.out.println("Moving Elevator to: " + verticalStowed.eLevel);
                 Elevator.aimedState = verticalStowed.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + verticalStowed.armPos);
+                //System.out.println("Moving Arm to: " + verticalStowed.armPos);
                 Arm.aimedState = verticalStowed.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(verticalStowed.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = verticalStowed.armPos;
                 Elevator.aimedState = verticalStowed.eLevel;
                 break;
@@ -910,24 +924,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.REVLIMITSWITCH, revLimitSwitch))
         {
             case ARRIVED:
-                System.out.println("Arrived at revLimitSwitch");
+                //System.out.println("Arrived at revLimitSwitch");
                 Arm.currentState = revLimitSwitch.armPos;
                 Elevator.aimedState = revLimitSwitch.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + revLimitSwitch.eLevel);
+                //System.out.println("Moving Elevator to: " + revLimitSwitch.eLevel);
                 Elevator.aimedState = revLimitSwitch.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + revLimitSwitch.armPos);
+                //System.out.println("Moving Arm to: " + revLimitSwitch.armPos);
                 Arm.aimedState = revLimitSwitch.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(revLimitSwitch.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = revLimitSwitch.armPos;
                 Elevator.aimedState = revLimitSwitch.eLevel;
                 break;
@@ -939,24 +953,24 @@ public class SeriesStateMachine
         switch(robotState.movementCheck(ScoringPosition.BOTTOMSTART, bottomStart))
         {
             case ARRIVED:
-                System.out.println("Arrived at revLimitSwitch");
+                //System.out.println("Arrived at revLimitSwitch");
                 Arm.currentState = bottomStart.armPos;
                 Elevator.aimedState = bottomStart.eLevel;
                 break;
             case MOVEELEV:
-                System.out.println("Moving Elevator to: " + bottomStart.eLevel);
+                //System.out.println("Moving Elevator to: " + bottomStart.eLevel);
                 Elevator.aimedState = bottomStart.eLevel;
                 break;
             case MOVEARM:
-                System.out.println("Moving Arm to: " + bottomStart.armPos);
+                //System.out.println("Moving Arm to: " + bottomStart.armPos);
                 Arm.aimedState = bottomStart.armPos;
                 break;
             case SAFEZMOVE:
-                System.out.println("Running Safe Z");
+                //System.out.println("Running Safe Z");
                 safetyRotateArm(bottomStart.armPos);
                 break;
             case FREEMOVE:
-                System.out.println("Running free move");
+                //System.out.println("Running free move");
                 Arm.aimedState = bottomStart.armPos;
                 Elevator.aimedState = bottomStart.eLevel;
                 break;
@@ -968,7 +982,7 @@ public class SeriesStateMachine
     
     public static void initializeRobotPosition()
     {
-        System.out.println("arrivedAtRevLimitSwitchOnce: " + arrivedAtRevLimitSwitchOnce);
+        //System.out.println("arrivedAtRevLimitSwitchOnce: " + arrivedAtRevLimitSwitchOnce);
         if(!ranOnce)
         {
             switch(initStep)
@@ -1071,7 +1085,7 @@ public class SeriesStateMachine
         }
         else
         {
-            System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
+            //System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
         }
     }
@@ -1079,7 +1093,7 @@ public class SeriesStateMachine
     private static void safetyRotateArm(Arm.ArmPosition pos)
     {
 
-        System.out.println("Safely rotating arm to: " + pos);
+        //System.out.println("Safely rotating arm to: " + pos);
         if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500)
         {
             state = 1;
@@ -1088,7 +1102,7 @@ public class SeriesStateMachine
         }
         else
         {
-            System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
+            //System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
             Arm.aimedState = ArmPosition.STOPPED;
         }

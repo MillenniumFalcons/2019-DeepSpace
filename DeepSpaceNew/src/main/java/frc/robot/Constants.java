@@ -134,7 +134,7 @@ public class Constants
 	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
-	public static final int armSRXClimb = 19000;
+	public static final int armSRXClimb = 20500;
 
 	// NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;
@@ -151,7 +151,7 @@ public class Constants
 	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values
 	public static final int elevatorCargoL1 = 6000; // need to check
 	public static final int elevatorHatchHandoff = 6000;
-	public static final int elevatorCargoHandoff = 6000; // need to test this and hatch handoff levels, might be able to
+	public static final int elevatorCargoHandoff = 6150; // need to test this and hatch handoff levels, might be able to
 															// combine
 	public static final int elevatorCargoShip = 21000;
 	public static final int elevatorHatchL2 = 23000;
@@ -168,7 +168,7 @@ public class Constants
 	public static final int hatchIntakeScore = 1840;
 	public static final int hatchIntakeHandoff = 2000;
 
-	public static final int shoppingCartDeployed = 1700;
+	public static final int shoppingCartDeployed = 2260;
 
 	/************** AUTONOMOUS CONSTANTS ******************/
 
@@ -177,7 +177,7 @@ public class Constants
 	public static final double kWheelBase = .7112;
 	public static final double kMaxVelocity = 2.24;
 
-	public static final double kBeta = 1.0; // b > 0 Correction
-	public static final double kZeta = 0.7; // 0 < z < 1 Dampening
+	public static final double kBeta = 1.75; // b > 0 Correction
+	public static final double kZeta = 0.8; // 0 < z < 1 Dampening
 
 }

@@ -1,7 +1,9 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import frc.team3647autonomous.AutonomousSequences;
@@ -25,7 +27,9 @@ public class Robot extends TimedRobot
 
 	public static Joysticks mainController;
 	public static Joysticks coController;
-	public static Gyro gyro;
+  public static Gyro gyro;
+  
+  public static Notifier autoNotifier, teleopNotifier;
 
 	public static double[] PIDFleft = new double[4];
 	public static double[] PIDFright = new double[4];
@@ -68,13 +72,22 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() 
 	{
+    // The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
+		autoNotifier = new Notifier(()->
+		{
+			Arm.armNEOFollow();
+      Odometry.getInstance().runOdometry();
+      
+    });
+    autoNotifier.startPeriodic(0.01);
+
 		gyro.resetAngle();
 		Drivetrain.drivetrainInitialization();
 		Drivetrain.resetEncoders();
 		AirCompressor.runCompressor();
-		SeriesStateMachine.seriesStateMachineInit();
-		Arm.armInitialization();
-		Elevator.elevatorInitialization();
+		// SeriesStateMachine.seriesStateMachineInit();
+		// Arm.armInitialization();
+		// Elevator.elevatorInitialization();
 		// driveSignal = new DriveSignal();
 		// trajectory = TrajectoryUtil.getTrajectoryFromName("Level2RightToCargoRight");
 		// ramseteFollower = new RamseteFollower(trajectory,
@@ -94,9 +107,9 @@ public class Robot extends TimedRobot
 	{
 		if(autoTimer.get() > 2)
 		{
-			SeriesStateMachine.runSeriesStateMachine();
-			Elevator.runElevator();
-			Arm.runArm();
+			// SeriesStateMachine.runSeriesStateMachine();
+			// Elevator.runElevator();
+			// Arm.runArm();
 		}
 		AutonomousSequences.level2RightToCargoShipRight();
 		// driveSignal = ramseteFollower.getNextDriveSignal();
@@ -117,8 +130,14 @@ public class Robot extends TimedRobot
 		Arm.armInitialization();
 		Elevator.elevatorInitialization();
 		SeriesStateMachine.seriesStateMachineInit();
-		// ShoppingCart.shoppingCartInit();
-		Drivetrain.drivetrainInitialization();
+		ShoppingCart.shoppingCartInit();
+    Drivetrain.drivetrainInitialization();
+
+    teleopNotifier = new Notifier(()->
+		{
+			Arm.armNEOFollow();
+      
+    });teleopNotifier.startPeriodic(.01);
 	}
 
 	@Override
@@ -150,20 +169,6 @@ public class Robot extends TimedRobot
 			double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
 			Drivetrain.setPercentOutput(leftIn, rightIn);
     }
-    // else if(Arm.armEncoderValue > Constants.armSRXVerticalStowed)
-    // {
-    //   System.out.println("DRIVER MODE FOR BOTTOM LIMELIGHT. TOP FLIP");
-    //   AutonomousSequences.limelightBottom.driverMode();
-    //   AutonomousSequences.limelightTop.driverFlipped();
-    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-    // }
-    // else if(Arm.armEncoderValue < Constants.armSRXVerticalStowed)
-    // {
-    //   System.out.println("DRIVER MODE FOR TOP LIMELIGHT. BOTTOM FLIP");
-    //   AutonomousSequences.limelightTop.driverMode();
-    //   AutonomousSequences.limelightBottom.driverFlipped();
-    //   Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-    // }
 		else 
 		{
       System.out.println("BORK");
@@ -175,12 +180,9 @@ public class Robot extends TimedRobot
 		Arm.runArm();
 		Elevator.runElevator();
 		HatchGrabber.runHatchGrabber(coController.rightBumper);
-		// ShoppingCart.runShoppingCart();
+		ShoppingCart.runShoppingCart();
 		SeriesStateMachine.setControllers(mainController, coController);
 		SeriesStateMachine.runSeriesStateMachine();
-		Elevator.printBannerSensor();
-		Elevator.printElevatorEncoders();
-		System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);
 	}
 
 	@Override
@@ -226,7 +228,9 @@ public class Robot extends TimedRobot
 		// Elevator.elevatorInitialization();
 		// Elevator.elevatorMaster.enableCurrentLimit(true);
 		// Elevator.elevatorMaster.configContinuousCurrentLimit(50);
-		// Arm.armInitialization()s;
+    // Arm.armInitialization()s;
+    
+    ShoppingCart.shoppingCartInit();
 	}
 
 	@Override
@@ -242,11 +246,13 @@ public class Robot extends TimedRobot
 		// // // System.out.println("Elevator currnet: " +
 		// Elevator.elevatorMaster.getOutputCurrent());
 		// Elevator.elevatorMaster.enableCurrentLimit(true);
-		Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
+		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
 		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
-
-		// Elevator.setOpenLoop(mainController.rightJoyStickY);
-
+    // BallShooter.intakeMotor.set(ControlMode.PercentOutput, -.4);
+    // Elevator.setOpenLoop(mainController.rightJoyStickY);
+    ShoppingCart.setShoppinCartEncoder();
+    ShoppingCart.printPosition();
+    ShoppingCart.shoppingCartMotor.set(ControlMode.PercentOutput, mainController.leftJoyStickY);
 	}
 
 	public void updateJoysticks()

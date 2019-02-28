@@ -1,6 +1,7 @@
 package frc.team3647autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Robot;
 import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
 import frc.team3647subsystems.Elevator;
@@ -85,13 +86,15 @@ public class AutonomousSequences
 		case 4:
 			System.out.println("Running step 4");
 			System.out.println("Auto Timer: " + autoTimer.get());
-			
+			limelightTop.visionTargetingMode();
+			limelightTop.center(.1);
+			Drivetrain.setPercentOutput(limelightTop.leftSpeed, limelightTop.rightSpeed);
 			if(autoTimer.get() < 1.5)
 				Drivetrain.setPercentOutput(.25, .25);
 			else if(autoTimer.get() < 3)
 			{
 				System.out.println("Releasing hatch");
-				HatchGrabber.releaseHatch();
+				// HatchGrabber.releaseHatch();
 			}
 			else if(autoTimer.get() < 5)
 				Drivetrain.stop();
@@ -102,13 +105,14 @@ public class AutonomousSequences
 				autoStep = 6;
 			break;
 		case 5:
-			if (Arm.currentState == ArmPosition.FLATBACKWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)
+			// if (Arm.currentState == ArmPosition.FLATBACKWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)
 				autoStep = 6;
-			else
-				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+			// else
+			// 	SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
 			break;
 		case 6:
 			System.out.println("AUTO SEQUENCE FINISHED!");
+			Robot.autoNotifier.close();
 			break;
 		}
 	}
