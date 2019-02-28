@@ -26,6 +26,7 @@ public class AutonomousSequences
 	public static Trajectory.Segment current;
 	public static double leftSpeed;
 	public static double rightSpeed;
+	private static Timer autoTimer;
 
 	public static void autoInit(String trajectoryName) 
 	{
@@ -34,6 +35,7 @@ public class AutonomousSequences
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 		Odometry.getInstance().setInitialOdometry(trajectory);
 		Odometry.getInstance().odometryInit();
+		autoTimer = new Timer();
 	}
 
 	public static void ramsetePeriodic() 
@@ -63,7 +65,6 @@ public class AutonomousSequences
 
 		case 2:
 			double threshold = 0.1;
-			Arm.moveToVisionF();
 			limelightTop.visionTargetingMode();
 			limelightTop.center(threshold);
 			System.out.println("Centering!!");
@@ -78,18 +79,22 @@ public class AutonomousSequences
 		case 3:
 			Drivetrain.stop();
 			Odometry.getInstance().closeNotifier();
+			autoTimer.reset();
+			autoTimer.start();
 			autoStep = 4;
 			break;
 		case 4:
-			Drivetrain.setPercentOutput(.25, .25);
-			Timer.delay(1.5);
-			HatchGrabber.releaseHatch();
-			Drivetrain.stop();
-			Timer.delay(0.5);
-			Drivetrain.setPercentOutput(-.25, -.25);
-			Timer.delay(1);
-			Drivetrain.stop();
-			autoStep = 5;
+			if(autoTimer.get() < 1.5)
+				Drivetrain.setPercentOutput(.25, .25);
+			else if(autoTimer.get() < 2.3)
+				HatchGrabber.releaseHatch();
+			else if(autoTimer.get() < 3.7)
+				Drivetrain.stop();
+			else if(autoTimer.get() < 6)
+				Drivetrain.setPercentOutput(-.25, -.25);
+			else if(autoTimer.get() < 6.6)
+				Drivetrain.stop();
+				autoStep = 5;
 			break;
 		case 5:
 			if (Arm.currentState == ArmPosition.FLATBACKWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)

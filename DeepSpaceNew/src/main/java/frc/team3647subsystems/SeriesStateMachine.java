@@ -15,8 +15,9 @@ public class SeriesStateMachine
     public static RobotPos robotState;
 
     // Variables to control initialization
-    private static boolean arrivedAtRevLimitSwitchOnce=false, arrivedAtFlatForwardsOnce=false, ranOnce = false;
+    private static boolean arrivedAtRevLimitSwitchOnce=false, ranOnce = false;
     public static boolean initializedRobot = false;
+    private static int initStep = 1;
 
     //control ball ground intake
     private static boolean intakeExtracted = false;
@@ -121,7 +122,7 @@ public class SeriesStateMachine
         aimedRobotState = null;
         arrivedAtRevLimitSwitchOnce = false;
         initializedRobot = false;
-        arrivedAtFlatForwardsOnce = false;
+        initStep = 0;
         ranOnce = false;
         intakeExtracted = false;
 
@@ -965,32 +966,28 @@ public class SeriesStateMachine
     public static void initializeRobotPosition()
     {
         System.out.println("arrivedAtRevLimitSwitchOnce: " + arrivedAtRevLimitSwitchOnce);
-        System.out.println("arrivedAtFlatForwardsOnce: " + arrivedAtFlatForwardsOnce);
         if(!ranOnce)
         {
-            if(!Arm.getRevLimitSwitch() && !arrivedAtRevLimitSwitchOnce)
+            switch(initStep)
             {
-                safetyRotateArm(ArmPosition.REVLIMITSWITCH);
+                case 0:
+                    safetyRotateArm(ArmPosition.REVLIMITSWITCH);
+                    if(Arm.getRevLimitSwitch())
+                    {
+                        arrivedAtRevLimitSwitchOnce = true;
+                        initStep = 2;
+                    }
+                    break;  
+                case 1:
+                    aimedRobotState = ScoringPosition.BOTTOMSTART;
+                    if(Arm.currentState == ArmPosition.FLATFORWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)
+                    {
+                        ranOnce=true;
+                        initializedRobot = true;
+                    }
+                    break;
             }
-
-            if(Arm.getRevLimitSwitch())
-                    arrivedAtRevLimitSwitchOnce = true;
-
-            if(arrivedAtRevLimitSwitchOnce && !arrivedAtFlatForwardsOnce)
-            {
-                aimedRobotState = ScoringPosition.BOTTOMSTART;
-            }
-
-            if(Arm.currentState == ArmPosition.FLATFORWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)
-                arrivedAtFlatForwardsOnce=true;
-
-            if(arrivedAtFlatForwardsOnce && arrivedAtRevLimitSwitchOnce)
-            {
-                ranOnce = true;
-                initializedRobot = true;
-                aimedRobotState = null;
-            }
-}
+        }
 
     }
 
@@ -1028,8 +1025,7 @@ public class SeriesStateMachine
                 aimedRobotState = ScoringPosition.HATCHHANDOFF;  
                 break;
             default:
-                stowed();                
-                
+                stowed();                  
                 break;
         }
     }
