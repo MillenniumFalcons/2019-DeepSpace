@@ -113,31 +113,37 @@ public class Robot extends TimedRobot
 		{
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
 		} 
-		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed && mainController.rightBumper) 
+		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed) 
 		{
 			System.out.println("VISION MODE FOR BOTTOM LIMELIGHT");
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightBottom.visionTargetingMode();
-			AutonomousSequences.limelightBottom.center(0.1);
 			AutonomousSequences.limelightTop.driverFlipped();
-			double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY;
-			double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
-			Drivetrain.setPercentOutput(leftIn, rightIn);
+			if (mainController.rightBumper)
+			{
+				AutonomousSequences.limelightBottom.center(0.1);
+				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			}
 		} 
-		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed && mainController.rightBumper) 
+		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)
 		{
 			System.out.println("VISION MODE FOR TOP LIMELIGHT");
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightTop.visionTargetingMode();
-			AutonomousSequences.limelightTop.center(0.1);
 			AutonomousSequences.limelightBottom.driverFlipped();
-			double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
-			double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
-			Drivetrain.setPercentOutput(leftIn, rightIn);
-    }
+			if (mainController.rightBumper)
+			{
+				AutonomousSequences.limelightTop.center(0.1);
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			}
+    	}
 		else 
 		{
-			System.out.println("BORK");
+			System.out.println("Shouldn't be here, but");
 			AutonomousSequences.limelightBottom.driverMode();
 			AutonomousSequences.limelightTop.driverMode();
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
