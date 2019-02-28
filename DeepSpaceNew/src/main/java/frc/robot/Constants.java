@@ -177,7 +177,7 @@ public class Constants
 	public static final double kWheelBase = .7112;
 	public static final double kMaxVelocity = 2.24;
 
-	public static final double kBeta = 1.25; // b > 0 Correction
+	public static final double kBeta = 1.0; // b > 0 Correction
 	public static final double kZeta = 0.7; // 0 < z < 1 Dampening
 
 }

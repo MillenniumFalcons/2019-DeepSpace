@@ -19,6 +19,11 @@ public class Limelight
         updateLimelight();
     }
 
+    public void flipped()
+    {
+        table.getEntry("pipeline").setNumber(1);
+    }
+
     public void setToDriver()
     {
         table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
@@ -36,7 +41,7 @@ public class Limelight
 
     public void pip()
     {
-        table.getEntry("stream").setNumber(2);
+        table.getEntry("stream").setNumber(1);
     }
 
     public void setToVison()

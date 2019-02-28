@@ -65,7 +65,7 @@ public class Arm
 			armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
 		});
 		// Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
-		followerThread.startPeriodic(0.005);
+		followerThread.startPeriodic(0.01);
 		armEncoderValue = 11000;
 	}
 

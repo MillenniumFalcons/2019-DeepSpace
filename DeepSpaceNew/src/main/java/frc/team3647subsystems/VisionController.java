@@ -155,6 +155,13 @@ public class VisionController
 		limelight.ledOff();
 	}
 
+	public void driverFlipped()
+	{
+		limelight.pip();
+		limelight.flipped();
+		limelight.ledOff();
+	}
+
 	public void visionTargetingMode() 
 	{
 		limelight.pip();

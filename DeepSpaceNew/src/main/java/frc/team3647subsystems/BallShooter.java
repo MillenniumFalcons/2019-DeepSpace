@@ -30,12 +30,12 @@ public class BallShooter
 
 	public static void shootBall()
 	{
-		setOpenLoop(.7);
+		setOpenLoop(1);
 	}
 	
 	public static void intakeCargo(double power)
 	{
-		setOpenLoop(-power);
+		setOpenLoop(-1);
 	}
 
 	public static void runSmartShooter(double power)

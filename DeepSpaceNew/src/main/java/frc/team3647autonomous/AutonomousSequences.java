@@ -83,17 +83,23 @@ public class AutonomousSequences
 			autoStep = 4;
 			break;
 		case 4:
+			System.out.println("Running step 4");
+			System.out.println("Auto Timer: " + autoTimer.get());
+			
 			if(autoTimer.get() < 1.5)
 				Drivetrain.setPercentOutput(.25, .25);
-			else if(autoTimer.get() < 2.3)
+			else if(autoTimer.get() < 3)
+			{
+				System.out.println("Releasing hatch");
 				HatchGrabber.releaseHatch();
-			else if(autoTimer.get() < 3.7)
+			}
+			else if(autoTimer.get() < 5)
 				Drivetrain.stop();
-			else if(autoTimer.get() < 6)
+			else if(autoTimer.get() < 7)
 				Drivetrain.setPercentOutput(-.25, -.25);
-			else if(autoTimer.get() < 6.6)
+			else if(autoTimer.get() < 9)
 				Drivetrain.stop();
-				autoStep = 5;
+				autoStep = 6;
 			break;
 		case 5:
 			if (Arm.currentState == ArmPosition.FLATBACKWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)

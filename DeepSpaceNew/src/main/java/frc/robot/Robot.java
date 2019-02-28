@@ -92,7 +92,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		if(autoTimer.get() > 3)
+		if(autoTimer.get() > 2)
 		{
 			SeriesStateMachine.runSeriesStateMachine();
 			Elevator.runElevator();
@@ -132,7 +132,8 @@ public class Robot extends TimedRobot
 		{
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightBottom.visionTargetingMode();
-			AutonomousSequences.limelightBottom.center(0.1);
+      AutonomousSequences.limelightBottom.center(0.1);
+      AutonomousSequences.limelightTop.driverFlipped();
 			double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY;
 			double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
 			Drivetrain.setPercentOutput(leftIn, rightIn);
@@ -141,7 +142,8 @@ public class Robot extends TimedRobot
 		{
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightTop.visionTargetingMode();
-			AutonomousSequences.limelightTop.center(0.1);
+      AutonomousSequences.limelightTop.center(0.1);
+      AutonomousSequences.limelightBottom.driverFlipped();
 			double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
 			double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
 			Drivetrain.setPercentOutput(leftIn, rightIn);
@@ -192,7 +194,7 @@ public class Robot extends TimedRobot
 	public void testInit() 
 	{
 		// // Elevator.aimedState = ElevatorLevel.MINROTATE;
-		// Drivetrain.drivetrainInitialization();
+		Drivetrain.drivetrainInitialization();
 		// // Drivetrain.initializeVelAccel();
 
 		// // secTimer = new Timer();
@@ -223,12 +225,15 @@ public class Robot extends TimedRobot
 		// // // System.out.println("Elevator currnet: " +
 		// Elevator.elevatorMaster.getOutputCurrent());
 		// Elevator.elevatorMaster.enableCurrentLimit(true);
-		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX ,
-		// mainController.leftJoyStickY, gyro);
+		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
 		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
 
 		// Elevator.setOpenLoop(mainController.rightJoyStickY);
-		BallShooter.printBeamBreak();
+    BallShooter.printBeamBreak();
+    if(mainController.rightTrigger > .5)
+      BallShooter.shootBall();
+    else
+      BallShooter.stopMotor();
 
 	}
 

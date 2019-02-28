@@ -64,9 +64,9 @@ public class BallIntake
 		}
 		else
 		{
-			intakeCargo(.5);
+			intakeCargo(.6);
 		}
-		BallShooter.intakeCargo(.5);
+		BallShooter.intakeCargo(1);
 	}
 	
 	public static void setOpenLoop(double speed)

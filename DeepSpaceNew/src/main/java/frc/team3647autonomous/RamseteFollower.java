@@ -189,6 +189,11 @@ public class RamseteFollower
         //     System.out.println("PASSED 3");
     }
 
+    public int getSegmentIndex()
+    {
+        return this.segmentIndex;
+    }
+
     public void printDeltaDist()
     {
         System.out.println("Delta position in meters: " + odometry.getDeltaPosition());
