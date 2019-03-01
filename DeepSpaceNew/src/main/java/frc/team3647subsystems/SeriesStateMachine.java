@@ -33,11 +33,13 @@ public class SeriesStateMachine
     private static RobotPos cargoL1Forwards, cargoL1Backwards, cargoshipForwards, cargoshipBackwards, cargoL2Forwards, cargoL2Backwards, cargoL3Forwards, cargoL3Backwards;
 
     private static RobotPos climbPos;
+
     //handoff positions
     private static RobotPos hatchHandoff, cargoHandoff;
 
     //Arm limit switch positions
     public static RobotPos revLimitSwitch, fwdLimitSwitch;
+
 
     //Stowed positions
     private static RobotPos stowed, verticalStowed;
@@ -118,6 +120,7 @@ public class SeriesStateMachine
         bottomStart = new RobotPos(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS);
 
         climbPos = new RobotPos(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.CLIMB);
+
         climbTimer = new Timer();
         aimedRobotState = null;
         arrivedAtRevLimitSwitchOnce = false;
@@ -130,7 +133,7 @@ public class SeriesStateMachine
         shoppingCartDeployed = false;
         mopDeploy = false;
         extendedIntakeOnce = false;
-        cT = 0;
+        climbStep = 0;
 
         aimedRobotState = ScoringPosition.START;
 
@@ -326,59 +329,86 @@ public class SeriesStateMachine
         }
     }
 
-    private static int cT = 0;
+    private static int climbStep = 0;
     private static void climbing() 
     {
         if(inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
         {
             System.out.println("Arm reached Position");
-            
-            // climbTimer.start();
-            if(!extendedIntakeOnce)
+            switch(climbStep)
             {
-                System.out.println("Extending intake!");
-                BallIntake.extendIntake();
-                // if(cT == 0)
-                // {
-                //     climbTimer.reset();
-                //     climbTimer.start();
-                //     cT = 1;
-                // }
-                // if(climbTimer.get() > .7)
+                case 0:
+                    climbTimer.reset();
+                    climbTimer.start();
+                    System.out.println("Climb timer started");
+                    climbStep = 1;
+                    break;
+                case 1:
+                    BallIntake.extendIntake();
+                    if(climbTimer.get() > 1.5)
+                        climbStep = 2;
+                    break;
+                case 2:
+                    System.out.println("Deploying shopping cart!");
                     ShoppingCart.deployShoppingCart();
+                    if(inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
+                        climbStep = 3;
+                    break;
+                case 3:
+                    System.out.println("retracting Ball Intake");
+                    BallIntake.retractIntake();
+                    climbStep = 4;
+                    break;
+                case 4:
+                    Mop.deployMop();
+                    climbStep = 5;
+                    break;
+                case 5:
+                    Elevator.aimedState = null;
+                    if(Robot.mainController.leftTrigger > .1)
+                    {
+                        Elevator.setOpenLoop(Robot.mainController.leftTrigger);
+                    }
+                    else if(Robot.mainController.rightTrigger > .1)
+                    {
+                        Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
+                    }
+                    else
+                    {
+                        Elevator.setOpenLoop(0);
+                    }
+                    climbStep = 5;
+                    break;
             }
-            else if(inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 500) && !extendedIntakeOnce)
-            {
-                System.out.println("Shopping cart deployed");
-                BallIntake.retractIntake();
-                extendedIntakeOnce = true;
-            }
-            else if(extendedIntakeOnce)
-            {
-                Mop.deployMop();
-                Elevator.aimedState = null;
-                if(Robot.mainController.leftTrigger > .1)
-                {
-                    Elevator.setOpenLoop(Robot.mainController.leftTrigger);
-                }
-                else if(Robot.mainController.rightTrigger > .1)
-                {
-                    Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
-                }
-                else
-                {
-                    Elevator.setOpenLoop(0);
-                }
-                System.out.println("running climb mode");
-            }   
         }
         else
         {
-            System.out.println("Rotating arm to climb");
-            safetyRotateArm(ArmPosition.CLIMB);
+            switch(robotState.movementCheck(ScoringPosition.CLIMB, climbPos))
+            {
+                case ARRIVED:
+                    //System.out.println("Arrived at hatchL1Forwards");
+                    Arm.aimedState = climbPos.armPos;
+                    Elevator.aimedState = climbPos.eLevel;
+                    break;
+                case MOVEELEV:
+                    //System.out.println("Moving Elevator to: " + hatchL1Forwards.eLevel);
+                    Elevator.aimedState = climbPos.eLevel;
+                    break;
+                case MOVEARM:
+                    //System.out.println("Moving Arm to: " + hatchL1Forwards.armPos);
+                    Arm.aimedState = climbPos.armPos;
+                    break;
+                case SAFEZMOVE:
+                    //System.out.println("Running Safe Z");
+                    safetyRotateArm(climbPos.armPos);
+                    break;
+                case FREEMOVE:
+                    //System.out.println("Running Freemove");
+                    Arm.aimedState = climbPos.armPos;
+                    Elevator.aimedState = climbPos.eLevel;
+                    break;
+            }
         }
-
-        
     }
 
     // Hatch methods--------------------------------------------
@@ -1094,7 +1124,7 @@ public class SeriesStateMachine
     {
 
         //System.out.println("Safely rotating arm to: " + pos);
-        if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500)
+        if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500 && Elevator.elevatorEncoderValue <= 30000)
         {
             state = 1;
             Arm.aimedState = pos;
@@ -1113,6 +1143,7 @@ public class SeriesStateMachine
     {
         if((val > threshold - actual) && (val < threshold + actual))
             return true;
-        return false;
+        else
+            return false;
     }
 }

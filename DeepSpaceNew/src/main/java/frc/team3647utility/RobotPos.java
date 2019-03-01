@@ -111,7 +111,9 @@ public class RobotPos
                     if(Elevator.getStateEncoder(posData.eLevel) >= Constants.elevatorMinRotation && Elevator.isAboveMinRotate(0))
                             return Movement.FREEMOVE;
                     else
-                        return Movement.SAFEZMOVE;
+                    {
+                        return Movement.FREEMOVE;
+                    }
             }
         }
     }
