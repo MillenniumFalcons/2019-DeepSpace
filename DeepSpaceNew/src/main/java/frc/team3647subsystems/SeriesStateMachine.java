@@ -139,7 +139,6 @@ public class SeriesStateMachine
         climbStep = 0;
 
         aimedRobotState = ScoringPosition.START;
-
     }
 
     public static void setControllers(Joysticks mainController, Joysticks coController)
@@ -1112,7 +1111,6 @@ public class SeriesStateMachine
         //System.out.println("Safely rotating arm to: " + pos);
         if(Elevator.elevatorEncoderValue >= Constants.elevatorMinRotation - 500 && Elevator.elevatorEncoderValue <= 30000)
         {
-            state = 1;
             Arm.aimedState = pos;
             // Elevator.aimedState  = null;
         }
@@ -1120,7 +1118,7 @@ public class SeriesStateMachine
         {
             //System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
-            Arm.aimedState = ArmPosition.STOPPED;
+            Arm.aimedState = null;
         }
     }
 
