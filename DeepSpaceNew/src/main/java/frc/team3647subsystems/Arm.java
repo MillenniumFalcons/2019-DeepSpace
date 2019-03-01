@@ -352,13 +352,7 @@ public class Arm
 
 	private static void moveToClimbPos()
 	{
-		if(SeriesStateMachine.inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
-		{
-			aimedState = null;
-			stopArm();
-		}
-		else
-			setPosition(Constants.armSRXClimb);
+		setPosition(Constants.armSRXClimb);
 	}
 	//-----------------------------------------
 

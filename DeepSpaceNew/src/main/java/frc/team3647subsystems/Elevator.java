@@ -60,6 +60,9 @@ public class Elevator
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
 
+		Elevator.elevatorMaster.enableCurrentLimit(true);
+		Elevator.elevatorMaster.configContinuousCurrentLimit(50);
+
 		elevatorMaster.setNeutralMode(NeutralMode.Brake);
 		setEncoderValue(Constants.elevatorStartingStowed);
 	}

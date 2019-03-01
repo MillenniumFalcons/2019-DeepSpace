@@ -26,6 +26,8 @@ public class SeriesStateMachine
     // Variables to control climb
     private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false;
 
+	public static boolean climbMode=false;
+
     //Hatch scoring positions
     private static RobotPos hatchL1Forwards, hatchL1Backwards, hatchL2Forwards, hatchL2Backwards, hatchL3Forwards, hatchL3Backwards;
 
@@ -119,7 +121,7 @@ public class SeriesStateMachine
 
         bottomStart = new RobotPos(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS);
 
-        climbPos = new RobotPos(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.CLIMB);
+        climbPos = new RobotPos(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CLIMB);
 
         climbTimer = new Timer();
         aimedRobotState = null;
@@ -133,6 +135,7 @@ public class SeriesStateMachine
         shoppingCartDeployed = false;
         mopDeploy = false;
         extendedIntakeOnce = false;
+        climbMode = false;
         climbStep = 0;
 
         aimedRobotState = ScoringPosition.START;
@@ -226,6 +229,9 @@ public class SeriesStateMachine
 
         if(mainController.buttonX)
         {
+            Elevator.aimedState = null;
+            Arm.aimedState = null;
+            climbMode = true;
             aimedRobotState = ScoringPosition.CLIMB;
         }
     }
@@ -239,6 +245,8 @@ public class SeriesStateMachine
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
+        if (!climbMode)
+            ShoppingCart.setPosition(0);
         
         if(aimedRobotState != null)
         {
@@ -330,84 +338,62 @@ public class SeriesStateMachine
     }
 
     private static int climbStep = 0;
+    private static boolean elevatorManual = false;
     private static void climbing() 
     {
-        if(inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500))
+        if(!elevatorManual && inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500) && inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorMinRotation, 1000))
         {
             System.out.println("Arm reached Position");
-            switch(climbStep)
-            {
-                case 0:
-                    climbTimer.reset();
-                    climbTimer.start();
-                    System.out.println("Climb timer started");
-                    climbStep = 1;
-                    break;
-                case 1:
-                    BallIntake.extendIntake();
-                    if(climbTimer.get() > 1.5)
-                        climbStep = 2;
-                    break;
-                case 2:
-                    System.out.println("Deploying shopping cart!");
-                    ShoppingCart.deployShoppingCart();
-                    if(inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
-                        climbStep = 3;
-                    break;
-                case 3:
-                    System.out.println("retracting Ball Intake");
-                    BallIntake.retractIntake();
-                    climbStep = 4;
-                    break;
-                case 4:
-                    Mop.deployMop();
-                    climbStep = 5;
-                    break;
-                case 5:
-                    Elevator.aimedState = null;
-                    if(Robot.mainController.leftTrigger > .1)
-                    {
-                        Elevator.setOpenLoop(Robot.mainController.leftTrigger);
-                    }
-                    else if(Robot.mainController.rightTrigger > .1)
-                    {
-                        Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
-                    }
-                    else
-                    {
-                        Elevator.setOpenLoop(0);
-                    }
-                    climbStep = 5;
-                    break;
+            elevatorManual = false;
+            switch (climbStep) {
+            case 0:
+                climbTimer.reset();
+                climbTimer.start();
+                System.out.println("Climb timer started");
+                climbStep = 1;
+                break;
+            case 1:
+                BallIntake.extendIntake();
+                if (climbTimer.get() > 1.5)
+                    climbStep = 2;
+                break;
+            case 2:
+                System.out.println("Deploying shopping cart!");
+                ShoppingCart.deployShoppingCart();
+                if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
+                    climbStep = 3;
+                break;
+            case 3:
+                System.out.println("retracting Ball Intake");
+                BallIntake.retractIntake();
+                climbStep = 4;
+                break;
+            case 4:
+                Mop.deployMop();
+                climbTimer.reset();
+                climbTimer.start();
+                climbStep = 5;
+                break;
+            case 5:
+                if (climbTimer.get() > 2)
+                    elevatorManual = true;
+                break;
+            }
+        }
+        else if(elevatorManual)
+        {
+            Elevator.aimedState = null;
+            if (Robot.mainController.leftTrigger > .1) {
+                Elevator.setOpenLoop(Robot.mainController.leftTrigger);
+            } else if (Robot.mainController.rightTrigger > .1) {
+                Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
+            } else {
+                Elevator.setOpenLoop(0);
             }
         }
         else
         {
-            switch(robotState.movementCheck(ScoringPosition.CLIMB, climbPos))
-            {
-                case ARRIVED:
-                    //System.out.println("Arrived at hatchL1Forwards");
-                    Arm.aimedState = climbPos.armPos;
-                    Elevator.aimedState = climbPos.eLevel;
-                    break;
-                case MOVEELEV:
-                    //System.out.println("Moving Elevator to: " + hatchL1Forwards.eLevel);
-                    Elevator.aimedState = climbPos.eLevel;
-                    break;
-                case MOVEARM:
-                    //System.out.println("Moving Arm to: " + hatchL1Forwards.armPos);
-                    Arm.aimedState = climbPos.armPos;
-                    break;
-                case SAFEZMOVE:
-                    //System.out.println("Running Safe Z");
-                    safetyRotateArm(climbPos.armPos);
-                    break;
-                case FREEMOVE:
-                    //System.out.println("Running Freemove");
-                    Arm.aimedState = climbPos.armPos;
-                    Elevator.aimedState = climbPos.eLevel;
-                    break;
-            }
+            safetyRotateArm(ArmPosition.CLIMB);
         }
     }
 
@@ -1141,7 +1127,7 @@ public class SeriesStateMachine
     
     public static boolean inThreshold(int val,int actual, int threshold)
     {
-        if((val > threshold - actual) && (val < threshold + actual))
+        if((val > actual - threshold) && (val < actual + threshold))
             return true;
         else
             return false;

@@ -134,7 +134,7 @@ public class Constants
 	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
-	public static final int armSRXClimb = 20500;
+	public static final int armSRXClimb = 19350;
 
 	// NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;

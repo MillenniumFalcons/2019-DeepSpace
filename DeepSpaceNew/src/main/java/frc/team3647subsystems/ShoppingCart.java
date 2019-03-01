@@ -96,6 +96,8 @@ public class ShoppingCart
 	{
 		shoppingCartSPX.set(ControlMode.PercentOutput, -demand);
 	}
+
+
     public static void setManualOverride(double jValue)
 	{
 		if(Math.abs(jValue) > .15) //deadzone

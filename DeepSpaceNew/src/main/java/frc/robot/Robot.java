@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
@@ -115,7 +116,7 @@ public class Robot extends TimedRobot
 		} 
 		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed) 
 		{
-			System.out.println("VISION MODE FOR BOTTOM LIMELIGHT");
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightBottom.visionTargetingMode();
 			AutonomousSequences.limelightTop.driverFlipped();
@@ -126,10 +127,14 @@ public class Robot extends TimedRobot
 				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
 				Drivetrain.setPercentOutput(leftIn, rightIn);
 			}
+			else 
+			{
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);	
+			}
 		} 
 		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)
 		{
-			System.out.println("VISION MODE FOR TOP LIMELIGHT");
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
 			double joyY = mainController.leftJoyStickY;
 			AutonomousSequences.limelightTop.visionTargetingMode();
 			AutonomousSequences.limelightBottom.driverFlipped();
@@ -139,6 +144,10 @@ public class Robot extends TimedRobot
 				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
 				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
 				Drivetrain.setPercentOutput(leftIn, rightIn);
+			}
+			else 
+			{
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);	
 			}
     	}
 		else 
@@ -150,9 +159,20 @@ public class Robot extends TimedRobot
 		}
 
 		Arm.runArm();
+		Arm.printArmEncoders();
 		Elevator.runElevator();
+		Elevator.printElevatorEncoders();
 		HatchGrabber.runHatchGrabber(coController.rightBumper);
 		ShoppingCart.runShoppingCart();
+		if (SeriesStateMachine.climbMode)
+		{
+			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
+		}
+		else if(!SeriesStateMachine.climbMode)
+		{
+			ShoppingCart.setPosition(0);
+			ShoppingCart.runShoppingCartSPX(0);
+		}
 		SeriesStateMachine.setControllers(mainController, coController);
 		SeriesStateMachine.runSeriesStateMachine();
 	}
@@ -197,17 +217,18 @@ public class Robot extends TimedRobot
 		// // HatchIntake.hatchIntakeInitialization();
 		// // BallShooter.ballShooterinitialization();
 		// // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-		// Elevator.elevatorInitialization();
+		Elevator.elevatorInitialization();
 		// Elevator.elevatorMaster.enableCurrentLimit(true);
 		// Elevator.elevatorMaster.configContinuousCurrentLimit(50);
     	// Arm.armInitialization()s;
     
-		ShoppingCart.shoppingCartInit();
+		// ShoppingCart.shoppingCartInit();
 	}
 
 	@Override
 	public void testPeriodic() 
 	{
+		// Mop.retractMop();
 		// // Elevator.setOpenLoop(mainController.leftJoyStickY);
 		// // // System.out.println("Controller power: " +
 		// mainController.leftJoyStickY);
@@ -221,10 +242,10 @@ public class Robot extends TimedRobot
 		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
 		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
     	// BallShooter.intakeMotor.set(ControlMode.PercentOutput, -.4);
-		// Elevator.setOpenLoop(mainController.rightJoyStickY);
-		ShoppingCart.setShoppinCartEncoder();
-		ShoppingCart.printPosition();
-		ShoppingCart.shoppingCartMotor.set(ControlMode.PercentOutput, mainController.leftJoyStickY);
+		Elevator.setOpenLoop(mainController.rightJoyStickY);
+		// ShoppingCart.setShoppinCartEncoder();
+		// ShoppingCart.printPosition();
+		// ShoppingCart.shoppingCartMotor.set(ControlMode.PercentOutput, mainController.leftJoyStic kY);
 	}
 
 	public void updateJoysticks()

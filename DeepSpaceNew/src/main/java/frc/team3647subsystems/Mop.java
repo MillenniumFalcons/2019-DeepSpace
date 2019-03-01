@@ -22,4 +22,9 @@ public class Mop
         mopSolenoid.set(true);
     }
 
+    public static void retractMop()
+    {
+        mopSolenoid.set(false);
+    }
+
 }
