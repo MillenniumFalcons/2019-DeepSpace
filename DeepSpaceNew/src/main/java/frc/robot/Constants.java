@@ -36,8 +36,8 @@ public class Constants
 
 	// Sensor Pins
 	public static final int hatchLimitSwitchPin = 9;
-	public static final int hatchIntakeBeamBreakPin = 8;
-	public static final int elevatorBeamBreakPin = 7;
+	// public static final int hatchIntakeBeamBreakPin = 8;
+	public static final int elevatorBeamBreakPin = 8;
 	public static final int ballShooterBeamBreakPin = 6;
 
 	// Solinoid Pins
