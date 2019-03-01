@@ -10,6 +10,11 @@ import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
 import frc.team3647utility.*;
 import frc.team3647utility.RobotPos.Movement;
 
+
+// NEED TO ADD MANUAL CONTROL FOR ELEVATOR AND ARM:
+// ARM rightJSX
+// ELEV leftJSY
+
 public class SeriesStateMachine
 {
     public static RobotPos robotState;
@@ -383,9 +388,9 @@ public class SeriesStateMachine
         {
             Elevator.aimedState = null;
             if (Robot.mainController.leftTrigger > .1) {
-                Elevator.setOpenLoop(Robot.mainController.leftTrigger);
+                Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
             } else if (Robot.mainController.rightTrigger > .1) {
-                Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
+                Elevator.setOpenLoop(-Robot.mainController.rightTrigger * .75);
             } else {
                 Elevator.setOpenLoop(0);
             }
