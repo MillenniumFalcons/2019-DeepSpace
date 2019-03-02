@@ -150,7 +150,7 @@ public class VisionController
 
 	public void disabledMode() 
 	{
-		limelight.setToVison();
+		limelight.setToNormalVision();
 		limelight.ledOff();
 	}
 
@@ -163,7 +163,7 @@ public class VisionController
 	public void visionTargetingMode() 
 	{
 		limelight.ledOn();
-		limelight.setToVison();
+		limelight.setToNormalVision();
 	}
 
 	public void driverMode() 

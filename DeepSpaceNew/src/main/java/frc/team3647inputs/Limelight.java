@@ -19,12 +19,6 @@ public class Limelight
         updateLimelight();
     }
 
-    public void flipped()
-    {
-        table.getEntry("pipeline").setNumber(1);
-        table.getEntry("camMode").setNumber(1);
-    }
-
     // public void setToDriver()
     // {
     //     table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
@@ -44,10 +38,31 @@ public class Limelight
     {
         table.getEntry("camMode").setNumber(0);
     }
-
-    public void setToVison()
+    
+    public void setToNormalVision()
     {
-        table.getEntry("pipeline").setNumber(0);
+        setVisionTargetingMode(0);
+    }
+
+    public void flipped()
+    {
+        table.getEntry("pipeline").setNumber(1);
+        table.getEntry("camMode").setNumber(1);
+    }
+
+    public void setToRightContour()
+    {
+        setVisionTargetingMode(2);
+    }
+
+    public void setToLeftContour()
+    {
+        setVisionTargetingMode(3);
+    }
+
+    private void setVisionTargetingMode(int pipeline)
+    {
+        table.getEntry("pipeline").setNumber(pipeline);
         table.getEntry("ledMode").setNumber(0);
         table.getEntry("camMode").setNumber(0); //Limelight Network Table code to set camera mode to vision tracking
     }
