@@ -151,8 +151,10 @@ public class Robot extends TimedRobot
 		}
 
 		Arm.runArm(); 
+		Arm.setArmManualControl(coController);
 		// Arm.printArmEncoders(); 
-		Elevator.runElevator(); 
+		Elevator.runElevator();
+		Elevator.setElevatorManualControl(coController);
 		// Elevator.printElevatorEncoders(); 
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
 		ShoppingCart.runShoppingCart(); 
@@ -241,9 +243,11 @@ public class Robot extends TimedRobot
 		}
 
 		Arm.runArm(); 
-		Arm.printArmEncoders(); 
+		Arm.setArmManualControl(coController);
+		// Arm.printArmEncoders(); 
 		Elevator.runElevator(); 
-		Elevator.printElevatorEncoders(); 
+		Elevator.setElevatorManualControl(coController);
+		// Elevator.printElevatorEncoders(); 
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
 		ShoppingCart.runShoppingCart(); 
 		if (SeriesStateMachine.climbMode)

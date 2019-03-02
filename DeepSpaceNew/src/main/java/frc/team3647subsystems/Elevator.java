@@ -113,21 +113,25 @@ public class Elevator
 				aimedState = ElevatorLevel.MINROTATE;
 	}
 
+	public static void setElevatorManualControl(Joysticks controller)
+	{
+		setManualOverride(controller.leftJoyStickY);
+	}
+
 	public static void runElevator()
 	{
 		System.out.println("Elevator aimedPos " + aimedState);
 		setElevatorEncoder();
 		updateLivePosition();
-		// setManualOverride(controller.leftJoyStickY);   
 		if(aimedState != null)
 		{
 			//System.out.println("Elevator moving to: " + aimedState);
 			switch(aimedState) //check if aimed state has a value
 			{
 				case MANUAL:
-					// if(!manualOverride)
-					// 	overrideValue = 0;
-					// moveManual(overrideValue);
+					if(!manualOverride)
+						overrideValue = 0;
+					moveManual(overrideValue);
 					break;
 				case STOP:
 					stopElevator();

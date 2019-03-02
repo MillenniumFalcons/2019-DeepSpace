@@ -133,6 +133,10 @@ public class Arm
 	}
 
 
+	public static void setArmManualControl(Joysticks controller)
+	{
+		setManualOverride(controller.rightJoyStickX);
+	}
 	/**
 	 * The main arm method, switches the aimedState variable to determine which position to move to next
 	 */
@@ -144,15 +148,14 @@ public class Arm
 		// }
 		setArmEncoder();
 		updateLivePosition();
-		// setManualOverride(controller.rightJoyStickY);
 		if(aimedState != null) //check if aimed state has a value
 		{
 			switch(aimedState)
 			{
 				case MANUAL:
-					// if(!manualOverride)
-					// 	overrideValue = 0;
-					// moveManual(overrideValue);
+					if(!manualOverride)
+						overrideValue = 0;
+					moveManual(overrideValue);
 					break;
 				case STOPPED:
 					Arm.stopArm();
