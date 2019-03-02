@@ -126,8 +126,8 @@ public class Constants
 	public static final int armSRXFlatForwards = 4290;
 	public static final int armSRXBackwardVision = 21700;
 	public static final int armSRXFlatBackwards = 22000;
-	public static final int armSRXCargoL3Front = 24400;
-	public static final int armSRXCargoL3Back = 1680;
+	public static final int armSRXCargoL3Front = 24200;
+	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
 	public static final int armSRXCargoShipBack = 5700;
 	public static final int armSRXHatchHandoff = 1700;
@@ -151,13 +151,13 @@ public class Constants
 
 	// Elevator Positions
 	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values
-	public static final int elevatorCargoL1 = 6000; // need to check
+	public static final int elevatorCargoL1 = 6200; // need to check
 	public static final int elevatorHatchHandoff = 6000;
 	public static final int elevatorCargoHandoff = 6150; // need to test this and hatch handoff levels, might be able to
 															// combine
 	public static final int elevatorCargoShip = 26000;
 	public static final int elevatorHatchL2 = 23000;
-	public static final int elevatorCargoL2 = 28000;
+	public static final int elevatorCargoL2 = 28400;
 	public static final int elevatorHatchL3 = 42800;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 14350;
