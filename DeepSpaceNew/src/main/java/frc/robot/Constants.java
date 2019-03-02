@@ -136,7 +136,7 @@ public class Constants
 	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
-	public static final int armSRXClimb = 19350;
+	public static final int armSRXClimb = 20100;
 
 	// NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;
@@ -155,7 +155,7 @@ public class Constants
 	public static final int elevatorHatchHandoff = 6000;
 	public static final int elevatorCargoHandoff = 6150; // need to test this and hatch handoff levels, might be able to
 															// combine
-	public static final int elevatorCargoShip = 23200;
+	public static final int elevatorCargoShip = 24200;
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28000;
 	public static final int elevatorHatchL3 = 42800;

@@ -129,6 +129,7 @@ public class Robot extends TimedRobot
 			double joyY = mainController.leftJoyStickY; 
 			AutonomousSequences.limelightTop.visionTargetingMode(); 
 			AutonomousSequences.limelightBottom.driverFlipped(); 
+
 			if (mainController.rightBumper)
 			{
 				AutonomousSequences.limelightTop.center(0.1); 
@@ -140,7 +141,7 @@ public class Robot extends TimedRobot
 			{
 				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
 			}
-    	}
+    }
 		else 
 		{
 			System.out.println("Shouldn't be here, but"); 
@@ -164,6 +165,7 @@ public class Robot extends TimedRobot
 			ShoppingCart.setPosition(0); 
 			ShoppingCart.runShoppingCartSPX(0); 
 		}
+
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine(); 
 	}
@@ -229,7 +231,7 @@ public class Robot extends TimedRobot
 			{
 				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
 			}
-    	}
+    }
 		else 
 		{
 			System.out.println("Shouldn't be here, but"); 
@@ -260,8 +262,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledInit()
 	{
-		AutonomousSequences.limelightTop.disabledMode(); 
-		AutonomousSequences.limelightBottom.disabledMode(); 
+		// AutonomousSequences.limelightTop.disabledMode(); 
+		// AutonomousSequences.limelightBottom.disabledMode(); 
 		// TestFunctions.vController.disabledMode();
 		// Arm.disableArm();
 		// Drivetrain.setToCoast();
@@ -273,13 +275,13 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		AutonomousSequences.limelightTop.visionTargetingMode();
-		AutonomousSequences.limelightBottom.visionTargetingMode();
+		// AutonomousSequences.limelightTop.visionTargetingMode();
+		// AutonomousSequences.limelightBottom.visionTargetingMode();
 
 		// Arm.armNEO.setIdleMode(IdleMode.kBrake);
 		// Drivetrain.setToCoast();
-		AutonomousSequences.limelightTop.disabledMode(); 
-		AutonomousSequences.limelightBottom.disabledMode(); 
+		// AutonomousSequences.limelightTop.disabledMode(); 
+		// AutonomousSequences.limelightBottom.disabledMode(); 
 	}
 
 	// private Timer secTimer;

@@ -219,7 +219,7 @@ public class SeriesStateMachine
         {
             BallShooter.shootBall();
         }
-        else
+        else if(coController.leftTrigger < .15)
         {
             BallShooter.stopMotor();
         }
@@ -242,10 +242,6 @@ public class SeriesStateMachine
     
     public static void runSeriesStateMachine()
     {
-        //System.out.println("AIMED STATE: " + aimedRobotState);
-        //System.out.println("Current ELEVATOR STATE: " + robotState.getRobotPos().eLevel);
-        //System.out.println("Current ARM STATE: " + robotState.getRobotPos().armPos);
-        //System.out.println("arrivedAtMidPos " +  arrivedAtMidPos);
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
@@ -345,7 +341,7 @@ public class SeriesStateMachine
     private static boolean elevatorManual = false;
     private static void climbing() 
     {
-        if(!elevatorManual && inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500) && inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorMinRotation, 1000))
+        if(!elevatorManual && inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500) && inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorHatchL2, 1000))
         {
             System.out.println("Arm reached Position");
             elevatorManual = false;
@@ -387,6 +383,7 @@ public class SeriesStateMachine
         else if(elevatorManual)
         {
             Elevator.aimedState = null;
+            Arm.aimedState = null;
             if (Robot.mainController.leftTrigger > .1) {
                 Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
             } else if (Robot.mainController.rightTrigger > .1) {
@@ -397,7 +394,7 @@ public class SeriesStateMachine
         }
         else
         {
-            safetyRotateArm(ArmPosition.CLIMB);
+            rotateArmClimb(ArmPosition.CLIMB);
         }
     }
 
@@ -1123,6 +1120,22 @@ public class SeriesStateMachine
         {
             //System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
+            Arm.aimedState = null;
+        }
+    }
+
+    public static void rotateArmClimb(Arm.ArmPosition pos)
+    {
+                //System.out.println("Safely rotating arm to: " + pos);
+        if(Elevator.elevatorEncoderValue >= Constants.elevatorHatchL2 - 500 && Elevator.elevatorEncoderValue <= 30000)
+        {
+            Arm.aimedState = pos;
+            // Elevator.aimedState  = null;
+        }
+        else
+        {
+            //System.out.println("Moving elevator to " + Elevator.ElevatorLevel.MINROTATE);
+            Elevator.aimedState = Elevator.ElevatorLevel.HATCHL2;
             Arm.aimedState = null;
         }
     }

@@ -21,9 +21,9 @@ public class BallShooter
 	public static void setOpenLoop(double speed)
 	{
 		intakeMotor.set(ControlMode.PercentOutput, speed);
-    }
+  }
     
-    	public static void stopMotor()
+  public static void stopMotor()
 	{
 		setOpenLoop(0);
 	}
