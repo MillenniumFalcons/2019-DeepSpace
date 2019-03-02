@@ -33,7 +33,7 @@ public class BallIntake
 		}
 		else if(shootJValue)
 		{
-			BallShooter.shootBall();
+			// BallShooter.shootBall();
 		}
 		else
 		{

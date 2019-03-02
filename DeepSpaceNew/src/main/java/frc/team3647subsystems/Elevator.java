@@ -129,9 +129,9 @@ public class Elevator
 			switch(aimedState) //check if aimed state has a value
 			{
 				case MANUAL:
-					if(!manualOverride)
-						overrideValue = 0;
-					moveManual(overrideValue);
+					// if(!manualOverride)
+					// 	overrideValue = 0;
+					// moveManual(overrideValue);
 					break;
 				case STOP:
 					stopElevator();

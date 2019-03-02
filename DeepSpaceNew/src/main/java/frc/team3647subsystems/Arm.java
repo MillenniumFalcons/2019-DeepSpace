@@ -153,9 +153,9 @@ public class Arm
 			switch(aimedState)
 			{
 				case MANUAL:
-					if(!manualOverride)
-						overrideValue = 0;
-					moveManual(overrideValue);
+					// if(!manualOverride)
+					// 	overrideValue = 0;
+					// moveManual(overrideValue);
 					break;
 				case STOPPED:
 					Arm.stopArm();

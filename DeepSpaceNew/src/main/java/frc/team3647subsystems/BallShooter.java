@@ -28,9 +28,9 @@ public class BallShooter
 		setOpenLoop(0);
 	}
 
-	public static void shootBall()
+	public static void shootBall(double power)
 	{
-		setOpenLoop(1);
+		setOpenLoop(power);
 	}
 	
 	public static void intakeCargo(double power)

@@ -5,7 +5,7 @@ import frc.robot.*;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
-import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
+// import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
 // import frc.team3647subsystems.ShoppingCart.WristPosition;
 import frc.team3647utility.*;
 import frc.team3647utility.RobotPos.Movement;
@@ -217,7 +217,7 @@ public class SeriesStateMachine
         
         if(coController.rightTrigger > .15)
         {
-            BallShooter.shootBall();
+            BallShooter.shootBall(coController.rightTrigger);
         }
         else if(coController.leftTrigger < .15)
         {
@@ -245,8 +245,8 @@ public class SeriesStateMachine
         if(Arm.currentState != null && Elevator.currentState != null)
             robotState.setRobotPos(Arm.currentState, Elevator.currentState);
 
-        if (!climbMode)
-            ShoppingCart.setPosition(0);
+        // if (!climbMode)
+        //     ShoppingCart.setPosition(0);
         
         if(aimedRobotState != null)
         {
@@ -359,8 +359,8 @@ public class SeriesStateMachine
                 break;
             case 2:
                 System.out.println("Deploying shopping cart!");
-                ShoppingCart.deployShoppingCart();
-                if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
+                // ShoppingCart.deployShoppingCart();
+                // if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
                     climbStep = 3;
                 break;
             case 3:
@@ -387,7 +387,7 @@ public class SeriesStateMachine
             if (Robot.mainController.leftTrigger > .1) {
                 Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
             } else if (Robot.mainController.rightTrigger > .1) {
-                Elevator.setOpenLoop(-Robot.mainController.rightTrigger * .75);
+                Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
             } else {
                 Elevator.setOpenLoop(0);
             }
@@ -1124,9 +1124,20 @@ public class SeriesStateMachine
         }
     }
 
-    public static void rotateArmClimb(Arm.ArmPosition pos)
+
+    
+    public static boolean inThreshold(int val,int actual, int threshold)
     {
-                //System.out.println("Safely rotating arm to: " + pos);
+        if((val > actual - threshold) && (val < actual + threshold))
+            return true;
+        else
+            return false;
+    }
+
+    private static void rotateArmClimb(Arm.ArmPosition pos)
+    {
+
+        //System.out.println("Safely rotating arm to: " + pos);
         if(Elevator.elevatorEncoderValue >= Constants.elevatorHatchL2 - 500 && Elevator.elevatorEncoderValue <= 30000)
         {
             Arm.aimedState = pos;
@@ -1138,14 +1149,5 @@ public class SeriesStateMachine
             Elevator.aimedState = Elevator.ElevatorLevel.HATCHL2;
             Arm.aimedState = null;
         }
-    }
-
-    
-    public static boolean inThreshold(int val,int actual, int threshold)
-    {
-        if((val > actual - threshold) && (val < actual + threshold))
-            return true;
-        else
-            return false;
     }
 }

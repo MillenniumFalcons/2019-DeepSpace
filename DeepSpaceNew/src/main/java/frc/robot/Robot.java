@@ -78,7 +78,7 @@ public class Robot extends TimedRobot
 		Arm.armInitialization(); 
 		Elevator.elevatorInitialization(); 
 		SeriesStateMachine.seriesStateMachineInit(); 
-		ShoppingCart.shoppingCartInit(); 
+		// ShoppingCart.shoppingCartInit(); 
 		Drivetrain.drivetrainInitialization(); 
 
 		teleopNotifier = new Notifier(() -> 
@@ -157,16 +157,16 @@ public class Robot extends TimedRobot
 		Elevator.setElevatorManualControl(coController);
 		// Elevator.printElevatorEncoders(); 
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
-		ShoppingCart.runShoppingCart(); 
-		if (SeriesStateMachine.climbMode)
-		{
-			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY); 
-		}
-		else if ( ! SeriesStateMachine.climbMode)
-		{
-			ShoppingCart.setPosition(0); 
-			ShoppingCart.runShoppingCartSPX(0); 
-		}
+		// ShoppingCart.runShoppingCart(); 
+		// if (SeriesStateMachine.climbMode)
+		// {
+		// 	ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY); 
+		// }
+		// else if ( ! SeriesStateMachine.climbMode)
+		// {
+		// 	ShoppingCart.setPosition(0); 
+		// 	ShoppingCart.runShoppingCartSPX(0); 
+		// }
 
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine(); 
@@ -243,22 +243,22 @@ public class Robot extends TimedRobot
 		}
 
 		Arm.runArm(); 
-		Arm.setArmManualControl(coController);
+		// Arm.setArmManualControl(coController);
 		// Arm.printArmEncoders(); 
 		Elevator.runElevator(); 
-		Elevator.setElevatorManualControl(coController);
+		// Elevator.setElevatorManualControl(coController);
 		// Elevator.printElevatorEncoders(); 
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
-		ShoppingCart.runShoppingCart(); 
-		if (SeriesStateMachine.climbMode)
-		{
-			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY); 
-		}
-		else if ( ! SeriesStateMachine.climbMode)
-		{
-			ShoppingCart.setPosition(0); 
-			ShoppingCart.runShoppingCartSPX(0); 
-		}
+		// ShoppingCart.runShoppingCart(); 
+		// if (SeriesStateMachine.climbMode)
+		// {
+		// 	ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY); 
+		// }
+		// else if ( ! SeriesStateMachine.climbMode)
+		// {
+		// 	ShoppingCart.setPosition(0); 
+		// 	ShoppingCart.runShoppingCartSPX(0); 
+		// }
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine(); 
 	}
