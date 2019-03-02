@@ -58,40 +58,22 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit()
 	{
-    	// The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
-		autoNotifier = new Notifier(() -> 
-		{
-			Arm.armNEOFollow(); 
-      		Odometry.getInstance().runOdometry(); 
-    	}); 
-    	autoNotifier.startPeriodic(0.01); 
+    // 	// The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
+		// autoNotifier = new Notifier(() -> 
+		// {
+		// 	Arm.armNEOFollow(); 
+    //   		Odometry.getInstance().runOdometry(); 
+    // 	}); 
+    // 	autoNotifier.startPeriodic(0.01); 
 
-		gyro.resetAngle(); 
-		Drivetrain.drivetrainInitialization(); 
-		Drivetrain.resetEncoders(); 
-		AirCompressor.runCompressor(); 
-		AutonomousSequences.autoInit("Level2RightToCargoRight"); 
-		autoTimer.reset(); 
-		autoTimer.start(); 
+		// gyro.resetAngle(); 
+		// Drivetrain.drivetrainInitialization(); 
+		// Drivetrain.resetEncoders(); 
+		// AirCompressor.runCompressor(); 
+		// AutonomousSequences.autoInit("Level2RightToCargoRight"); 
+		// autoTimer.reset(); 
+		// autoTimer.start(); 
 
-	}
-
-
-	@Override
-	public void autonomousPeriodic()
-	{
-		if (autoTimer.get() > 2)
-		{
-			// SeriesStateMachine.runSeriesStateMachine();
-			// Elevator.runElevator();
-			// Arm.runArm();
-		}
-		AutonomousSequences.level2RightToCargoShipRight(); 
-	}
-
-	@Override
-	public void teleopInit()
-	{
 		BallIntake.ballIntakeinitialization(); 
 		Arm.armInitialization(); 
 		Elevator.elevatorInitialization(); 
@@ -100,10 +82,107 @@ public class Robot extends TimedRobot
 		Drivetrain.drivetrainInitialization(); 
 
 		teleopNotifier = new Notifier(() -> 
-        {
+    {
 			Arm.armNEOFollow(); 
 		}); 
-		teleopNotifier.startPeriodic(.01); 
+		teleopNotifier.startPeriodic(.01);
+
+	}
+
+
+	@Override
+	public void autonomousPeriodic()
+	{
+		// if (autoTimer.get() > 2)
+		// {
+		// 	// SeriesStateMachine.runSeriesStateMachine();
+		// 	// Elevator.runElevator();
+		// 	// Arm.runArm();
+		// }
+		// AutonomousSequences.level2RightToCargoShipRight(); 
+
+		if (mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
+		{
+			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro); 
+		}
+		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed)
+		{
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS"); 
+			double joyY = mainController.leftJoyStickY; 
+			AutonomousSequences.limelightBottom.visionTargetingMode(); 
+			AutonomousSequences.limelightTop.driverFlipped(); 
+			if (mainController.rightBumper)
+			{
+				AutonomousSequences.limelightBottom.center(0.1); 
+				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
+				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY; 
+				Drivetrain.setPercentOutput(leftIn, rightIn); 
+			}
+			else 
+			{
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
+			}
+		}
+		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)
+		{
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS"); 
+			double joyY = mainController.leftJoyStickY; 
+			AutonomousSequences.limelightTop.visionTargetingMode(); 
+			AutonomousSequences.limelightBottom.driverFlipped(); 
+			if (mainController.rightBumper)
+			{
+				AutonomousSequences.limelightTop.center(0.1); 
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY; 
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY; 
+				Drivetrain.setPercentOutput(leftIn, rightIn); 
+			}
+			else 
+			{
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
+			}
+    	}
+		else 
+		{
+			System.out.println("Shouldn't be here, but"); 
+			AutonomousSequences.limelightBottom.driverMode(); 
+			AutonomousSequences.limelightTop.driverMode(); 
+			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 
+		}
+
+		Arm.runArm(); 
+		// Arm.printArmEncoders(); 
+		Elevator.runElevator(); 
+		// Elevator.printElevatorEncoders(); 
+		HatchGrabber.runHatchGrabber(coController.rightBumper); 
+		ShoppingCart.runShoppingCart(); 
+		if (SeriesStateMachine.climbMode)
+		{
+			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY); 
+		}
+		else if ( ! SeriesStateMachine.climbMode)
+		{
+			ShoppingCart.setPosition(0); 
+			ShoppingCart.runShoppingCartSPX(0); 
+		}
+		SeriesStateMachine.setControllers(mainController, coController); 
+		SeriesStateMachine.runSeriesStateMachine(); 
+	}
+
+	@Override
+	public void teleopInit()
+	{
+		// BallIntake.ballIntakeinitialization(); 
+		// Arm.armInitialization(); 
+		// Elevator.elevatorInitialization(); 
+		// SeriesStateMachine.seriesStateMachineInit(); 
+		// ShoppingCart.shoppingCartInit(); 
+		// Drivetrain.drivetrainInitialization(); 
+
+		// teleopNotifier = new Notifier(() -> 
+    //     {
+		// 	Arm.armNEOFollow(); 
+		// }); 
+		// teleopNotifier.startPeriodic(.01); 
 
 	}
 
