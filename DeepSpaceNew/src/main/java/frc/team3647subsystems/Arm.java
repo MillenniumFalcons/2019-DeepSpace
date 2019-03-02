@@ -98,7 +98,7 @@ public class Arm
 		STOPPED,
 		CLIMB,
 		VISIONF,
-		VISIONB
+		VISIONB, CARGOSHIPBACKWARDS, CARGOSHIPFORWARDS
 	}
 
 	public static void armNEOFollow()
@@ -168,6 +168,12 @@ public class Arm
 					break;
 				case FLATBACKWARDS:
 					moveToFlatBackwards();
+					break;
+				case CARGOSHIPBACKWARDS:
+					moveToCargoBackwards();
+					break;
+				case CARGOSHIPFORWARDS:
+					moveToCargoForwards();
 					break;
 				case CARGOL3FRONT:
 					moveToCargoL3Front();
@@ -313,6 +319,16 @@ public class Arm
 	public static void moveToFlatBackwards()
 	{
 		setPosition(Constants.armSRXFlatBackwards);
+	}
+
+	public static void moveToCargoBackwards()
+	{
+		setPosition(Constants.armSRXCargoShipBack);
+	}
+
+	public static void moveToCargoForwards()
+	{
+		setPosition(Constants.armSRXCargoShipFront);
 	}
 
 	public static void moveToCargoL3Front()

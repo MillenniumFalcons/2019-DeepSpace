@@ -128,6 +128,8 @@ public class Constants
 	public static final int armSRXFlatBackwards = 22000;
 	public static final int armSRXCargoL3Front = 24400;
 	public static final int armSRXCargoL3Back = 1680;
+	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
+	public static final int armSRXCargoShipBack = 5700;
 	public static final int armSRXHatchHandoff = 1700;
 	public static final int armSRXStowed = 11000;
 	public static final int armSRXVerticalStowed = 12860;
@@ -153,7 +155,7 @@ public class Constants
 	public static final int elevatorHatchHandoff = 6000;
 	public static final int elevatorCargoHandoff = 6150; // need to test this and hatch handoff levels, might be able to
 															// combine
-	public static final int elevatorCargoShip = 21000;
+	public static final int elevatorCargoShip = 22500;
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28000;
 	public static final int elevatorHatchL3 = 42800;

@@ -106,8 +106,8 @@ public class SeriesStateMachine
         cargoL1Forwards = new RobotPos(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATBACKWARDS);
         cargoL1Backwards = new RobotPos(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATFORWARDS);
 
-        cargoshipForwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.FLATBACKWARDS);
-        cargoshipBackwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.FLATFORWARDS);
+        cargoshipForwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.CARGOSHIPFORWARDS);
+        cargoshipBackwards = new RobotPos(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.CARGOSHIPBACKWARDS);
 
         cargoL2Forwards = new RobotPos(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATBACKWARDS);
         cargoL2Backwards = new RobotPos(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATFORWARDS);
