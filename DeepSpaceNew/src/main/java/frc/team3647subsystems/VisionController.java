@@ -166,6 +166,18 @@ public class VisionController
 		limelight.setToNormalVision();
 	}
 
+	public void rightMost()
+	{
+		limelight.ledOn();
+		limelight.setToRightContour();
+	}
+
+	public void leftMost()
+	{
+		limelight.ledOn();
+		limelight.setToLeftContour();
+	}
+
 	public void driverMode() 
 	{
 		limelight.ledOff();

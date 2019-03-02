@@ -101,21 +101,33 @@ public class Robot extends TimedRobot
 		// }
 		// AutonomousSequences.level2RightToCargoShipRight(); 
 
-		if (mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
+		if (Elevator.elevatorEncoderValue > 27000)
 		{
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro); 
 		}
 		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed)
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS"); 
-			double joyY = mainController.leftJoyStickY; 
-			AutonomousSequences.limelightBottom.visionTargetingMode(); 
-			AutonomousSequences.limelightTop.driverFlipped(); 
+			double joyY = mainController.leftJoyStickY;
+			AutonomousSequences.limelightTop.driverFlipped();
 			if (mainController.rightBumper)
 			{
+				AutonomousSequences.limelightBottom.rightMost();
+				Timer.delay(0.001);
 				AutonomousSequences.limelightBottom.center(0.1); 
 				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
-				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY; 
+				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
+				// System.out.println("Left: " + leftIn + " Right: " + rightIn);
+				Drivetrain.setPercentOutput(leftIn, rightIn); 
+			}
+			else if(mainController.leftBumper)
+			{
+				AutonomousSequences.limelightBottom.leftMost();
+				Timer.delay(0.001);
+				AutonomousSequences.limelightBottom.center(0.1); 
+				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
+				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
+				// System.out.println("Left: " + leftIn + " Right: " + rightIn);
 				Drivetrain.setPercentOutput(leftIn, rightIn); 
 			}
 			else 
@@ -125,23 +137,32 @@ public class Robot extends TimedRobot
 		}
 		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)
 		{
-			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS"); 
-			double joyY = mainController.leftJoyStickY; 
-			AutonomousSequences.limelightTop.visionTargetingMode(); 
-			AutonomousSequences.limelightBottom.driverFlipped(); 
-
-			if (mainController.rightBumper)
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
+			double joyY = mainController.leftJoyStickY;
+			AutonomousSequences.limelightBottom.driverFlipped();
+			if (mainController.rightBumper) 
 			{
-				AutonomousSequences.limelightTop.center(0.1); 
-				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY; 
-				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY; 
-				Drivetrain.setPercentOutput(leftIn, rightIn); 
-			}
+				AutonomousSequences.limelightTop.rightMost();
+				Timer.delay(.001);
+				AutonomousSequences.limelightTop.center(0.1);
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			} 
+			else if (mainController.leftBumper) 
+			{
+				AutonomousSequences.limelightTop.leftMost();
+				Timer.delay(.001);
+				AutonomousSequences.limelightTop.center(0.1);
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			} 
 			else 
 			{
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
 			}
-    }
+		}
 		else 
 		{
 			System.out.println("Shouldn't be here, but"); 
@@ -202,7 +223,7 @@ public class Robot extends TimedRobot
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS"); 
 			double joyY = mainController.leftJoyStickY; 
-			AutonomousSequences.limelightBottom.visionTargetingMode(); 
+			AutonomousSequences.limelightBottom.visionTargetingMode(); //BROKEN
 			AutonomousSequences.limelightTop.driverFlipped(); 
 			if (mainController.rightBumper)
 			{
@@ -220,9 +241,16 @@ public class Robot extends TimedRobot
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS"); 
 			double joyY = mainController.leftJoyStickY; 
-			AutonomousSequences.limelightTop.visionTargetingMode(); 
-			AutonomousSequences.limelightBottom.driverFlipped(); 
 			if (mainController.rightBumper)
+			{
+				AutonomousSequences.limelightTop.visionTargetingMode(); //BROKEN
+				AutonomousSequences.limelightBottom.driverFlipped();
+				AutonomousSequences.limelightTop.center(0.1);
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			}
+			else if (mainController.leftBumper)
 			{
 				AutonomousSequences.limelightTop.center(0.1); 
 				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY; 
@@ -318,7 +346,64 @@ public class Robot extends TimedRobot
 	@Override
 	public void testPeriodic()
 	{
-		AirCompressor.runCompressor();
+		// AirCompressor.runCompressor();
+		if (mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
+		{
+			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro); 
+		}
+		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed)
+		{
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS"); 
+			double joyY = mainController.leftJoyStickY; 
+			AutonomousSequences.limelightTop.driverFlipped();
+			if (mainController.rightBumper)
+			{
+				AutonomousSequences.limelightBottom.rightMost();
+				AutonomousSequences.limelightBottom.center(0.1); 
+				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
+				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY; 
+				Drivetrain.setPercentOutput(leftIn, rightIn); 
+			}
+			else if(mainController.leftBumper)
+			{
+				AutonomousSequences.limelightBottom.leftMost();
+				AutonomousSequences.limelightBottom.center(0.1); 
+				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
+				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY; 
+				Drivetrain.setPercentOutput(leftIn, rightIn); 
+			}
+			else 
+			{
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
+			}
+		}
+		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)
+		{
+			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
+			double joyY = mainController.leftJoyStickY;
+			AutonomousSequences.limelightBottom.driverFlipped();
+			if (mainController.rightBumper) 
+			{
+				AutonomousSequences.limelightTop.rightMost();
+				AutonomousSequences.limelightTop.center(0.1);
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			} 
+			else if (mainController.leftBumper) 
+			{
+				AutonomousSequences.limelightTop.leftMost();
+				AutonomousSequences.limelightTop.center(0.1);
+				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
+				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
+				Drivetrain.setPercentOutput(leftIn, rightIn);
+			} 
+			else 
+			{
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+			}
+		}
+
 		// Mop.retractMop();
 		// // Elevator.setOpenLoop(mainController.leftJoyStickY);
 		// // // System.out.println("Controller power: " +
