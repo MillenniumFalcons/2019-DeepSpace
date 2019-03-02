@@ -788,11 +788,11 @@ public class SeriesStateMachine
             case ARRIVED:
                 //System.out.println("Arrived at cargoL3Backwards");
                 Arm.aimedState = cargoL3Backwards.armPos;
-                Elevator.aimedState = hatchL3Forwards.eLevel;
+                Elevator.aimedState = cargoL3Backwards.eLevel;
                 break;
             case MOVEELEV:
                 //System.out.println("Moving Elevator to: " + hatchL3Forwards.eLevel);
-                Elevator.aimedState = hatchL3Forwards.eLevel;
+                Elevator.aimedState = cargoL3Backwards.eLevel;
                 break;
             case MOVEARM:
                 //System.out.println("Moving Arm to: " + cargoL3Backwards.armPos);
@@ -805,7 +805,7 @@ public class SeriesStateMachine
             case FREEMOVE:
                 //System.out.println("Running free move");
                 Arm.aimedState = cargoL3Backwards.armPos;
-                Elevator.aimedState = hatchL3Forwards.eLevel;
+                Elevator.aimedState = cargoL3Backwards.eLevel;
                 break;
         }
     }

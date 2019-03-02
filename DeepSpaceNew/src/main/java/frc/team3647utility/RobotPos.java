@@ -107,6 +107,11 @@ public class RobotPos
                     //     return Movement.FREEMOVE;
                     // else
                         return Movement.SAFEZMOVE;
+                case CARGOL3BACKWARDS:
+                    if(Elevator.isAboveMinRotate(0))
+                        return Movement.FREEMOVE;
+                    else
+                        return Movement.SAFEZMOVE;
                 default:
                     if(Elevator.getStateEncoder(posData.eLevel) >= Constants.elevatorMinRotation && Elevator.isAboveMinRotate(0))
                         return Movement.FREEMOVE;

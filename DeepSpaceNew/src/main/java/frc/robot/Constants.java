@@ -155,7 +155,7 @@ public class Constants
 	public static final int elevatorHatchHandoff = 6000;
 	public static final int elevatorCargoHandoff = 6150; // need to test this and hatch handoff levels, might be able to
 															// combine
-	public static final int elevatorCargoShip = 22500;
+	public static final int elevatorCargoShip = 23200;
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28000;
 	public static final int elevatorHatchL3 = 42800;
