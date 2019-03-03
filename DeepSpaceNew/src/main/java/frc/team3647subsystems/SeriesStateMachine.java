@@ -197,15 +197,12 @@ public class SeriesStateMachine
         if(coController.leftTrigger > .15)
         {
             //System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
-            if(!arrivedAtMidPos)
-            {
+            if (!arrivedAtMidPos) {
                 //System.out.println("Going to midPos");
                 ballIntakeTimer.reset();
                 ballIntakeTimer.start();
                 aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
-            }
-            else if(prevCargoIntakeExtended || ballIntakeTimer.get() > 1)
-            {
+            } else if (prevCargoIntakeExtended || ballIntakeTimer.get() > 1) {
                 //System.out.println("Going to cargoHandoff");
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
             }
@@ -213,6 +210,11 @@ public class SeriesStateMachine
         else
         {
             arrivedAtMidPos = false;
+        }
+
+        if(BallShooter.cargoDetection() && coController.leftTrigger < .15 && Math.abs(Arm.armEncoderVelocity) > 500)
+        {
+            BallShooter.intakeCargo(.45);
         }
         
         if(coController.rightTrigger > .15)
@@ -222,6 +224,18 @@ public class SeriesStateMachine
         else if(coController.leftTrigger < .15)
         {
             BallShooter.stopMotor();
+        }
+
+        if (mainController.buttonA)
+        {
+            aimedRobotState = null;
+            Elevator.aimedState = ElevatorLevel.START;
+        }
+
+        if (mainController.buttonY)
+        {
+            aimedRobotState = null;
+            Arm.aimedState = ArmPosition.REVLIMITSWITCH;
         }
 
            

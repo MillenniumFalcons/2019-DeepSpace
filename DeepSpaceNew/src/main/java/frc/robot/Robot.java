@@ -112,7 +112,7 @@ public class Robot extends TimedRobot
 			AutonomousSequences.limelightTop.driverFlipped();
 			if (mainController.rightBumper)
 			{
-				AutonomousSequences.limelightBottom.rightMost();
+				AutonomousSequences.limelightBottom.leftMost();
 				Timer.delay(0.001);
 				AutonomousSequences.limelightBottom.center(0.1); 
 				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
@@ -122,7 +122,7 @@ public class Robot extends TimedRobot
 			}
 			else if(mainController.leftBumper)
 			{
-				AutonomousSequences.limelightBottom.leftMost();
+				AutonomousSequences.limelightBottom.rightMost();  
 				Timer.delay(0.001);
 				AutonomousSequences.limelightBottom.center(0.1); 
 				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 

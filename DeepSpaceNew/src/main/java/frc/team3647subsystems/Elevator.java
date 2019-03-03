@@ -186,7 +186,7 @@ public class Elevator
 	{
 		elevatorMaster.set(ControlMode.MotionMagic, position);
 	}
-	private static void moveToBottomStart()
+	static void moveToBottomStart()
 	{
 		if(getLimitSwitch())
 		{
