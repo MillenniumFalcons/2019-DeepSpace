@@ -1,8 +1,9 @@
 package frc.robot; 
 
 import com.ctre.phoenix.motorcontrol.ControlMode; 
-import com.revrobotics.CANSparkMax.IdleMode; 
+import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Notifier; 
 import edu.wpi.first.wpilibj.TimedRobot; 
 import edu.wpi.first.wpilibj.Timer; 
@@ -21,9 +22,9 @@ public class Robot extends TimedRobot
 
 	public static Joysticks mainController; 
 	public static Joysticks coController; 
-  public static Gyro gyro; 
+	public static Gyro gyro;
   
-  public static Notifier autoNotifier, teleopNotifier; 
+	public static Notifier autoNotifier, teleopNotifier;
 
 	public static double[] PIDFleft = new double[4]; 
 	public static double[] PIDFright = new double[4]; 
@@ -44,7 +45,8 @@ public class Robot extends TimedRobot
 
 		Drivetrain.initializeSmartDashboardVelAccel(); 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
-		autoTimer = new Timer(); 
+		autoTimer = new Timer();
+		CameraServer.getInstance().startAutomaticCapture();
 	}
 
 	@Override
