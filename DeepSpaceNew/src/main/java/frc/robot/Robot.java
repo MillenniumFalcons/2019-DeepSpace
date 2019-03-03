@@ -93,6 +93,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic()
 	{
+		Elevator.printElevatorEncoders();
 		// if (autoTimer.get() > 2)
 		// {
 		// 	// SeriesStateMachine.runSeriesStateMachine();
@@ -113,7 +114,6 @@ public class Robot extends TimedRobot
 			if (mainController.rightBumper)
 			{
 				AutonomousSequences.limelightBottom.leftMost();
-				Timer.delay(0.001);
 				AutonomousSequences.limelightBottom.center(0.1); 
 				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
 				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
@@ -123,7 +123,6 @@ public class Robot extends TimedRobot
 			else if(mainController.leftBumper)
 			{
 				AutonomousSequences.limelightBottom.rightMost();  
-				Timer.delay(0.001);
 				AutonomousSequences.limelightBottom.center(0.1); 
 				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
 				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY;
@@ -143,7 +142,6 @@ public class Robot extends TimedRobot
 			if (mainController.rightBumper) 
 			{
 				AutonomousSequences.limelightTop.rightMost();
-				Timer.delay(.001);
 				AutonomousSequences.limelightTop.center(0.1);
 				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
 				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
@@ -152,7 +150,6 @@ public class Robot extends TimedRobot
 			else if (mainController.leftBumper) 
 			{
 				AutonomousSequences.limelightTop.leftMost();
-				Timer.delay(.001);
 				AutonomousSequences.limelightTop.center(0.1);
 				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
 				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;

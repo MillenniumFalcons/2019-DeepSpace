@@ -264,6 +264,14 @@ public class Arm
 			currentState = ArmPosition.VERTICALSTOWED;
 			lastState = ArmPosition.VERTICALSTOWED;
 		}
+		else if(positionThreshold(Constants.armSRXBackwardVision))
+		{
+			currentState = ArmPosition.VISIONB;
+		}
+		else if(positionThreshold(Constants.armSRXForwardVision))
+		{
+			currentState = ArmPosition.VISIONF;
+		}
 		else
 			currentState = null;
 	}

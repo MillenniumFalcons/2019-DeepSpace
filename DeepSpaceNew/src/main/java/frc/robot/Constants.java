@@ -121,7 +121,7 @@ public class Constants
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~POSITION & THRESHOLD VALUES FOR MECHANISMS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Arm Positions
 	// SRX MAG Encoder Positions
-	public static final int kArmSRXPositionThreshold = 800; // Threshold for arm positions in encoder values
+	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXForwardVision = 3700;
 	public static final int armSRXFlatForwards = 4290;
 	public static final int armSRXBackwardVision = 22600;
