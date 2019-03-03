@@ -166,6 +166,12 @@ public class Arm
 				case REVLIMITSWITCH:
 					moveToRevLimitSwitch();
 					break;
+				case VISIONF:
+					moveToVisionF();
+					break;
+				case VISIONB:
+					moveToVisionB();
+					break;
 				case FLATFORWARDS:
 					moveToFlatForwards();
 					break;
@@ -367,6 +373,11 @@ public class Arm
 	public static void moveToVisionF()
 	{
 		setPosition(Constants.armSRXForwardVision);
+	}
+
+	public static void moveToVisionB()
+	{
+		setPosition(Constants.armSRXBackwardVision);
 	}
 
 	private static void moveToClimbPos()
