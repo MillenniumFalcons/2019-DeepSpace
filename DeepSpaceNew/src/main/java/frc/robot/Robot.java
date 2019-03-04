@@ -345,63 +345,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void testPeriodic()
 	{
-		// AirCompressor.runCompressor();
-		if (mainController.leftBumper || Elevator.elevatorEncoderValue > 27000)
-		{
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro); 
-		}
-		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed)
-		{
-			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS"); 
-			double joyY = mainController.leftJoyStickY; 
-			AutonomousSequences.limelightTop.driverFlipped();
-			if (mainController.rightBumper)
-			{
-				AutonomousSequences.limelightBottom.rightMost();
-				AutonomousSequences.limelightBottom.center(0.1); 
-				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
-				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY; 
-				Drivetrain.setPercentOutput(leftIn, rightIn); 
-			}
-			else if(mainController.leftBumper)
-			{
-				AutonomousSequences.limelightBottom.leftMost();
-				AutonomousSequences.limelightBottom.center(0.1); 
-				double leftIn = AutonomousSequences.limelightBottom.leftSpeed + joyY; 
-				double rightIn = AutonomousSequences.limelightBottom.rightSpeed + joyY; 
-				Drivetrain.setPercentOutput(leftIn, rightIn); 
-			}
-			else 
-			{
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 	
-			}
-		}
-		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)
-		{
-			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
-			double joyY = mainController.leftJoyStickY;
-			AutonomousSequences.limelightBottom.driverFlipped();
-			if (mainController.rightBumper) 
-			{
-				AutonomousSequences.limelightTop.rightMost();
-				AutonomousSequences.limelightTop.center(0.1);
-				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
-				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
-				Drivetrain.setPercentOutput(leftIn, rightIn);
-			} 
-			else if (mainController.leftBumper) 
-			{
-				AutonomousSequences.limelightTop.leftMost();
-				AutonomousSequences.limelightTop.center(0.1);
-				double leftIn = AutonomousSequences.limelightTop.leftSpeed + joyY;
-				double rightIn = AutonomousSequences.limelightTop.rightSpeed + joyY;
-				Drivetrain.setPercentOutput(leftIn, rightIn);
-			} 
-			else 
-			{
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-			}
-		}
+		AirCompressor.runCompressor();
 
 		// Mop.retractMop();
 		// // Elevator.setOpenLoop(mainController.leftJoyStickY);
