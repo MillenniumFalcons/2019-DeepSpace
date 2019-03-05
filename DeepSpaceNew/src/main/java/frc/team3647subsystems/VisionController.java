@@ -42,7 +42,7 @@ public class VisionController
 
 		limelight.updateLimelight();
 		updateInputs();
-		double error = limelight.getX() / 27; // error is x / 27. x is measured in degrees, where the max x is 27. We
+		double error = limelight.getX() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
 												// get a value from -1 to 1 to scale for speed output
 		if (error > -errorThreshold && error < errorThreshold) // checking if the error is within a threshold to stop
 		{
@@ -162,18 +162,21 @@ public class VisionController
 
 	public void visionTargetingMode() 
 	{
+		updateInputs();
 		limelight.ledOn();
 		limelight.setToNormalVision();
 	}
 
 	public void rightMost()
 	{
+		updateInputs();
 		limelight.ledOn();
 		limelight.setToRightContour();
 	}
 
 	public void leftMost()
 	{
+		updateInputs();
 		limelight.ledOn();
 		limelight.setToLeftContour();
 	}

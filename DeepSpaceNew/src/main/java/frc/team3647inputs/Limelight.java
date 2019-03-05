@@ -47,7 +47,7 @@ public class Limelight
     public void flipped()
     {
         table.getEntry("pipeline").setNumber(1);
-        table.getEntry("camMode").setNumber(1);
+        table.getEntry("camMode").setNumber(0);
     }
 
     public void setToRightContour()
