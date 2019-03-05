@@ -40,10 +40,11 @@ public class Constants
 	public static final int elevatorBeamBreakPin = 8;
 	public static final int ballShooterBeamBreakPin = 6;
 
-	// Solinoid Pins
-	public static final int ballIntakeSolinoidPin = 0;
-	// public static final int hatchIntakeSolinoidPin = 1;
-	public static final int hatchGrabberSolinoidPin = 2;
+	// Solenoid Pins
+	public static final int ballIntakeSolenoidPin = 0;
+	public static final int ballIntakeSolenoid2Pin = 3;
+	// public static final int hatchIntakeSolenoidPin = 1;
+	public static final int hatchGrabberSolenoidPin = 2;
 	public static final int mopSolenoidPin = 1;
 
 	// CANifier Pin
@@ -98,7 +99,7 @@ public class Constants
 	public static final double[] leftVelocityPIDF = { 5, 0, 50, 0.26 };
 	public static final double[] rightVelocityPIDF = { 5, 0, 50, 0.26 };
 
-	public static final double[] limelightPID = { 1, 0, 10 };
+	public static final double[] limelightPID = { .75, 0, 3.1 };
 
 	public static final double velocityConstant = 4200; // Explanation for velocityConstant
 

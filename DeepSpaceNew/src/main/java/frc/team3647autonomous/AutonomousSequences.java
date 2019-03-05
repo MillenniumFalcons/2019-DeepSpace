@@ -16,8 +16,8 @@ import jaci.pathfinder.Trajectory;
 
 public class AutonomousSequences 
 {
-	public static VisionController limelightFourBar = new VisionController("top");
-	public static VisionController limelightClimber = new VisionController("bottom");
+	public static VisionController limelightFourBar = new VisionController("fourbar");
+	public static VisionController limelightClimber = new VisionController("climber");
 
 	public static int autoStep = 0;
 

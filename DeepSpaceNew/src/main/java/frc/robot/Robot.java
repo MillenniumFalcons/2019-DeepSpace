@@ -109,11 +109,11 @@ public class Robot extends TimedRobot
 	public void teleopInit()
 	{
 		// BallIntake.ballIntakeinitialization(); 
-		// Arm.armInitialization(); 
+		Arm.armInitialization(); 
 		// Elevator.elevatorInitialization(); 
 		// SeriesStateMachine.seriesStateMachineInit(); 
 		// ShoppingCart.shoppingCartInit(); 
-		// Drivetrain.drivetrainInitialization(); 
+		Drivetrain.drivetrainInitialization(); 
 
 		// teleopNotifier = new Notifier(() -> 
     //     {
@@ -127,12 +127,14 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopPeriodic()
 	{
-		teleop();
-		Arm.runArm(); 
-		Elevator.runElevator(); 
-		HatchGrabber.runHatchGrabber(coController.rightBumper); 
-		SeriesStateMachine.setControllers(mainController, coController); 
-		SeriesStateMachine.runSeriesStateMachine(); 
+		Arm.setArmEncoder();
+		System.out.println(Arm.armEncoderValue);
+		driveVisionTeleop();
+		// Arm.runArm(); 
+		// Elevator.runElevator(); 
+		// HatchGrabber.runHatchGrabber(coController.rightBumper); 
+		// SeriesStateMachine.setControllers(mainController, coController); 
+		// SeriesStateMachine.runSeriesStateMachine(); 
 	}
 
 	@Override
@@ -197,34 +199,34 @@ public class Robot extends TimedRobot
 	@Override
 	public void testPeriodic()
 	{
-		AutonomousSequences.limelightClimber.leftMost();
-		if(mainController.rightBumper)
-		{
-			switch(visionCase)
-			{
-			case 0:
-				AutonomousSequences.limelightClimber.center(0.075);
-				Drivetrain.setPercentOutput(-AutonomousSequences.limelightClimber.rightSpeed + mainController.leftJoyStickY, -AutonomousSequences.limelightClimber.leftSpeed + mainController.leftJoyStickY);
-				if(AutonomousSequences.limelightClimber.area > 6)
-						visionCase = 1;
-					break;
+		// AutonomousSequences.limelightClimber.leftMost();
+		// if(mainController.rightBumper)
+		// {
+		// 	switch(visionCase)
+		// 	{
+		// 	case 0:
+		// 		AutonomousSequences.limelightClimber.center(0.075);
+		// 		Drivetrain.setPercentOutput(-AutonomousSequences.limelightClimber.rightSpeed + mainController.leftJoyStickY, -AutonomousSequences.limelightClimber.leftSpeed + mainController.leftJoyStickY);
+		// 		if(AutonomousSequences.limelightClimber.area > 6)
+		// 				visionCase = 1;
+		// 			break;
 				
-			case 1:
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+		// 	case 1:
+		// 		Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
 						
-			}
+		// 	}
 			
-		}
-		else if(mainController.leftBumper)
-		{
-			new VictorSPX(1).set(ControlMode.PercentOutput, mainController.leftJoyStickY);
-		}
-		else 
-		{
-			visionCase = 0;
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 
-		}
-		// AirCompressor.runCompressor();
+		// }
+		// else if(mainController.leftBumper)
+		// {
+		// 	new VictorSPX(1).set(ControlMode.PercentOutput, mainController.leftJoyStickY);
+		// }
+		// else 
+		// {
+		// 	visionCase = 0;
+		// 	Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 
+		// }
+		AirCompressor.runCompressor();
 
 		// Mop.retractMop();
 		// // Elevator.setOpenLoop(mainController.leftJoyStickY);
@@ -252,7 +254,7 @@ public class Robot extends TimedRobot
 		coController.setMainContollerValues();
 	}
 	
-	public void teleop()
+	public void driveVisionTeleop()
 	{
 		if (Elevator.elevatorEncoderValue > 27000) 
 		{
@@ -329,7 +331,7 @@ public class Robot extends TimedRobot
 		camTwo.driverFlipped();
 		if (mainController.rightBumper) 
 		{
-			camOne.rightMost();
+			camOne.leftMost();
 			switch(visionCase)
 			{
 			case 0:
@@ -346,7 +348,7 @@ public class Robot extends TimedRobot
 		} 
 		else if (mainController.leftBumper) 
 		{
-			camOne.leftMost();
+			camOne.rightMost();
 			switch(visionCase)
 			{
 			case 0:
