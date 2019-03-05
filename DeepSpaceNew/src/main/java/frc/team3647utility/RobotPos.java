@@ -42,12 +42,12 @@ public class RobotPos
         {
             switch(scoringPos)
             {
-                case HATCHL1FORWARDS:
+                case HATCHL1FORWARDS: // fast movement!
                     if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 800))
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;
-                case HATCHL1BACKWARDS:
+                case HATCHL1BACKWARDS: // fast movement!
                     if(threshold(Constants.armSRXFlatBackwards, Arm.armEncoderValue, 500))
                         return Movement.MOVEARM;
                     else

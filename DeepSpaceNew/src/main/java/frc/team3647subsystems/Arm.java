@@ -524,7 +524,7 @@ public class Arm
 	}
 	public static void printArmEncoders()
     {
-        System.out.println("\nArm Encoder Value: " + armEncoderValue + "\nArm Velocity: " + armEncoderVelocity);
+        System.out.println("\nArm Encoder Value: " + armEncoderValue);// + "\nArm Velocity: " + armEncoderVelocity);
 	}
 
 	public static void printArmLimitSwitches()

@@ -373,8 +373,8 @@ public class SeriesStateMachine
                 break;
             case 2:
                 System.out.println("Deploying shopping cart!");
-                // ShoppingCart.deployShoppingCart();
-                // if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
+                ShoppingCart.deployShoppingCart();
+                if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 750))
                     climbStep = 3;
                 break;
             case 3:

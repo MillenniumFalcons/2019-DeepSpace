@@ -488,7 +488,7 @@ public class Elevator
 	
 	public static void printElevatorEncoders()
     {
-        System.out.println("Elevator Encoder Value: " + elevatorEncoderValue + "\nElevator Velocity: " + elevatorEncoderVelocity);
+        System.out.println("Elevator Encoder Value: " + elevatorEncoderValue );//+ "\nElevator Velocity: " + elevatorEncoderVelocity);
 	}
 
 	public static void printBannerSensor()
