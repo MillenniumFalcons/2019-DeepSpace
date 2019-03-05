@@ -16,8 +16,8 @@ import jaci.pathfinder.Trajectory;
 
 public class AutonomousSequences 
 {
-	public static VisionController limelightTop = new VisionController("top");
-	public static VisionController limelightBottom = new VisionController("bottom");
+	public static VisionController limelightFourBar = new VisionController("top");
+	public static VisionController limelightClimber = new VisionController("bottom");
 
 	public static int autoStep = 0;
 
@@ -55,7 +55,7 @@ public class AutonomousSequences
 		case 0:
 			autoStep = 1;
 		case 1:
-			limelightTop.disabledMode();
+			limelightFourBar.disabledMode();
 			ramsetePeriodic();
 			Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 			System.out.println("Ramsete Running: " + !ramseteFollower.isFinished());
@@ -65,11 +65,11 @@ public class AutonomousSequences
 
 		case 2:
 			double threshold = 0.1;
-			limelightTop.visionTargetingMode();
-			limelightTop.center(threshold);
+			limelightFourBar.visionTargetingMode();
+			limelightFourBar.center(threshold);
 			System.out.println("Centering!!");
-			Drivetrain.setPercentOutput(limelightTop.leftSpeed, limelightTop.rightSpeed);
-			if (limelightTop.centered(threshold)) 
+			Drivetrain.setPercentOutput(limelightFourBar.leftSpeed, limelightFourBar.rightSpeed);
+			if (limelightFourBar.centered(threshold)) 
 			{
 				autoStep = 3;
 				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
@@ -86,9 +86,9 @@ public class AutonomousSequences
 		case 4:
 			System.out.println("Running step 4");
 			System.out.println("Auto Timer: " + autoTimer.get());
-			limelightTop.visionTargetingMode();
-			limelightTop.center(.1);
-			Drivetrain.setPercentOutput(limelightTop.leftSpeed, limelightTop.rightSpeed);
+			limelightFourBar.visionTargetingMode();
+			limelightFourBar.center(.1);
+			Drivetrain.setPercentOutput(limelightFourBar.leftSpeed, limelightFourBar.rightSpeed);
 			if(autoTimer.get() < 1.5)
 				Drivetrain.setPercentOutput(.25, .25);
 			else if(autoTimer.get() < 3)
