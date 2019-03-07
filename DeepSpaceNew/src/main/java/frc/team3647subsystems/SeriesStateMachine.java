@@ -216,18 +216,23 @@ public class SeriesStateMachine
         else
         {
             arrivedAtMidPos = false;
+            BallIntake.stopMotor();
         }
 
         if(BallShooter.cargoDetection() && coController.leftTrigger < .15 && Math.abs(Arm.armEncoderVelocity) > 500)
         {
             BallShooter.intakeCargo(.45);
         }
+        else
+        {
+            BallShooter.stopMotor();
+        }
         
         if(coController.rightTrigger > .15)
         {
             BallShooter.shootBall(coController.rightTrigger);
         }
-        else if(coController.leftTrigger < .15)
+        else if(coController.leftTrigger < .15 && !BallShooter.cargoDetection())
         {
             BallShooter.stopMotor();
         }
@@ -410,53 +415,53 @@ public class SeriesStateMachine
     // Hatch methods--------------------------------------------
     private static void hatchL1Forwards()
     {
-        if(specialMovement)
-        {
-            System.out.println("HATCHFORWARD: Doing special movement!");
-            if(Arm.currentState == hatchL1Forwards.armPos && Elevator.currentState == hatchL1Forwards.eLevel)
-            {
-                specialMovement = false;
-                movementStep = 0;
-            }
-            else
-            {
-                switch(movementStep)
-                {
-                    case 0:
-                        System.out.println("HATCHFORWARD: Step 0:\nPossible Arm: " + possibeArmPosition(Elevator.elevatorEncoderValue));
-                        System.out.println("HATCHFORWARD: Step 0:\nCurrent Elev: " + (Elevator.elevatorEncoderValue));
-                        Elevator.aimedState = ElevatorLevel.MINROTATE;
-                        Arm.setPosition(possibeArmPosition(Elevator.elevatorEncoderValue));
-                        if(inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorMinRotation, 500) && inThreshold(Arm.armEncoderValue, Constants.armSRXVerticalStowed, 500))
-                            movementStep = 1;
-                        else
-                            movementStep = 0;
-                        break;
-                    case 1:
-                        System.out.println("HATCHFORWARD: Step 1 Possible Elev: " + possibleElevatorPosition(Arm.armEncoderValue));
-                        System.out.println("HATCHFORWARD: Step 1 Current Arm: " + (Arm.armEncoderValue));
-                        Arm.aimedState = hatchL1Forwards.armPos;
-                        Elevator.setPosition(possibleElevatorPosition(Arm.armEncoderValue));
-                        if(Arm.currentState == hatchL1Forwards.armPos && aimedRobotState == ScoringPosition.HATCHL1FORWARDS)
-                        {
-                            specialMovement = false;
-                            movementStep = 0;
-                            Arm.aimedState = hatchL1Forwards.armPos;
-                            Elevator.aimedState = hatchL1Forwards.eLevel;
-                        }
-                        break;
-                }
-            }
-        }
-        // if current robot state is Hatch backwards
-        else if(Arm.currentState == hatchL1Backwards.armPos && Elevator.currentState == hatchL1Backwards.eLevel)
-        {
-            specialMovement = true;
-            movementStep = 0;
-        }
+        // if(specialMovement)
+        // {
+        //     System.out.println("HATCHFORWARD: Doing special movement!");
+        //     if(Arm.currentState == hatchL1Forwards.armPos && Elevator.currentState == hatchL1Forwards.eLevel)
+        //     {
+        //         specialMovement = false;
+        //         movementStep = 0;
+        //     }
+        //     else
+        //     {
+        //         switch(movementStep)
+        //         {
+        //             case 0:
+        //                 System.out.println("HATCHFORWARD: Step 0:\nPossible Arm: " + possibeArmPosition(Elevator.elevatorEncoderValue));
+        //                 System.out.println("HATCHFORWARD: Step 0:\nCurrent Elev: " + (Elevator.elevatorEncoderValue));
+        //                 Elevator.aimedState = ElevatorLevel.MINROTATE;
+        //                 Arm.setPosition(possibeArmPosition(Elevator.elevatorEncoderValue));
+        //                 if(inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorMinRotation, 500) && inThreshold(Arm.armEncoderValue, Constants.armSRXVerticalStowed, 500))
+        //                     movementStep = 1;
+        //                 else
+        //                     movementStep = 0;
+        //                 break;
+        //             case 1:
+        //                 System.out.println("HATCHFORWARD: Step 1 Possible Elev: " + possibleElevatorPosition(Arm.armEncoderValue));
+        //                 System.out.println("HATCHFORWARD: Step 1 Current Arm: " + (Arm.armEncoderValue));
+        //                 Arm.aimedState = hatchL1Forwards.armPos;
+        //                 Elevator.setPosition(possibleElevatorPosition(Arm.armEncoderValue));
+        //                 if(Arm.currentState == hatchL1Forwards.armPos && aimedRobotState == ScoringPosition.HATCHL1FORWARDS)
+        //                 {
+        //                     specialMovement = false;
+        //                     movementStep = 0;
+        //                     Arm.aimedState = hatchL1Forwards.armPos;
+        //                     Elevator.aimedState = hatchL1Forwards.eLevel;
+        //                 }
+        //                 break;
+        //         }
+        //     }
+        // }
+        // // if current robot state is Hatch backwards
+        // else if(Arm.currentState == hatchL1Backwards.armPos && Elevator.currentState == hatchL1Backwards.eLevel)
+        // {
+        //     specialMovement = true;
+        //     movementStep = 0;
+        // }
         
-        else
-        {
+        // else
+        // {
             System.out.println("Running regular movement");
             switch(robotState.movementCheck(ScoringPosition.HATCHL1FORWARDS, hatchL1Forwards))
             {
@@ -483,58 +488,58 @@ public class SeriesStateMachine
                     Elevator.aimedState = hatchL1Forwards.eLevel;
                     break;
             }
-        }
+        // }
     }
 
     private static void hatchL1Backwards()
     {
-        if(specialMovement)
-        {
-            if(Arm.currentState == hatchL1Backwards.armPos && Elevator.currentState == hatchL1Backwards.eLevel)
-            {
-                specialMovement = false;
-                movementStep = 0;
-            }
-            else
-            {
-                switch(movementStep)
-                {
-                    case 0:
-                        System.out.println("HATCHBACKWARD: Step 0:\nPossible Arm: " + possibeArmPosition(Elevator.elevatorEncoderValue));
-                        System.out.println("HATCHBACKWARD: Step 0:\nCurrent Elev: " + (Elevator.elevatorEncoderValue));
-                        Elevator.aimedState = ElevatorLevel.MINROTATE;
-                        Arm.setPosition(possibeArmPosition(Elevator.elevatorEncoderValue) );
-                        if(inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorMinRotation, 500) && inThreshold(Arm.armEncoderValue, Constants.armSRXVerticalStowed, 500))
-                            movementStep = 1;
-                        else
-                            movementStep = 0;
-                        break;
-                    case 1:
-                        System.out.println("HATCHBACKWARD: Step 1 Possible Elev: " + possibleElevatorPosition(Arm.armEncoderValue));
-                        System.out.println("HATCHBACKWARD: Step 1 Current Arm: " + (Arm.armEncoderValue));
-                        Arm.aimedState = hatchL1Backwards.armPos;
-                        Elevator.setPosition(possibleElevatorPosition(Arm.armEncoderValue));
-                        if(Arm.currentState == hatchL1Backwards.armPos && aimedRobotState == ScoringPosition.HATCHL1BACKWARDS)
-                        {
-                            specialMovement = false;
-                            movementStep = 0;
-                            Arm.aimedState = hatchL1Backwards.armPos;
-                            Elevator.aimedState = hatchL1Backwards.eLevel;
+        // if(specialMovement)
+        // {
+        //     if(Arm.currentState == hatchL1Backwards.armPos && Elevator.currentState == hatchL1Backwards.eLevel)
+        //     {
+        //         specialMovement = false;
+        //         movementStep = 0;
+        //     }
+        //     else
+        //     {
+        //         switch(movementStep)
+        //         {
+        //             case 0:
+        //                 System.out.println("HATCHBACKWARD: Step 0:\nPossible Arm: " + possibeArmPosition(Elevator.elevatorEncoderValue));
+        //                 System.out.println("HATCHBACKWARD: Step 0:\nCurrent Elev: " + (Elevator.elevatorEncoderValue));
+        //                 Elevator.aimedState = ElevatorLevel.MINROTATE;
+        //                 Arm.setPosition(possibeArmPosition(Elevator.elevatorEncoderValue) );
+        //                 if(inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorMinRotation, 500) && inThreshold(Arm.armEncoderValue, Constants.armSRXVerticalStowed, 500))
+        //                     movementStep = 1;
+        //                 else
+        //                     movementStep = 0;
+        //                 break;
+        //             case 1:
+        //                 System.out.println("HATCHBACKWARD: Step 1 Possible Elev: " + possibleElevatorPosition(Arm.armEncoderValue));
+        //                 System.out.println("HATCHBACKWARD: Step 1 Current Arm: " + (Arm.armEncoderValue));
+        //                 Arm.aimedState = hatchL1Backwards.armPos;
+        //                 Elevator.setPosition(possibleElevatorPosition(Arm.armEncoderValue));
+        //                 if(Arm.currentState == hatchL1Backwards.armPos && aimedRobotState == ScoringPosition.HATCHL1BACKWARDS)
+        //                 {
+        //                     specialMovement = false;
+        //                     movementStep = 0;
+        //                     Arm.aimedState = hatchL1Backwards.armPos;
+        //                     Elevator.aimedState = hatchL1Backwards.eLevel;
                 
-                        }
-                        break;
-                }
-            }
-        }
-        // if current robot state is Hatch backwards
-        else if(Arm.currentState == hatchL1Forwards.armPos && Elevator.currentState == hatchL1Forwards.eLevel)
-        {
-            specialMovement = true;
-            movementStep = 0;
-        }
+        //                 }
+        //                 break;
+        //         }
+        //     }
+        // }
+        // // if current robot state is Hatch backwards
+        // else if(Arm.currentState == hatchL1Forwards.armPos && Elevator.currentState == hatchL1Forwards.eLevel)
+        // {
+        //     specialMovement = true;
+        //     movementStep = 0;
+        // }
 
-        else
-        {
+        // else
+        // {
             System.out.println("Running regular movement");
             switch(robotState.movementCheck(ScoringPosition.HATCHL1BACKWARDS, hatchL1Backwards))
             {
@@ -557,11 +562,11 @@ public class SeriesStateMachine
                     break;
                 case FREEMOVE:
                     //System.out.println("Running free move");
-                    //Arm.aimedState = hatchL1Backwards.armPos;
-                    //Elevator.aimedState = hatchL1Backwards.eLevel;
+                    Arm.aimedState = hatchL1Backwards.armPos;
+                    Elevator.aimedState = hatchL1Backwards.eLevel;
                     break;
             }
-        }
+        // }
     }
 
     private static void hatchL2Forwards()

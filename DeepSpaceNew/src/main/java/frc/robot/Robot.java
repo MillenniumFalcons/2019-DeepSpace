@@ -1,14 +1,15 @@
-package frc.robot; 
+package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Notifier; 
-import edu.wpi.first.wpilibj.TimedRobot; 
-import edu.wpi.first.wpilibj.Timer; 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard; 
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences; 
 import frc.team3647autonomous.Odometry; 
 import frc.team3647inputs. * ; 
@@ -39,25 +40,28 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit()
 	{
+		Shuffleboard.setRecordingFileNameFormat("San Diego Regional - ");
 		matchTimer = new Timer();
 		mainController = new Joysticks(0); 
 		coController = new Joysticks(1); 
-		gyro = new Gyro(); 
+		gyro = new Gyro();
+		
 		// TestFunctions.shuffleboardInit();
 		// Drivetrain.drivetrainInitialization();
+		// Drivetrain.initializeSmartDashboardVelAccel(); 
 
-		Drivetrain.initializeSmartDashboardVelAccel(); 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
 		autoTimer = new Timer();
-		// CameraServer.getInstance().startAutomaticCapture(0);
-		// CameraServer.getInstance().startAutomaticCapture(1);
+		CameraServer.getInstance().startAutomaticCapture(0); //USB Cam One
+		CameraServer.getInstance().startAutomaticCapture(1); //USB Cam Two
+		
 		matchTimer.reset();
 	}
 
 	@Override
 	public void robotPeriodic()
 	{
-		gyro.updateGyro(); 
+		gyro.updateGyro();
 		updateJoysticks();
 		SmartDashboard.putNumber("Match Timer", 150 - matchTimer.get());
 	}
@@ -68,6 +72,9 @@ public class Robot extends TimedRobot
 	{
 		// The NEO takes the Motor-output in percent from the SRX and since SRX
 		// values are using motion-magic, it "follows" the SRX
+		// AutonomousSequences.autoInit("Level2RightToCargoRight"); 
+		// autoTimer.reset(); 
+		// autoTimer.start(); 
 		// autoNotifier = new Notifier(() ->
 		// {
 		// 	Arm.armNEOFollow();
@@ -75,16 +82,15 @@ public class Robot extends TimedRobot
 		// });
 		// autoNotifier.startPeriodic(0.01);
 
+		Shuffleboard.startRecording();
+		matchTimer.reset();
+		matchTimer.start();
+
 		gyro.resetAngle(); 
 		Drivetrain.drivetrainInitialization(); 
 		Drivetrain.resetEncoders(); 
 		AirCompressor.runCompressor(); 
-		// AutonomousSequences.autoInit("Level2RightToCargoRight"); 
-		// autoTimer.reset(); 
-		// autoTimer.start(); 
 
-		// matchTimer.reset();
-		// matchTimer.start();
 		BallIntake.ballIntakeinitialization(); 
 		Arm.armInitialization(); 
 		Elevator.elevatorInitialization(); 
@@ -118,6 +124,7 @@ public class Robot extends TimedRobot
 	{
 		driveVisionTeleop();
 		Arm.runArm();
+		ShoppingCart.setShoppinCartEncoder();
 		if(SeriesStateMachine.climbMode)
 		{
 			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
@@ -131,26 +138,21 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledInit()
 	{
-		
-		// AutonomousSequences.limelightTop.rightMost();
-		// AutonomousSequences.limelightBottom.rightMost();
-		// AutonomousSequences.limelightTop.disabledMode(); 
-		// AutonomousSequences.limelightBottom.disabledMode(); 
-		// TestFunctions.vController.disabledMode();
+		Shuffleboard.stopRecording();
+		matchTimer.stop();
+		matchTimer.reset();
 		// Arm.disableArm();
 		// Drivetrain.setToCoast();
 		// Odometry.getInstance().closeOdoThread();
 		// Elevator.aimedState = null;
 		// SeriesStateMachine.aimedRobotState = null;
-		matchTimer.stop();
-		matchTimer.reset();
 	}
 
 	@Override
 	public void disabledPeriodic()
 	{
-		// AutonomousSequences.limelightTop.rightMost();
-		// AutonomousSequences.limelightBottom.rightMost();
+		AutonomousSequences.limelightClimber.rightMost();
+		AutonomousSequences.limelightFourBar.rightMost();
 
 		// Arm.armNEO.setIdleMode(IdleMode.kBrake);
 		// Drivetrain.setToCoast();
@@ -174,7 +176,7 @@ public class Robot extends TimedRobot
 	public void testPeriodic()
 	{
 		// ShoppingCart.setShoppinCartEncoder();
-		ShoppingCart.runShoppingCartSPX(coController.leftJoyStickY);
+		// ShoppingCart.runShoppingCartSPX(coController.leftJoyStickY);
 		// System.out.println("HELLO");
 		// ShoppingCart.printPosition();
 		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY*.5);
@@ -186,7 +188,7 @@ public class Robot extends TimedRobot
 		// } else {
 		// 	Elevator.setOpenLoop(0);
 		// }
-		// AirCompressor.runCompressor();
+		AirCompressor.runCompressor();
 		// Elevator.setElevatorEncoder();
 		// Elevator.printElevatorEncoders();
 		// System.out.println(Elevator.elevatorMaster.getSelectedSensorPosition(0));
