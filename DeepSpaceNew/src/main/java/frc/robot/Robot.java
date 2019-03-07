@@ -35,6 +35,7 @@ public class Robot extends TimedRobot
 	private Timer autoTimer;
 	private Timer matchTimer;
 
+
 	@Override
 	public void robotInit()
 	{
@@ -48,8 +49,8 @@ public class Robot extends TimedRobot
 		Drivetrain.initializeSmartDashboardVelAccel(); 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
 		autoTimer = new Timer();
-		CameraServer.getInstance().startAutomaticCapture(0);
-		CameraServer.getInstance().startAutomaticCapture(1);
+		// CameraServer.getInstance().startAutomaticCapture(0);
+		// CameraServer.getInstance().startAutomaticCapture(1);
 		matchTimer.reset();
 	}
 
@@ -74,35 +75,35 @@ public class Robot extends TimedRobot
 		// });
 		// autoNotifier.startPeriodic(0.01);
 
-		// gyro.resetAngle(); 
-		// Drivetrain.drivetrainInitialization(); 
-		// Drivetrain.resetEncoders(); 
-		// AirCompressor.runCompressor(); 
+		gyro.resetAngle(); 
+		Drivetrain.drivetrainInitialization(); 
+		Drivetrain.resetEncoders(); 
+		AirCompressor.runCompressor(); 
 		// AutonomousSequences.autoInit("Level2RightToCargoRight"); 
 		// autoTimer.reset(); 
 		// autoTimer.start(); 
 
-		matchTimer.reset();
-		matchTimer.start();
-		// BallIntake.ballIntakeinitialization(); 
-		// Arm.armInitialization(); 
-		// Elevator.elevatorInitialization(); 
-		// SeriesStateMachine.seriesStateMachineInit(); 
-		// // ShoppingCart.shoppingCartInit(); 
-		// Drivetrain.drivetrainInitialization(); 
+		// matchTimer.reset();
+		// matchTimer.start();
+		BallIntake.ballIntakeinitialization(); 
+		Arm.armInitialization(); 
+		Elevator.elevatorInitialization(); 
+		SeriesStateMachine.seriesStateMachineInit(); 
+		ShoppingCart.shoppingCartInit(); 
+		Drivetrain.drivetrainInitialization(); 
 
-		// teleopNotifier = new Notifier(() -> 
-    	// {
-		// 	Arm.armNEOFollow(); 
-		// }); 
-		// teleopNotifier.startPeriodic(.01);
+		teleopNotifier = new Notifier(() -> 
+    	{
+			Arm.armNEOFollow(); 
+		}); 
+		teleopNotifier.startPeriodic(.01);
 	}
 
 
 	@Override
 	public void autonomousPeriodic()
 	{
-		// teleopPeriodic();
+		teleopPeriodic();
 	}
 
 	@Override
@@ -128,11 +129,17 @@ public class Robot extends TimedRobot
 	public void teleopPeriodic()
 	{
 		teleop();
-		Arm.runArm(); 
+		Arm.runArm();
+		if(SeriesStateMachine.climbMode)
+		{
+			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
+		}
 		Elevator.runElevator(); 
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
 		SeriesStateMachine.setControllers(mainController, coController); 
-		SeriesStateMachine.runSeriesStateMachine(); 
+		SeriesStateMachine.runSeriesStateMachine();
+		Arm.printArmEncoders();
+		Elevator.printElevatorEncoders();
 	}
 
 	@Override
@@ -170,80 +177,37 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		// // Elevator.aimedState = ElevatorLevel.MINROTATE;
-		Drivetrain.drivetrainInitialization();
-		// // Drivetrain.initializeVelAccel();
-
-		// // secTimer = new Timer();
-		// // secTimer.reset();
-		// // secTimer.start();
-		// // TestFunctions.shuffleboard();
-		// //BallIntake.ballIntakeinitialization();
-		// // BallShooter.ballShooterinitialization();
-		// // HatchIntake.hatchIntakeInitialization();
-		// // BallShooter.ballShooterinitialization();
-		// // Arm.aimedState = ArmPosition.REVLIMITSWITCH;
-		// Elevator.elevatorInitialization(); 
-		// Elevator.elevatorMaster.enableCurrentLimit(true);
-		// Elevator.elevatorMaster.configContinuousCurrentLimit(50);
-		// Arm.armInitialization()s;
-
 		// ShoppingCart.shoppingCartInit();
-		AutonomousSequences.limelightClimber.leftMost();
-		AutonomousSequences.limelightFourBar.leftMost();
+		// Drivetrain.drivetrainInitialization();
+		// Elevator.elevatorInitialization();
+		// Drivetrain.drivetrainInitialization();
 	}
 
 
 	@Override
 	public void testPeriodic()
 	{
-		AutonomousSequences.limelightClimber.leftMost();
-		if(mainController.rightBumper)
-		{
-			switch(visionCase)
-			{
-			case 0:
-				AutonomousSequences.limelightClimber.center(0.075);
-				Drivetrain.setPercentOutput(-AutonomousSequences.limelightClimber.rightSpeed + mainController.leftJoyStickY, -AutonomousSequences.limelightClimber.leftSpeed + mainController.leftJoyStickY);
-				if(AutonomousSequences.limelightClimber.area > 6)
-						visionCase = 1;
-					break;
-				
-			case 1:
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-						
-			}
-			
-		}
-		else if(mainController.leftBumper)
-		{
-			new VictorSPX(1).set(ControlMode.PercentOutput, mainController.leftJoyStickY);
-		}
-		else 
-		{
-			visionCase = 0;
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro); 
-		}
-		// AirCompressor.runCompressor();
-
-		// Mop.retractMop();
-		// // Elevator.setOpenLoop(mainController.leftJoyStickY);
-		// // // System.out.println("Controller power: " +
-		// mainController.leftJoyStickY);
-		// // // System.out.println("Elevator power: " +
-		// Elevator.elevatorMaster.getMotorOutputPercent());
-		// // // System.out.println("Elevator voltage: " +
-		// Elevator.elevatorMaster.getMotorOutputVoltage());
-		// // // System.out.println("Elevator currnet: " +
-		// Elevator.elevatorMaster.getOutputCurrent());
-		// Elevator.elevatorMaster.enableCurrentLimit(true);
-		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX , mainController.leftJoyStickY, gyro);
-		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
-    	// BallShooter.intakeMotor.set(ControlMode.PercentOutput, -.4);
-		// Elevator.setOpenLoop(mainController.rightJoyStickY); 
 		// ShoppingCart.setShoppinCartEncoder();
+		ShoppingCart.runShoppingCartSPX(coController.leftJoyStickY);
+		// System.out.println("HELLO");
 		// ShoppingCart.printPosition();
-		// ShoppingCart.shoppingCartMotor.set(ControlMode.PercentOutput, mainController.leftJoyStic kY);
+		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY*.5);
+		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+		// if (Robot.mainController.leftTrigger > .1) {
+		// 	Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
+		// } else if (Robot.mainController.rightTrigger > .1) {
+		// 	Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
+		// } else {
+		// 	Elevator.setOpenLoop(0);
+		// }
+		// AirCompressor.runCompressor();
+		// Elevator.setElevatorEncoder();
+		// Elevator.printElevatorEncoders();
+		// System.out.println(Elevator.elevatorMaster.getSelectedSensorPosition(0));
+		// System.out.println(Elevator.elevatorEncoderValue);
+		// System.out.println("HELLO");
+		// System.out.println("left srx" + Drivetrain.leftSRX.getSelectedSensorPosition(0));
+		// System.out.println("right srx" + Drivetrain.rightSRX.getSelectedSensorPosition(0));
 	}
 
 	public void updateJoysticks()
@@ -275,6 +239,8 @@ public class Robot extends TimedRobot
 			AutonomousSequences.limelightFourBar.driverMode();
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
 		}
+
+
 	}
 	
 	

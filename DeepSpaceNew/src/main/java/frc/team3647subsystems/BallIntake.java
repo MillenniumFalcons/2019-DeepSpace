@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.*;
 public class BallIntake 
 {
 	public static Solenoid extensionCylinder = new Solenoid(Constants.ballIntakeSolinoidPin);
+	public static Solenoid extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
 	public static VictorSPX intakeMotor = new VictorSPX(Constants.ballMotorPin);
 	
 	public static void ballIntakeinitialization()
@@ -82,11 +83,13 @@ public class BallIntake
 	public static void extendIntake()
 	{
 		extensionCylinder.set(true);
+		extensionCylinder2.set(true);
 	}
 	
 	public static void retractIntake()
 	{
 		extensionCylinder.set(false);
+		extensionCylinder2.set(false);
 	}
 
 	public static void intakeCargo(double power)

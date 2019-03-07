@@ -197,7 +197,7 @@ public class ShoppingCart
     
     public static void printPosition()
 	{
-		System.out.println("Encoder Value: " + shoppingCartEncoderValue);
+		// System.out.println("Encoder Value: " + shoppingCartEncoderValue);
 	}
 
 	public static void stopWrist()

@@ -24,7 +24,8 @@ public class Elevator
 	// Elevator motors
     public static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
 	public static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
-    public static VictorSPX GearboxSPX2= new VictorSPX(Constants.ElevatorGearboxSPX2); //13
+	public static VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
+	public static VictorSPX GearBoxSPX3 = new VictorSPX(14);
 
 	public static int elevatorEncoderCCL, elevatorEncoderValue, elevatorEncoderVelocity;
 	
@@ -55,13 +56,14 @@ public class Elevator
         elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
 
         GearboxSPX2.follow(elevatorMaster);
-        GearboxSPX1.follow(elevatorMaster);
+		GearboxSPX1.follow(elevatorMaster);
+		GearBoxSPX3.follow(elevatorMaster);
 		GearboxSPX2.setInverted(false);
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
 
 		Elevator.elevatorMaster.enableCurrentLimit(true);
-		Elevator.elevatorMaster.configContinuousCurrentLimit(50);
+		Elevator.elevatorMaster.configContinuousCurrentLimit(35);
 
 		elevatorMaster.setNeutralMode(NeutralMode.Brake);
 		setEncoderValue(Constants.elevatorStartingStowed);
@@ -120,7 +122,7 @@ public class Elevator
 
 	public static void runElevator()
 	{
-		System.out.println("Elevator aimedPos " + aimedState);
+		// System.out.println("Elevator aimedPos " + aimedState);
 		setElevatorEncoder();
 		updateLivePosition();
 		if(aimedState != null)

@@ -42,6 +42,7 @@ public class Constants
 
 	// Solinoid Pins
 	public static final int ballIntakeSolinoidPin = 0;
+	public static final int ballIntakeSolinoidPin2 = 3;
 	// public static final int hatchIntakeSolinoidPin = 1;
 	public static final int hatchGrabberSolinoidPin = 2;
 	public static final int mopSolenoidPin = 1;
@@ -170,7 +171,7 @@ public class Constants
 	public static final int hatchIntakeScore = 1840;
 	public static final int hatchIntakeHandoff = 2000;
 
-	public static final int shoppingCartDeployed = 2260;
+	public static final int shoppingCartDeployed = 2428;
 
 	/************** AUTONOMOUS CONSTANTS ******************/
 
