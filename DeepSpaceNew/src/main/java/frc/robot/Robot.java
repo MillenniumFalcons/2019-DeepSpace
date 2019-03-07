@@ -109,26 +109,14 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopInit()
 	{
-		// BallIntake.ballIntakeinitialization(); 
-		Arm.armInitialization(); 
-		// Elevator.elevatorInitialization(); 
-		// SeriesStateMachine.seriesStateMachineInit(); 
-		// ShoppingCart.shoppingCartInit(); 
-		Drivetrain.drivetrainInitialization(); 
-
-		// teleopNotifier = new Notifier(() -> 
-    //     {
-		// 	Arm.armNEOFollow(); 
-		// }); 
-		// teleopNotifier.startPeriodic(.01); 
-
+		//RUN NOTHING
 	}
 
 	//Teleop Code
 	@Override
 	public void teleopPeriodic()
 	{
-		teleop();
+		driveVisionTeleop();
 		Arm.runArm();
 		if(SeriesStateMachine.climbMode)
 		{
@@ -138,8 +126,6 @@ public class Robot extends TimedRobot
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
-		Arm.printArmEncoders();
-		Elevator.printElevatorEncoders();
 	}
 
 	@Override

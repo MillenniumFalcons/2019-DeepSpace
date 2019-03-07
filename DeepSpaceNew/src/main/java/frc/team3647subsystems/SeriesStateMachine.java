@@ -77,17 +77,17 @@ public class SeriesStateMachine
         CARGOL2BACKWARDS,
         CARGOL3FORWARDS, // Move elevator first
         CARGOL3BACKWARDS, // move elevator first
-        HATCHHANDOFF, //ARM HIT
+        // HATCHHANDOFF, //ARM HIT
         CARGOHANDOFF, //ARM HIT, make sure cargo ground intake is deployed
         STOWED, //ARM HIT, Hatch intake is stowed
         VERTICALSTOWED, //ARM HIT
         REVLIMITSWITCH,
         FWDLIMITSWITCH,
         START,
-        HATCHINTAKEGROUND,
-        HATCHINTAKESCORE,
+        // HATCHINTAKEGROUND,
+        // HATCHINTAKESCORE,
         CARGOGROUNDINTAKE, 
-        HATCHINTAKESTOWED,
+        // HATCHINTAKESTOWED,
         BOTTOMSTART,
         CLIMB,
     }
@@ -243,8 +243,6 @@ public class SeriesStateMachine
             aimedRobotState = null;
             Arm.aimedState = ArmPosition.REVLIMITSWITCH;
         }
-
-           
             
         if(coController.leftJoyStickPress)
         {
@@ -322,9 +320,6 @@ public class SeriesStateMachine
                 case CARGOL3BACKWARDS:
                     cargoL3Backwards();
                     break;
-                case HATCHHANDOFF:
-                    // hatchHandoff();
-                    break;
                 case CARGOHANDOFF:
                     cargoHandoff();
                     break;
@@ -339,18 +334,9 @@ public class SeriesStateMachine
                     break;
                 case FWDLIMITSWITCH:
                     break;
-                case HATCHINTAKESCORE:
-                    groundHatchIntakeScore();
-                    break;
                 case CARGOGROUNDINTAKE:
                     extendCargoGroundIntake();
                     break;
-                // case HATCHINTAKEGROUND:
-                //     groundHatchIntakeDeploy();
-                //     break;
-                // case HATCHINTAKESTOWED:
-                //     groundHatchIntakeStowed();
-                //     break;
                 case CLIMB:
                     climbing();
                     break;
@@ -1159,31 +1145,31 @@ public class SeriesStateMachine
     //     }
     // }
 
-    public static void groundHatchIntakeScore()
-    {
-        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
-        {
-            case ARRIVED:
-                // ShoppingCart.aimedState = WristPosition.SCORE;  
-                break;
-            default:
-                stowed();
-                break;
-        }            
-    }
+    // public static void groundHatchIntakeScore()
+    // {
+    //     switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+    //     {
+    //         case ARRIVED:
+    //             // ShoppingCart.aimedState = WristPosition.SCORE;  
+    //             break;
+    //         default:
+    //             stowed();
+    //             break;
+    //     }            
+    // }
 
-    public static void groundHatchIntakeHandoff()
-    {
-        switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
-        {
-            case ARRIVED:
-                aimedRobotState = ScoringPosition.HATCHHANDOFF;  
-                break;
-            default:
-                stowed();                  
-                break;
-        }
-    }
+    // public static void groundHatchIntakeHandoff()
+    // {
+    //     switch(robotState.movementCheck(ScoringPosition.STOWED, stowed))
+    //     {
+    //         case ARRIVED:
+    //             aimedRobotState = ScoringPosition.HATCHHANDOFF;  
+    //             break;
+    //         default:
+    //             stowed();                  
+    //             break;
+    //     }
+    // }
 
     // private static void groundHatchIntakeStowed() 
     // {
@@ -1282,6 +1268,6 @@ public class SeriesStateMachine
 
     private static int possibleElevatorPosition(int armEncoder)
     {
-        return (int)(-0.00022417 * (armEncoder-3700) * (armEncoder-22600));
+        return (int)(-0.00022417 * (armEncoder - 3700) * (armEncoder - 22600));
     }
 }

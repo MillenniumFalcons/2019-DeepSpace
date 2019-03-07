@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.*;
 
 public class HatchGrabber
 {
-	public static Solenoid hatchCylinder = new Solenoid(Constants.hatchGrabberSolenoidPin);
+	public static Solenoid hatchCylinder = new Solenoid(Constants.hatchGrabberSolinoidPin);
     
     public static void runHatchGrabber(boolean joyvalue) 
 	{

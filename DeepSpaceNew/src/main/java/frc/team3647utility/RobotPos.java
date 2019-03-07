@@ -57,11 +57,11 @@ public class RobotPos
                         return Movement.MOVEARM;
                     else
                         return Movement.SAFEZMOVE;    
-                case HATCHHANDOFF:
-                    if(Arm.armEncoderValue > Constants.armSRXHatchHandoff)
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;                
+                // case HATCHHANDOFF:
+                //     if(Arm.armEncoderValue > Constants.armSRXHatchHandoff)
+                //         return Movement.MOVEARM;
+                //     else
+                //         return Movement.SAFEZMOVE;                
                 case CARGOHANDOFF:
                     if(threshold(Constants.armSRXCargoHandoff, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
