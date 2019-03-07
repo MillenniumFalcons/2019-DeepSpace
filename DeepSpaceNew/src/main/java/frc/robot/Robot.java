@@ -110,11 +110,11 @@ public class Robot extends TimedRobot
 	public void teleopInit()
 	{
 		// BallIntake.ballIntakeinitialization(); 
-		// Arm.armInitialization(); 
+		Arm.armInitialization(); 
 		// Elevator.elevatorInitialization(); 
 		// SeriesStateMachine.seriesStateMachineInit(); 
 		// ShoppingCart.shoppingCartInit(); 
-		// Drivetrain.drivetrainInitialization(); 
+		Drivetrain.drivetrainInitialization(); 
 
 		// teleopNotifier = new Notifier(() -> 
     //     {
@@ -216,7 +216,7 @@ public class Robot extends TimedRobot
 		coController.setMainContollerValues();
 	}
 	
-	public void teleop()
+	public void driveVisionTeleop()
 	{
 		if (Elevator.elevatorEncoderValue > 27000) 
 		{
@@ -295,7 +295,7 @@ public class Robot extends TimedRobot
 		camTwo.driverFlipped();
 		if (mainController.rightBumper) 
 		{
-			camOne.rightMost();
+			camOne.leftMost();
 			switch(visionCase)
 			{
 			case 0:
@@ -312,7 +312,7 @@ public class Robot extends TimedRobot
 		} 
 		else if (mainController.leftBumper) 
 		{
-			camOne.leftMost();
+			camOne.rightMost();
 			switch(visionCase)
 			{
 			case 0:

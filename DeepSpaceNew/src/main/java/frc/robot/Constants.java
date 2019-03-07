@@ -99,7 +99,7 @@ public class Constants
 	public static final double[] leftVelocityPIDF = { 5, 0, 50, 0.26 };
 	public static final double[] rightVelocityPIDF = { 5, 0, 50, 0.26 };
 
-	public static final double[] limelightPID = { 1, 0, 10 };
+	public static final double[] limelightPID = { .75, 0, 3.1 };
 
 	public static final double velocityConstant = 4200; // Explanation for velocityConstant
 
