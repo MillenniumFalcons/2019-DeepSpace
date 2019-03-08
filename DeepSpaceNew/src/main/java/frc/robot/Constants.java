@@ -23,7 +23,7 @@ public class Constants
 
 	// Hatch Intake Motor Pins
 	public static final int shoppingCartMotorPin = 3;
-	public static final int shoppinCartSPXPin = 1;
+	public static final int shoppingCartSPXPin = 1;
 
 	// Ball Intake
 	public static final int ballMotorPin = 2;

@@ -254,13 +254,13 @@ public class SeriesStateMachine
             aimedRobotState = ScoringPosition.STOWED;
         }
 
-        if(mainController.buttonX)
-        {
-            Elevator.aimedState = null;
-            Arm.aimedState = null;
-            climbMode = true;
-            aimedRobotState = ScoringPosition.CLIMB;
-        }
+        // if(mainController.buttonX)
+        // {
+        //     Elevator.aimedState = null;
+        //     Arm.aimedState = null;
+        //     climbMode = true;
+        //     aimedRobotState = ScoringPosition.CLIMB;
+        // }
     }
     
     public static void runSeriesStateMachine()

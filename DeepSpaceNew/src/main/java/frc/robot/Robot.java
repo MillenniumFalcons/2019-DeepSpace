@@ -96,7 +96,7 @@ public class Robot extends TimedRobot
 		Arm.armInitialization(); 
 		Elevator.elevatorInitialization(); 
 		SeriesStateMachine.seriesStateMachineInit(); 
-		ShoppingCart.shoppingCartInit(); 
+		// ShoppingCart.shoppingCartInit(); 
 		Drivetrain.drivetrainInitialization(); 
 
 		teleopNotifier = new Notifier(() -> 
@@ -125,16 +125,16 @@ public class Robot extends TimedRobot
 	{
 		driveVisionTeleop();
 		Arm.runArm();
-		if(SeriesStateMachine.climbMode)
-		{
-			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
-			if(mainController.buttonB)
-				ShoppingCart.aimedState = ShoppingCartPosition.MIDDLE;
-		}
-
-		ShoppingCart.runShoppingCart();
+		// if(SeriesStateMachine.climbMode)
+		// {
+		// 	ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
+		// 	if(mainController.buttonB)
+		// 		ShoppingCart.aimedState = ShoppingCartPosition.MIDDLE;
+		// }
+		
+		// ShoppingCart.runShoppingCart();
 		Elevator.runElevator(); 
-		HatchGrabber.runHatchGrabber(coController.rightBumper); 
+		HatchGrabber.runHatchGrabber(mainController, coController);
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
 	}
@@ -179,27 +179,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void testPeriodic()
 	{
-		// ShoppingCart.setShoppinCartEncoder();
-		// ShoppingCart.runShoppingCartSPX(coController.leftJoyStickY);
-		// System.out.println("HELLO");
-		// ShoppingCart.printPosition();
-		// ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY*.5);
-		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-		// if (Robot.mainController.leftTrigger > .1) {
-		// 	Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
-		// } else if (Robot.mainController.rightTrigger > .1) {
-		// 	Elevator.setOpenLoop(-Robot.mainController.rightTrigger);
-		// } else {
-		// 	Elevator.setOpenLoop(0);
-		// }
-		AirCompressor.runCompressor();
-		// Elevator.setElevatorEncoder();
-		// Elevator.printElevatorEncoders();
-		// System.out.println(Elevator.elevatorMaster.getSelectedSensorPosition(0));
-		// System.out.println(Elevator.elevatorEncoderValue);
-		// System.out.println("HELLO");
-		// System.out.println("left srx" + Drivetrain.leftSRX.getSelectedSensorPosition(0));
-		// System.out.println("right srx" + Drivetrain.rightSRX.getSelectedSensorPosition(0));
+		HatchGrabber.runHatchGrabber(mainController, coController);
 	}
 
 	public void updateJoysticks()

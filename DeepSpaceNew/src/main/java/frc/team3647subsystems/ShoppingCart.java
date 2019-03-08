@@ -20,7 +20,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class ShoppingCart 
 {
 	public static WPI_TalonSRX shoppingCartMotor = new WPI_TalonSRX(Constants.shoppingCartMotorPin);
-	private static VictorSPX shoppingCartSPX = new VictorSPX(Constants.shoppinCartSPXPin); // motor for shopping cart wheels
+	private static VictorSPX shoppingCartSPX = new VictorSPX(Constants.shoppingCartSPXPin); // motor for shopping cart wheels
     public static ShoppingCartPosition currentState, aimedState;
     public static int shoppingCartEncoderCCL, shoppingCartEncoderValue, shoppingCartEncoderVelocity;
 	public static double overrideValue;
