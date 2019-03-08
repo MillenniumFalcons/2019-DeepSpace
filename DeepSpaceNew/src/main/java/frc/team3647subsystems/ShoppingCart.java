@@ -67,7 +67,8 @@ public class ShoppingCart
 	{
 		STOWED,
 		DEPLOYED,
-		MANUAL
+		MANUAL,
+		MIDDLE
     }
 
     public static void runShoppingCart()
@@ -87,7 +88,10 @@ public class ShoppingCart
                     break;
                 case STOWED:
                     moveToStowed();
-                    break;
+					break;
+				case MIDDLE:
+					setPosition(1000);
+					break;
             }
         }
     }

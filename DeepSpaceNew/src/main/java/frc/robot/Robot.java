@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences; 
 import frc.team3647autonomous.Odometry; 
 import frc.team3647inputs. * ; 
-import frc.team3647subsystems. * ; 
+import frc.team3647subsystems. * ;
+import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition; 
 
 public class Robot extends TimedRobot 
 {
@@ -124,11 +125,14 @@ public class Robot extends TimedRobot
 	{
 		driveVisionTeleop();
 		Arm.runArm();
-		ShoppingCart.setShoppinCartEncoder();
 		if(SeriesStateMachine.climbMode)
 		{
 			ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
+			if(mainController.buttonB)
+				ShoppingCart.aimedState = ShoppingCartPosition.MIDDLE;
 		}
+
+		ShoppingCart.runShoppingCart();
 		Elevator.runElevator(); 
 		HatchGrabber.runHatchGrabber(coController.rightBumper); 
 		SeriesStateMachine.setControllers(mainController, coController); 
