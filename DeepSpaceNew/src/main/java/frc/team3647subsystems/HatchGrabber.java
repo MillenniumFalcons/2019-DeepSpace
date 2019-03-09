@@ -12,6 +12,7 @@ public class HatchGrabber
 {
 	public static Solenoid hatchCylinder = new Solenoid(Constants.hatchGrabberSolinoidPin);
 	public static VictorSPX hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
+	// public static PowerDistributionPanel pdp = new PowerDistributionPanel();
     
     // public static void runHatchGrabber(Joystick joystick) 
 	// {
@@ -21,21 +22,21 @@ public class HatchGrabber
 	// 		grabHatch();
 	// }
 	
-	public static void runHatchGrabber(Joysticks mainController, Joysticks coController)
+	public static void runHatchGrabber(Joysticks coController)
 	{
-		if(mainController.leftTrigger > .3 || coController.rightBumper)
+		if(coController.rightBumper)
 			grabHatch();
-		else if(mainController.rightTrigger > .3)
+		else if(coController.leftBumper)
 			releaseHatch();
 		else
-			stopMotor();
+			runConstant();
 
 		
 	}
 	public static void grabHatch()
 	{
 		// hatchCylinder.set(false);
-		hatchSucker.set(ControlMode.PercentOutput, 1);
+		hatchSucker.set(ControlMode.PercentOutput, .5);
 	}
 	
 	public static void releaseHatch()
@@ -43,6 +44,10 @@ public class HatchGrabber
 		hatchSucker.set(ControlMode.PercentOutput, -1);
 	}
 
+	public static void runConstant()
+	{
+		hatchSucker.set(ControlMode.PercentOutput, .23);
+	}
 	public static void stopMotor()
 	{
 		hatchSucker.set(ControlMode.PercentOutput, 0);

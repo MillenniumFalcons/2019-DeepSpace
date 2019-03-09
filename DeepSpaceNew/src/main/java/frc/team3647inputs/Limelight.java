@@ -36,7 +36,7 @@ public class Limelight
 
     public void setToDriver()
     {
-        table.getEntry("camMode").setNumber(0);
+        table.getEntry("pipeline").setNumber(1);
     }
     
     public void setToNormalVision()

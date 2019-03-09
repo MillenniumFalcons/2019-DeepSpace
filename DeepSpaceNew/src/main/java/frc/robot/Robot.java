@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -53,10 +54,17 @@ public class Robot extends TimedRobot
 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
 		autoTimer = new Timer();
+		// CameraServer.getInstance().startAutomaticCapture(0).setVideoMode(PixelFormat.kBGR, 320, 240, 15); //USB Cam One
 		CameraServer.getInstance().startAutomaticCapture(0); //USB Cam One
+		// CameraServer.getInstance().startAutomaticCapture(1).setVideoMode(PixelFormat.kBGR, 320, 240, 15); //USB Cam Two
 		CameraServer.getInstance().startAutomaticCapture(1); //USB Cam Two
 		
 		matchTimer.reset();
+
+		teleopNotifier = new Notifier(() -> {
+			Arm.armNEOFollow();
+		});
+		teleopNotifier.startPeriodic(.01);
 	}
 
 	@Override
@@ -99,11 +107,11 @@ public class Robot extends TimedRobot
 		// ShoppingCart.shoppingCartInit(); 
 		Drivetrain.drivetrainInitialization(); 
 
-		teleopNotifier = new Notifier(() -> 
-    	{
-			Arm.armNEOFollow(); 
-		}); 
-		teleopNotifier.startPeriodic(.01);
+		// teleopNotifier = new Notifier(() -> 
+    	// {
+		// 	Arm.armNEOFollow(); 
+		// }); 
+		// teleopNotifier.startPeriodic(.01);
 	}
 
 
@@ -117,12 +125,27 @@ public class Robot extends TimedRobot
 	public void teleopInit()
 	{
 		//RUN NOTHING
+
+		Arm.armInitSensors();
+		SeriesStateMachine.initializeTeleop();
+		Drivetrain.drivetrainInitialization();
+		Elevator.elevatorTeleopInit();
+		AirCompressor.runCompressor();
+		BallIntake.ballIntakeinitialization();
+
+		
+
 	}
 
 	//Teleop Code
 	@Override
 	public void teleopPeriodic()
 	{
+		if(matchTimer.get() == 148)
+		{
+			Shuffleboard.stopRecording();
+			matchTimer.stop();
+		}
 		driveVisionTeleop();
 		Arm.runArm();
 		// if(SeriesStateMachine.climbMode)
@@ -134,7 +157,7 @@ public class Robot extends TimedRobot
 		
 		// ShoppingCart.runShoppingCart();
 		Elevator.runElevator(); 
-		HatchGrabber.runHatchGrabber(mainController, coController);
+		HatchGrabber.runHatchGrabber(coController);
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
 	}
@@ -142,9 +165,6 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledInit()
 	{
-		Shuffleboard.stopRecording();
-		matchTimer.stop();
-		matchTimer.reset();
 		// Arm.disableArm();
 		// Drivetrain.setToCoast();
 		// Odometry.getInstance().closeOdoThread();
@@ -155,8 +175,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		AutonomousSequences.limelightClimber.rightMost();
-		AutonomousSequences.limelightFourBar.rightMost();
+		// AutonomousSequences.limelightClimber.rightMost();
+		// AutonomousSequences.limelightFourBar.rightMost();
 
 		// Arm.armNEO.setIdleMode(IdleMode.kBrake);
 		// Drivetrain.setToCoast();
@@ -173,13 +193,24 @@ public class Robot extends TimedRobot
 		// Drivetrain.drivetrainInitialization();
 		// Elevator.elevatorInitialization();
 		// Drivetrain.drivetrainInitialization();
+		// Arm.armInitialization();
 	}
 
 
 	@Override
 	public void testPeriodic()
 	{
-		HatchGrabber.runHatchGrabber(mainController, coController);
+		// HatchGrabber.runHatchGrabber(coController);
+		// driveVisionTeleop();
+		// try
+		// {
+		// 	System.out.println("Arm fwd limit switch : " + Arm.getFwdLimitSwitch());
+		// }	
+		// catch(Exception e)
+		// {
+		// 	System.out.println(e.toString());
+		// }
+			HatchGrabber.runConstant();
 	}
 
 	public void updateJoysticks()
@@ -194,13 +225,19 @@ public class Robot extends TimedRobot
 		{
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
 		} 
-		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed) //Hatch intake above fourbar
+		else if(BallShooter.cargoDetection())
+		{
+			AutonomousSequences.limelightClimber.driverMode();
+			AutonomousSequences.limelightFourBar.driverMode();
+			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+		}
+		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed && !BallShooter.cargoDetection()) //Hatch intake above fourbar
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
 			teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, .075);
 
 		} 
-		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)//Hatch intake above climber
+		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed && !BallShooter.cargoDetection())//Hatch intake above climber
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
 			teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, .075);
@@ -215,7 +252,7 @@ public class Robot extends TimedRobot
 
 	}
 	
-	
+	double targetTA = 4.65;
 	int visionCase = 0;
 	public void teleopVisionForward(VisionController camOne, VisionController camTwo, double threshold) //.075
 	{
@@ -229,7 +266,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(camOne.leftSpeed + joyY, camOne.rightSpeed + joyY);
-				if (camOne.area > 6)
+				if (camOne.area > targetTA)
 					visionCase = 1;
 				break;
 
@@ -245,7 +282,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(camOne.leftSpeed + joyY, camOne.rightSpeed + joyY);
-				if (camOne.area > 6)
+				if (camOne.area > targetTA)
 					visionCase = 1;
 				break;
 
@@ -273,7 +310,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(-camOne.rightSpeed + joyY, -camOne.leftSpeed + joyY);
-				if(camOne.area > 6)
+				if(camOne.area > targetTA)
 						visionCase = 1;
 					break;
 				
@@ -290,7 +327,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(-camOne.rightSpeed + joyY, -camOne.leftSpeed + joyY);
-				if(camOne.area > 6)
+				if(camOne.area > targetTA)
 						visionCase = 1;
 					break;
 				

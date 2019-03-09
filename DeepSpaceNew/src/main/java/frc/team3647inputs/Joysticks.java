@@ -51,7 +51,7 @@ public class Joysticks
 		leftJoyStickX 	= 	Math.pow(joystickThreshold(controller.getRawAxis(0)),1);
 		leftJoyStickY 	= Math.pow(joystickThreshold(-controller.getRawAxis(1)), 1);
 		rightJoyStickX 	= Math.pow(joystickThreshold(controller.getRawAxis(4)), 1);
-		rightJoyStickY 	= Math.pow(joystickThreshold(-controller.getRawAxis(5)), 1);
+		rightJoyStickY 	= Math.pow(joystickThreshold(-controller.getRawAxis(5)), 1); //
 		rightJoyStickPress = controller.getRawButton(8);
 		leftJoyStickPress = controller.getRawButton(9);
 		dPadValue = dPad.getPOV();

@@ -31,7 +31,7 @@ public class Arm
 	static Notifier followerThread;
 	
     public static void armInitialization()
-    {	
+	{
 		currentState = null;
 		aimedState = null;
 		lastState = null;
@@ -44,6 +44,39 @@ public class Arm
 		armNEO.setIdleMode(IdleMode.kBrake);
 		armNEO.enableVoltageCompensation(12);//max voltage of 12v to scale output better
 
+		// Reverse and forward limit switch from the NEO
+		revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+		fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
+		// PID for motors
+		armSRX.selectProfileSlot(Constants.armPID, 0);
+		armSRX.config_kP(Constants.armPID, Constants.armPIDF[0], Constants.kTimeoutMs);
+		armSRX.config_kI(Constants.armPID, Constants.armPIDF[1], Constants.kTimeoutMs);
+		armSRX.config_kD(Constants.armPID, Constants.armPIDF[2], Constants.kTimeoutMs);
+		armSRX.config_kF(Constants.armPID, Constants.armPIDF[3], Constants.kTimeoutMs);
+		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);
+		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
+
+		// // The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
+		// followerThread = new Notifier(()->
+		// {
+		// 	//armNEO.set(armSRX.getMotorOutputPercent()); //set straight %output
+		// 	armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
+		// });
+		// // Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
+		// followerThread.startPeriodic(0.01);
+		// armEncoderValue = 11000;
+	}
+	
+	public static void armInitSensors()
+	{
+		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		armSRX.setSensorPhase(true);
+		armSRX.setInverted(false);
+
+		armNEO.restoreFactoryDefaults();
+		armNEO.setIdleMode(IdleMode.kBrake);
+		armNEO.enableVoltageCompensation(12);//max voltage of 12v to scale output better
 
 		// Reverse and forward limit switch from the NEO
 		revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
@@ -55,18 +88,8 @@ public class Arm
 		armSRX.config_kI(Constants.armPID, Constants.armPIDF[1], Constants.kTimeoutMs);
 		armSRX.config_kD(Constants.armPID, Constants.armPIDF[2], Constants.kTimeoutMs);
 		armSRX.config_kF(Constants.armPID, Constants.armPIDF[3], Constants.kTimeoutMs);
-		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);	
+		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);
 		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
-
-		// // The NEO takes the Motor-output in percent from the SRX and since SRX values are using motion-magic, it "follows" the SRX
-		// followerThread = new Notifier(()->
-		// {
-		// 	//armNEO.set(armSRX.getMotorOutputPercent()); //set straight %output
-		// 	armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
-		// });
-		// // Thread runs at 10ms, so setting and getting output from SRX, has no latency with PID values
-		// followerThread.startPeriodic(0.01);
-		armEncoderValue = 11000;
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)

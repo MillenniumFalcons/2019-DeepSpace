@@ -89,6 +89,8 @@ public class VisionController
 		}
 	}
 
+	
+
 	private void centerAlgorithm(double error, double kp, double ki, double kd) 
 	{
 		updateInputs();
@@ -99,10 +101,10 @@ public class VisionController
 																			// a.k.a. actual speed output
 		speed = output;
 
-		if (speed > 0 && speed < .25) // Speed threshold if in between 0 and .25, set speed to .25
-			speed = 0.25;
-		else if (speed < 0 && speed > -.25) // Speed threshold if in between -.25 and 0, set speed to -.25
-			speed = -0.25;
+		if (speed > 0 && speed < .2) // Speed threshold if in between 0 and .25, set speed to .25
+			speed = 0.2;
+		else if (speed < 0 && speed > -.2) // Speed threshold if in between -.25 and 0, set speed to -.25
+			speed = -0.2;
 		else if (speed > 1) // Speed threshold if greater than 1, set speed to 1
 			speed = 1;
 		else if (speed < -1) // Speed threshold if less than -1, set speed to -1
