@@ -254,7 +254,7 @@ public class SeriesStateMachine
                 //System.out.println("Going to cargoHandoff");
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
             }
-        }
+        } 
         else
         {
             arrivedAtMidPos = false;
