@@ -182,7 +182,6 @@ public class Drivetrain
 
 	public static void setAutoVelocity(double leftDriveSignal, double rightDriveSignal)
 	{
-		selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		rightSRX.set(ControlMode.Velocity, rightDriveSignal);
 		leftSRX.set(ControlMode.Velocity, leftDriveSignal);
 	}
