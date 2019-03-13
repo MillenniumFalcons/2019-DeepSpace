@@ -53,6 +53,7 @@ public class AutonomousSequences
 		switch (autoStep) 
 		{
 		case 0:
+			Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 			autoStep = 1;
 		case 1:
 			limelightFourBar.disabledMode();
