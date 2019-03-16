@@ -116,8 +116,8 @@ public class RamseteFollower
             double desiredLinearVelocity, double desiredAngularVelocity) 
     {
         // System.out.println("DesiredLinearVelocity: " + desiredLinearVelocity);
-        System.out.println("Desired X: " + desiredX);
-        System.out.println("Actual X : " + odometry.getX());
+        // System.out.println("Desired X: " + desiredX);
+        // System.out.println("Actual X : " + odometry.getX());
         // System.out.println("thetaError: " + thetaError);
         k = calculateK(desiredLinearVelocity, desiredAngularVelocity);
 
@@ -126,7 +126,7 @@ public class RamseteFollower
         odometryError = (Math.cos(odometry.getTheta()) * (desiredX - odometry.getX()))
                 + (Math.sin(odometry.getTheta()) * (desiredY - odometry.getY()));
 
-        System.out.println("k * odometryError: " + (k * odometryError));
+        System.out.println("odometryError: " + (odometryError));
 
         return (desiredLinearVelocity * Math.cos(thetaError)) + (k * odometryError);
     }

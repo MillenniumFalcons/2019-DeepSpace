@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -42,8 +41,6 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit()
 	{
-		AutonomousSequences.limelightClimber.limelight.setToDriver();
-		AutonomousSequences.limelightFourBar.limelight.setToDriver();
 		Shuffleboard.setRecordingFileNameFormat("San Diego Regional - ");
 		matchTimer = new Timer();
 		mainController = new Joysticks(0); 
@@ -56,16 +53,10 @@ public class Robot extends TimedRobot
 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
 		autoTimer = new Timer();
-		// CameraServer.getInstance().startAutomaticCapture().setVideoMode(PixelFormat.kMJPEG, 160, 120, 15); //USB Cam One
-		// CameraServer.getInstance().startAutomaticCapture(); //USB Cam One
-		// CameraServer.getInstance().startAutomaticCapture().close();
+		// CameraServer.getInstance().startAutomaticCapture(0); //USB Cam One
+		// CameraServer.getInstance().startAutomaticCapture(1); //USB Cam Two
 		
 		matchTimer.reset();
-
-		teleopNotifier = new Notifier(() -> {
-			Arm.armNEOFollow();
-		});
-		teleopNotifier.startPeriodic(.01);
 	}
 
 	@Override
@@ -82,71 +73,67 @@ public class Robot extends TimedRobot
 	{
 		// The NEO takes the Motor-output in percent from the SRX and since SRX
 		// values are using motion-magic, it "follows" the SRX
-		// AutonomousSequences.autoInit("Level2RightToCargoRight"); 
+		Drivetrain.drivetrainInitialization();
+		AutonomousSequences.autoInitFWD("TestPath");
 		// autoTimer.reset(); 
 		// autoTimer.start(); 
-		// autoNotifier = new Notifier(() ->
-		// {
-		// 	Arm.armNEOFollow();
-		// 	Odometry.getInstance().runOdometry();
-		// });
-		// autoNotifier.startPeriodic(0.01);
+		
 
-		Shuffleboard.startRecording();
-		matchTimer.reset();
-		matchTimer.start();
+		// Shuffleboard.startRecording();
+		// matchTimer.reset();
+		// matchTimer.start();
 
 		gyro.resetAngle(); 
-		Drivetrain.drivetrainInitialization(); 
 		Drivetrain.resetEncoders(); 
-		AirCompressor.runCompressor(); 
+		// AirCompressor.runCompressor();
 
-		BallIntake.ballIntakeinitialization(); 
-		Arm.armInitialization(); 
-		Elevator.elevatorInitialization(); 
-		SeriesStateMachine.seriesStateMachineInit(); 
-		// ShoppingCart.shoppingCartInit(); 
-		Drivetrain.drivetrainInitialization(); 
+		// BallIntake.ballIntakeinitialization(); 
+		// Arm.armInitialization(); 
+		// Elevator.elevatorInitialization(); 
+		// SeriesStateMachine.seriesStateMachineInit(); 
+		// // ShoppingCart.shoppingCartInit(); 
+		// Drivetrain.drivetrainInitialization(); 
+
+		autoNotifier = new Notifier(() ->
+		{
+			// Arm.armNEOFollow();
+			Odometry.getInstance().runOdometry();
+		});
+		autoNotifier.startPeriodic(0.01);
 
 		// teleopNotifier = new Notifier(() -> 
     	// {
 		// 	Arm.armNEOFollow(); 
 		// }); 
 		// teleopNotifier.startPeriodic(.01);
+		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+
 	}
 
 
 	@Override
 	public void autonomousPeriodic()
 	{
-		teleopPeriodic();
+		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		// AutonomousSequences.fwdBwd("RocketToStation");
+		AutonomousSequences.runPath();
+		Drivetrain.printVelocity();
+		System.out.println("Desired Left Vel: " + AutonomousSequences.leftSpeed);
+		System.out.println("Desired Right Vel: " + AutonomousSequences.rightSpeed);
+		
+		// teleopPeriodic();
 	}
 
 	@Override
 	public void teleopInit()
 	{
 		//RUN NOTHING
-
-		Arm.armInitSensors();
-		SeriesStateMachine.initializeTeleop();
-		Drivetrain.drivetrainInitialization();
-		Elevator.elevatorTeleopInit();
-		AirCompressor.runCompressor();
-		BallIntake.ballIntakeinitialization();
-
-		
-
 	}
 
 	//Teleop Code
 	@Override
 	public void teleopPeriodic()
 	{
-		if(matchTimer.get() == 148)
-		{
-			Shuffleboard.stopRecording();
-			matchTimer.stop();
-		}
 		driveVisionTeleop();
 		Arm.runArm();
 		// if(SeriesStateMachine.climbMode)
@@ -166,6 +153,9 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledInit()
 	{
+		Shuffleboard.stopRecording();
+		matchTimer.stop();
+		matchTimer.reset();
 		// Arm.disableArm();
 		// Drivetrain.setToCoast();
 		// Odometry.getInstance().closeOdoThread();
@@ -176,8 +166,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		// AutonomousSequences.limelightClimber.rightMost();
-		// AutonomousSequences.limelightFourBar.rightMost();
+		AutonomousSequences.limelightClimber.rightMost();
+		AutonomousSequences.limelightFourBar.rightMost();
 
 		// Arm.armNEO.setIdleMode(IdleMode.kBrake);
 		// Drivetrain.setToCoast();
@@ -193,25 +183,52 @@ public class Robot extends TimedRobot
 		// ShoppingCart.shoppingCartInit();
 		// Drivetrain.drivetrainInitialization();
 		// Elevator.elevatorInitialization();
-		// Drivetrain.drivetrainInitialization();
-		// Arm.armInitialization();
+		Drivetrain.drivetrainInitialization();
+		Drivetrain.resetEncoders();
+		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 	}
 
 
 	@Override
 	public void testPeriodic()
 	{
-		// HatchGrabber.runHatchGrabber(coController);
-		// driveVisionTeleop();
-		// try
+		// if(mainController.buttonA)
 		// {
-		// 	System.out.println("Arm fwd limit switch : " + Arm.getFwdLimitSwitch());
-		// }	
-		// catch(Exception e)
-		// {
-		// 	System.out.println(e.toString());
+		// 	Drivetrain.setVelocity(mainController.rightJoyStickX, -mainController.rightJoyStickX);
+		// 	gyro.resetAngle();
+		// 	Drivetrain.resetEncoders();
 		// }
-			HatchGrabber.runConstant();
+		// else
+		// 	Drivetrain.setVelocity(mainController.leftJoyStickY, mainController.leftJoyStickY);
+
+		// Drivetrain.printVelError();
+
+		// if(mainController.buttonY)
+		// {
+		// 	Drivetrain.leftSRX.set(ControlMode.Velocity, 3000);
+		// 	Drivetrain.rightSRX.set(ControlMode.Velocity, 3000);
+		// }
+		// else if(mainController.buttonA)
+		// {
+		// 	Drivetrain.leftSRX.set(ControlMode.Velocity, -600);
+		// 	Drivetrain.rightSRX.set(ControlMode.Velocity, -600);
+		// }
+		// else
+		// {
+		// 	Drivetrain.stop();
+		// }
+
+		// Drivetrain.printVelocity();
+
+		// HatchGrabber.runHatchGrabber(coController);
+		// Drivetrain.printEncoders();
+		// gyro.printAngles();
+		// if(Drivetrain.rightSRX.getSelectedSensorPosition(0) != 0)
+			// System.out.println(Drivetrain.leftSRX.getSelectedSensorPosition(0) / Drivetrain.rightSRX.getSelectedSensorPosition(0));
+		// Drivetrain.printAccel();
+		
+		Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+		// Drivetrain.setVelocity(mainController.leftJoyStickY, mainController.leftJoyStickY);
 	}
 
 	public void updateJoysticks()
@@ -225,64 +242,29 @@ public class Robot extends TimedRobot
 		if (Elevator.elevatorEncoderValue > 27000) 
 		{
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
-			if (Arm.armEncoderValue > Constants.armSRXVerticalStowed && !BallShooter.cargoDetection()) //Hatch intake above fourbar
-			{
-				SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
-
-				// teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, .075);
-
-			} 
-			else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed && !BallShooter.cargoDetection())//Hatch intake above climber
-			{
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
-				SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
-				// teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, .075);
-			}
-			else if(BallShooter.cargoDetection())
-			{
-				// AutonomousSequences.limelightClimber.driverMode();
-				// AutonomousSequences.limelightFourBar.driverMode();
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-			}
-			else
-			{
-				// AutonomousSequences.limelightClimber.driverMode();
-				// AutonomousSequences.limelightFourBar.driverMode();
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-			}
 		} 
-		else if(BallShooter.cargoDetection())
+		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed) //Hatch intake above fourbar
 		{
-			// AutonomousSequences.limelightClimber.driverMode();
-			// AutonomousSequences.limelightFourBar.driverMode();
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-		}
-		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed && !BallShooter.cargoDetection()) //Hatch intake above fourbar
-		{
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
-
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
-			// teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, .075);
+			teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, .075);
 
 		} 
-		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed && !BallShooter.cargoDetection())//Hatch intake above climber
-		{
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
+		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)//Hatch intake above climber
+ 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
-			// teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, .075);
+			teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, .075);
 		} 
 		else 
 		{
-			// AutonomousSequences.limelightClimber.driverMode();
-			// AutonomousSequences.limelightFourBar.driverMode();
+			AutonomousSequences.limelightClimber.driverMode();
+			AutonomousSequences.limelightFourBar.driverMode();
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
 		}
 
 
 	}
 	
-	double targetTA = 5.00;
+	
 	int visionCase = 0;
 	public void teleopVisionForward(VisionController camOne, VisionController camTwo, double threshold) //.075
 	{
@@ -296,7 +278,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(camOne.leftSpeed + joyY, camOne.rightSpeed + joyY);
-				if (camOne.area > targetTA)
+				if (camOne.area > 6)
 					visionCase = 1;
 				break;
 
@@ -312,7 +294,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(camOne.leftSpeed + joyY, camOne.rightSpeed + joyY);
-				if (camOne.area > targetTA)
+				if (camOne.area > 6)
 					visionCase = 1;
 				break;
 
@@ -340,7 +322,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(-camOne.rightSpeed + joyY, -camOne.leftSpeed + joyY);
-				if(camOne.area > targetTA)
+				if(camOne.area > 6)
 						visionCase = 1;
 					break;
 				
@@ -357,7 +339,7 @@ public class Robot extends TimedRobot
 			case 0:
 				camOne.center(threshold);
 				Drivetrain.setPercentOutput(-camOne.rightSpeed + joyY, -camOne.leftSpeed + joyY);
-				if(camOne.area > targetTA)
+				if(camOne.area > 6)
 						visionCase = 1;
 					break;
 				

@@ -1,6 +1,7 @@
 package frc.team3647autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
@@ -28,23 +29,86 @@ public class AutonomousSequences
 	public static double leftSpeed;
 	public static double rightSpeed;
 	private static Timer autoTimer;
+	private static int i = 0;
 
-	public static void autoInit(String trajectoryName) 
+	public static void autoInitFWD(String trajectoryName) 
 	{
+		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 		Odometry.getInstance().setInitialOdometry(trajectory);
 		Odometry.getInstance().odometryInit();
-		autoTimer = new Timer();
+		// autoTimer = new Timer();
+		// i = 0;
+	}
+
+	public static void autoInitBWD(String trajectoryName) 
+	{
+		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		driveSignal = new DriveSignal();
+		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
+		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
+		Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
+		Odometry.getInstance().odometryInit();
+		// autoTimer = new Timer();
+		// i = 0;
 	}
 
 	public static void ramsetePeriodic() 
 	{
 		driveSignal = ramseteFollower.getNextDriveSignal();
+
 		current = ramseteFollower.currentSegment();
 		rightSpeed = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
 		leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
+		// i++;
+	}
+
+	public static void runPath()
+	{
+		ramsetePeriodic();
+		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
+		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+	}
+
+	public static void fwdBwd(String bwdPath)
+	{
+		switch (autoStep) 
+		{
+			case 0:
+				Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+				autoStep = 1;
+				break;
+			case 1:
+				// limelightFourBar.disabledMode();
+				ramsetePeriodic();
+				Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+				System.out.println("Ramsete Running: " + !ramseteFollower.isFinished());
+				if (ramseteFollower.isFinished())
+					autoStep = 2;
+				break;
+			case 2:
+				autoInitBWD(bwdPath);
+				Robot.gyro.resetAngle();
+				Drivetrain.resetEncoders();
+				autoStep = 4;
+				break;
+			case 4:
+				ramsetePeriodic();
+				Drivetrain.setAutoVelocity(rightSpeed, leftSpeed);
+				System.out.println("Ramsete Running: " + !ramseteFollower.isFinished());
+				if (ramseteFollower.isFinished())
+					autoStep = 5;
+				break;
+			case 5:
+				Drivetrain.stop();
+				System.out.println("Finished");
+				break;
+			default:
+				Drivetrain.stop();
+				break;
+		}
 	}
 
 	public static void level2RightToCargoShipRight() 

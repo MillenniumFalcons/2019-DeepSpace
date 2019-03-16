@@ -92,16 +92,16 @@ public class Constants
 	public static final int velocitySlotIdx = 1;
 
 	// Left and Right Drivetrain Percent PIDF Values (in that order)
-	public static final double[] leftPercentPIDF = { 0.1, 0, 0.1, 0 };
-	public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
+	// public static final double[] leftPercentPIDF = { 0.1, 0, 0.1, 0 };
+	// public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF = { 5, 0, 50, 0.26 };
-	public static final double[] rightVelocityPIDF = { 5, 0, 50, 0.26 };
+	public static final double[] leftVelocityPIDF = { 0.341 * 1.05, 0, 0, .281417 }; // .281417
+	public static final double[] rightVelocityPIDF = { 0.341, 0, 0, .281417 };
 
 	public static final double[] limelightPID = { .80, 0, 3.2 };
 
-	public static final double velocityConstant = 4200; // Explanation for velocityConstant
+	public static final double velocityConstant = 3600; // 3600enc / 100ms
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Drivetrain Current Limiting Constants
@@ -176,11 +176,11 @@ public class Constants
 	/************** AUTONOMOUS CONSTANTS ******************/
 
 	public static final double kEncoderTicks = 4096;
-	public static final double kWheelDiameter = .152; // meters
+	public static final double kWheelDiameter = .153; // meters
 	public static final double kWheelBase = .7112;
-	public static final double kMaxVelocity = 2.24;
+	public static final double kMaxVelocity = 4.22;
 
-	public static final double kBeta = 1.75; // b > 0 Correction
-	public static final double kZeta = 0.8; // 0 < z < 1 Dampening
-
+	public static final double kBeta = 2.1; // b > 0 Correction
+	public static final double kZeta = 0.2; // 0 < z < 1 Dampening
+	
 }

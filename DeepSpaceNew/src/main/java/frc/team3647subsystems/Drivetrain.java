@@ -117,21 +117,21 @@ public class Drivetrain
 	{
 		double threshold = 0.09;
 		if(yValue != 0 && Math.abs(xValue) < threshold)
-        {
+    {
 			setPercentOutput(yValue, yValue);
 	 	}
 		else if(yValue == 0 && Math.abs(xValue) < threshold)
 		{
-			resetEncoders();
-			gyro.resetAngle();
+			// resetEncoders();
+			// gyro.resetAngle();
 			stop();
-			supposedAngle = gyro.getYaw();
+			// supposedAngle = gyro.getYaw();
 		}
 		else
 		{
-			gyro.resetAngle();
+			// gyro.resetAngle();
 			curvatureDrive(xValue, yValue);
-			supposedAngle = gyro.getYaw();
+			// supposedAngle = gyro.getYaw();
 		}
 	}
     
@@ -176,6 +176,7 @@ public class Drivetrain
 	{
 		double targetVelocityRight = rSpeed * Constants.velocityConstant;
 		double targetVelocityLeft = lSpeed * Constants.velocityConstant;
+		
 		rightSRX.set(ControlMode.Velocity, targetVelocityRight);
 		leftSRX.set(ControlMode.Velocity, targetVelocityLeft);
 	}
@@ -191,7 +192,39 @@ public class Drivetrain
 		System.out.println("Left Motor Current: " + leftSRX.getOutputCurrent());
 		System.out.println("Right Motor Current:" + rightSRX.getOutputCurrent());
 	}
-	
+
+	public static void printEncoders()
+	{
+		System.out.println("Left Encoder: " + leftSRX.getSelectedSensorPosition());
+		System.out.println("Right Encoder:" + rightSRX.getSelectedSensorPosition());
+	}
+
+	public static void printVelocity()
+	{
+		System.out.println("Left Vel: " + leftSRX.getSelectedSensorVelocity());
+		System.out.println("Right Vel:" + rightSRX.getSelectedSensorVelocity());
+	}
+
+	public static int prevVelR = 0, prevVelL = 0;
+	public static void printAccel()
+	{
+		int currentVelR = rightSRX.getSelectedSensorVelocity();
+		int currentVelL = leftSRX.getSelectedSensorVelocity();
+
+		System.out.println("Left accel: " + (currentVelL - prevVelL) / .02);
+		System.out.println("Right Vel:" + (currentVelR - prevVelR) / .02);
+
+		prevVelR = rightSRX.getSelectedSensorVelocity();
+		prevVelL = leftSRX.getSelectedSensorVelocity();
+	}
+
+	public static void printVelError()
+	{
+		int velErrorR = rightSRX.getClosedLoopError();
+		int velErrorL = leftSRX.getClosedLoopError();
+		System.out.println("Right Vel Error: " + velErrorR);
+		System.out.println("Left Vel Error: " + velErrorL);
+	}
 	public static void enableCurrentLimiting(double amps)
 	{
 		leftSRX.enableCurrentLimit(true);
