@@ -1,6 +1,7 @@
 package frc.team3647autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
