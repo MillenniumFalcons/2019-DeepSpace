@@ -38,7 +38,7 @@ public class Joysticks
 	/**
 	 * Set main controller values.
 	 */
-	public void setMainContollerValues()
+	public void setMainControllerValues()
 	{
 		leftBumper		= 	controller.getBumper(XboxController.Hand.kLeft);
 		rightBumper 	=	controller.getRawButton(6);

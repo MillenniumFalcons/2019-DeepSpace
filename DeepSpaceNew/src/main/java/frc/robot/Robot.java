@@ -24,7 +24,8 @@ public class Robot extends TimedRobot
 	// private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 	public static Joysticks mainController; 
-	public static Joysticks coController; 
+	public static Joysticks coController;
+	public static Guitar guitarController;
 	public static Gyro gyro;
   
 	public static Notifier autoNotifier, teleopNotifier;
@@ -233,8 +234,8 @@ public class Robot extends TimedRobot
 
 	public void updateJoysticks()
 	{
-		mainController.setMainContollerValues();
-		coController.setMainContollerValues();
+		mainController.setMainControllerValues();
+		coController.setMainControllerValues();
 	}
 	
 	public void driveVisionTeleop()
