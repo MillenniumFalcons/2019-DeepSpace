@@ -303,6 +303,117 @@ public class SeriesStateMachine
         //     aimedRobotState = ScoringPosition.CLIMB;
         // }
     }
+
+    public static void setControllers(Joysticks mainController, Guitar coController)
+    {
+        if(!BallShooter.cargoDetection())
+        {
+
+            if(coController.strumDown)
+            {
+                if(coController.fret1Up)
+                    aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+                else if(coController.fret2Up)
+                    aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+                else if(coController.fret3Up)
+                    aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
+            }
+            else if(coController.strumUp)
+            {
+                if(coController.fret1Up)
+                    aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+                else if(coController.fret2Up)
+                    aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+                else if(coController.fret3Up)
+                    aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
+            }
+        }
+        // If the robot has a ball:
+        else if(BallShooter.cargoDetection())
+        {
+            if(coController.strumDown)
+            {
+                if(coController.fret1Up)
+                    aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
+                else if(coController.fret2Up)
+                    aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
+                else if(coController.fret2Down)
+                    aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+                else if(coController.fret3Up)
+                    aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
+            }
+            else if(coController.strumUp)
+            {
+                if(coController.fret1Up)
+                    aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
+                else if(coController.fret2Up)
+                    aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
+                else if(coController.fret2Down)
+                    aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
+                else if(coController.fret3Up)
+                    aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
+            }
+        }
+
+
+        if(mainController.rightTrigger > .3)
+        {
+            BallIntake.retractIntake();
+        }
+        
+        if(coController.fret1Down && coController.strumUp)
+        {
+            //System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
+            if (!arrivedAtMidPos) {
+                //System.out.println("Going to midPos");
+                ballIntakeTimer.reset();
+                ballIntakeTimer.start();
+                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
+            } else if (prevCargoIntakeExtended || ballIntakeTimer.get() > .5) {
+                //System.out.println("Going to cargoHandoff");
+                aimedRobotState = ScoringPosition.CARGOHANDOFF;
+            }
+        } 
+        else
+        {
+            arrivedAtMidPos = false;
+            BallIntake.stopMotor();
+        }
+
+        if(BallShooter.cargoDetection() && coController.fret1Down && coController.strumUp && Math.abs(Arm.armEncoderVelocity) > 500)
+        {
+            BallShooter.intakeCargo(.45);
+        }
+        else
+        {
+            BallShooter.stopMotor();
+        }
+        
+        if(coController.fret3Down && coController.strumUp)
+        {
+            BallShooter.shootBall(.7);
+        }
+        else if(!(coController.fret3Down && coController.strumUp) && !BallShooter.cargoDetection())
+        {
+            BallShooter.stopMotor();
+        }
+
+        if (mainController.buttonA)
+        {
+            aimedRobotState = null;
+            Elevator.aimedState = ElevatorLevel.START;
+        }
+
+        if (mainController.buttonY)
+        {
+            aimedRobotState = ScoringPosition.REVLIMITSWITCH;
+        }
+            
+        if(coController.stow)
+        {
+            aimedRobotState = ScoringPosition.STOWED;
+        }
+    }
     
     public static void runSeriesStateMachine()
     {
