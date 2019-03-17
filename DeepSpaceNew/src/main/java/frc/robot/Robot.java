@@ -10,11 +10,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3647autonomous.AutonomousSequences; 
-import frc.team3647autonomous.Odometry; 
-import frc.team3647inputs. * ; 
-import frc.team3647subsystems. * ;
-import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition; 
+import frc.team3647autonomous.AutonomousSequences;
+import frc.team3647autonomous.DriveSignal;
+import frc.team3647autonomous.MotionProfileDirection;
+import frc.team3647autonomous.Odometry;
+import frc.team3647autonomous.RamseteFollower;
+import frc.team3647autonomous.TrajectoryUtil;
+import frc.team3647inputs.*;
+import frc.team3647subsystems.*;
+import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
+import frc.team3647utility.Units;
+import jaci.pathfinder.Trajectory;
 
 public class Robot extends TimedRobot 
 {
@@ -69,60 +75,81 @@ public class Robot extends TimedRobot
 	}
 	
 
+	DriveSignal driveSignal;
+	Trajectory trajectory;
+	RamseteFollower ramseteFollower;
+	Trajectory.Segment current;
+	boolean ranBackwardsOnce = false;
+  
 	@Override
-	public void autonomousInit()
+	public void autonomousInit() 
 	{
-		// The NEO takes the Motor-output in percent from the SRX and since SRX
-		// values are using motion-magic, it "follows" the SRX
-		Drivetrain.drivetrainInitialization();
-		AutonomousSequences.autoInitFWD("TestPath");
-		// autoTimer.reset(); 
-		// autoTimer.start(); 
-		
-
-		// Shuffleboard.startRecording();
-		// matchTimer.reset();
-		// matchTimer.start();
-
-		gyro.resetAngle(); 
-		Drivetrain.resetEncoders(); 
-		// AirCompressor.runCompressor();
-
-		// BallIntake.ballIntakeinitialization(); 
-		// Arm.armInitialization(); 
-		// Elevator.elevatorInitialization(); 
-		// SeriesStateMachine.seriesStateMachineInit(); 
-		// // ShoppingCart.shoppingCartInit(); 
-		// Drivetrain.drivetrainInitialization(); 
-
-		autoNotifier = new Notifier(() ->
-		{
-			// Arm.armNEOFollow();
-			Odometry.getInstance().runOdometry();
-		});
-		autoNotifier.startPeriodic(0.01);
-
-		// teleopNotifier = new Notifier(() -> 
-    	// {
-		// 	Arm.armNEOFollow(); 
-		// }); 
-		// teleopNotifier.startPeriodic(.01);
-		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
-
+	  gyro.resetAngle();
+	  Drivetrain.drivetrainInitialization();
+	  Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+	  Drivetrain.resetEncoders();
+	  driveSignal = new DriveSignal();
+	  trajectory = TrajectoryUtil.getTrajectoryFromName("TestPath");
+	  ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
+	  Odometry.getInstance().setInitialOdometry(trajectory);
+	  Odometry.getInstance().odometryInit();
+	  ranBackwardsOnce = false;
+	  
+	//   autoNotifier = new Notifier(()->
+	//   {
+	// 	  Odometry.getInstance().runOdometry();
+	//   });
+	//   autoNotifier.startPeriodic(.01);
 	}
-
-
+  
+	double left;
+	double right;
+  
 	@Override
-	public void autonomousPeriodic()
+	public void autonomousPeriodic() 
 	{
-		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
-		// AutonomousSequences.fwdBwd("RocketToStation");
-		AutonomousSequences.runPath();
-		Drivetrain.printVelocity();
-		System.out.println("Desired Left Vel: " + AutonomousSequences.leftSpeed);
-		System.out.println("Desired Right Vel: " + AutonomousSequences.rightSpeed);
-		
-		// teleopPeriodic();
+	  driveSignal = ramseteFollower.getNextDriveSignal();
+	  current = ramseteFollower.currentSegment();
+  
+	  right = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
+	  left = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
+  
+	  if(ramseteFollower.isFinished() && !ranBackwardsOnce)
+	  {
+		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
+		// Drivetrain.resetEncoders();
+		Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
+		ranBackwardsOnce = true;
+	  }
+  
+	  // ramseteFollower.printOdometry();
+	  // ramseteFollower.printDeltaDist();
+	  // ramseteFollower.printCurrentEncoders();
+  
+	  // System.out.println("Gyro Yaw: " + gyro.getYaw());
+	  // if (left > right)
+	  // {
+	  //   System.out.println("Left Move More");
+	  // }
+	  // else if (left < right)
+	  // {
+	  //   System.out.println("Right Move More");
+	  // }
+	  // else if(left == 0 && right == 0)
+	  // {
+	  //   System.out.println("Stopped");
+	  // }
+	  // else if (left == right)
+	  // {
+	  //   System.out.println("Straight Move");
+	  // }
+	  // else
+	  // {
+	  //   System.out.println("Something's broken!");
+	  // }
+	  Drivetrain.setAutoVelocity(left, right);
+	//   System.out.println("Left Vel: " + (driveSignal.getLeft()) + "\nRight Vel: " + (driveSignal.getRight()));
+	//   System.out.println("Left ticks Vel: " + (left) + "\nRight Vel: " + (right));
 	}
 
 	@Override

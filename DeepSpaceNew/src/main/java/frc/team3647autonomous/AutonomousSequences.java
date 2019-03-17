@@ -50,9 +50,24 @@ public class AutonomousSequences
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
 		Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
-		Odometry.getInstance().odometryInit();
+		// Odometry.getInstance().odometryInit();
 		// autoTimer = new Timer();
 		// i = 0;
+	}
+
+	public static void testing()
+	{
+		driveSignal = ramseteFollower.getNextDriveSignal();
+    	current = ramseteFollower.currentSegment();
+
+    	rightSpeed = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
+    	leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
+
+		if(ramseteFollower.isFinished())
+		{
+			ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
+			Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
+		}
 	}
 
 	public static void ramsetePeriodic() 
@@ -70,6 +85,13 @@ public class AutonomousSequences
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+	}
+
+	public static void runPathBWD()
+	{
+		ramsetePeriodic();
+		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
+		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
 	}
 
 	public static void fwdBwd(String bwdPath)
