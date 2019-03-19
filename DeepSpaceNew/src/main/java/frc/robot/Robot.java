@@ -10,11 +10,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3647autonomous.AutonomousSequences; 
-import frc.team3647autonomous.Odometry; 
-import frc.team3647inputs. * ; 
-import frc.team3647subsystems. * ;
-import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition; 
+import frc.team3647autonomous.AutonomousSequences;
+import frc.team3647autonomous.DriveSignal;
+import frc.team3647autonomous.MotionProfileDirection;
+import frc.team3647autonomous.Odometry;
+import frc.team3647autonomous.RamseteFollower;
+import frc.team3647autonomous.TrajectoryUtil;
+import frc.team3647inputs.*;
+import frc.team3647subsystems.*;
+import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
+import frc.team3647utility.Units;
+import jaci.pathfinder.Trajectory;
 
 public class Robot extends TimedRobot 
 {
@@ -68,9 +74,9 @@ public class Robot extends TimedRobot
 		SmartDashboard.putNumber("Match Timer", 150 - matchTimer.get());
 	}
 	
-
+  
 	@Override
-	public void autonomousInit()
+	public void autonomousInit() 
 	{
 		gyro.resetAngle(); 
 		// The NEO takes the Motor-output in percent from the SRX and since SRX
@@ -111,10 +117,12 @@ public class Robot extends TimedRobot
 		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 
 	}
-
-
+  
+	double left;
+	double right;
+  
 	@Override
-	public void autonomousPeriodic()
+	public void autonomousPeriodic() 
 	{
 		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		// AutonomousSequences.fwdBwd("RocketToStation");
@@ -175,11 +183,6 @@ public class Robot extends TimedRobot
 	{
 		AutonomousSequences.limelightClimber.rightMost();
 		AutonomousSequences.limelightFourBar.rightMost();
-
-		// Arm.armNEO.setIdleMode(IdleMode.kBrake);
-		// Drivetrain.setToCoast();
-		// AutonomousSequences.limelightTop.disabledMode(); 
-		// AutonomousSequences.limelightBottom.disabledMode(); 
 	}
 
 	// private Timer secTimer;
@@ -236,8 +239,8 @@ public class Robot extends TimedRobot
 			// System.out.println(Drivetrain.leftSRX.getSelectedSensorPosition(0) / Drivetrain.rightSRX.getSelectedSensorPosition(0));
 		// Drivetrain.printAccel();
 		
-		Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
-		// Drivetrain.setVelocity(mainController.leftJoyStickY, mainController.leftJoyStickY);
+		teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);
+		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
 	}
 
 	public void updateJoysticks()
@@ -246,6 +249,7 @@ public class Robot extends TimedRobot
 		coController.setMainControllerValues();
 	}
 	
+	double threshold = Constants.limelightThreshold;
 	public void driveVisionTeleop()
 	{
 		if (Elevator.elevatorEncoderValue > 27000) 
@@ -255,13 +259,13 @@ public class Robot extends TimedRobot
 		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed) //Hatch intake above fourbar
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
-			teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, .075);
+			teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, threshold);
 
 		} 
 		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)//Hatch intake above climber
  		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
-			teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, .075);
+			teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);
 		} 
 		else 
 		{
@@ -275,7 +279,7 @@ public class Robot extends TimedRobot
 	
 	
 	int visionCase = 0;
-	public void teleopVisionForward(VisionController camOne, VisionController camTwo, double threshold) //.075
+	public void teleopVisionForward(VisionController camOne, VisionController camTwo, double threshold) //.0037
 	{
 		double joyY = mainController.leftJoyStickY;
 		camTwo.driverFlipped();
@@ -319,7 +323,7 @@ public class Robot extends TimedRobot
 		}
 	}
 	
-	public void teleopVisionBackward(VisionController camOne, VisionController camTwo, double threshold) //.075
+	public void teleopVisionBackward(VisionController camOne, VisionController camTwo, double threshold) //.0037
 	{
 		double joyY = mainController.leftJoyStickY;
 		camTwo.driverFlipped();
