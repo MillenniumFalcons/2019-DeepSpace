@@ -8,7 +8,7 @@ public class Gyro
     /**
      * Pigeon IMU Object (a gyro sensor) to receive and reset Yaw, Pitch, Roll, and Heading
      */
-    PigeonIMU gyro = new PigeonIMU(Constants.gyroPin);  //Create new Pigeon Gyro Object
+    public PigeonIMU gyro = new PigeonIMU(Constants.gyroPin);  //Create new Pigeon Gyro Object
 
     /**
      * array of type double that holds Yaw (0), Pitch(1), and Roll(2) values (in degrees).
@@ -18,7 +18,7 @@ public class Gyro
     /**
      * gyro value
      */
-    private double yaw, pitch, roll, heading;
+    private double yaw, pitch, roll, heading, compassHeading;
     
     /**
      * This method updates the gyro values for Yaw, Pitch, Roll, and Heading.
@@ -27,6 +27,7 @@ public class Gyro
     {
         gyro.getYawPitchRoll(ypr);
         heading = gyro.getCompassHeading();
+        compassHeading = gyro.getAbsoluteCompassHeading();
         yaw = ypr[0];
         pitch = ypr[1];
         roll = ypr[2];
@@ -38,6 +39,38 @@ public class Gyro
     public void resetAngle()
     {
         gyro.setYaw(0);
+    }
+
+    public void setHeading(double angleDeg)
+    {
+        gyro.setFusedHeading(angleDeg);
+    }
+
+    public void setYaw(double angleDeg)
+    {
+        gyro.setYaw(angleDeg);
+    }
+
+    public void resetHeading()
+    {
+        this.setHeading(0);
+    }
+
+    public void setCompass(double angleDeg)
+    {
+        gyro.setCompassAngle(angleDeg);
+    }
+
+    public void resetCompass()
+    {
+        this.setCompass(0);
+    }
+
+    public void reset()
+    {
+        this.resetAngle();
+        this.resetCompass();
+        this.resetHeading();
     }
 
     /**
@@ -78,5 +111,10 @@ public class Gyro
     public double getHeading()
     {
         return this.heading;
+    }
+
+    public double getCompassHeading()
+    {
+        return this.compassHeading;
     }
 }

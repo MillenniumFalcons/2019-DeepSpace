@@ -61,7 +61,7 @@ public class Robot extends TimedRobot
 	}
 
 	@Override
-	public void robotPeriodic()
+	public void robotPeriodic()	
 	{
 		gyro.updateGyro();
 		updateJoysticks();
@@ -72,10 +72,11 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit()
 	{
+		gyro.resetAngle(); 
 		// The NEO takes the Motor-output in percent from the SRX and since SRX
 		// values are using motion-magic, it "follows" the SRX
 		Drivetrain.drivetrainInitialization();
-		AutonomousSequences.autoInitFWD("TestPath");
+		AutonomousSequences.autoInitFWD("YTW");
 		// autoTimer.reset(); 
 		// autoTimer.start(); 
 		
@@ -84,7 +85,7 @@ public class Robot extends TimedRobot
 		// matchTimer.reset();
 		// matchTimer.start();
 
-		gyro.resetAngle(); 
+		
 		Drivetrain.resetEncoders(); 
 		// AirCompressor.runCompressor();
 
@@ -118,9 +119,13 @@ public class Robot extends TimedRobot
 		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		// AutonomousSequences.fwdBwd("RocketToStation");
 		AutonomousSequences.runPath();
-		Drivetrain.printVelocity();
-		System.out.println("Desired Left Vel: " + AutonomousSequences.leftSpeed);
-		System.out.println("Desired Right Vel: " + AutonomousSequences.rightSpeed);
+		System.out.println(Math.toRadians(gyro.getYaw()));
+		System.out.println("Current Position: " + Odometry.getInstance().getCurrentEncoderPosition());
+		// Drivetrain.printVelocity();
+		// System.out.println("Desired Left Vel: " + AutonomousSequences.leftSpeed);
+		// System.out.println("Desired Right Vel: " + AutonomousSequences.rightSpeed);
+
+
 		
 		// teleopPeriodic();
 	}
@@ -162,6 +167,7 @@ public class Robot extends TimedRobot
 		// Odometry.getInstance().closeOdoThread();
 		// Elevator.aimedState = null;
 		// SeriesStateMachine.aimedRobotState = null;
+
 	}
 
 	@Override
@@ -181,6 +187,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
+		HatchGrabber.stopMotor();
 		// ShoppingCart.shoppingCartInit();
 		// Drivetrain.drivetrainInitialization();
 		// Elevator.elevatorInitialization();
@@ -193,12 +200,13 @@ public class Robot extends TimedRobot
 	@Override
 	public void testPeriodic()
 	{
-		// if(mainController.buttonA)
-		// {
-		// 	Drivetrain.setVelocity(mainController.rightJoyStickX, -mainController.rightJoyStickX);
-		// 	gyro.resetAngle();
-		// 	Drivetrain.resetEncoders();
-		// }
+		// System.out.println(gyro.getYaw());
+		if(mainController.buttonA)
+		{
+			// Drivetrain.setVelocity(mainController.rightJoyStickX, -mainController.rightJoyStickX);
+			gyro.resetAngle();
+			Drivetrain.resetEncoders();
+		}
 		// else
 		// 	Drivetrain.setVelocity(mainController.leftJoyStickY, mainController.leftJoyStickY);
 

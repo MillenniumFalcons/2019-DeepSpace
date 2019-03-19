@@ -30,7 +30,7 @@ public class Drivetrain
 
     public static double supposedAngle;
 
-    public static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
+    public static DifferentialDrive drive;
 
 
     public static void drivetrainInitialization()
@@ -76,6 +76,9 @@ public class Drivetrain
 		rightSRX.setInverted(true);
 		rightSPX1.setInverted(true);
 		rightSPX2.setInverted(true);
+
+		drive = new DifferentialDrive(leftSRX, rightSRX);
+		drive.setSafetyEnabled(false);
 
 		setToBrake();
 	}

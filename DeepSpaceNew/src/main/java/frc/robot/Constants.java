@@ -96,8 +96,8 @@ public class Constants
 	// public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF = { 0.341 * 1.05, 0, 0, .281417 }; // .281417
-	public static final double[] rightVelocityPIDF = { 0.341, 0, 0, .281417 };
+	public static final double[] leftVelocityPIDF = {  .341* 1.05, 0, 3.4, .281417 }; // .281417
+	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
 
 	public static final double[] limelightPID = { .80, 0, 3.2 };
 

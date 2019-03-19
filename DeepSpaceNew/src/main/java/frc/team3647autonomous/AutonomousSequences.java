@@ -39,6 +39,11 @@ public class AutonomousSequences
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 		Odometry.getInstance().setInitialOdometry(trajectory);
 		Odometry.getInstance().odometryInit();
+
+		afterAutoTimer = new Timer();
+		afterAutoTimer.reset();
+		afterAutoStep = 0;
+		hey = false;
 		// autoTimer = new Timer();
 		// i = 0;
 	}
@@ -64,12 +69,61 @@ public class AutonomousSequences
 		leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
 		// i++;
 	}
+	static Timer afterAutoTimer = new Timer();
+	static int afterAutoStep = 0;
+	static boolean hey = false;
 
 	public static void runPath()
 	{
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+		// if(ramseteFollower.isFinished() || hey)
+		// {
+		// 	hey = true;
+		// 	switch(afterAutoStep)
+		// 	{
+		// 		case 0:
+		// 			afterAutoTimer.reset();
+		// 			afterAutoTimer.start();
+		// 			afterAutoStep = 1;
+		// 			break;
+		// 		case 1:
+		// 			Drivetrain.setPercentOutput(.2, .2);
+		// 			if(afterAutoTimer.get() > 2)
+		// 			{
+		// 				Drivetrain.stop();
+		// 				afterAutoTimer.reset();
+		// 				afterAutoTimer.start();
+		// 				afterAutoStep = 2;
+		// 			}
+		// 			break;
+		// 		case 2:
+		// 			HatchGrabber.releaseHatch();
+		// 			if(afterAutoTimer.get() > .4)
+		// 			{
+		// 				HatchGrabber.stopMotor();
+		// 				afterAutoTimer.reset();
+		// 				afterAutoTimer.start();
+		// 				afterAutoStep = 3;
+		// 			}
+		// 			break;
+		// 		case 3:
+		// 			Drivetrain.setPercentOutput(-.2, -.2);
+		// 			if(afterAutoTimer.get() > 1.7)
+		// 			{
+		// 				Drivetrain.stop();
+		// 				afterAutoTimer.reset();
+		// 				afterAutoTimer.start();
+		// 				afterAutoStep = 4;
+		// 			}
+		// 			break;
+		// 		case 4:
+		// 			Drivetrain.stop();
+		// 			System.out.println("DONE!");
+		// 			break;
+		// 	}
+		// }
 	}
 
 	public static void fwdBwd(String bwdPath)
