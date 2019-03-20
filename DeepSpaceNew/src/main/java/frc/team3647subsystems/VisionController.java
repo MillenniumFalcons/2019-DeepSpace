@@ -44,7 +44,7 @@ public class VisionController
 		updateInputs();
 		double error = limelight.getX() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
 												// get a value from -1 to 1 to scale for speed output
-		if (error > -errorThreshold && error < errorThreshold) // checking if the error is within a threshold to stop
+		if (limelight.getValidTarget() <= 0 && Math.abs(error) < errorThreshold) // checking if the error is within a threshold to stop
 		{
 			speed = 0; // setting global variable speed equal to zero
 			// drivesignal.setBoth(speed, speed); //setting Drivetrain to 0 speed

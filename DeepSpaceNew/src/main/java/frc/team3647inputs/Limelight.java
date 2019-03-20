@@ -96,4 +96,10 @@ public class Limelight
     {
         return this.area;
     }
+
+    public double getValidTarget()         //get area, because area is private
+    {
+        return table.getEntry("tv").getDouble(-3647);
+    }
+
 }
