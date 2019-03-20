@@ -1,6 +1,7 @@
 package frc.team3647inputs;
 
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -32,6 +33,7 @@ public class Joysticks
 	{
 		controller = new XboxController(controllerPin);
 		dPad = new XboxController(controllerPin);
+		DriverStation.getInstance().getJoystickName(controllerPin);
 	}
 
 	
@@ -41,22 +43,23 @@ public class Joysticks
 	public void setMainControllerValues()
 	{
 		leftBumper		= 	controller.getBumper(XboxController.Hand.kLeft);
-		rightBumper 	=	controller.getRawButton(6);
-		leftTrigger 	= 	joystickThreshold(controller.getRawAxis(2));
-		rightTrigger 	= 	joystickThreshold(controller.getRawAxis(3));
-		buttonA 		=	controller.getRawButton(1);
-		buttonB 		= 	controller.getRawButton(2);
-		buttonX 		= 	controller.getRawButton(3);
-		buttonY 		= 	controller.getRawButton(4);
-		leftJoyStickX 	= 	Math.pow(joystickThreshold(controller.getRawAxis(0)),1);
-		leftJoyStickY 	= Math.pow(joystickThreshold(-controller.getRawAxis(1)), 1);
-		rightJoyStickX 	= Math.pow(joystickThreshold(controller.getRawAxis(4)), 1);
-		rightJoyStickY 	= Math.pow(joystickThreshold(-controller.getRawAxis(5)), 1); //
-		rightJoyStickPress = controller.getRawButton(8);
-		leftJoyStickPress = controller.getRawButton(9);
-		dPadValue = dPad.getPOV();
+		rightBumper 	=	controller.getBumper(XboxController.Hand.kRight);
+		leftTrigger 	= 	joystickThreshold(controller.getTriggerAxis(XboxController.Hand.kLeft));
+		rightTrigger 	= 	joystickThreshold(controller.getTriggerAxis(XboxController.Hand.kRight));
+		buttonA 		=	controller.getAButtonPressed();
+		buttonB 		= 	controller.getBButtonPressed();
+		buttonX 		= 	controller.getXButtonPressed();
+		buttonY 		= 	controller.getYButtonPressed();
+
+		leftJoyStickX 	= 	joystickThreshold(controller.getX(XboxController.Hand.kLeft));
+		leftJoyStickY 	= 	joystickThreshold(controller.getY(XboxController.Hand.kLeft));
+		rightJoyStickX 	= 	joystickThreshold(controller.getX(XboxController.Hand.kRight));
+		rightJoyStickY 	= 	joystickThreshold(controller.getY(XboxController.Hand.kRight)); 
+
+		rightJoyStickPress= controller.getStickButtonPressed(XboxController.Hand.kRight);
+		leftJoyStickPress = controller.getStickButtonPressed(XboxController.Hand.kLeft);
+		dPadValue = 		controller.getPOV();
 		setDPadValues();
-		// System.out.println("Updating controller!");
 	}
 
 

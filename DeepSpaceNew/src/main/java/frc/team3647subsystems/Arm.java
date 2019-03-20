@@ -188,8 +188,6 @@ public class Arm
 			if(positionThreshold(aimedState.encoderVal))
 				currentState = aimedState;
 		}
-		else if(getRevLimitSwitch())
-			currentState = ArmPosition.REVLIMITSWITCH;
 		else if(getFwdLimitSwitch())
 			currentState = ArmPosition.FWDLIMITSWITCH;
 		else if(positionThreshold(Constants.armSRXCargoHandoff))
@@ -315,9 +313,6 @@ public class Arm
 	public static void setArmEncoder()
 	{
 		// When the arm rotates all the way to the back encoder resets
-		if(getRevLimitSwitch())
-			resetArmEncoder();
-
 		// Gets encoder from SRX
 		armEncoderValue = armSRX.getSelectedSensorPosition(0);
 		armEncoderVelocity = armSRX.getSelectedSensorVelocity(0);

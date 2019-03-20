@@ -8,11 +8,14 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 public class BallShooter 
 {
-  private static VictorSPX intakeMotor = new VictorSPX(Constants.ballShooterPin);
+	
+	private static VictorSPX intakeMotor = new VictorSPX(Constants.ballShooterPin);
+	
 	
 	public static void ballShooterinitialization()
 	{
 		intakeMotor.setInverted(false);
+		
 	}
 	
 	private static void setOpenLoop(double demand)
@@ -27,12 +30,22 @@ public class BallShooter
 
 	public static void shootBall(double demand)
 	{
-		setOpenLoop(demand);
+		double mDemand = demand/2;
+		if(mDemand < .3)
+			mDemand = .5;
+		setOpenLoop(limitCurrent(mDemand));
 	}
 	
-	public static void intakeCargo(double power)
+	public static void intakeCargo(double power) //40 amps limit
 	{
-		setOpenLoop(-1);
+
+		setOpenLoop(-limitCurrent(.4));
+	}
+
+	private static double limitCurrent(double constant)
+	{
+		double current = Robot.pDistributionPanel.getCurrent(Constants.ballShooterPDPpin);
+		return (1.3 / current + constant);
 	}
 
 	public static boolean cargoDetection()
