@@ -180,6 +180,15 @@ public class VisionController
 		limelight.setToLeftContour();
 	}
 
+	public void flashLEDS()
+	{
+		limelight.ledOn();
+		limelight.ledOff();
+		limelight.ledOn();
+		limelight.ledOff();
+		limelight.ledPipeline();
+	}
+
 	public void driverMode() 
 	{
 		limelight.ledOff();

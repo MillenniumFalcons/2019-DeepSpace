@@ -28,7 +28,7 @@ public class HatchGrabber
 		hatchSucker.set(ControlMode.PercentOutput, .5);
 	}
 	
-	private static void releaseHatch()
+	public static void releaseHatch()
 	{
 		hatchSucker.set(ControlMode.PercentOutput, -1);
 	}
@@ -37,7 +37,7 @@ public class HatchGrabber
 	{
 		hatchSucker.set(ControlMode.PercentOutput, .23);
 	}
-	private static void stopMotor()
+	public static void stopMotor()
 	{
 		hatchSucker.set(ControlMode.PercentOutput, 0);
 	}

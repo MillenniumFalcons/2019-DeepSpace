@@ -92,52 +92,52 @@ public class AutonomousSequences
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-		// if(ramseteFollower.isFinished() || hey)
-		// {
-		// 	hey = true;
-		// 	switch(afterAutoStep)
-		// 	{
-		// 		case 0:
-		// 			afterAutoTimer.reset();
-		// 			afterAutoTimer.start();
-		// 			afterAutoStep = 1;
-		// 			break;
-		// 		case 1:
-		// 			Drivetrain.setPercentOutput(.2, .2);
-		// 			if(afterAutoTimer.get() > 2)
-		// 			{
-		// 				Drivetrain.stop();
-		// 				afterAutoTimer.reset();
-		// 				afterAutoTimer.start();
-		// 				afterAutoStep = 2;
-		// 			}
-		// 			break;
-		// 		case 2:
-		// 			HatchGrabber.releaseHatch();
-		// 			if(afterAutoTimer.get() > .4)
-		// 			{
-		// 				HatchGrabber.stopMotor();
-		// 				afterAutoTimer.reset();
-		// 				afterAutoTimer.start();
-		// 				afterAutoStep = 3;
-		// 			}
-		// 			break;
-		// 		case 3:
-		// 			Drivetrain.setPercentOutput(-.2, -.2);
-		// 			if(afterAutoTimer.get() > 1.7)
-		// 			{
-		// 				Drivetrain.stop();
-		// 				afterAutoTimer.reset();
-		// 				afterAutoTimer.start();
-		// 				afterAutoStep = 4;
-		// 			}
-		// 			break;
-		// 		case 4:
-		// 			Drivetrain.stop();
-		// 			System.out.println("DONE!");
-		// 			break;
-		// 	}
-		// }
+		if(ramseteFollower.isFinished() || hey)
+		{
+			hey = true;
+			switch(afterAutoStep)
+			{
+				case 0:
+					afterAutoTimer.reset();
+					afterAutoTimer.start();
+					afterAutoStep = 1;
+					break;
+				case 1:
+					Drivetrain.setPercentOutput(.2, .2);
+					if(afterAutoTimer.get() > 2)
+					{
+						Drivetrain.stop();
+						afterAutoTimer.reset();
+						afterAutoTimer.start();
+						afterAutoStep = 2;
+					}
+					break;
+				case 2:
+					HatchGrabber.releaseHatch();
+					if(afterAutoTimer.get() > .4)
+					{
+						HatchGrabber.stopMotor();
+						afterAutoTimer.reset();
+						afterAutoTimer.start();
+						afterAutoStep = 3;
+					}
+					break;
+				case 3:
+					Drivetrain.setPercentOutput(-.2, -.2);
+					if(afterAutoTimer.get() > 1.7)
+					{
+						Drivetrain.stop();
+						afterAutoTimer.reset();
+						afterAutoTimer.start();
+						afterAutoStep = 4;
+					}
+					break;
+				case 4:
+					Drivetrain.stop();
+					System.out.println("DONE!");
+					break;
+			}
+		}
 	}
 
 	public static void runPathBWD()

@@ -24,6 +24,10 @@ public class Limelight
     //     table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
     // }
 
+    public void ledPipeline()
+    {
+        table.getEntry("ledMode").setNumber(0);
+    }
     public void ledOff()
     {
         table.getEntry("ledMode").setNumber(1);
