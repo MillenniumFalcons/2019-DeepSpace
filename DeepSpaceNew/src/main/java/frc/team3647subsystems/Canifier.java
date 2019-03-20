@@ -7,7 +7,7 @@ import frc.robot.*;
 
 public class Canifier
 {
-    static CANifier can = new CANifier(Constants.canifierPin);
+    private static CANifier can = new CANifier(Constants.canifierPin);
 
     public static void setLights(int r, int g, int b)
     {
@@ -23,13 +23,6 @@ public class Canifier
 
     public static boolean hatchGrabberSensor()
     {
-        if(can.getGeneralInput(GeneralPin.LIMF))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return can.getGeneralInput(GeneralPin.LIMF);
     }
 }

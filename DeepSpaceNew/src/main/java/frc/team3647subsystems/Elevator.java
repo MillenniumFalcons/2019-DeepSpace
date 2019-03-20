@@ -7,7 +7,6 @@ import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -118,20 +117,27 @@ public class Elevator
 
 	public enum ElevatorLevel
 	{
-		MANUAL,
-		STOP,
-		BOTTOM,
-        CARGOHANDOFF,
-        HATCHHANDOFF,
-		HATCHL2,
-		HATCHL3, //also cargo lvl3
-		CARGOL2,
-		CARGO1,
-        CARGOSHIP,
-		STOWED,
-		MINROTATE,
-		VERTICALSTOWED,
-		START
+		MANUAL(-1),
+		STOP(-1),
+		BOTTOM(0),
+        CARGOHANDOFF(Constants.elevatorCargoHandoff),
+        HATCHHANDOFF(Constants.elevatorHatchHandoff),
+		HATCHL2(Constants.elevatorHatchL2),
+		HATCHL3(Constants.elevatorHatchL3), //also cargo lvl3
+		CARGOL2(Constants.elevatorCargoL2),
+		CARGO1(Constants.elevatorCargoL1),
+        CARGOSHIP(Constants.elevatorCargoShip),
+		STOWED(Constants.elevatorStowed),
+		MINROTATE(Constants.elevatorMinRotation),
+		VERTICALSTOWED(Constants.elevatorMinRotation),
+		START(-1);
+
+		public int encoderVal;
+
+		ElevatorLevel(int encoderVal)
+		{
+			this.encoderVal = encoderVal;
+		}
 	}
 
 	public static void setManualController(Joysticks controller)
@@ -167,44 +173,15 @@ public class Elevator
 				case STOP:
 					stopElevator();
 					break;
-				case BOTTOM:
-					moveToBottom();
-					break;
 				case START:
 					moveToBottomStart();
 					break;
-				case CARGOHANDOFF:
-					moveToCargoHandoff();
-					break;
-				case HATCHHANDOFF:
-					moveToHatchHandoff();
-					break;
-				case HATCHL2:
-					moveToHatchL2();
-					break;
-				case HATCHL3:
-					moveToHatchL3();
-					break;
-				case CARGO1:
-					moveToCargoL1();
-					break;
-				case CARGOL2:
-					moveToCargoL2();
-					break;
-				case CARGOSHIP:
-					moveToCargoShip();
-					break;
-				case STOWED:
-					moveToStowed();
-					break;
-				case VERTICALSTOWED:
-					moveToVerticalStowed();
-					break;
-				case MINROTATE:
-					moveToMinRotate();
+				case BOTTOM:
+					moveToBottom();
 					break;
 				default:
-					System.out.println("Unreachable ELEVATOR Position");
+					if(aimedState.encoderVal != -1)
+						setPosition(aimedState.encoderVal);
 					break;
 			}
 		}
@@ -225,9 +202,7 @@ public class Elevator
 			resetElevatorEncoder();
 		}
 		else
-		{
 			setOpenLoop(-.3);
-		}
 	}
 	
 	private static void moveToBottom()
@@ -239,53 +214,6 @@ public class Elevator
 		
 	}
     
-    private static void moveToCargoHandoff()
-    {
-		setPosition(Constants.elevatorCargoHandoff);
-    }
-    
-    private static void moveToHatchHandoff()
-    {
-        setPosition(Constants.elevatorHatchHandoff);
-    }
-
-    private static void moveToHatchL2()
-    {
-        setPosition(Constants.elevatorHatchL2);
-    }
-
-    private static void moveToHatchL3()
-    {
-        setPosition(Constants.elevatorHatchL3);
-    }
-	private static void moveToCargoL1() 
-	{
-		setPosition(Constants.elevatorCargoL1);
-	}
-    private static void moveToCargoL2()
-    {
-        setPosition(Constants.elevatorCargoL2);
-    }
-
-    private static void moveToCargoShip()
-    {
-        setPosition(Constants.elevatorCargoShip);
-    }
-
-    private static void moveToStowed()
-    {
-        setPosition(Constants.elevatorStowed);
-	}
-	
-	private static void moveToVerticalStowed()
-	{
-		setPosition(Constants.elevatorVerticalStowed);
-	}
-
-	private static void moveToMinRotate()
-	{
-		setPosition(Constants.elevatorMinRotation);
-	}
 	//----------------------------------------------------------
 
 	//Manual movement-------------------------------------------
@@ -338,76 +266,38 @@ public class Elevator
 
     public static void setOpenLoop(double power)
     {
-		// Percent Output		
 		elevatorMaster.set(ControlMode.PercentOutput, power);
-
 	}
 	//----------------------------------------------------------
 
 	private static boolean positionThreshold(double constant)
 	{
-		if((constant + Constants.kElevatorPositionThreshold) > elevatorEncoderValue && (constant - Constants.kElevatorPositionThreshold) < elevatorEncoderValue)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return (constant + Constants.kElevatorPositionThreshold) > elevatorEncoderValue && 
+				(constant - Constants.kElevatorPositionThreshold) < elevatorEncoderValue;
 	}
 
 	private static void updateLivePosition()
 	{
 		if(getLimitSwitch())
-		{
 			currentState = ElevatorLevel.BOTTOM;
-			lastState = ElevatorLevel.BOTTOM;
-		}
 		else if(positionThreshold(Constants.elevatorCargoHandoff))
-		{
 			currentState = ElevatorLevel.CARGOHANDOFF;
-			lastState = ElevatorLevel.CARGOHANDOFF;
-		}
 		else if(positionThreshold(Constants.elevatorHatchHandoff))
-		{
 			currentState = ElevatorLevel.HATCHHANDOFF;
-			currentState = ElevatorLevel.HATCHHANDOFF;
-		}
 		else if(positionThreshold(Constants.elevatorHatchL2))
-		{
 			currentState = ElevatorLevel.HATCHL2;
-			lastState = ElevatorLevel.HATCHL2;
-		}
 		else if(positionThreshold(Constants.elevatorHatchL3))
-		{
 			currentState = ElevatorLevel.HATCHL3;
-			lastState = ElevatorLevel.HATCHL3;
-		}
 		else if(positionThreshold(Constants.elevatorCargoL2))
-		{
 			currentState = ElevatorLevel.CARGOL2;
-			lastState = ElevatorLevel.CARGOL2;
-		}
 		else if(positionThreshold(Constants.elevatorCargoShip))
-		{
 			currentState = ElevatorLevel.CARGOSHIP;
-			lastState = ElevatorLevel.CARGOSHIP;
-		}
 		else if(positionThreshold(Constants.elevatorStowed) || positionThreshold(Constants.elevatorStartingStowed))
-		{
 			currentState = ElevatorLevel.STOWED;
-			lastState = ElevatorLevel.STOWED;
-		}
 		else if(positionThreshold(Constants.elevatorMinRotation))
-		{
 			currentState = ElevatorLevel.MINROTATE;
-			lastState = ElevatorLevel.MINROTATE;
-		}
 		else if(positionThreshold(Constants.elevatorVerticalStowed))
-		{
 			currentState = ElevatorLevel.VERTICALSTOWED;
-			lastState = ElevatorLevel.VERTICALSTOWED;
-		}
 		else
 			currentState = ElevatorLevel.MANUAL;
 	}
@@ -416,9 +306,7 @@ public class Elevator
 	public static void setElevatorEncoder()
 	{
 		if(getLimitSwitch())
-		{
 			resetElevatorEncoder();
-		}
 		elevatorEncoderValue = elevatorMaster.getSelectedSensorPosition(0);
 		elevatorEncoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
 		elevatorEncoderCCL = elevatorMaster.getClosedLoopError(0);
@@ -431,45 +319,13 @@ public class Elevator
 	
 	private static void resetElevatorEncoder()
 	{
-		elevatorMaster.setSelectedSensorPosition(0,Constants.interstageSlotIdx, Constants.kTimeoutMs);
+		setEncoderValue(0);
 	}
 
 	public static int getStateEncoder(ElevatorLevel futureAimedState)
 	{
-		if(futureAimedState != null)
-		{
-			switch(futureAimedState) //check if aimed state has a value
-			{
-				case STOP:
-					return elevatorEncoderValue;
-				case BOTTOM:
-					return 0;
-				case START:
-					return 0;
-				case CARGOHANDOFF:
-					return Constants.elevatorCargoHandoff;
-				case HATCHHANDOFF:
-					return Constants.elevatorHatchHandoff;
-				case HATCHL2:
-					return Constants.elevatorHatchL2;
-				case HATCHL3:
-					return Constants.elevatorHatchL3;
-				case CARGO1:
-					return Constants.elevatorCargoL1;
-				case CARGOL2:
-					return Constants.elevatorCargoL2;
-				case CARGOSHIP:
-					return Constants.elevatorCargoShip;
-				case STOWED:
-					return Constants.elevatorStowed;
-				case VERTICALSTOWED:
-					return Constants.elevatorVerticalStowed;
-				case MINROTATE:
-					return Constants.elevatorMinRotation;
-				default:
-					return -1;
-			}
-		}
+		if(futureAimedState != null && futureAimedState.encoderVal != -1)
+			return futureAimedState.encoderVal;
 		return -1;
 	}
 	//----------------------------------------------------------

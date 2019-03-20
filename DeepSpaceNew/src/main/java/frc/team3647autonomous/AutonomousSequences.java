@@ -29,7 +29,6 @@ public class AutonomousSequences
 	public static double leftSpeed;
 	public static double rightSpeed;
 	private static Timer autoTimer;
-	private static int i = 0;
 
 	public static void autoInitFWD(String trajectoryName) 
 	{

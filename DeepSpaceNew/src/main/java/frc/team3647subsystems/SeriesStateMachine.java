@@ -9,25 +9,24 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class SeriesStateMachine
 {
     // Variables to control initialization
-    private static boolean arrivedAtRevLimitSwitchOnce=false, ranOnce = false;
+    private static boolean ranOnce = false;
     public static boolean initializedRobot = false;
     private static int initStep = 1;
 
     //control ball ground intake
     private static boolean intakeExtracted = false;
-    private static boolean ballIntakeShouldBeRetracted = false;
     
     // Variables to control climb
     private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false;
+    private static int climbStep = 0;
+    private static boolean elevatorManual = false;
 
 	private static boolean climbMode=false;
 
     private static ScoringPosition aimedRobotState;
 
-    private static Timer ballIntakeTimer, climbTimer;
+    private static Timer ballIntakeTimer = new Timer(), climbTimer = new Timer();
 
-    private static boolean specialMovement = false;
-    private static int movementStep = 0;
 
     public enum ScoringPosition
     {
@@ -54,7 +53,7 @@ public class SeriesStateMachine
         CARGOGROUNDINTAKE(null, null), 
         BOTTOMSTART(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS),
         CLIMB(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CLIMB),
-        BEFORECARGOHANDOFF(Elevator.ElevatorLevel.CARGOHANDOFF, Arm.ArmPosition.CARGOHANDOFF);
+        BEFORECARGOHANDOFF(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CARGOHANDOFF);
 
         public Elevator.ElevatorLevel eLevel;
         public Arm.ArmPosition armPos;
@@ -76,10 +75,7 @@ public class SeriesStateMachine
 
     public static void seriesStateMachineInit()
     {
-        ballIntakeTimer = new Timer();
-        climbTimer = new Timer();
         aimedRobotState = null;
-        arrivedAtRevLimitSwitchOnce = false;
         initializedRobot = false;
         initStep = 0;
         ranOnce = false;
@@ -92,18 +88,7 @@ public class SeriesStateMachine
         climbMode = false;
         climbStep = 0;
 
-        ballIntakeShouldBeRetracted = false;
-
-        specialMovement = false;
-        movementStep = 0;
-
         aimedRobotState = ScoringPosition.START;
-    }
-
-    public static void initializeTeleop()
-    {
-        ballIntakeTimer = new Timer();
-        climbTimer = new Timer();
     }
 
     public static void setControllers(Joysticks mainController, Joysticks coController)
@@ -151,20 +136,16 @@ public class SeriesStateMachine
         if(mainController.rightTrigger > .3)
         {
             BallIntake.retractIntake();
-            ballIntakeShouldBeRetracted = true;
+            prevCargoIntakeExtended = false;
         }
         
         if(coController.leftTrigger > .15)
-        {
-            ballIntakeShouldBeRetracted = false;   
-            //System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
+        {  
             if (!arrivedAtMidPos) {
-                //System.out.println("Going to midPos");
                 ballIntakeTimer.reset();
                 ballIntakeTimer.start();
                 aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
             } else if (prevCargoIntakeExtended || ballIntakeTimer.get() > .5) {
-                //System.out.println("Going to cargoHandoff");
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
             }
         } 
@@ -179,7 +160,7 @@ public class SeriesStateMachine
         {
             BallShooter.shootBall(coController.rightTrigger);
         }
-        else if(BallShooter.cargoDetection() && coController.leftTrigger < .15 && Math.abs(Arm.armEncoderVelocity) > 500)
+        else if(!BallShooter.cargoDetection() && coController.leftTrigger < .15 && Math.abs(Arm.armEncoderVelocity) > 500)
         {
             BallShooter.intakeCargo(.45);
         }
@@ -193,8 +174,7 @@ public class SeriesStateMachine
             aimedRobotState = null;
             Elevator.aimedState = ElevatorLevel.START;
         }
-
-        if (mainController.buttonY)
+        else if (mainController.buttonY)
         {
             aimedRobotState = ScoringPosition.REVLIMITSWITCH;
         }
@@ -203,22 +183,10 @@ public class SeriesStateMachine
         {
             aimedRobotState = ScoringPosition.STOWED;
         }
-
-        // if(mainController.buttonX)
-        // {
-        //     Elevator.aimedState = null;
-        //     Arm.aimedState = null;
-        //     climbMode = true;
-        //     aimedRobotState = ScoringPosition.CLIMB;
-        // }
     }
 
     public static void runSeriesStateMachine()
     {
-        // if(Arm.currentState != null && Elevator.currentState != null)
-        //     robotState.setRobotPos(Arm.currentState, Elevator.currentState);
-        // if (!climbMode)
-        //     ShoppingCart.setPosition(0);
         if(aimedRobotState != null)
         {
             switch(aimedRobotState)
@@ -324,8 +292,7 @@ public class SeriesStateMachine
                 break;
             }
     }
-    private static int climbStep = 0;
-    private static boolean elevatorManual = false;
+
     private static void climbing() 
     {
         if(!elevatorManual && inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500) && inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorHatchL2, 1000))
@@ -381,9 +348,7 @@ public class SeriesStateMachine
             }
         }
         else
-        {
             rotateArmClimb(ArmPosition.CLIMB);
-        }
     }
 
     //Method will only run when robot initializes until reaching hatch level 1 forwards
@@ -398,7 +363,6 @@ public class SeriesStateMachine
                     safetyRotateArm(ArmPosition.REVLIMITSWITCH);
                     if(Arm.getRevLimitSwitch())
                     {
-                        arrivedAtRevLimitSwitchOnce = true;
                         initStep = 1;
                     }
                     break;  
@@ -449,18 +413,13 @@ public class SeriesStateMachine
 
     private static boolean inThreshold(int val,int actual, int threshold)
     {
-        if((val > actual - threshold) && (val < actual + threshold))
-            return true;
-        else
-            return false;
+        return (val > actual - threshold) && (val < actual + threshold);
     }
 
     private static void rotateArmClimb(Arm.ArmPosition pos)
     {
         if(Elevator.elevatorEncoderValue >= Constants.elevatorHatchL2 - 500 && Elevator.elevatorEncoderValue <= 30000)
-        {
             Arm.aimedState = pos;
-        }
         else
         {
             Elevator.aimedState = Elevator.ElevatorLevel.HATCHL2;
@@ -547,27 +506,18 @@ public class SeriesStateMachine
                     else
                         return Movement.SAFEZMOVE;
                 default:
-                    if( Elevator.getStateEncoder(aimedState.eLevel) >= Constants.elevatorMinRotation && 
+                    if( aimedState.eLevel.encoderVal >= Constants.elevatorMinRotation && 
                         Elevator.isAboveMinRotate(0) )
                         return Movement.FREEMOVE;
                     else
-                    {
                         return Movement.SAFEZMOVE;
-                    }
             }
         }
     }
 
     private static boolean threshold(int constant, int currentValue, int threshold)
     {
-        if((constant + threshold) > currentValue && (constant - threshold) < currentValue)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+        return (constant + threshold) > currentValue && (constant - threshold) < currentValue;
     }
 
     public static ScoringPosition getAimedRobotState()
@@ -578,118 +528,5 @@ public class SeriesStateMachine
     public static void setAimedRobotState(ScoringPosition newAimedState)
     {
         aimedRobotState = newAimedState;
-    }
-
-
-    public static void setControllers(Joysticks mainController, Guitar coController)
-    {
-        if(!BallShooter.cargoDetection())
-        {
-
-            if(coController.strumDown)
-            {
-                if(coController.fret1Up)
-                    aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
-                else if(coController.fret2Up)
-                    aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-                else if(coController.fret3Up)
-                    aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
-            }
-            else if(coController.strumUp)
-            {
-                if(coController.fret1Up)
-                    aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-                else if(coController.fret2Up)
-                    aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
-                else if(coController.fret3Up)
-                    aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
-            }
-        }
-        // If the robot has a ball:
-        else if(BallShooter.cargoDetection())
-        {
-            if(coController.strumDown)
-            {
-                if(coController.fret1Up)
-                    aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
-                else if(coController.fret2Up)
-                    aimedRobotState = ScoringPosition.CARGOL2FORWARDS;
-                else if(coController.fret2Down)
-                    aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
-                else if(coController.fret3Up)
-                    aimedRobotState = ScoringPosition.CARGOL3FORWARDS;
-            }
-            else if(coController.strumUp)
-            {
-                if(coController.fret1Up)
-                    aimedRobotState = ScoringPosition.CARGOL1BACKWARDS;
-                else if(coController.fret2Up)
-                    aimedRobotState = ScoringPosition.CARGOL2BACKWARDS;
-                else if(coController.fret2Down)
-                    aimedRobotState = ScoringPosition.CARGOSHIPBACKWARDS;
-                else if(coController.fret3Up)
-                    aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
-            }
-        }
-
-
-        if(mainController.rightTrigger > .3)
-        {
-            BallIntake.retractIntake();
-        }
-        
-        if(coController.fret1Down && coController.strumUp)
-        {
-            //System.out.println("BallIntaketimer : " + ballIntakeTimer.get());
-            if (!arrivedAtMidPos) {
-                //System.out.println("Going to midPos");
-                ballIntakeTimer.reset();
-                ballIntakeTimer.start();
-                aimedRobotState = ScoringPosition.CARGOGROUNDINTAKE;
-            } else if (prevCargoIntakeExtended || ballIntakeTimer.get() > .5) {
-                //System.out.println("Going to cargoHandoff");
-                aimedRobotState = ScoringPosition.CARGOHANDOFF;
-            }
-        } 
-        else
-        {
-            arrivedAtMidPos = false;
-            BallIntake.stopMotor();
-        }
-
-        if(BallShooter.cargoDetection() && coController.fret1Down && coController.strumUp && Math.abs(Arm.armEncoderVelocity) > 500)
-        {
-            BallShooter.intakeCargo(.45);
-        }
-        else
-        {
-            BallShooter.stopMotor();
-        }
-        
-        if(coController.fret3Down && coController.strumUp)
-        {
-            BallShooter.shootBall(.7);
-        }
-        else if(!(coController.fret3Down && coController.strumUp) && !BallShooter.cargoDetection())
-        {
-            BallShooter.stopMotor();
-        }
-
-        if (mainController.buttonA)
-        {
-            aimedRobotState = null;
-            Elevator.aimedState = ElevatorLevel.START;
-        }
-
-        if (mainController.buttonY)
-        {
-            aimedRobotState = ScoringPosition.REVLIMITSWITCH;
-        }
-            
-        if(coController.stow)
-        {
-            aimedRobotState = ScoringPosition.STOWED;
-        }
-    }
-    
+    }    
 }

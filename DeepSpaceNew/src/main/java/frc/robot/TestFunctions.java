@@ -1,9 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3647inputs.Joysticks;
-import frc.team3647inputs.Limelight;
-import frc.team3647subsystems.VisionController;
+
 
 ///TO BE MOVED SOMETIME, ELSEWHERE
 public class TestFunctions 

@@ -7,10 +7,15 @@ import edu.wpi.first.wpilibj.Compressor;
 
 public class AirCompressor
 {
-	static Compressor c = new Compressor(Constants.CompressorPCMPin);
+	private static Compressor compressor = new Compressor(Constants.CompressorPCMPin);
 	
 	public static void runCompressor()
 	{
-	    c.setClosedLoopControl(true);
+		compressor.start();
+	}
+
+	public static void stopCompressor()
+	{
+		compressor.stop();
 	}
 }

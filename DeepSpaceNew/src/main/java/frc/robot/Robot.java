@@ -1,26 +1,14 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax.IdleMode;
-
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
-import frc.team3647autonomous.DriveSignal;
-import frc.team3647autonomous.MotionProfileDirection;
-import frc.team3647autonomous.Odometry;
-import frc.team3647autonomous.RamseteFollower;
-import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
-import frc.team3647subsystems.ShoppingCart.ShoppingCartPosition;
-import frc.team3647utility.Units;
-import jaci.pathfinder.Trajectory;
 
 public class Robot extends TimedRobot 
 {
@@ -41,7 +29,6 @@ public class Robot extends TimedRobot
 	public static double[] PIDF = new double[4]; 
 	public static int mVel = 0; 
 	public static int mAccel = 0; 
-	private Timer autoTimer;
 	private Timer matchTimer;
 
 
@@ -56,12 +43,9 @@ public class Robot extends TimedRobot
 		coController = new Joysticks(1); 
 		gyro = new Gyro();
 		
-		// TestFunctions.shuffleboardInit();
-		// Drivetrain.drivetrainInitialization();
-		// Drivetrain.initializeSmartDashboardVelAccel(); 
+		Drivetrain.drivetrainInitialization();
 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
-		autoTimer = new Timer();
 		// CameraServer.getInstance().startAutomaticCapture().setVideoMode(PixelFormat.kMJPEG, 160, 120, 15); //USB Cam One
 		// CameraServer.getInstance().startAutomaticCapture(); //USB Cam One
 		// CameraServer.getInstance().startAutomaticCapture().close();
@@ -92,7 +76,6 @@ public class Robot extends TimedRobot
 
 		gyro.resetAngle(); 
 		Drivetrain.drivetrainInitialization(); 
-		Drivetrain.resetEncoders(); 
 		AirCompressor.runCompressor(); 
 
 		BallIntake.ballIntakeinitialization(); 
@@ -110,13 +93,15 @@ public class Robot extends TimedRobot
 	public void autonomousPeriodic() 
 	{
 		teleopPeriodic();
+		Elevator.printElevatorEncoders();
+		System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);
+		System.out.println("ARM AIMED STATE: " + Arm.aimedState);
 	}
 
 	@Override
 	public void teleopInit()
 	{
 		Arm.armInitSensors();
-		SeriesStateMachine.initializeTeleop();
 		Drivetrain.drivetrainInitialization();
 		Elevator.elevatorTeleopInit();
 		AirCompressor.runCompressor();
@@ -141,6 +126,9 @@ public class Robot extends TimedRobot
 		HatchGrabber.runHatchGrabber(coController);
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
+		Elevator.printBannerSensor();
+		BallShooter.printBeamBreak();
+		Elevator.printElevatorEncoders();
 	}
 
 	@Override
@@ -169,13 +157,13 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		HatchGrabber.stopMotor();
-		// ShoppingCart.shoppingCartInit();
-		// Drivetrain.drivetrainInitialization();
-		// Elevator.elevatorInitialization();
+		// HatchGrabber.stopMotor();
+		// // ShoppingCart.shoppingCartInit();
+		// // Drivetrain.drivetrainInitialization();
+		// // Elevator.elevatorInitialization();
 		Drivetrain.drivetrainInitialization();
-		Drivetrain.resetEncoders();
-		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		// Drivetrain.resetEncoders();
+		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 	}
 
 
@@ -183,12 +171,12 @@ public class Robot extends TimedRobot
 	public void testPeriodic()
 	{
 		// System.out.println(gyro.getYaw());
-		if(mainController.buttonA)
-		{
-			// Drivetrain.setVelocity(mainController.rightJoyStickX, -mainController.rightJoyStickX);
-			gyro.resetAngle();
-			Drivetrain.resetEncoders();
-		}
+		// if(mainController.buttonA)
+		// {
+		// 	// Drivetrain.setVelocity(mainController.rightJoyStickX, -mainController.rightJoyStickX);
+		// 	gyro.resetAngle();
+		// 	Drivetrain.resetEncoders();
+		// }
 		// else
 		// 	Drivetrain.setVelocity(mainController.leftJoyStickY, mainController.leftJoyStickY);
 
@@ -219,6 +207,7 @@ public class Robot extends TimedRobot
 		// Drivetrain.printAccel();
 		
 		teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);
+
 		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
 	}
 
