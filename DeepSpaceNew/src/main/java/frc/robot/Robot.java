@@ -48,6 +48,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit()
 	{
+		AutonomousSequences.limelightClimber.limelight.setToDriver();
+		AutonomousSequences.limelightFourBar.limelight.setToDriver();
 		Shuffleboard.setRecordingFileNameFormat("San Diego Regional - ");
 		matchTimer = new Timer();
 		mainController = new Joysticks(0); 
@@ -60,10 +62,16 @@ public class Robot extends TimedRobot
 
 		Arm.armNEO.setIdleMode(IdleMode.kBrake); 
 		autoTimer = new Timer();
-		// CameraServer.getInstance().startAutomaticCapture(0); //USB Cam One
-		// CameraServer.getInstance().startAutomaticCapture(1); //USB Cam Two
+		// CameraServer.getInstance().startAutomaticCapture().setVideoMode(PixelFormat.kMJPEG, 160, 120, 15); //USB Cam One
+		// CameraServer.getInstance().startAutomaticCapture(); //USB Cam One
+		// CameraServer.getInstance().startAutomaticCapture().close();
 		
 		matchTimer.reset();
+
+		teleopNotifier = new Notifier(() -> {
+			Arm.armNEOFollow();
+		});
+		teleopNotifier.startPeriodic(.01);
 	}
 
 	@Override
@@ -78,43 +86,20 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() 
 	{
+		Shuffleboard.startRecording();
+		matchTimer.reset();
+		matchTimer.start();
+
 		gyro.resetAngle(); 
-		// The NEO takes the Motor-output in percent from the SRX and since SRX
-		// values are using motion-magic, it "follows" the SRX
-		Drivetrain.drivetrainInitialization();
-		AutonomousSequences.autoInitFWD("YTW");
-		// autoTimer.reset(); 
-		// autoTimer.start(); 
-		
-
-		// Shuffleboard.startRecording();
-		// matchTimer.reset();
-		// matchTimer.start();
-
-		
+		Drivetrain.drivetrainInitialization(); 
 		Drivetrain.resetEncoders(); 
-		// AirCompressor.runCompressor();
+		AirCompressor.runCompressor(); 
 
-		// BallIntake.ballIntakeinitialization(); 
-		// Arm.armInitialization(); 
-		// Elevator.elevatorInitialization(); 
-		// SeriesStateMachine.seriesStateMachineInit(); 
-		// // ShoppingCart.shoppingCartInit(); 
-		// Drivetrain.drivetrainInitialization(); 
-
-		autoNotifier = new Notifier(() ->
-		{
-			// Arm.armNEOFollow();
-			Odometry.getInstance().runOdometry();
-		});
-		autoNotifier.startPeriodic(0.01);
-
-		// teleopNotifier = new Notifier(() -> 
-    	// {
-		// 	Arm.armNEOFollow(); 
-		// }); 
-		// teleopNotifier.startPeriodic(.01);
-		Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		BallIntake.ballIntakeinitialization(); 
+		Arm.armInitialization(); 
+		Elevator.elevatorInitialization(); 
+		SeriesStateMachine.seriesStateMachineInit(); 
+		// ShoppingCart.shoppingCartInit(); 
 
 	}
   
@@ -124,24 +109,18 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
-		// AutonomousSequences.fwdBwd("RocketToStation");
-		AutonomousSequences.runPath();
-		System.out.println(Math.toRadians(gyro.getYaw()));
-		System.out.println("Current Position: " + Odometry.getInstance().getCurrentEncoderPosition());
-		// Drivetrain.printVelocity();
-		// System.out.println("Desired Left Vel: " + AutonomousSequences.leftSpeed);
-		// System.out.println("Desired Right Vel: " + AutonomousSequences.rightSpeed);
-
-
-		
-		// teleopPeriodic();
+		teleopPeriodic();
 	}
 
 	@Override
 	public void teleopInit()
 	{
-		//RUN NOTHING
+		Arm.armInitSensors();
+		SeriesStateMachine.initializeTeleop();
+		Drivetrain.drivetrainInitialization();
+		Elevator.elevatorTeleopInit();
+		AirCompressor.runCompressor();
+		BallIntake.ballIntakeinitialization();
 	}
 
 	//Teleop Code

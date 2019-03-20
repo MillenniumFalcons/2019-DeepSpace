@@ -56,12 +56,7 @@ public class RobotPos
                     if(threshold(Constants.armSRXStowed, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
                     else
-                        return Movement.SAFEZMOVE;    
-                // case HATCHHANDOFF:
-                //     if(Arm.armEncoderValue > Constants.armSRXHatchHandoff)
-                //         return Movement.MOVEARM;
-                //     else
-                //         return Movement.SAFEZMOVE;                
+                        return Movement.SAFEZMOVE;                   
                 case CARGOHANDOFF:
                     if(threshold(Constants.armSRXCargoHandoff, Arm.armEncoderValue, 100))
                         return Movement.MOVEARM;
@@ -73,7 +68,10 @@ public class RobotPos
                     else
                         return Movement.SAFEZMOVE;
                 default:
-                    return Movement.MOVEARM;
+                    if(Elevator.isAboveMinRotate(0))
+                        return Movement.MOVEARM;
+                    else
+                        return Movement.SAFEZMOVE;
             }
         }
         //Both have to move
@@ -113,7 +111,7 @@ public class RobotPos
                     else
                         return Movement.SAFEZMOVE;
                 default:
-                    if(Elevator.getStateEncoder(posData.eLevel) >= Constants.elevatorMinRotation && Elevator.isAboveMinRotate(0))
+                    if(Elevator.elevatorEncoderVelocity > 1000 && Elevator.getStateEncoder(posData.eLevel) >= Constants.elevatorMinRotation && Elevator.isAboveMinRotate(0))
                         return Movement.FREEMOVE;
                     else
                     {
