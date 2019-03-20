@@ -7,6 +7,7 @@ import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -110,9 +111,6 @@ public class Elevator
 		elevatorMaster.config_kI(Constants.interstageSlotIdx, i, Constants.kTimeoutMs);	
 		elevatorMaster.config_kD(Constants.interstageSlotIdx, d, Constants.kTimeoutMs);
 		elevatorMaster.config_kF(Constants.interstageSlotIdx, f, Constants.kTimeoutMs);
-		
-		// GearboxMaster.config_IntegralZone(Constants.carriagePIDIdx, Constants.carriageIZone, Constants.kTimeoutMs);
-		
 		//Motion Magic Constants
 		elevatorMaster.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
         elevatorMaster.configMotionAcceleration(accel, Constants.kTimeoutMs);
@@ -155,12 +153,10 @@ public class Elevator
 
 	public static void runElevator()
 	{
-		// System.out.println("Elevator aimedPos " + aimedState);
 		setElevatorEncoder();
 		updateLivePosition();
 		if(aimedState != null)
 		{
-			//System.out.println("Elevator moving to: " + aimedState);
 			switch(aimedState) //check if aimed state has a value
 			{
 				case MANUAL:
@@ -230,14 +226,17 @@ public class Elevator
 		}
 		else
 		{
-			//setPosition(0);
-			setOpenLoop(-.15);
+			setOpenLoop(-.3);
 		}
 	}
 	
 	private static void moveToBottom()
 	{
-		setPosition(0);
+		if(positionThreshold(0) && !getLimitSwitch())
+			moveToBottomStart();
+		else
+			setPosition(0);
+		
 	}
     
     private static void moveToCargoHandoff()
@@ -413,37 +412,6 @@ public class Elevator
 			currentState = ElevatorLevel.MANUAL;
 	}
 
-	private static boolean stateDetection(ElevatorLevel level)
-	{
-        switch(level)
-		{
-			case MANUAL:
-				return manualOverride;
-            case BOTTOM:
-                return getLimitSwitch();
-            case CARGOHANDOFF:
-                return positionThreshold(Constants.elevatorCargoHandoff);
-            case HATCHHANDOFF:
-                return positionThreshold(Constants.elevatorHatchHandoff);
-            case HATCHL2:
-                return positionThreshold(Constants.elevatorHatchL2);
-            case HATCHL3:
-                return positionThreshold(Constants.elevatorHatchL3);
-            case CARGOL2:
-                return positionThreshold(Constants.elevatorHatchL3);
-            case CARGOSHIP:
-                return positionThreshold(Constants.elevatorCargoShip);
-			case STOWED:
-				return positionThreshold(Constants.elevatorStowed);
-			case MINROTATE:
-				return positionThreshold(Constants.elevatorMinRotation);
-			case VERTICALSTOWED:
-				return positionThreshold(Constants.elevatorVerticalStowed);
-            default:
-                return false;
-        }
-	}
-	
 	//Encoder Methods-------------------------------------------
 	public static void setElevatorEncoder()
 	{

@@ -28,8 +28,10 @@ public class HatchGrabber
 			grabHatch();
 		else if(coController.leftBumper)
 			releaseHatch();
-		else
+		else if (!BallShooter.cargoDetection())
 			runConstant();
+		else
+			stopMotor();
 
 		
 	}

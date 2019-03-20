@@ -213,7 +213,7 @@ public class AutonomousSequences
 			if (limelightFourBar.centered(threshold)) 
 			{
 				autoStep = 3;
-				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+				SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL1FORWARDS);
 			}
 			break;
 

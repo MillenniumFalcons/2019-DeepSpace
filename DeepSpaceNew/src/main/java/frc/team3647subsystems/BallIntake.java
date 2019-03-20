@@ -7,56 +7,15 @@ import edu.wpi.first.wpilibj.*;
 
 public class BallIntake 
 {
-	public static Solenoid extensionCylinder = new Solenoid(Constants.ballIntakeSolinoidPin);
-	public static Solenoid extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
-	public static VictorSPX intakeMotor = new VictorSPX(Constants.ballMotorPin);
+	private static Solenoid extensionCylinder = new Solenoid(Constants.ballIntakeSolinoidPin);
+	private static Solenoid extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
+	private static VictorSPX intakeMotor = new VictorSPX(Constants.ballMotorPin);
 	
 	public static void ballIntakeinitialization()
 	{
 		intakeMotor.setInverted(false);
 	}
-	
-	public static void runSmartBallIntake(boolean intakeJValue, boolean shootJValue)
-	{
-		if(intakeJValue)
-		{
-			if(BallShooter.cargoDetection())
-			{
-				stopMotor();
-				BallShooter.stopMotor();
-			}
-			else
-			{
-				intakeCargo(.75);
-				extendIntake();
-				BallShooter.intakeCargo(.75);
-			}
-		}
-		else if(shootJValue)
-		{
-			// BallShooter.shootBall();
-		}
-		else
-		{
-			stopMotor();
-			BallShooter.stopMotor();
-			retractIntake();
-		}
-	}
-	// For state machine
-	public static void runSmartIntake(double power)
-	{
-		if(!BallShooter.cargoDetection())
-		{
-			intakeCargo(power);
-			BallShooter.intakeCargo(power);
-		}
-		else
-		{
-			BallShooter.stopMotor();
-			stopMotor();
-		}
-	}
+
 	public static void runIntake()
 	{
 		if(BallShooter.cargoDetection())
