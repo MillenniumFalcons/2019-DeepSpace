@@ -1,7 +1,10 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -12,14 +15,9 @@ import frc.team3647subsystems.*;
 
 public class Robot extends TimedRobot 
 {
-	// private static final String kDefaultAuto = "Default";
-	// private static final String kCustomAuto = "My Auto";
-	// private String m_autoSelected;
-	// private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
+	public static PowerDistributionPanel pDistributionPanel;
 	public static Joysticks mainController; 
 	public static Joysticks coController;
-	public static Guitar guitarController;
 	public static Gyro gyro;
   
 	public static Notifier autoNotifier, teleopNotifier;
@@ -35,6 +33,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit()
 	{
+		pDistributionPanel = new PowerDistributionPanel();
+		
 		AutonomousSequences.limelightClimber.limelight.setToDriver();
 		AutonomousSequences.limelightFourBar.limelight.setToDriver();
 		// AutonomousSequences.limelightClimber.limelight.ledPipeline();
@@ -132,9 +132,7 @@ public class Robot extends TimedRobot
 		HatchGrabber.runHatchGrabber(coController);
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
-		Elevator.printBannerSensor();
-		BallShooter.printBeamBreak();
-		Elevator.printElevatorEncoders();
+		System.out.println("BALL SHOOTER: " + pDistributionPanel.getCurrent(Constants.ballShooterPDPpin));
 	}
 
 	@Override
@@ -176,6 +174,11 @@ public class Robot extends TimedRobot
 	@Override
 	public void testPeriodic()
 	{
+		if(coController.leftTrigger > .15)
+			BallShooter.intakeCargo(1);
+		else
+			BallShooter.stopMotor();
+		System.out.println("BALL SHOOTER: " + pDistributionPanel.getCurrent(Constants.ballShooterPDPpin));
 		// System.out.println(gyro.getYaw());
 		// if(mainController.buttonA)
 		// {

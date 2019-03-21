@@ -9,21 +9,17 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class SeriesStateMachine
 {
     // Variables to control initialization
-    private static boolean ranOnce = false;
-    public static boolean initializedRobot = false;
+    private static boolean ranOnce = false, initializedRobot = false;
     private static int initStep = 1;
 
-    //control ball ground intake
-    private static boolean intakeExtracted = false;
-    
     // Variables to control climb
-    private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false;
+    private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false, elevatorManual = false, climbMode=false;
     private static int climbStep = 0;
-    private static boolean elevatorManual = false;
-
-	private static boolean climbMode=false;
 
     private static ScoringPosition aimedRobotState;
+
+    //Variables to control ground cargo intake
+    private static boolean arrivedAtMidPos=false, prevCargoIntakeExtended=false;
 
     private static Timer ballIntakeTimer = new Timer(), climbTimer = new Timer();
 
@@ -70,16 +66,23 @@ public class SeriesStateMachine
         MOVEELEV,
         MOVEARM,
         SAFEZMOVE,
+        SAFEZDMOVE,
+        SAFEZUMOVE,
         FREEMOVE
     }
 
     public static void seriesStateMachineInit()
     {
+        //Variables to control init
         aimedRobotState = null;
         initializedRobot = false;
         initStep = 0;
         ranOnce = false;
-        intakeExtracted = false;
+
+
+        //Variables to control cargo intake
+        arrivedAtMidPos=false;
+        prevCargoIntakeExtended=false;
 
         // Variables to control climb
         shoppingCartDeployed = false;
@@ -88,6 +91,7 @@ public class SeriesStateMachine
         climbMode = false;
         climbStep = 0;
 
+        //Init aimed state
         aimedRobotState = ScoringPosition.START;
     }
 
@@ -132,13 +136,11 @@ public class SeriesStateMachine
                 aimedRobotState = ScoringPosition.CARGOL3BACKWARDS;
         }
 
-        
-        if(mainController.rightTrigger > .3)
+        if(coController.leftJoyStickPress)
         {
-            BallIntake.retractIntake();
-            prevCargoIntakeExtended = false;
+            aimedRobotState = ScoringPosition.STOWED;
         }
-        
+
         if(coController.leftTrigger > .15)
         {  
             if (!arrivedAtMidPos) {
@@ -155,18 +157,24 @@ public class SeriesStateMachine
             BallIntake.stopMotor();
         }
 
-        
         if(coController.rightTrigger > .15)
         {
             BallShooter.shootBall(coController.rightTrigger);
         }
-        else if(!BallShooter.cargoDetection() && coController.leftTrigger < .15 && Math.abs(Arm.armEncoderVelocity) > 500)
+        else if(coController.leftTrigger < .15 && (Math.abs(Arm.armEncoderVelocity) > 500 || Math.abs(Elevator.elevatorEncoderVelocity) > 500))
         {
             BallShooter.intakeCargo(.45);
         }
         else
         {
             BallShooter.stopMotor();
+        }
+
+        //Main controller controls
+        if(mainController.rightTrigger > .3)
+        {
+            BallIntake.retractIntake();
+            prevCargoIntakeExtended = false;
         }
 
         if (mainController.buttonA)
@@ -179,10 +187,7 @@ public class SeriesStateMachine
             aimedRobotState = ScoringPosition.REVLIMITSWITCH;
         }
             
-        if(coController.leftJoyStickPress)
-        {
-            aimedRobotState = ScoringPosition.STOWED;
-        }
+
     }
 
     public static void runSeriesStateMachine()
@@ -196,9 +201,6 @@ public class SeriesStateMachine
                     break;
                 case CARGOGROUNDINTAKE:
                     extendCargoGroundIntake();
-                    break;
-                case CARGOHANDOFF:
-                    cargoHandoff();
                     break;
                 case CLIMB:
                     climbing();
@@ -214,26 +216,7 @@ public class SeriesStateMachine
 
     private static void goToAimedState()
     {
-        switch(movementCheck(aimedRobotState))
-        {
-            case ARRIVED:
-                Arm.aimedState = aimedRobotState.armPos;
-                Elevator.aimedState = aimedRobotState.eLevel;
-                break;
-            case MOVEELEV:
-                Elevator.aimedState = aimedRobotState.eLevel;
-                break;
-            case MOVEARM:
-                Arm.aimedState = aimedRobotState.armPos;
-                break;
-            case SAFEZMOVE:
-                safetyRotateArm(aimedRobotState.armPos);
-                break;
-            case FREEMOVE:
-                Arm.aimedState = aimedRobotState.armPos;
-                Elevator.aimedState = aimedRobotState.eLevel;
-                break; 
-        }
+        goToAimedState(aimedRobotState);
     }
 
     private static void goToAimedState(ScoringPosition aimedState)
@@ -243,6 +226,8 @@ public class SeriesStateMachine
             case ARRIVED:
                 Arm.aimedState = aimedState.armPos;
                 Elevator.aimedState = aimedState.eLevel;
+                if(aimedState.equals(ScoringPosition.CARGOHANDOFF))
+                    runCargoHandoff();
                 break;
             case MOVEELEV:
                 Elevator.aimedState = aimedState.eLevel;
@@ -253,6 +238,12 @@ public class SeriesStateMachine
             case SAFEZMOVE:
                 safetyRotateArm(aimedState.armPos);
                 break;
+            case SAFEZDMOVE:
+                safetyRotateArmDown(aimedState.armPos);
+                break;
+            case SAFEZUMOVE:
+                safetyRotateArmUp(aimedState.armPos, aimedState.eLevel);
+                break;
             case FREEMOVE:
                 Arm.aimedState = aimedState.armPos;
                 Elevator.aimedState = aimedState.eLevel;
@@ -260,37 +251,16 @@ public class SeriesStateMachine
         }
     }
 
-    private static void cargoHandoff()
+    private static void runCargoHandoff()
     {
-        switch(movementCheck(ScoringPosition.CARGOHANDOFF))
+        prevCargoIntakeExtended = true;
+        BallIntake.runIntake();
+        if(Robot.coController.leftTrigger < .15)
         {
-            case ARRIVED:
-                Arm.aimedState = ScoringPosition.CARGOHANDOFF.armPos;
-                Elevator.aimedState = ScoringPosition.CARGOHANDOFF.eLevel;
-
-                prevCargoIntakeExtended = true;
-                BallIntake.runIntake();
-                if(Robot.coController.leftTrigger < .15)
-                {
-                    BallIntake.stopMotor();
-                    BallShooter.stopMotor();
-                    aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
-                }
-                break;
-            case MOVEELEV:
-                Elevator.aimedState = ScoringPosition.CARGOHANDOFF.eLevel;
-                break;
-            case MOVEARM:
-                Arm.aimedState = ScoringPosition.CARGOHANDOFF.armPos;
-                break;
-            case SAFEZMOVE:
-                safetyRotateArm(ScoringPosition.CARGOHANDOFF.armPos);
-                break;
-            case FREEMOVE:
-                Arm.aimedState = ScoringPosition.CARGOHANDOFF.armPos;
-                Elevator.aimedState = ScoringPosition.CARGOHANDOFF.eLevel;
-                break;
-            }
+            BallIntake.stopMotor();
+            BallShooter.stopMotor();
+            aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+        }
     }
 
     private static void climbing() 
@@ -363,6 +333,7 @@ public class SeriesStateMachine
                     safetyRotateArm(ArmPosition.REVLIMITSWITCH);
                     if(Arm.getRevLimitSwitch())
                     {
+                        Arm.resetArmEncoder();
                         initStep = 1;
                     }
                     break;  
@@ -379,7 +350,6 @@ public class SeriesStateMachine
 
     }
 
-    private static boolean arrivedAtMidPos=false, prevCargoIntakeExtended=false;
     private static void extendCargoGroundIntake()
     {
         if(!arrivedAtMidPos)
@@ -389,9 +359,7 @@ public class SeriesStateMachine
                 arrivedAtMidPos = true;
         }
         if(arrivedAtMidPos)
-        {
-            BallIntake.extendIntake();
-        }        
+            BallIntake.extendIntake(); 
     }
 
     private static void safetyRotateArm(Arm.ArmPosition pos)
@@ -411,14 +379,36 @@ public class SeriesStateMachine
         }
     }
 
-    private static boolean inThreshold(int val,int actual, int threshold)
+    private static void safetyRotateArmDown(Arm.ArmPosition pos)
+    {
+        Elevator.aimedState = ElevatorLevel.MINROTATE;
+        Arm.aimedState = pos;
+    }
+
+    private static void safetyRotateArmUp(Arm.ArmPosition armPos, Elevator.ElevatorLevel eLevel)
+    {
+        if(Elevator.isAboveMinRotate(-500))
+        {
+            Arm.aimedState = armPos;
+            Elevator.aimedState = eLevel;
+        }
+        else
+        {
+            Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
+            Arm.aimedState = null;
+        }
+    }
+
+    private static boolean inThreshold(int val, int actual, int threshold)
     {
         return (val > actual - threshold) && (val < actual + threshold);
     }
 
     private static void rotateArmClimb(Arm.ArmPosition pos)
     {
-        if(Elevator.elevatorEncoderValue >= Constants.elevatorHatchL2 - 500 && Elevator.elevatorEncoderValue <= 30000)
+        if( Elevator.elevatorEncoderValue >= Constants.elevatorHatchL2 - 500 && 
+            Elevator.elevatorEncoderValue <= 30000
+          )
             Arm.aimedState = pos;
         else
         {
@@ -426,6 +416,7 @@ public class SeriesStateMachine
             Arm.aimedState = null;
         }
     }
+
 
     private static int possibeArmPosition(int elevEncoder)
     {
@@ -437,7 +428,7 @@ public class SeriesStateMachine
 
     private static int possibleElevatorPosition(int armEncoder)
     {
-        return (int)(-0.00022417 * (armEncoder - 3700) * (armEncoder - 22600));
+        return (int)(-0.00022417 * (armEncoder - Constants.armSRXFlatForwards) * (armEncoder - Constants.armSRXFlatBackwards));
     }
 
     private static Movement movementCheck(SeriesStateMachine.ScoringPosition aimedState)
@@ -452,72 +443,28 @@ public class SeriesStateMachine
         }
         else if(Elevator.currentState == aimedState.eLevel && Arm.currentState != aimedState.armPos)//check if arm can move without moving elevator
         {
-            switch(aimedState)
-            {
-                case HATCHL1FORWARDS: // fast movement!
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 800))
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;
-                case HATCHL1BACKWARDS: // fast movement!
-                    if(threshold(Constants.armSRXFlatBackwards, Arm.armEncoderValue, 500))
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;
-                case STOWED:
-                    if(threshold(Constants.armSRXStowed, Arm.armEncoderValue, 100))
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;                   
-                case CARGOHANDOFF:
-                    if(threshold(Constants.armSRXCargoHandoff, Arm.armEncoderValue, 100))
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;
-                case VERTICALSTOWED:
-                    if(threshold(Constants.armSRXFlatForwards, Arm.armEncoderValue, 100))
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;
-                default:
-                    if(Elevator.isAboveMinRotate(0))
-                        return Movement.MOVEARM;
-                    else
-                        return Movement.SAFEZMOVE;
-            }
+            if(Elevator.isAboveMinRotate(-500))
+                return Movement.MOVEARM;
+            else
+                return Movement.SAFEZMOVE;
         }
         else //Both have to move
         {
-            switch(aimedState)
-            {
-                case HATCHL1FORWARDS: //Change from SAFEZMOVE to only if statement
-                    return Movement.SAFEZMOVE;
-                case HATCHL1BACKWARDS:
-                    return Movement.SAFEZMOVE;
-                case STOWED:
-                    return Movement.SAFEZMOVE;                    
-                case CARGOHANDOFF:
-                    return Movement.SAFEZMOVE;
-                case VERTICALSTOWED:
-                    return Movement.SAFEZMOVE;
-                case CARGOL3BACKWARDS:
-                    if(Elevator.isAboveMinRotate(0))
-                        return Movement.FREEMOVE;
-                    else
-                        return Movement.SAFEZMOVE;
-                default:
-                    if( aimedState.eLevel.encoderVal >= Constants.elevatorMinRotation && 
-                        Elevator.isAboveMinRotate(0) )
-                        return Movement.FREEMOVE;
-                    else
-                        return Movement.SAFEZMOVE;
-            }
+            if(Elevator.isAboveMinRotate(-550) &&
+                aimedState.eLevel.encoderVal >= Constants.elevatorMinRotation
+               )
+                return Movement.FREEMOVE;
+            else if(Elevator.isAboveMinRotate(-550) &&
+                    aimedState.eLevel.encoderVal < Constants.elevatorMinRotation
+                    )
+                return Movement.SAFEZDMOVE;
+            else if(!Elevator.isAboveMinRotate(-500) && 
+                    aimedState.eLevel.encoderVal >= Constants.elevatorMinRotation
+                   )
+                return Movement.SAFEZUMOVE;
+            else
+                return Movement.SAFEZMOVE;
         }
-    }
-
-    private static boolean threshold(int constant, int currentValue, int threshold)
-    {
-        return (constant + threshold) > currentValue && (constant - threshold) < currentValue;
     }
 
     public static ScoringPosition getAimedRobotState()

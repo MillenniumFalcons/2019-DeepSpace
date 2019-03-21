@@ -30,6 +30,7 @@ public class Constants
 
 	// Ball Shooter
 	public static final int ballShooterPin = 15;
+	public static final int ballShooterPDPpin = 9;
 
 	// Gyro Pin
 	public static final int gyroPin = 16;
@@ -183,5 +184,6 @@ public class Constants
 
 	public static final double kBeta = 1.62; // b > 0 Correction
 	public static final double kZeta = 0.17; // 0 < z < 1 Dampening
+	
 	
 }

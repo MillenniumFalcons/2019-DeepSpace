@@ -54,7 +54,6 @@ public class Drivetrain
 		rightSRX.setInverted(true);
 		rightSPX1.setInverted(true);
 		rightSPX2.setInverted(true);
-		drive.setSafetyEnabled(false);
 		
 		resetEncoders();
 
@@ -63,7 +62,6 @@ public class Drivetrain
 	
 	public static void selectPIDF(int slot, double[] right, double[] left)
 	{
-
 		//PID SLOT
 		rightSRX.selectProfileSlot(slot, 0);
 		leftSRX.selectProfileSlot(slot, 0);
@@ -95,16 +93,11 @@ public class Drivetrain
 	 	}
 		else if(yValue == 0 && Math.abs(xValue) < threshold)
 		{
-			// resetEncoders();
-			// gyro.resetAngle();
 			stop();
-			// supposedAngle = gyro.getYaw();
 		}
 		else
 		{
-			// gyro.resetAngle();
 			curvatureDrive(xValue, yValue);
-			// supposedAngle = gyro.getYaw();
 		}
 	}
     
@@ -143,7 +136,11 @@ public class Drivetrain
 			supposedAngle = gyro.getYaw();
 		}
 	}
-	
+	private static void curvatureDrive(double throttle, double turn)
+	{
+		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
+	}
+
 	//USED BY AUTO FOR SOME REASON
     public static void setVelocity(double lSpeed, double rSpeed)
 	{
@@ -224,39 +221,12 @@ public class Drivetrain
 		rightSPX2.setNeutralMode(NeutralMode.Coast);
     }
     
-  private static void curvatureDrive(double throttle, double turn)
-	{
-		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
-	}
+
 
 	public static void resetEncoders()
 	{
 		leftSRX.setSelectedSensorPosition(0);
 		rightSRX.setSelectedSensorPosition(0);
-	}
-
-	public static void runPCJoy(Joysticks controller, Gyro gyro)
-	{
-	  if(controller.dPadUp)
-	  {
-		Drivetrain.customArcadeDrive(0, .5, gyro);
-	  }
-	  else if(controller.dPadDown)
-	  {
-		Drivetrain.customArcadeDrive(0, -.5, gyro);
-	  }
-	  else if(controller.dPadLeft)
-	  {
-		Drivetrain.customArcadeDrive(-.5, 0, gyro);
-	  }
-	  else if(controller.dPadRight)
-	  {
-		Drivetrain.customArcadeDrive(.5, 0, gyro);
-	  }
-	  else
-	  {
-		Drivetrain.stop();
-	  }
 	}
 
 		//-- -- -- Methods for testing max velocity and acceleration -- -- -- //
