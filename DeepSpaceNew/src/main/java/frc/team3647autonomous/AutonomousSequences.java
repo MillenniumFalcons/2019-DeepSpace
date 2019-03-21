@@ -20,7 +20,7 @@ public class AutonomousSequences
 	public static VisionController limelightFourBar = new VisionController("fourbar");
 	public static VisionController limelightClimber = new VisionController("climber");
 
-	public static int autoStep = 0;
+	public static int autoStep = -1;
 
 	public static DriveSignal driveSignal;
 	public static Trajectory trajectory;
@@ -97,6 +97,27 @@ public class AutonomousSequences
 			hey = true;
 			switch(afterAutoStep)
 			{
+				case -1:
+					if(limelightClimber.limelight.getValidTarget() != 1)
+						Drivetrain.setPercentOutput(-2, 2);
+					else
+					{
+						Drivetrain.stop();
+						autoStep = 66;
+					}
+					break;
+				case 66:
+					if(limelightClimber.area < 5)
+					{
+						limelightClimber.center(.0037);
+						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .2, limelightClimber.rightSpeed + .2);
+					}
+					else
+					{
+						Drivetrain.stop();
+						afterAutoStep = 0;
+					}
+					break;
 				case 0:
 					afterAutoTimer.reset();
 					afterAutoTimer.start();

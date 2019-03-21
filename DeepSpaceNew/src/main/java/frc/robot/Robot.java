@@ -37,6 +37,8 @@ public class Robot extends TimedRobot
 	{
 		AutonomousSequences.limelightClimber.limelight.setToDriver();
 		AutonomousSequences.limelightFourBar.limelight.setToDriver();
+		// AutonomousSequences.limelightClimber.limelight.ledPipeline();
+		// AutonomousSequences.limelightFourBar.limelight.ledPipeline();
 		Shuffleboard.setRecordingFileNameFormat("San Diego Regional - ");
 		matchTimer = new Timer();
 		mainController = new Joysticks(0); 
@@ -70,19 +72,21 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() 
 	{
-		Shuffleboard.startRecording();
-		matchTimer.reset();
-		matchTimer.start();
+		// Shuffleboard.startRecording();
+		// matchTimer.reset();
+		// matchTimer.start();
 
 		gyro.resetAngle(); 
 		Drivetrain.drivetrainInitialization(); 
-		AirCompressor.runCompressor(); 
+		// AirCompressor.runCompressor(); 
 
-		BallIntake.ballIntakeinitialization(); 
-		Arm.armInitialization(); 
-		Elevator.elevatorInitialization(); 
-		SeriesStateMachine.seriesStateMachineInit(); 
-		// ShoppingCart.shoppingCartInit(); 
+		// BallIntake.ballIntakeinitialization(); 
+		// Arm.armInitialization(); 
+		// Elevator.elevatorInitialization(); 
+		// SeriesStateMachine.seriesStateMachineInit(); 
+		// ShoppingCart.shoppingCartInit();
+		
+		AutonomousSequences.autoInitFWD("TestPath");
 
 	}
   
@@ -92,10 +96,12 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		teleopPeriodic();
-		Elevator.printElevatorEncoders();
-		System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);
-		System.out.println("ARM AIMED STATE: " + Arm.aimedState);
+		// teleopPeriodic();
+		// Elevator.printElevatorEncoders();
+		// System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);
+		// System.out.println("ARM AIMED STATE: " + Arm.aimedState);
+
+		AutonomousSequences.runPath();
 	}
 
 	@Override
@@ -148,8 +154,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		AutonomousSequences.limelightClimber.rightMost();
-		AutonomousSequences.limelightFourBar.rightMost();
+		AutonomousSequences.limelightClimber.limelight.ledPipeline();
+		AutonomousSequences.limelightFourBar.limelight.ledPipeline();
 	}
 
 	// private Timer secTimer;
@@ -207,6 +213,7 @@ public class Robot extends TimedRobot
 		// Drivetrain.printAccel();
 		
 		teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, threshold);
+		// teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);
 
 		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
 	}
