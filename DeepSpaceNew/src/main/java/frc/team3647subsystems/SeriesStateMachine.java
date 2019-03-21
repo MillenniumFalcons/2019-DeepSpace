@@ -259,7 +259,10 @@ public class SeriesStateMachine
         {
             BallIntake.stopMotor();
             BallShooter.stopMotor();
-            aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+            if(BallShooter.cargoDetection())
+                aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
+            else
+                aimedRobotState = ScoringPosition.BEFORECARGOHANDOFF;
         }
     }
 
@@ -267,13 +270,13 @@ public class SeriesStateMachine
     {
         if(!elevatorManual && inThreshold(Arm.armEncoderValue, Constants.armSRXClimb, 500) && inThreshold(Elevator.elevatorEncoderValue, Constants.elevatorHatchL2, 1000))
         {
-            System.out.println("Arm reached Position");
+            // System.out.println("Arm reached Position");
             elevatorManual = false;
             switch (climbStep) {
             case 0:
                 climbTimer.reset();
                 climbTimer.start();
-                System.out.println("Climb timer started");
+                // System.out.println("Climb timer started");
                 climbStep = 1;
                 break;
             case 1:
@@ -282,13 +285,13 @@ public class SeriesStateMachine
                     climbStep = 2;
                 break;
             case 2:
-                System.out.println("Deploying shopping cart!");
+                // System.out.println("Deploying shopping cart!");
                 ShoppingCart.deployShoppingCart();
                 if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 1000))
                     climbStep = 3;
                 break;
             case 3:
-                System.out.println("retracting Ball Intake");
+                // System.out.println("retracting Ball Intake");
                 BallIntake.retractIntake();
                 climbStep = 4;
                 break;
@@ -307,7 +310,7 @@ public class SeriesStateMachine
         else if(elevatorManual)
         {
             Elevator.aimedState = null;
-            Arm.aimedState = null;
+            Arm.aimedState = ArmPosition.STOPPED;
             climbMode = true;
             if (Robot.mainController.leftTrigger > .1) {
                 Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
@@ -375,7 +378,7 @@ public class SeriesStateMachine
         else
         {
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
-            Arm.aimedState = null;
+            Arm.aimedState = ArmPosition.STOPPED;
         }
     }
 
@@ -395,7 +398,7 @@ public class SeriesStateMachine
         else
         {
             Elevator.aimedState = Elevator.ElevatorLevel.MINROTATE;
-            Arm.aimedState = null;
+            Arm.aimedState = ArmPosition.STOPPED;
         }
     }
 
@@ -413,7 +416,7 @@ public class SeriesStateMachine
         else
         {
             Elevator.aimedState = Elevator.ElevatorLevel.HATCHL2;
-            Arm.aimedState = null;
+            Arm.aimedState = ArmPosition.STOPPED;
         }
     }
 

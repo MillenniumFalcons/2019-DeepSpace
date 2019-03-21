@@ -184,6 +184,8 @@ public class Constants
 
 	public static final double kBeta = 1.62; // b > 0 Correction
 	public static final double kZeta = 0.17; // 0 < z < 1 Dampening
-	
+
+	public static final double kFieldWidth = 8.2296;
+	public static final double expirationTimeSRX = 2; // seconds	
 	
 }

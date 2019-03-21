@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
+import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.Arm.ArmPosition;
 
 public class Robot extends TimedRobot 
 {
@@ -76,17 +78,15 @@ public class Robot extends TimedRobot
 		// matchTimer.reset();
 		// matchTimer.start();
 
-		gyro.resetAngle(); 
-		Drivetrain.drivetrainInitialization(); 
-		// AirCompressor.runCompressor(); 
+		try{gyro.resetAngle();}
+		catch(NullPointerException e){ gyro = new Gyro(); }
 
-		// BallIntake.ballIntakeinitialization(); 
-		// Arm.armInitialization(); 
-		// Elevator.elevatorInitialization(); 
-		// SeriesStateMachine.seriesStateMachineInit(); 
-		// ShoppingCart.shoppingCartInit();
-		
+		Drivetrain.drivetrainInitialization(); 
 		AutonomousSequences.autoInitFWD("TestPath");
+		
+		autoNotifier = new Notifier(() ->{
+			Odometry.getInstance().runOdometry();
+		});
 
 	}
   
@@ -96,11 +96,6 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
-		// teleopPeriodic();
-		// Elevator.printElevatorEncoders();
-		// System.out.println("ELEVATOR AIMED STATE: " + Elevator.aimedState);
-		// System.out.println("ARM AIMED STATE: " + Arm.aimedState);
-
 		AutonomousSequences.runPath();
 	}
 
@@ -120,19 +115,10 @@ public class Robot extends TimedRobot
 	{
 		driveVisionTeleop();
 		Arm.runArm();
-		// if(SeriesStateMachine.climbMode)
-		// {
-		// 	ShoppingCart.runShoppingCartSPX(mainController.leftJoyStickY);
-		// 	if(mainController.buttonB)
-		// 		ShoppingCart.aimedState = ShoppingCartPosition.MIDDLE;
-		// }
-		
-		// ShoppingCart.runShoppingCart();
 		Elevator.runElevator(); 
 		HatchGrabber.runHatchGrabber(coController);
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
-		System.out.println("BALL SHOOTER: " + pDistributionPanel.getCurrent(Constants.ballShooterPDPpin));
 	}
 
 	@Override
@@ -141,12 +127,6 @@ public class Robot extends TimedRobot
 		Shuffleboard.stopRecording();
 		matchTimer.stop();
 		matchTimer.reset();
-		// Arm.disableArm();
-		// Drivetrain.setToCoast();
-		// Odometry.getInstance().closeOdoThread();
-		// Elevator.aimedState = null;
-		// SeriesStateMachine.aimedRobotState = null;
-
 	}
 
 	@Override
@@ -161,188 +141,116 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		// HatchGrabber.stopMotor();
-		// // ShoppingCart.shoppingCartInit();
-		// // Drivetrain.drivetrainInitialization();
-		// // Elevator.elevatorInitialization();
 		Drivetrain.drivetrainInitialization();
-		// Drivetrain.resetEncoders();
-		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 	}
 
 
 	@Override
 	public void testPeriodic()
 	{
-		if(coController.leftTrigger > .15)
-			BallShooter.intakeCargo(1);
-		else
-			BallShooter.stopMotor();
-		System.out.println("BALL SHOOTER: " + pDistributionPanel.getCurrent(Constants.ballShooterPDPpin));
-		// System.out.println(gyro.getYaw());
-		// if(mainController.buttonA)
-		// {
-		// 	// Drivetrain.setVelocity(mainController.rightJoyStickX, -mainController.rightJoyStickX);
-		// 	gyro.resetAngle();
-		// 	Drivetrain.resetEncoders();
-		// }
-		// else
-		// 	Drivetrain.setVelocity(mainController.leftJoyStickY, mainController.leftJoyStickY);
-
-		// Drivetrain.printVelError();
-
-		// if(mainController.buttonY)
-		// {
-		// 	Drivetrain.leftSRX.set(ControlMode.Velocity, 3000);
-		// 	Drivetrain.rightSRX.set(ControlMode.Velocity, 3000);
-		// }
-		// else if(mainController.buttonA)
-		// {
-		// 	Drivetrain.leftSRX.set(ControlMode.Velocity, -600);
-		// 	Drivetrain.rightSRX.set(ControlMode.Velocity, -600);
-		// }
-		// else
-		// {
-		// 	Drivetrain.stop();
-		// }
-
-		// Drivetrain.printVelocity();
-
-		// HatchGrabber.runHatchGrabber(coController);
-		// Drivetrain.printEncoders();
-		// gyro.printAngles();
-		// if(Drivetrain.rightSRX.getSelectedSensorPosition(0) != 0)
-			// System.out.println(Drivetrain.leftSRX.getSelectedSensorPosition(0) / Drivetrain.rightSRX.getSelectedSensorPosition(0));
-		// Drivetrain.printAccel();
-		
-		teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, threshold);
-		// teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);
-
-		// Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, gyro);
+		driveVisionTeleop();
 	}
 
 	public void updateJoysticks()
 	{
-		mainController.setMainControllerValues();
-		coController.setMainControllerValues();
+		try{ mainController.setMainControllerValues(); }
+		catch(NullPointerException e)
+		{
+			System.out.println(e);
+			mainController = new Joysticks(0);
+		}
+		catch(Exception e){System.out.println(e);}
+		
+		try{ coController.setMainControllerValues();}
+		catch(NullPointerException e)
+		{
+			System.out.println(e);
+			coController = new Joysticks(1);
+		}
+		catch(Exception e){System.out.println(e);}
 	}
 	
 	double threshold = Constants.limelightThreshold;
 	public void driveVisionTeleop()
 	{
-		if (Elevator.elevatorEncoderValue > 27000) 
-		{
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
-		} 
-		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed || Drivetrain.rightSRX.getSelectedSensorVelocity() < -200) //Hatch intake above fourbar
-		{
-			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
-			teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, threshold);
-
-		} 
-		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed || Drivetrain.rightSRX.getSelectedSensorVelocity() > 200)//Hatch intake above climber
- 		{
-			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
-			teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);
-		} 
+		if(mainController.leftBumper)
+			vision(getVisionSide(), (Elevator.elevatorEncoderValue > 27000), VisionContour.kLeft);
+		else if(mainController.rightBumper)
+			vision(getVisionSide(), (Elevator.elevatorEncoderValue > 27000), VisionContour.kRight);
 		else 
 		{
 			AutonomousSequences.limelightClimber.driverMode();
 			AutonomousSequences.limelightFourBar.driverMode();
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-		}
-
-
-	}
-	
-	
-	int visionCase = 0;
-	public void teleopVisionForward(VisionController camOne, VisionController camTwo, double threshold) //.0037
-	{
-		double joyY = mainController.leftJoyStickY;
-		camTwo.driverFlipped();
-		if (mainController.rightBumper) 
-		{
-			camOne.rightMost();
-			switch (visionCase) 
-			{
-			case 0:
-				camOne.center(threshold);
-				Drivetrain.setPercentOutput(camOne.leftSpeed + joyY, camOne.rightSpeed + joyY);
-				if (camOne.area > 6)
-					visionCase = 1;
-				break;
-
-			case 1:
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-
-			}
-		} 
-		else if (mainController.leftBumper) 
-		{
-			camOne.leftMost();
-			switch (visionCase) {
-			case 0:
-				camOne.center(threshold);
-				Drivetrain.setPercentOutput(camOne.leftSpeed + joyY, camOne.rightSpeed + joyY);
-				if (camOne.area > 6)
-					visionCase = 1;
-				break;
-
-			case 1:
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-
-			}
-		} 
-		else 
-		{
-			visionCase = 0;
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+			if(Elevator.elevatorEncoderValue > 27000)
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6);
+			else
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY);
 		}
 	}
+
+	private VisionSide getVisionSide()
+	{
+		if(Arm.aimedState != null)
+		{
+			if(Arm.armEncoderValue > Constants.armSRXVerticalStowed || 
+				Arm.aimedState.equals(ArmPosition.FLATBACKWARDS) 	|| 
+				Arm.aimedState.equals(ArmPosition.CARGOL3FRONT)
+				)
+				return VisionSide.kBackwards;
+
+			return VisionSide.kForwards;
+		}
+		else
+		{
+			if(Arm.armEncoderValue > Constants.armSRXVerticalStowed)
+				return VisionSide.kBackwards;
+			return VisionSide.kForwards;
+
+		}
+			
+	}
 	
-	public void teleopVisionBackward(VisionController camOne, VisionController camTwo, double threshold) //.0037
+	public enum VisionSide
+	{
+		kBackwards,
+		kForwards,
+		kUnknown,
+	}
+	public enum VisionContour
+	{
+		kRight,
+		kLeft,
+	}
+
+	public void vision(VisionSide side, boolean scaleJoy, VisionContour contour)
 	{
 		double joyY = mainController.leftJoyStickY;
-		camTwo.driverFlipped();
-		if (mainController.rightBumper) 
+		double joyX = mainController.rightJoyStickX;
+		VisionController mVision;
+
+		if(scaleJoy)
 		{
-			camOne.leftMost();
-			switch(visionCase)
-			{
-			case 0:
-				camOne.center(threshold);
-				Drivetrain.setPercentOutput(-camOne.rightSpeed + joyY, -camOne.leftSpeed + joyY);
-				if(camOne.area > 6)
-						visionCase = 1;
-					break;
-				
-			case 1:
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-						
-			}
-		} 
-		else if (mainController.leftBumper) 
-		{
-			camOne.rightMost();
-			switch(visionCase)
-			{
-			case 0:
-				camOne.center(threshold);
-				Drivetrain.setPercentOutput(-camOne.rightSpeed + joyY, -camOne.leftSpeed + joyY);
-				if(camOne.area > 6)
-						visionCase = 1;
-					break;
-				
-			case 1:
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
-						
-			}
-		} 
-		else 
-		{
-			visionCase = 0;
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY, gyro);
+			joyY *= .6;
+			joyX *= .65;
 		}
+
+		
+		if(side.equals(VisionSide.kForwards))
+			mVision = AutonomousSequences.limelightClimber;
+		else
+			mVision = AutonomousSequences.limelightFourBar;
+
+		if(contour.equals(VisionContour.kRight))
+			mVision.rightMost();
+		else
+			mVision.leftMost();
+		
+		if(mVision.area < 6)
+		{
+			mVision.center(Constants.limelightThreshold);
+			Drivetrain.setPercentOutput(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY);
+		}
+		else
+			Drivetrain.customArcadeDrive(joyX * .7, joyY);
 	}
 }

@@ -33,7 +33,7 @@ public class Arm
     public static void armInitialization()
 	{
 		currentState = null;
-		aimedState = null;
+		aimedState = ArmPosition.STOPPED;
 		lastState = null;
 		//Encoder for arm motor
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
@@ -52,6 +52,10 @@ public class Arm
 		armSRX.config_kF(Constants.armPID, Constants.armPIDF[3], Constants.kTimeoutMs);
 		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);
 		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
+
+
+		armSRX.setName("Arm", "armSRX");
+		armSRX.setExpiration(Constants.expirationTimeSRX);
 	}
 	
 	public static void armInitSensors()
@@ -249,7 +253,12 @@ public class Arm
 	private static void setPosition(int position)
 	{
 		// Motion Magic
-		armSRX.set(ControlMode.MotionMagic, position);
+		try{ armSRX.set(ControlMode.MotionMagic, position); }
+		catch(NullPointerException e)
+		{
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+			armSRX.set(ControlMode.MotionMagic, position);
+		}
 	}
 	//-----------------------------------------
 	// Manual Movement-------------------------
@@ -288,7 +297,8 @@ public class Arm
 
 	public static void setOpenLoop(double demand)
 	{
-		armSRX.set(ControlMode.PercentOutput, demand);
+		try{ armSRX.set(ControlMode.PercentOutput, demand); }
+		catch(NullPointerException e){ armSRX = new WPI_TalonSRX(Constants.armSRXPin); }
 	}
 
 	public static void stopArm()
@@ -314,9 +324,17 @@ public class Arm
 	{
 		// When the arm rotates all the way to the back encoder resets
 		// Gets encoder from SRX
-		armEncoderValue = armSRX.getSelectedSensorPosition(0);
-		armEncoderVelocity = armSRX.getSelectedSensorVelocity(0);
-		armEncoderCCL = armSRX.getClosedLoopError(0); // Gets difference between aimed encoder value and current encoder value
+		try
+		{
+			armEncoderValue = armSRX.getSelectedSensorPosition(0);
+			armEncoderVelocity = armSRX.getSelectedSensorVelocity(0);
+			armEncoderCCL = armSRX.getClosedLoopError(0); // Gets difference between aimed encoder value and current encoder value
+		}
+		catch(NullPointerException e)
+		{
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+			armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		}
 	}
 
 	public static void setEncoderValue(int encoderValue)
@@ -341,12 +359,30 @@ public class Arm
 	// Limit switch methods ------------------------------------
 	public static boolean getRevLimitSwitch()
 	{
-		return revNeoLimitSwitch.get();
+		try
+		{
+			return revNeoLimitSwitch.get();
+		}
+		catch(NullPointerException e)
+		{
+			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+			revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+			return revNeoLimitSwitch.get();
+		}
 	}
 
 	public static boolean getFwdLimitSwitch()
 	{
-		return fwdNeoLimitSwitch.get();
+		try
+		{
+			return fwdNeoLimitSwitch.get();
+		}
+		catch(NullPointerException e)
+		{
+			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+			fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+			return fwdNeoLimitSwitch.get();
+		}
 	}
 	//----------------------------------------------------------
 	
@@ -356,7 +392,7 @@ public class Arm
 	}
 	public static void printArmEncoders()
     {
-        System.out.println("\nArm Encoder Value: " + armEncoderValue);// + "\nArm Velocity: " + armEncoderVelocity);
+        System.out.println("\nArm Encoder Value: " + armEncoderValue);
 	}
 
 	public static void printArmLimitSwitches()

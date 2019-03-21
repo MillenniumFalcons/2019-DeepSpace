@@ -24,7 +24,7 @@ public class Drivetrain
 
   public static double supposedAngle;
 
-  private static DifferentialDrive drive= new DifferentialDrive(leftSRX, rightSRX);
+  private static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 
 
   public static void drivetrainInitialization()
@@ -54,6 +54,14 @@ public class Drivetrain
 		rightSRX.setInverted(true);
 		rightSPX1.setInverted(true);
 		rightSPX2.setInverted(true);
+
+		leftSRX.setName("Drivetrain", "leftSRX");
+		rightSRX.setName("Drivetrain", "rightSRX");
+
+		leftSRX.setExpiration(Constants.expirationTimeSRX);
+		rightSRX.setExpiration(Constants.expirationTimeSRX);
+		drive.setExpiration(Constants.expirationTimeSRX);
+
 		
 		resetEncoders();
 
@@ -84,7 +92,7 @@ public class Drivetrain
 	 * @param yValue joystick y value
 	 * @param gyro gyro object
 	 */
-  public static void customArcadeDrive(double xValue, double yValue, Gyro gyro)
+  public static void customArcadeDrive(double xValue, double yValue)
 	{
 		double threshold = 0.09;
 		if(yValue != 0 && Math.abs(xValue) < threshold)
@@ -138,7 +146,16 @@ public class Drivetrain
 	}
 	private static void curvatureDrive(double throttle, double turn)
 	{
-		drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
+		try
+		{
+			drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
+		}
+		catch(NullPointerException e)
+		{
+			System.out.println(e);
+			System.out.println("differential drive not initialized\nCreating new DifferentialDrive object");
+			drive = new DifferentialDrive(leftSRX, rightSRX);
+		}
 	}
 
 	//USED BY AUTO FOR SOME REASON

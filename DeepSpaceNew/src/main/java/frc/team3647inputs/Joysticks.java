@@ -6,15 +6,13 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
-public class Joysticks 
+public class Joysticks
 {
 	/**
 	 * XboxController Object for Main-Driver Controller; contains all Xbox Controller Functions
 	 */
 	private XboxController controller;
 	
-	// to get dPad degrees
-	private GenericHID dPad;
 	
 	/**
 	 * Main controller Variable
@@ -32,8 +30,6 @@ public class Joysticks
 	public Joysticks(int controllerPin)
 	{
 		controller = new XboxController(controllerPin);
-		dPad = new XboxController(controllerPin);
-		DriverStation.getInstance().getJoystickName(controllerPin);
 	}
 
 	
@@ -42,6 +38,7 @@ public class Joysticks
 	 */
 	public void setMainControllerValues()
 	{
+
 		leftBumper		= 	controller.getBumper(XboxController.Hand.kLeft);
 		rightBumper 	=	controller.getBumper(XboxController.Hand.kRight);
 		leftTrigger 	= 	joystickThreshold(controller.getTriggerAxis(XboxController.Hand.kLeft));

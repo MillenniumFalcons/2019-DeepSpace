@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import frc.robot.Constants;
+
 public class TrajectoryUtil 
 {
 
@@ -21,6 +23,15 @@ public class TrajectoryUtil
 
         return new Trajectory(segments.stream()
                 .map(segment -> new Segment(segment.dt, segment.x, segment.y, distance - segment.position, -segment.velocity, -segment.acceleration, -segment.jerk, segment.heading))
+                .toArray(Segment[]::new));
+    }
+
+    public static Trajectory correctPath(Trajectory originalTrajectory)
+    {
+        ArrayList<Segment> segments = new ArrayList<>(Arrays.asList(originalTrajectory.segments));
+
+        return new Trajectory(segments.stream()
+                .map(segment -> new Segment(segment.dt, segment.x, Constants.kFieldWidth - segment.y, segment.position, segment.velocity, segment.acceleration, segment.jerk, -segment.heading))
                 .toArray(Segment[]::new));
     }
 

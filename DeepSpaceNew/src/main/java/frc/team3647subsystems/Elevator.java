@@ -67,39 +67,44 @@ public class Elevator
 
 		elevatorMaster.setNeutralMode(NeutralMode.Brake);
 		setEncoderValue(Constants.elevatorStartingStowed);
+
+		elevatorMaster.setName("Elevator", "elevatorMaster");
+		elevatorMaster.setExpiration(Constants.expirationTimeSRX);
 	}
 	
 	public static void elevatorTeleopInit()
 	{
-			//Config Sensors for encoder
-			elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-			elevatorMaster.setSensorPhase(true);
-	
-			// Configure PID Values
-			elevatorMaster.selectProfileSlot(Constants.interstageSlotIdx, 0);
-	
-			elevatorMaster.config_kP(Constants.interstageSlotIdx, Constants.interstagePIDF[0], Constants.kTimeoutMs);		
-			elevatorMaster.config_kI(Constants.interstageSlotIdx, Constants.interstagePIDF[1], Constants.kTimeoutMs);	
-			elevatorMaster.config_kD(Constants.interstageSlotIdx, Constants.interstagePIDF[2], Constants.kTimeoutMs);
-			elevatorMaster.config_kF(Constants.interstageSlotIdx, Constants.interstagePIDF[3], Constants.kTimeoutMs);
-			
-			// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
-	
-			// //Motion Magic Constants
-			elevatorMaster.configMotionCruiseVelocity(Constants.kElevatorCruiseVelocity, Constants.kTimeoutMs);
-			elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
-	
-			GearboxSPX2.follow(elevatorMaster);
-			GearboxSPX1.follow(elevatorMaster);
-			GearBoxSPX3.follow(elevatorMaster);
-			GearboxSPX2.setInverted(false);
-			elevatorMaster.setInverted(false);
-			GearboxSPX1.setInverted(false);
-	
-			Elevator.elevatorMaster.enableCurrentLimit(true);
-			Elevator.elevatorMaster.configContinuousCurrentLimit(35);
-	
-			elevatorMaster.setNeutralMode(NeutralMode.Brake);
+		//Config Sensors for encoder
+		elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		elevatorMaster.setSensorPhase(true);
+
+		// Configure PID Values
+		elevatorMaster.selectProfileSlot(Constants.interstageSlotIdx, 0);
+
+		elevatorMaster.config_kP(Constants.interstageSlotIdx, Constants.interstagePIDF[0], Constants.kTimeoutMs);		
+		elevatorMaster.config_kI(Constants.interstageSlotIdx, Constants.interstagePIDF[1], Constants.kTimeoutMs);	
+		elevatorMaster.config_kD(Constants.interstageSlotIdx, Constants.interstagePIDF[2], Constants.kTimeoutMs);
+		elevatorMaster.config_kF(Constants.interstageSlotIdx, Constants.interstagePIDF[3], Constants.kTimeoutMs);
+		
+		// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
+
+		// //Motion Magic Constants
+		elevatorMaster.configMotionCruiseVelocity(Constants.kElevatorCruiseVelocity, Constants.kTimeoutMs);
+		elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
+
+		GearboxSPX2.follow(elevatorMaster);
+		GearboxSPX1.follow(elevatorMaster);
+		GearBoxSPX3.follow(elevatorMaster);
+		GearboxSPX2.setInverted(false);
+		elevatorMaster.setInverted(false);
+		GearboxSPX1.setInverted(false);
+
+		Elevator.elevatorMaster.enableCurrentLimit(true);
+		Elevator.elevatorMaster.configContinuousCurrentLimit(35);
+
+		elevatorMaster.setNeutralMode(NeutralMode.Brake);
+		elevatorMaster.setName("Elevator", "elevatorMaster");
+		elevatorMaster.setExpiration(Constants.expirationTimeSRX);
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)

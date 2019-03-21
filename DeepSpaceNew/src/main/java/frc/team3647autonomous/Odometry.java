@@ -55,10 +55,7 @@ public class Odometry
 
     public void runOdometry()
     {
-        if(this.bwd)
-            currentEncoderPosition = -(Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
-        else
-            currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
+        currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
         deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
         // difference in encoder ticks
         theta = Math.toRadians(Robot.gyro.getYaw());// Gyro angle in Radians
