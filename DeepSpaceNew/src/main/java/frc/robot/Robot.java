@@ -234,13 +234,13 @@ public class Robot extends TimedRobot
 		{
 			Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6, gyro);
 		} 
-		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed) //Hatch intake above fourbar
+		else if (Arm.armEncoderValue > Constants.armSRXVerticalStowed || Drivetrain.rightSRX.getSelectedSensorVelocity() < -200) //Hatch intake above fourbar
 		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH BACKWARDS");
 			teleopVisionBackward(AutonomousSequences.limelightFourBar, AutonomousSequences.limelightClimber, threshold);
 
 		} 
-		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed)//Hatch intake above climber
+		else if (Arm.armEncoderValue < Constants.armSRXVerticalStowed || Drivetrain.rightSRX.getSelectedSensorVelocity() > 200)//Hatch intake above climber
  		{
 			SmartDashboard.putString("ARM ORIENTATION", "HATCH FORWARDS");
 			teleopVisionForward(AutonomousSequences.limelightClimber, AutonomousSequences.limelightFourBar, threshold);

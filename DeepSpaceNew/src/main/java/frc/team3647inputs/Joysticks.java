@@ -52,9 +52,9 @@ public class Joysticks
 		buttonY 		= 	controller.getYButtonPressed();
 
 		leftJoyStickX 	= 	joystickThreshold(controller.getX(XboxController.Hand.kLeft));
-		leftJoyStickY 	= 	joystickThreshold(controller.getY(XboxController.Hand.kLeft));
+		leftJoyStickY 	= 	joystickThreshold(-controller.getY(XboxController.Hand.kLeft));
 		rightJoyStickX 	= 	joystickThreshold(controller.getX(XboxController.Hand.kRight));
-		rightJoyStickY 	= 	joystickThreshold(controller.getY(XboxController.Hand.kRight)); 
+		rightJoyStickY 	= 	joystickThreshold(-controller.getY(XboxController.Hand.kRight)); 
 
 		rightJoyStickPress= controller.getStickButtonPressed(XboxController.Hand.kRight);
 		leftJoyStickPress = controller.getStickButtonPressed(XboxController.Hand.kLeft);
