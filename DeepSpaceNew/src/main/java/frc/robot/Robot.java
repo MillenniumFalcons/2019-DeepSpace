@@ -150,6 +150,7 @@ public class Robot extends TimedRobot
 	{
 		Drivetrain.drivetrainInitialization();
 		Drivetrain.resetEncoders();
+		Drivetrain.setToCoast();
 	}
 
 
