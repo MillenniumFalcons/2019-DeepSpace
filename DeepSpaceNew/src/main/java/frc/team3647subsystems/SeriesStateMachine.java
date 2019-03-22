@@ -18,6 +18,9 @@ public class SeriesStateMachine
 
     private static ScoringPosition aimedRobotState;
 
+    public static boolean forceCargoOff = false;
+    public static boolean forceCargoOn = false;
+
     //Variables to control ground cargo intake
     private static boolean arrivedAtMidPos=false, prevCargoIntakeExtended=false;
 
@@ -185,6 +188,22 @@ public class SeriesStateMachine
         else if (mainController.buttonY)
         {
             aimedRobotState = ScoringPosition.REVLIMITSWITCH;
+        }
+
+        if(mainController.leftMidButton && mainController.rightMidButton)
+        {
+            forceCargoOn = false;
+            forceCargoOff = false;
+        }
+        else if(mainController.rightMidButton)
+        {
+            forceCargoOn = true;
+            forceCargoOff = false;
+        }
+        else if(mainController.leftMidButton)
+        {
+            forceCargoOn = false;
+            forceCargoOff = true;
         }
             
 

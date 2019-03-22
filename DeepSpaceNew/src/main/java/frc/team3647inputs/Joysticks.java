@@ -19,7 +19,7 @@ public class Joysticks
 	 */
 	public double leftTrigger, rightTrigger, leftJoyStickY, leftJoyStickX, rightJoyStickY, rightJoyStickX;
 	public boolean rightBumper, leftBumper, buttonA, buttonB, buttonY, buttonX, dPadDown, dPadLeft, dPadRight, dPadUp;
-	public boolean rightJoyStickPress, leftJoyStickPress;
+	public boolean rightJoyStickPress, leftJoyStickPress, leftMidButton, rightMidButton;
 	
 	/**
 	 * Co-Driver Controller Variable
@@ -55,7 +55,11 @@ public class Joysticks
 
 		rightJoyStickPress= controller.getStickButtonPressed(XboxController.Hand.kRight);
 		leftJoyStickPress = controller.getStickButtonPressed(XboxController.Hand.kLeft);
-		dPadValue = 		controller.getPOV();
+
+		leftMidButton = controller.getBackButtonPressed();
+		rightMidButton = controller.getStartButtonPressed();
+		
+		dPadValue = controller.getPOV();
 		setDPadValues();
 	}
 

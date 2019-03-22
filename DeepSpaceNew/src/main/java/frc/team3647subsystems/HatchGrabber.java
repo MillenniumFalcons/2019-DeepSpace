@@ -23,7 +23,7 @@ public class HatchGrabber
 			stopMotor();		
 	}
 	
-	private static void grabHatch()
+	public static void grabHatch()
 	{
 		hatchSucker.set(ControlMode.PercentOutput, .5);
 	}

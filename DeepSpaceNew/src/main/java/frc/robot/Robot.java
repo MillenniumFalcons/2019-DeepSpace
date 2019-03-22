@@ -81,14 +81,16 @@ public class Robot extends TimedRobot
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
-		Drivetrain.drivetrainInitialization(); 
-		AutonomousSequences.autoInitFWD("PlatformToRightRocket");
+		Drivetrain.drivetrainInitialization();
+		Drivetrain.resetEncoders();
+		AutonomousSequences.autoInitFWD("TestPath");
 		
 		autoNotifier = new Notifier(() ->{
 			Odometry.getInstance().runOdometry();
 		});
 		autoNotifier.startPeriodic(.01);
 		AutonomousSequences.limelightClimber.limelight.setToRightContour();
+		// Drivetrain.setEncoders(48951, 46817);
 	}
   
 	double left;
@@ -139,17 +141,22 @@ public class Robot extends TimedRobot
 
 	// private Timer secTimer;
 
+	//
+	//l - 48951
+	//r - 46817
 	@Override
 	public void testInit()
 	{
 		Drivetrain.drivetrainInitialization();
+		Drivetrain.resetEncoders();
 	}
 
 
 	@Override
 	public void testPeriodic()
 	{
-		driveVisionTeleop();
+		driveVisionTeleop();	
+		Drivetrain.printEncoders();	
 	}
 
 	public void updateJoysticks()

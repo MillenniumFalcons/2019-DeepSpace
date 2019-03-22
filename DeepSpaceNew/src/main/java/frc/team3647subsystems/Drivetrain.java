@@ -63,7 +63,7 @@ public class Drivetrain
 		drive.setExpiration(Constants.expirationTimeSRX);
 
 		
-		resetEncoders();
+		// resetEncoders();
 
 		setToBrake();
 	}
@@ -244,6 +244,12 @@ public class Drivetrain
 	{
 		leftSRX.setSelectedSensorPosition(0);
 		rightSRX.setSelectedSensorPosition(0);
+	}
+
+	public static void setEncoders(int leftVal, int rightVal)
+	{
+		leftSRX.setSelectedSensorPosition(leftVal);
+		rightSRX.setSelectedSensorPosition(rightVal);
 	}
 
 		//-- -- -- Methods for testing max velocity and acceleration -- -- -- //

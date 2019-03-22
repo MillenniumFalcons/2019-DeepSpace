@@ -53,10 +53,11 @@ public class AutonomousSequences
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
-		Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
 		// Odometry.getInstance().odometryInit();
+		// Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
 		// autoTimer = new Timer();
 		// i = 0;
+		hey = false;
 	}
 
 	public static void testing()
@@ -157,6 +158,11 @@ public class AutonomousSequences
 				case 4:
 					Drivetrain.stop();
 					System.out.println("DONE!");
+					autoInitBWD("RocketToStation");
+					afterAutoStep = 5;
+					break;
+				case 5:
+					runPathBWD();
 					break;
 			}
 		}
@@ -167,6 +173,74 @@ public class AutonomousSequences
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
+		if(ramseteFollower.isFinished() || hey)
+		{
+			hey = true;
+			switch(afterAutoStep)
+			{
+				case -1:
+					if(limelightFourBar.limelight.getValidTarget() != 1)
+						Drivetrain.setPercentOutput(-.5, .5);
+					else
+					{
+						Drivetrain.stop();
+						afterAutoStep = 66;
+					}
+					break;
+				case 66:
+					if(limelightFourBar.area < 5.5 && limelightFourBar.limelight.getValidTarget() == 1)
+					{
+						System.out.println("CENTERING");
+						limelightFourBar.center(.0037);
+						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .24, -limelightFourBar.leftSpeed - .24);						
+					}
+					else
+					{
+						Drivetrain.stop();
+						afterAutoStep = 0;
+					}
+					break;
+				case 0:
+					afterAutoTimer.reset();
+					afterAutoTimer.start();
+					afterAutoStep = 1;
+					break;
+				case 1:
+					Drivetrain.setPercentOutput(-.24, -.24);
+					if(afterAutoTimer.get() > 1)
+					{
+						Drivetrain.stop();
+						afterAutoTimer.reset();
+						afterAutoTimer.start();
+						afterAutoStep = 2;
+					}
+					break;
+				case 2:
+					HatchGrabber.releaseHatch();
+					if(afterAutoTimer.get() > .4)
+					{
+						HatchGrabber.stopMotor();
+						afterAutoTimer.reset();
+						afterAutoTimer.start();
+						afterAutoStep = 3;
+					}
+					break;
+				case 3:
+					Drivetrain.setPercentOutput(.24, .24);
+					if(afterAutoTimer.get() > 1)
+					{
+						Drivetrain.stop();
+						afterAutoTimer.reset();
+						afterAutoTimer.start();
+						afterAutoStep = 4;
+					}
+					break;
+				case 4:
+					Drivetrain.stop();
+					System.out.println("DONE!");
+					break;
+			}
+		}
 	}
 
 	public static void fwdBwd(String bwdPath)

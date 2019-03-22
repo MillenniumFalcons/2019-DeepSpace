@@ -127,7 +127,7 @@ public class RamseteFollower
         odometryError = (Math.cos(odometry.getTheta()) * (desiredX - odometry.getX()))
                 + (Math.sin(odometry.getTheta()) * (desiredY - odometry.getY()));
 
-        System.out.println("odometryError: " + (odometryError));
+        // System.out.println("odometryError: " + (odometryError));
 
         return (desiredLinearVelocity * Math.cos(thetaError)) + (k * odometryError);
     }
