@@ -99,7 +99,7 @@ public class AutonomousSequences
 			{
 				case -1:
 					if(limelightClimber.limelight.getValidTarget() != 1)
-						Drivetrain.setPercentOutput(-.7, .5);
+						Drivetrain.setPercentOutput(-.5, .5);
 					else
 					{
 						Drivetrain.stop();
@@ -107,7 +107,7 @@ public class AutonomousSequences
 					}
 					break;
 				case 66:
-					if(limelightClimber.area < 5.5)
+					if(limelightClimber.area < 5.5 && limelightClimber.limelight.getValidTarget() == 1)
 					{
 						System.out.println("CENTERING");
 						limelightClimber.center(.0037);
@@ -126,7 +126,7 @@ public class AutonomousSequences
 					break;
 				case 1:
 					Drivetrain.setPercentOutput(.24, .24);
-					if(afterAutoTimer.get() > 2)
+					if(afterAutoTimer.get() > 1)
 					{
 						Drivetrain.stop();
 						afterAutoTimer.reset();
@@ -146,7 +146,7 @@ public class AutonomousSequences
 					break;
 				case 3:
 					Drivetrain.setPercentOutput(-.24, -.24);
-					if(afterAutoTimer.get() > 1.7)
+					if(afterAutoTimer.get() > 1)
 					{
 						Drivetrain.stop();
 						afterAutoTimer.reset();
