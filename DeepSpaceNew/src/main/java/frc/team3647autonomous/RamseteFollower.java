@@ -50,6 +50,7 @@ public class RamseteFollower
     {
         //ternary operator, if direction is forward return trajectory, else return the reversed path
         this.trajectory = direction == MotionProfileDirection.FORWARD ? trajectory : TrajectoryUtil.reversePath(trajectory);
+        // this.trajectory = TrajectoryUtil.correctPath(trajectory);
 
         segmentIndex = 0;
         odometry = Odometry.getInstance();

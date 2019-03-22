@@ -38,10 +38,10 @@ public class AutonomousSequences
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 		Odometry.getInstance().setInitialOdometry(trajectory);
 		Odometry.getInstance().odometryInit();
-
+		limelightClimber.limelight.setToRightContour();
 		afterAutoTimer = new Timer();
 		afterAutoTimer.reset();
-		afterAutoStep = 0;
+		afterAutoStep = -1;
 		hey = false;
 		// autoTimer = new Timer();
 		// i = 0;
@@ -84,7 +84,7 @@ public class AutonomousSequences
 		// i++;
 	}
 	static Timer afterAutoTimer = new Timer();
-	static int afterAutoStep = 0;
+	static int afterAutoStep = -1;
 	static boolean hey = false;
 
 	public static void runPath()
@@ -99,18 +99,19 @@ public class AutonomousSequences
 			{
 				case -1:
 					if(limelightClimber.limelight.getValidTarget() != 1)
-						Drivetrain.setPercentOutput(-2, 2);
+						Drivetrain.setPercentOutput(-.7, .5);
 					else
 					{
 						Drivetrain.stop();
-						autoStep = 66;
+						afterAutoStep = 66;
 					}
 					break;
 				case 66:
-					if(limelightClimber.area < 5)
+					if(limelightClimber.area < 5.5)
 					{
+						System.out.println("CENTERING");
 						limelightClimber.center(.0037);
-						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .2, limelightClimber.rightSpeed + .2);
+						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .24, limelightClimber.rightSpeed + .24);
 					}
 					else
 					{
@@ -124,7 +125,7 @@ public class AutonomousSequences
 					afterAutoStep = 1;
 					break;
 				case 1:
-					Drivetrain.setPercentOutput(.2, .2);
+					Drivetrain.setPercentOutput(.24, .24);
 					if(afterAutoTimer.get() > 2)
 					{
 						Drivetrain.stop();
@@ -144,7 +145,7 @@ public class AutonomousSequences
 					}
 					break;
 				case 3:
-					Drivetrain.setPercentOutput(-.2, -.2);
+					Drivetrain.setPercentOutput(-.24, -.24);
 					if(afterAutoTimer.get() > 1.7)
 					{
 						Drivetrain.stop();

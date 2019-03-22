@@ -50,7 +50,7 @@ public class TrajectoryUtil
         else
             System.out.println("CSV READ SUCCESSFUL");
 
-        return trajectory;
+        return correctPath(trajectory);
     }
 
     public static Trajectory getTrajectoryFromNameJaci(String trajectoryName)

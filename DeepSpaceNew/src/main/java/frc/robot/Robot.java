@@ -82,12 +82,13 @@ public class Robot extends TimedRobot
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
 		Drivetrain.drivetrainInitialization(); 
-		AutonomousSequences.autoInitFWD("TestPath");
+		AutonomousSequences.autoInitFWD("PlatformToRightRocket");
 		
 		autoNotifier = new Notifier(() ->{
 			Odometry.getInstance().runOdometry();
 		});
-
+		autoNotifier.startPeriodic(.01);
+		AutonomousSequences.limelightClimber.limelight.setToRightContour();
 	}
   
 	double left;
@@ -132,8 +133,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		AutonomousSequences.limelightClimber.limelight.ledPipeline();
-		AutonomousSequences.limelightFourBar.limelight.ledPipeline();
+		// AutonomousSequences.limelightClimber.limelight.ledPipeline();
+		// AutonomousSequences.limelightFourBar.limelight.ledPipeline();
 	}
 
 	// private Timer secTimer;
