@@ -110,6 +110,7 @@ public class Robot extends TimedRobot
 		Elevator.elevatorTeleopInit();
 		AirCompressor.runCompressor();
 		BallIntake.ballIntakeinitialization();
+		Drivetrain.setToCoast();
 	}
 
 	//Teleop Code
