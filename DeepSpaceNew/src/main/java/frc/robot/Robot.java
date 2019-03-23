@@ -83,7 +83,7 @@ public class Robot extends TimedRobot
 
 		Drivetrain.drivetrainInitialization();
 		Drivetrain.resetEncoders();
-		AutonomousSequences.autoInitFWD("TestPath");
+		AutonomousSequences.autoInitFWD("TestPath2");
 		
 		autoNotifier = new Notifier(() ->{
 			Odometry.getInstance().runOdometry();
@@ -158,6 +158,7 @@ public class Robot extends TimedRobot
 	public void testPeriodic()
 	{
 		driveVisionTeleop();	
+		// vision(VisionSide.kBackwards, (Elevator.elevatorEncoderValue > 27000), VisionContour.kRight);
 		Drivetrain.printEncoders();	
 	}
 

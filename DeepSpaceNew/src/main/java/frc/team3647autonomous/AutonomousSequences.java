@@ -112,7 +112,7 @@ public class AutonomousSequences
 					{
 						System.out.println("CENTERING");
 						limelightClimber.center(.0037);
-						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .24, limelightClimber.rightSpeed + .24);
+						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .4, limelightClimber.rightSpeed + .4);
 					}
 					else
 					{
@@ -142,7 +142,7 @@ public class AutonomousSequences
 						HatchGrabber.stopMotor();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
-						afterAutoStep = 3;
+						afterAutoStep = 4;
 					}
 					break;
 				case 3:
@@ -159,6 +159,7 @@ public class AutonomousSequences
 					Drivetrain.stop();
 					System.out.println("DONE!");
 					autoInitBWD("RocketToStation");
+					limelightFourBar.limelight.setToRightContour();
 					afterAutoStep = 5;
 					break;
 				case 5:
@@ -175,35 +176,48 @@ public class AutonomousSequences
 		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
 		if(ramseteFollower.isFinished() || hey)
 		{
+			System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
 			hey = true;
-			switch(afterAutoStep)
+			switch(autoStep)
 			{
 				case -1:
 					if(limelightFourBar.limelight.getValidTarget() != 1)
-						Drivetrain.setPercentOutput(-.5, .5);
+					{
+						Drivetrain.setPercentOutput(.65, -.65);
+					}
 					else
 					{
 						Drivetrain.stop();
-						afterAutoStep = 66;
+						autoStep = 66;
+						System.out.println("AUTO STEP: " + autoStep);
 					}
 					break;
 				case 66:
-					if(limelightFourBar.area < 5.5 && limelightFourBar.limelight.getValidTarget() == 1)
+					if(limelightFourBar.area < 5)
 					{
+						
 						System.out.println("CENTERING");
 						limelightFourBar.center(.0037);
-						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .24, -limelightFourBar.leftSpeed - .24);						
+						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .4, -limelightFourBar.leftSpeed - .4);					
 					}
 					else
 					{
+						// Timer.delay(.1);
+						// if(limelightFourBar.limelight.getValidTarget() > 1)
+						// {
+						// 	autoStep = 66;
+						// }
+						// else
+						// {
 						Drivetrain.stop();
-						afterAutoStep = 0;
+						autoStep = 0;
+						// }
 					}
 					break;
 				case 0:
 					afterAutoTimer.reset();
 					afterAutoTimer.start();
-					afterAutoStep = 1;
+					autoStep = 1;
 					break;
 				case 1:
 					Drivetrain.setPercentOutput(-.24, -.24);
@@ -212,17 +226,17 @@ public class AutonomousSequences
 						Drivetrain.stop();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
-						afterAutoStep = 2;
+						autoStep = 2;
 					}
 					break;
 				case 2:
-					HatchGrabber.releaseHatch();
+					HatchGrabber.grabHatch();
 					if(afterAutoTimer.get() > .4)
 					{
 						HatchGrabber.stopMotor();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
-						afterAutoStep = 3;
+						autoStep = 3;
 					}
 					break;
 				case 3:
@@ -232,7 +246,7 @@ public class AutonomousSequences
 						Drivetrain.stop();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
-						afterAutoStep = 4;
+						autoStep = 4;
 					}
 					break;
 				case 4:
