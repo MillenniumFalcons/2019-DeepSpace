@@ -128,7 +128,7 @@ public class Constants
 	public static final int armSRXForwardVision = 3700;
 	public static final int armSRXFlatForwards = 4290;
 	public static final int armSRXBackwardVision = 22600;
-	public static final int armSRXFlatBackwards = 22000;
+	public static final int armSRXFlatBackwards = 22200;
 	public static final int armSRXCargoL3Front = 24200;
 	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1

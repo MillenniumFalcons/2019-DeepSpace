@@ -43,8 +43,6 @@ public class AutonomousSequences
 		afterAutoTimer.reset();
 		afterAutoStep = -1;
 		hey = false;
-		// autoTimer = new Timer();
-		// i = 0;
 	}
 
 	public static void autoInitBWD(String trajectoryName) 
@@ -53,10 +51,6 @@ public class AutonomousSequences
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
-		// Odometry.getInstance().odometryInit();
-		// Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
-		// autoTimer = new Timer();
-		// i = 0;
 		hey = false;
 	}
 
@@ -78,12 +72,11 @@ public class AutonomousSequences
 	public static void ramsetePeriodic() 
 	{
 		driveSignal = ramseteFollower.getNextDriveSignal();
-
 		current = ramseteFollower.currentSegment();
 		rightSpeed = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
 		leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
-		// i++;
 	}
+
 	static Timer afterAutoTimer = new Timer();
 	static int afterAutoStep = -1;
 	static boolean hey = false;
@@ -99,7 +92,7 @@ public class AutonomousSequences
 			switch(afterAutoStep)
 			{
 				case -1:
-					if(limelightClimber.limelight.getValidTarget() != 1)
+					if(limelightClimber.limelight.getValidTarget())
 						Drivetrain.setPercentOutput(-.5, .5);
 					else
 					{
@@ -108,9 +101,9 @@ public class AutonomousSequences
 					}
 					break;
 				case 66:
-					if(limelightClimber.area < 5.5 && limelightClimber.limelight.getValidTarget() == 1)
+					if(limelightClimber.area < 5.5 && limelightClimber.limelight.getValidTarget())
 					{
-						System.out.println("CENTERING");
+						// System.out.println("CENTERING");
 						limelightClimber.center(.0037);
 						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .4, limelightClimber.rightSpeed + .4);
 					}
@@ -157,7 +150,7 @@ public class AutonomousSequences
 					break;
 				case 4:
 					Drivetrain.stop();
-					System.out.println("DONE!");
+					// System.out.println("DONE!");
 					autoInitBWD("RocketToStation");
 					limelightFourBar.limelight.setToRightContour();
 					afterAutoStep = 5;
@@ -176,12 +169,12 @@ public class AutonomousSequences
 		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
 		if(ramseteFollower.isFinished() || hey)
 		{
-			System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
+			// System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
 			hey = true;
 			switch(autoStep)
 			{
 				case -1:
-					if(limelightFourBar.limelight.getValidTarget() != 1)
+					if(limelightFourBar.limelight.getValidTarget())
 					{
 						Drivetrain.setPercentOutput(.65, -.65);
 					}
@@ -189,14 +182,14 @@ public class AutonomousSequences
 					{
 						Drivetrain.stop();
 						autoStep = 66;
-						System.out.println("AUTO STEP: " + autoStep);
+						// System.out.println("AUTO STEP: " + autoStep);
 					}
 					break;
 				case 66:
 					if(limelightFourBar.area < 5)
 					{
 						
-						System.out.println("CENTERING");
+						// System.out.println("CENTERING");
 						limelightFourBar.center(.0037);
 						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .4, -limelightFourBar.leftSpeed - .4);					
 					}
@@ -251,119 +244,9 @@ public class AutonomousSequences
 					break;
 				case 4:
 					Drivetrain.stop();
-					System.out.println("DONE!");
+					// System.out.println("DONE!");
 					break;
 			}
-		}
-	}
-
-	public static void fwdBwd(String bwdPath)
-	{
-		switch (autoStep) 
-		{
-			case 0:
-				Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
-				autoStep = 1;
-				break;
-			case 1:
-				// limelightFourBar.disabledMode();
-				ramsetePeriodic();
-				Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-				System.out.println("Ramsete Running: " + !ramseteFollower.isFinished());
-				if (ramseteFollower.isFinished())
-					autoStep = 2;
-				break;
-			case 2:
-				autoInitBWD(bwdPath);
-				Robot.gyro.resetAngle();
-				Drivetrain.resetEncoders();
-				autoStep = 4;
-				break;
-			case 4:
-				ramsetePeriodic();
-				Drivetrain.setAutoVelocity(rightSpeed, leftSpeed);
-				System.out.println("Ramsete Running: " + !ramseteFollower.isFinished());
-				if (ramseteFollower.isFinished())
-					autoStep = 5;
-				break;
-			case 5:
-				Drivetrain.stop();
-				System.out.println("Finished");
-				break;
-			default:
-				Drivetrain.stop();
-				break;
-		}
-	}
-
-	public static void level2RightToCargoShipRight() 
-	{
-
-		switch (autoStep) 
-		{
-		case 0:
-			Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
-			autoStep = 1;
-		case 1:
-			limelightFourBar.disabledMode();
-			ramsetePeriodic();
-			Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-			System.out.println("Ramsete Running: " + !ramseteFollower.isFinished());
-			if (ramseteFollower.isFinished())
-				autoStep = 2;
-			break;
-
-		case 2:
-			double threshold = 0.1;
-			limelightFourBar.visionTargetingMode();
-			limelightFourBar.center(threshold);
-			System.out.println("Centering!!");
-			Drivetrain.setPercentOutput(limelightFourBar.leftSpeed, limelightFourBar.rightSpeed);
-			if (limelightFourBar.centered(threshold)) 
-			{
-				autoStep = 3;
-				SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL1FORWARDS);
-			}
-			break;
-
-		case 3:
-			Drivetrain.stop();
-			Odometry.getInstance().closeNotifier();
-			autoTimer.reset();
-			autoTimer.start();
-			autoStep = 4;
-			break;
-		case 4:
-			System.out.println("Running step 4");
-			System.out.println("Auto Timer: " + autoTimer.get());
-			limelightFourBar.visionTargetingMode();
-			limelightFourBar.center(.1);
-			Drivetrain.setPercentOutput(limelightFourBar.leftSpeed, limelightFourBar.rightSpeed);
-			if(autoTimer.get() < 1.5)
-				Drivetrain.setPercentOutput(.25, .25);
-			else if(autoTimer.get() < 3)
-			{
-				System.out.println("Releasing hatch");
-				// HatchGrabber.releaseHatch();
-			}
-			else if(autoTimer.get() < 5)
-				Drivetrain.stop();
-			else if(autoTimer.get() < 7)
-				Drivetrain.setPercentOutput(-.25, -.25);
-			else if(autoTimer.get() < 9)
-				Drivetrain.stop();
-				autoStep = 6;
-			break;
-		case 5:
-			// if (Arm.currentState == ArmPosition.FLATBACKWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)
-				autoStep = 6;
-			// else
-			// 	SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-			break;
-		case 6:
-			System.out.println("AUTO SEQUENCE FINISHED!");
-			Robot.autoNotifier.close();
-			break;
 		}
 	}
 

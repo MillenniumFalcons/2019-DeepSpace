@@ -14,6 +14,7 @@ import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.Arm.ArmPosition;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 
 public class Robot extends TimedRobot 
 {
@@ -37,11 +38,11 @@ public class Robot extends TimedRobot
 	{
 		pDistributionPanel = new PowerDistributionPanel();
 		
-		AutonomousSequences.limelightClimber.limelight.setToDriver();
-		AutonomousSequences.limelightFourBar.limelight.setToDriver();
+		AutonomousSequences.limelightClimber.limelight.setToBlack();
+		AutonomousSequences.limelightFourBar.limelight.setToBlack();
 		// AutonomousSequences.limelightClimber.limelight.ledPipeline();
 		// AutonomousSequences.limelightFourBar.limelight.ledPipeline();
-		Shuffleboard.setRecordingFileNameFormat("San Diego Regional - ");
+		// Shuffleboard.setRecordingFileNameFormat("San Diego Regional - ");
 		matchTimer = new Timer();
 		mainController = new Joysticks(0); 
 		coController = new Joysticks(1); 
@@ -136,15 +137,10 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		// AutonomousSequences.limelightClimber.limelight.ledPipeline();
-		// AutonomousSequences.limelightFourBar.limelight.ledPipeline();
+		AutonomousSequences.limelightClimber.limelight.setToBlack();
+		AutonomousSequences.limelightFourBar.limelight.setToBlack();
 	}
 
-	// private Timer secTimer;
-
-	//
-	//l - 48951
-	//r - 46817
 	@Override
 	public void testInit()
 	{
@@ -152,7 +148,6 @@ public class Robot extends TimedRobot
 		Drivetrain.resetEncoders();
 		Drivetrain.setToCoast();
 	}
-
 
 	@Override
 	public void testPeriodic()
@@ -203,8 +198,8 @@ public class Robot extends TimedRobot
 	{
 		if(Arm.aimedState != null)
 		{
-			if(Arm.armEncoderValue > Constants.armSRXVerticalStowed || 
-				Arm.aimedState.equals(ArmPosition.FLATBACKWARDS) 	|| 
+			if(Arm.armEncoderValue > Constants.armSRXVerticalStowed ||
+				Arm.aimedState.equals(ArmPosition.FLATBACKWARDS) 	||
 				Arm.aimedState.equals(ArmPosition.CARGOL3FRONT)
 				)
 				return VisionSide.kBackwards;
@@ -225,12 +220,15 @@ public class Robot extends TimedRobot
 	{
 		kBackwards,
 		kForwards,
+		kTop,
+		kBottom,
 		kUnknown,
 	}
 	public enum VisionContour
 	{
 		kRight,
 		kLeft,
+		kClosest
 	}
 
 	public void vision(VisionSide side, boolean scaleJoy, VisionContour contour)
@@ -246,7 +244,7 @@ public class Robot extends TimedRobot
 		}
 
 		
-		if(side.equals(VisionSide.kForwards))
+		if(side.equals(VisionSide.kForwards) && (Elevator.currentState == ElevatorLevel.BOTTOM || Elevator.currentState == ElevatorLevel.BOTTOM))
 			mVision = AutonomousSequences.limelightClimber;
 		else
 			mVision = AutonomousSequences.limelightFourBar;
