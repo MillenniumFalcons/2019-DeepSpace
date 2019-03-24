@@ -95,6 +95,8 @@ public class Arm
 		FWDLIMITSWITCH(Constants.armSRXFwdLimitSwitch),
 		REVLIMITSWITCH(-1),
 		FLATFORWARDS(Constants.armSRXFlatForwards),
+		FLATVISIONFORWARDS(Constants.armSRXForwardVision),
+		FLATVISIONBACKWARDS(Constants.armSRXBackwardVision),
 		FLATBACKWARDS(Constants.armSRXFlatBackwards),
 		CARGOL3FRONT(Constants.armSRXCargoL3Front),
 		CARGOL3BACK(Constants.armSRXCargoL3Back),

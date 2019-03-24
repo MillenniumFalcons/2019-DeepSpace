@@ -148,7 +148,7 @@ public class Drivetrain
 	{
 		try
 		{
-			drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
+			drive.curvatureDrive(throttle, turn, false);	//curvature drive from WPILIB libraries.
 		}
 		catch(NullPointerException e)
 		{

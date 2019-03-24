@@ -124,6 +124,7 @@ public class Robot extends TimedRobot
 		HatchGrabber.runHatchGrabber(coController);
 		SeriesStateMachine.setControllers(mainController, coController); 
 		SeriesStateMachine.runSeriesStateMachine();
+		// System.out.println(HatchGrabber.hatchIn());
 	}
 
 	@Override
@@ -185,8 +186,10 @@ public class Robot extends TimedRobot
 			vision(getVisionSide(), (Elevator.elevatorEncoderValue > 27000), VisionContour.kRight);
 		else 
 		{
-			AutonomousSequences.limelightClimber.driverMode();
-			AutonomousSequences.limelightFourBar.driverMode();
+			AutonomousSequences.limelightClimber.disabledMode();
+			AutonomousSequences.limelightFourBar.disabledMode();
+			AutonomousSequences.limelightArmBottom.disabledMode();
+			AutonomousSequences.limelightArmTop.disabledMode();
 			if(Elevator.elevatorEncoderValue > 27000)
 				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6);
 			else
@@ -198,10 +201,18 @@ public class Robot extends TimedRobot
 	{
 		if(Arm.aimedState != null)
 		{
-			if(Arm.armEncoderValue > Constants.armSRXVerticalStowed ||
-				Arm.aimedState.equals(ArmPosition.FLATBACKWARDS) 	||
-				Arm.aimedState.equals(ArmPosition.CARGOL3FRONT)
-				)
+			if((Arm.aimedState.equals(ArmPosition.FLATBACKWARDS))
+				&& Elevator.aimedState == ElevatorLevel.BOTTOM)
+				return VisionSide.kBackwards;
+				
+			else if((Arm.aimedState.equals(ArmPosition.FLATFORWARDS))
+			&& Elevator.aimedState == ElevatorLevel.BOTTOM)
+				return VisionSide.kForwards;
+
+			else if(Arm.armEncoderValue > Constants.armSRXVerticalStowed || 
+					Arm.aimedState.equals(ArmPosition.FLATBACKWARDS) 	 || 
+					Arm.aimedState.equals(ArmPosition.CARGOL3FRONT)
+				   )
 				return VisionSide.kBackwards;
 
 			return VisionSide.kForwards;
@@ -211,7 +222,6 @@ public class Robot extends TimedRobot
 			if(Arm.armEncoderValue > Constants.armSRXVerticalStowed)
 				return VisionSide.kBackwards;
 			return VisionSide.kForwards;
-
 		}
 			
 	}
@@ -244,15 +254,25 @@ public class Robot extends TimedRobot
 		}
 
 		
-		if(side.equals(VisionSide.kForwards) && (Elevator.currentState == ElevatorLevel.BOTTOM || Elevator.currentState == ElevatorLevel.BOTTOM))
+		if(side.equals(VisionSide.kForwards) && (Elevator.aimedState == ElevatorLevel.BOTTOM))
+			mVision = AutonomousSequences.limelightArmTop;
+		else if(side.equals(VisionSide.kBackwards) && (Elevator.aimedState == ElevatorLevel.BOTTOM))
+			mVision = AutonomousSequences.limelightArmBottom;
+		else if(side.equals(VisionSide.kBackwards) && BallShooter.cargoDetection())
 			mVision = AutonomousSequences.limelightClimber;
-		else
+		else if(side.equals(VisionSide.kForwards) && BallShooter.cargoDetection())
 			mVision = AutonomousSequences.limelightFourBar;
+		else if (side.equals(VisionSide.kBackwards))
+			mVision = AutonomousSequences.limelightFourBar;
+		else
+			mVision = AutonomousSequences.limelightClimber;
 
 		if(contour.equals(VisionContour.kRight))
-			mVision.rightMost();
+			mVision.closestMode();
+		else if (contour.equals(VisionContour.kLeft))
+			mVision.closestMode();
 		else
-			mVision.leftMost();
+			mVision.closestMode();
 		
 		if(mVision.area < 6)
 		{

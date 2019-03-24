@@ -19,6 +19,8 @@ public class AutonomousSequences
 {
 	public static VisionController limelightFourBar = new VisionController("fourbar");
 	public static VisionController limelightClimber = new VisionController("climber");
+	public static VisionController limelightArmTop = new VisionController("top");
+	public static VisionController limelightArmBottom = new VisionController("bottom");
 
 	public static int autoStep = -1;
 

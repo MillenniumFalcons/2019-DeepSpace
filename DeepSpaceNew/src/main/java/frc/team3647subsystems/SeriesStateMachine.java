@@ -31,6 +31,8 @@ public class SeriesStateMachine
     {
         HATCHL1FORWARDS(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATFORWARDS), //ARM HIT
         HATCHL1BACKWARDS(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATBACKWARDS), //ARM HIT
+        HATCHL1VISIONFORWARDS(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATVISIONFORWARDS),
+        HATCHL1VISIONBACKWARDS(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATVISIONBACKWARDS),
         HATCHL2FORWARDS(Elevator.ElevatorLevel.HATCHL2, Arm.ArmPosition.FLATFORWARDS),
         HATCHL2BACKWARDS(Elevator.ElevatorLevel.HATCHL2, Arm.ArmPosition.FLATBACKWARDS),
         HATCHL3FORWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.FLATFORWARDS),
@@ -100,10 +102,13 @@ public class SeriesStateMachine
 
     public static void setControllers(Joysticks mainController, Joysticks coController)
     {
-        if(!BallShooter.cargoDetection())
+        if(!BallShooter.cargoDetection() || HatchGrabber.hatchIn())
         {
             if(coController.buttonA)
-                aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+                if(!HatchGrabber.hatchIn())
+                    aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+                else
+                    aimedRobotState = ScoringPosition.HATCHL1VISIONFORWARDS;
             else if(coController.buttonX)
                 aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
             else if(coController.buttonB)
@@ -111,7 +116,10 @@ public class SeriesStateMachine
             else if(coController.buttonY)
                 aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
             else if(coController.dPadDown)
-                aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+                if(!HatchGrabber.hatchIn())
+                    aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+                else
+                    aimedRobotState = ScoringPosition.HATCHL1VISIONBACKWARDS;
             else if(coController.dPadLeft)
                 aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
             else if(coController.dPadRight)
@@ -465,7 +473,7 @@ public class SeriesStateMachine
         }
         else if(Elevator.currentState == aimedState.eLevel && Arm.currentState != aimedState.armPos)//check if arm can move without moving elevator
         {
-            if(Elevator.isAboveMinRotate(-500))
+            if(Arm.isEncoderInThreshold() || Elevator.isAboveMinRotate(-500))
                 return Movement.MOVEARM;
             else
                 return Movement.SAFEZMOVE;
