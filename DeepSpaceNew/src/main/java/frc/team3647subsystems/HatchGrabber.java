@@ -22,6 +22,16 @@ public class HatchGrabber
 		else
 			stopMotor();		
 	}
+
+	public static boolean hatchIn()
+	{
+		double current = Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin);
+		if(current > 3.5)
+		{
+			return true;
+		}
+		return false;
+	}
 	
 	public static void grabHatch()
 	{

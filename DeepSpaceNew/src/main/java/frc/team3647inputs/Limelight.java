@@ -24,51 +24,48 @@ public class Limelight
     //     table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
     // }
 
-    public void ledPipeline()
-    {
-        table.getEntry("ledMode").setNumber(0);
-    }
-    public void ledOff()
-    {
-        table.getEntry("ledMode").setNumber(1);
-    }
+    // public void ledPipeline()
+    // {
+    //     table.getEntry("ledMode").setNumber(0);
+    // }
+    // public void ledOff()
+    // {
+    //     table.getEntry("ledMode").setNumber(1);
+    // }
 
-    public void ledOn()
-    {
-        table.getEntry("ledMode").setNumber(3);
-    }
-
-    public void setToDriver()
-    {
-        table.getEntry("pipeline").setNumber(1);
-    }
+    // public void ledOn()
+    // {
+    //     table.getEntry("ledMode").setNumber(3);
+    // }
     
-    public void setToNormalVision()
+    public void setToBlack()
     {
-        setVisionTargetingMode(0);
+        setPipeline(0);
     }
 
-    public void flipped()
+    public void setToDriverCam()
     {
-        table.getEntry("pipeline").setNumber(0);
-        table.getEntry("camMode").setNumber(0);
+        setPipeline(1);
     }
 
     public void setToRightContour()
     {
-        setVisionTargetingMode(2);
+        setPipeline(2);
     }
 
     public void setToLeftContour()
     {
-        setVisionTargetingMode(3);
+        setPipeline(3);
     }
 
-    private void setVisionTargetingMode(int pipeline)
+    public void setToCloseContour()
+    {
+        setPipeline(4);
+    }
+
+    private void setPipeline(int pipeline)
     {
         table.getEntry("pipeline").setNumber(pipeline);
-        table.getEntry("ledMode").setNumber(0);
-        table.getEntry("camMode").setNumber(0); //Limelight Network Table code to set camera mode to vision tracking
     }
 
     public void updateLimelight()
@@ -101,9 +98,9 @@ public class Limelight
         return this.area;
     }
 
-    public double getValidTarget()         //get area, because area is private
+    public boolean getValidTarget()         //get area, because area is private
     {
-        return table.getEntry("tv").getDouble(-3647);
+        return table.getEntry("tv").getDouble(-3647) == 1;
     }
 
 }
