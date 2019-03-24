@@ -106,12 +106,7 @@ public class AutonomousSequences
 						afterAutoStep = -1;
 					break;
 				case -1:
-<<<<<<< HEAD
-					System.out.println("Looking for target");
-					if(limelightClimber.limelight.getValidTarget() != 1)
-=======
 					if(limelightClimber.limelight.getValidTarget())
->>>>>>> 6ed7fb194bbc44be642976ee31f4d941a93f1c4b
 						Drivetrain.setPercentOutput(-.5, .5);
 					else
 					{
@@ -195,13 +190,8 @@ public class AutonomousSequences
 		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
 		if(ramseteFollower.isFinished() || hey2)
 		{
-<<<<<<< HEAD
 			System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
 			hey2 = true;
-=======
-			// System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
-			hey = true;
->>>>>>> 6ed7fb194bbc44be642976ee31f4d941a93f1c4b
 			switch(autoStep)
 			{
 				case -1:
@@ -220,13 +210,8 @@ public class AutonomousSequences
 				case 66:
 					if(limelightFourBar.area < 5)
 					{
-<<<<<<< HEAD
 						SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
 						System.out.println("CENTERING");
-=======
-						
-						// System.out.println("CENTERING");
->>>>>>> 6ed7fb194bbc44be642976ee31f4d941a93f1c4b
 						limelightFourBar.center(.0037);
 						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .4, -limelightFourBar.leftSpeed - .4);					
 					}
