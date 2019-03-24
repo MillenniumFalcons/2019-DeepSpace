@@ -41,7 +41,8 @@ public class AutonomousSequences
 		limelightClimber.limelight.setToRightContour();
 		afterAutoTimer = new Timer();
 		afterAutoTimer.reset();
-		afterAutoStep = -1;
+		afterAutoStep = -2;
+		autoStep = -1;
 		hey = false;
 		// autoTimer = new Timer();
 		// i = 0;
@@ -85,20 +86,32 @@ public class AutonomousSequences
 		// i++;
 	}
 	static Timer afterAutoTimer = new Timer();
-	static int afterAutoStep = -1;
+	static int afterAutoStep = -2;
 	static boolean hey = false;
+	static boolean initializedRobot = false;
 
 	public static void runPath()
 	{
+		if(Arm.currentState != null && Elevator.currentState != null)
+			initializedRobot = Arm.currentState.equals(ArmPosition.FLATFORWARDS) && 
+			Elevator.currentState.equals(ElevatorLevel.BOTTOM);
+
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-		if(ramseteFollower.isFinished() || hey)
+		if((ramseteFollower.isFinished() && initializedRobot) || hey)
 		{
+			// System.out.println("After auto");
 			hey = true;
 			switch(afterAutoStep)
 			{
+				case -2:
+					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+					if(Elevator.elevatorEncoderValue > 10000)
+						afterAutoStep = -1;
+					break;
 				case -1:
+					System.out.println("Looking for target");
 					if(limelightClimber.limelight.getValidTarget() != 1)
 						Drivetrain.setPercentOutput(-.5, .5);
 					else
@@ -142,7 +155,7 @@ public class AutonomousSequences
 						HatchGrabber.stopMotor();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
-						afterAutoStep = 4;
+						afterAutoStep = 3;
 					}
 					break;
 				case 3:
@@ -156,33 +169,41 @@ public class AutonomousSequences
 					}
 					break;
 				case 4:
+					SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
 					Drivetrain.stop();
 					System.out.println("DONE!");
 					autoInitBWD("RocketToStation");
-					limelightFourBar.limelight.setToRightContour();
 					afterAutoStep = 5;
 					break;
 				case 5:
+					System.out.println("running step 5");
 					runPathBWD();
 					break;
 			}
 		}
 	}
 
+
+	private static int hatchGrabbingCase = -1;
+	private static Timer hatchGrabbingTimer = new Timer();
+	private static boolean grabbedHatch = false;
+	private static boolean hey2 = false;
 	public static void runPathBWD()
 	{
+		System.out.println("running backwards");
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
-		if(ramseteFollower.isFinished() || hey)
+		if(ramseteFollower.isFinished() || hey2)
 		{
 			System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
-			hey = true;
+			hey2 = true;
 			switch(autoStep)
 			{
 				case -1:
 					if(limelightFourBar.limelight.getValidTarget() != 1)
 					{
+						limelightFourBar.limelight.setToRightContour();
 						Drivetrain.setPercentOutput(.65, -.65);
 					}
 					else
@@ -195,23 +216,17 @@ public class AutonomousSequences
 				case 66:
 					if(limelightFourBar.area < 5)
 					{
-						
+						SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
 						System.out.println("CENTERING");
 						limelightFourBar.center(.0037);
 						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .4, -limelightFourBar.leftSpeed - .4);					
 					}
 					else
 					{
-						// Timer.delay(.1);
-						// if(limelightFourBar.limelight.getValidTarget() > 1)
-						// {
-						// 	autoStep = 66;
-						// }
-						// else
-						// {
-						Drivetrain.stop();
-						autoStep = 0;
-						// }
+						if(Elevator.elevatorEncoderValue != 0 || Arm.currentState != ArmPosition.FLATBACKWARDS)
+							SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL1BACKWARDS);
+						else
+							autoStep = 0;
 					}
 					break;
 				case 0:
@@ -231,9 +246,49 @@ public class AutonomousSequences
 					break;
 				case 2:
 					HatchGrabber.grabHatch();
-					if(afterAutoTimer.get() > .4)
+					if(Robot.pDistributionPanel.getCurrent(6) > 17 && afterAutoTimer.get() > .4)
 					{
-						HatchGrabber.stopMotor();
+						hatchGrabbingCase = 0;
+					}
+					else if(afterAutoTimer.get() > 1)
+					{
+						Drivetrain.setPercentOutput(.2, .2);
+						afterAutoStep = 66;
+						hatchGrabbingCase = -1;
+					}
+					switch(hatchGrabbingCase)
+					{
+						case 0:
+							hatchGrabbingTimer.reset();
+							hatchGrabbingTimer.start();
+							hatchGrabbingCase = 1;
+							break;
+						case 1:
+							Drivetrain.setPercentOutput(.2, .2);
+							if(hatchGrabbingTimer.get() > 1.3)
+							{
+								Drivetrain.stop();
+								if(Robot.pDistributionPanel.getCurrent(6) > 17)
+								{
+									grabbedHatch = true;
+									hatchGrabbingCase = -1;
+								}
+								else
+								{
+									grabbedHatch = false;
+									autoStep = 66;
+									hatchGrabbingCase = -1;
+								}	
+							}
+							break;
+						case 2:
+							Drivetrain.setPercentOutput(.18, .18);
+							afterAutoStep = 66;
+							break;
+					}
+					if(grabbedHatch)
+					{
+						HatchGrabber.runConstant();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
 						autoStep = 3;
@@ -246,6 +301,7 @@ public class AutonomousSequences
 						Drivetrain.stop();
 						afterAutoTimer.reset();
 						afterAutoTimer.start();
+						SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2FORWARDS);
 						autoStep = 4;
 					}
 					break;

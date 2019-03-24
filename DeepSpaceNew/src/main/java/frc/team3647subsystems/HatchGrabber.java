@@ -33,7 +33,7 @@ public class HatchGrabber
 		hatchSucker.set(ControlMode.PercentOutput, -1);
 	}
 
-	private static void runConstant()
+	public static void runConstant()
 	{
 		hatchSucker.set(ControlMode.PercentOutput, .23);
 	}

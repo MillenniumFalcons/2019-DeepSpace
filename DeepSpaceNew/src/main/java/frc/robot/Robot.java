@@ -17,6 +17,7 @@ import frc.team3647subsystems.Arm.ArmPosition;
 
 public class Robot extends TimedRobot 
 {
+	
 	public static PowerDistributionPanel pDistributionPanel;
 	public static Joysticks mainController; 
 	public static Joysticks coController;
@@ -31,6 +32,10 @@ public class Robot extends TimedRobot
 	public static int mAccel = 0; 
 	private Timer matchTimer;
 
+	public Robot()
+	{
+		super(.07);
+	}
 
 	@Override
 	public void robotInit()
@@ -71,12 +76,11 @@ public class Robot extends TimedRobot
 	}
 	
   
+	Timer stateMachineTimer = new Timer();
+	boolean runStateMachine = false;
 	@Override
 	public void autonomousInit() 
 	{
-		// Shuffleboard.startRecording();
-		// matchTimer.reset();
-		// matchTimer.start();
 
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
@@ -84,6 +88,10 @@ public class Robot extends TimedRobot
 		Drivetrain.drivetrainInitialization();
 		Drivetrain.resetEncoders();
 		AutonomousSequences.autoInitFWD("TestPath2");
+		SeriesStateMachine.seriesStateMachineInit();
+		Elevator.elevatorInitialization();
+		Drivetrain.setToBrake();
+		Arm.armInitialization();
 		
 		autoNotifier = new Notifier(() ->{
 			Odometry.getInstance().runOdometry();
@@ -91,6 +99,9 @@ public class Robot extends TimedRobot
 		autoNotifier.startPeriodic(.01);
 		AutonomousSequences.limelightClimber.limelight.setToRightContour();
 		// Drivetrain.setEncoders(48951, 46817);
+		stateMachineTimer.reset();
+		stateMachineTimer.start();
+		runStateMachine = false;
 	}
   
 	double left;
@@ -100,6 +111,15 @@ public class Robot extends TimedRobot
 	public void autonomousPeriodic() 
 	{
 		AutonomousSequences.runPath();
+
+		if(stateMachineTimer.get() > .5 || runStateMachine)
+		{
+			runStateMachine = true;
+			SeriesStateMachine.runSeriesStateMachine();
+			Arm.runArm();
+			Elevator.runElevator();
+			stateMachineTimer.stop();
+		}
 	}
 
 	@Override
@@ -158,8 +178,8 @@ public class Robot extends TimedRobot
 	public void testPeriodic()
 	{
 		driveVisionTeleop();	
-		// vision(VisionSide.kBackwards, (Elevator.elevatorEncoderValue > 27000), VisionContour.kRight);
-		Drivetrain.printEncoders();	
+		// Drivetrain.setPercentOutput(-.5, .5);
+		
 	}
 
 	public void updateJoysticks()

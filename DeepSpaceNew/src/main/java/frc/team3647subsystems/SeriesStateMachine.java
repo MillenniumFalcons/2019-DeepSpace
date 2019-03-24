@@ -9,14 +9,15 @@ import frc.team3647subsystems.Elevator.ElevatorLevel;
 public class SeriesStateMachine
 {
     // Variables to control initialization
-    private static boolean ranOnce = false, initializedRobot = false;
+    private static boolean ranOnce = false;
+    public static boolean initializedRobot = false;
     private static int initStep = 1;
 
     // Variables to control climb
     private static boolean shoppingCartDeployed=false, mopDeploy=false, extendedIntakeOnce=false, elevatorManual = false, climbMode=false;
     private static int climbStep = 0;
 
-    private static ScoringPosition aimedRobotState;
+    public static ScoringPosition aimedRobotState;
 
     public static boolean forceCargoOff = false;
     public static boolean forceCargoOn = false;
@@ -347,6 +348,7 @@ public class SeriesStateMachine
     // Cannot run again
     private static void initializeRobotPosition()
     {
+        System.out.println("Initializing State machine");
         if(!ranOnce)
         {
             switch(initStep)
@@ -361,11 +363,6 @@ public class SeriesStateMachine
                     break;  
                 case 1:
                     aimedRobotState = ScoringPosition.BOTTOMSTART;
-                    if(Arm.currentState == ArmPosition.FLATFORWARDS && Elevator.currentState == ElevatorLevel.BOTTOM)
-                    {
-                        ranOnce=true;
-                        initializedRobot = true;
-                    }
                     break;
             }
         }

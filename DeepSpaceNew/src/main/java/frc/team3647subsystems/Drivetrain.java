@@ -58,9 +58,12 @@ public class Drivetrain
 		leftSRX.setName("Drivetrain", "leftSRX");
 		rightSRX.setName("Drivetrain", "rightSRX");
 
-		leftSRX.setExpiration(Constants.expirationTimeSRX);
-		rightSRX.setExpiration(Constants.expirationTimeSRX);
-		drive.setExpiration(Constants.expirationTimeSRX);
+		// leftSRX.setExpiration(Constants.expirationTimeSRX);
+		// rightSRX.setExpiration(Constants.expirationTimeSRX);
+		// drive.setExpiration(Constants.expirationTimeSRX);
+		drive.setSafetyEnabled(false);
+		leftSRX.setSafetyEnabled(false);
+		rightSRX.setSafetyEnabled(false);
 
 		
 		// resetEncoders();
