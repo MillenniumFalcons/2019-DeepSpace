@@ -9,12 +9,12 @@ public class AirCompressor
 {
 	private static Compressor compressor = new Compressor(Constants.CompressorPCMPin);
 	
-	public static void runCompressor()
+	public static void run()
 	{
 		compressor.start();
 	}
 
-	public static void stopCompressor()
+	public static void stop()
 	{
 		compressor.stop();
 	}

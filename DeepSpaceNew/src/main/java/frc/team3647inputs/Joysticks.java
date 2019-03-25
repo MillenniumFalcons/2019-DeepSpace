@@ -1,7 +1,6 @@
 package frc.team3647inputs;
 
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -36,7 +35,7 @@ public class Joysticks
 	/**
 	 * Set main controller values.
 	 */
-	public void setMainControllerValues()
+	public void update()
 	{
 
 		leftBumper		= 	controller.getBumper(XboxController.Hand.kLeft);

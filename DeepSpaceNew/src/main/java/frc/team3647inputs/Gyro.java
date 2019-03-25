@@ -23,7 +23,7 @@ public class Gyro
     /**
      * This method updates the gyro values for Yaw, Pitch, Roll, and Heading.
      */
-    public void updateGyro()
+    public void update()
     {
         gyro.getYawPitchRoll(ypr);
         heading = gyro.getCompassHeading();

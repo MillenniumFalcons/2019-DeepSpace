@@ -11,20 +11,20 @@ public class BallIntake
 	private static Solenoid extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
 	private static VictorSPX intakeMotor = new VictorSPX(Constants.ballMotorPin);
 	
-	public static void ballIntakeinitialization()
+	public static void init()
 	{
 		intakeMotor.setInverted(false);
 	}
 
-	public static void runIntake()
+	public static void run()
 	{
 		if(BallShooter.cargoDetection())
 		{
-			intakeCargo(.2);
+			intake(.2);
 		}
 		else
 		{
-			intakeCargo(.6);
+			intake(.6);
 		}
 		BallShooter.intakeCargo(1);
 	}
@@ -39,24 +39,24 @@ public class BallIntake
 		setOpenLoop(0);
 	}
 
-	public static void extendIntake()
+	public static void extend()
 	{
 		extensionCylinder.set(true);
 		extensionCylinder2.set(true);
 	}
 	
-	public static void retractIntake()
+	public static void retract()
 	{
 		extensionCylinder.set(false);
 		extensionCylinder2.set(false);
 	}
 
-	public static void intakeCargo(double power)
+	public static void intake(double power)
 	{
 		setOpenLoop(power);
 	}
 
-	public static void backOutIntake()
+	public static void spitOut()
 	{
 		setOpenLoop(-1);
 	}

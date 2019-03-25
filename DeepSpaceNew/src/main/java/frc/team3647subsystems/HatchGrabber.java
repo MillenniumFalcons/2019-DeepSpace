@@ -11,13 +11,13 @@ public class HatchGrabber
 {
 	private static VictorSPX hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
 	
-	public static void runHatchGrabber(Joysticks coController)
+	public static void run(Joysticks coController)
 	{
 		if(coController.rightBumper)
 			grabHatch();
 		else if(coController.leftBumper)
 			releaseHatch();
-		else if (!BallShooter.cargoDetection())
+		else if (!Robot.cargoDetection)
 			runConstant();
 		else
 			stopMotor();		

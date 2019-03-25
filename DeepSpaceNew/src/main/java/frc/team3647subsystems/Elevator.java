@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Elevator
 {
 
-	public static ElevatorLevel currentState, lastState, aimedState;
+	public static ElevatorLevel aimedState;
+	private static boolean bannerSensor = false;
 	
 	// Sensor at bottom of elevator
 	public static DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
@@ -27,70 +28,25 @@ public class Elevator
 	public static VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
 	public static VictorSPX GearBoxSPX3 = new VictorSPX(14);
 
-	public static int elevatorEncoderCCL, elevatorEncoderValue, elevatorEncoderVelocity;
+	public static int encoderError, encoderValue, encoderVelocity;
 	
 	private static double overrideValue;
 	private static boolean manualOverride;
     
-    public static void elevatorInitialization()
+    public static void init()
 	{
-		currentState = null;
 		aimedState = null;
-		lastState = null;
-		//Config Sensors for encoder
-		elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		elevatorMaster.setSensorPhase(true);
-
-		// Configure PID Values
-		elevatorMaster.selectProfileSlot(Constants.interstageSlotIdx, 0);
-
-		elevatorMaster.config_kP(Constants.interstageSlotIdx, Constants.interstagePIDF[0], Constants.kTimeoutMs);
-		elevatorMaster.config_kI(Constants.interstageSlotIdx, Constants.interstagePIDF[1], Constants.kTimeoutMs);
-		elevatorMaster.config_kD(Constants.interstageSlotIdx, Constants.interstagePIDF[2], Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstageSlotIdx, Constants.interstagePIDF[3], Constants.kTimeoutMs);
-
-		// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
-
-		// //Motion Magic Constants
-		elevatorMaster.configMotionCruiseVelocity(Constants.kElevatorCruiseVelocity, Constants.kTimeoutMs);
-		elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
-
-		GearboxSPX2.follow(elevatorMaster);
-		GearboxSPX1.follow(elevatorMaster);
-		GearBoxSPX3.follow(elevatorMaster);
-		GearboxSPX2.setInverted(false);
-		elevatorMaster.setInverted(false);
-		GearboxSPX1.setInverted(false);
-
-		Elevator.elevatorMaster.enableCurrentLimit(true);
-		Elevator.elevatorMaster.configContinuousCurrentLimit(35);
-
-		elevatorMaster.setNeutralMode(NeutralMode.Brake);
-		setEncoderValue(Constants.elevatorStartingStowed);
-
-		elevatorMaster.setName("Elevator", "elevatorMaster");
-		elevatorMaster.setExpiration(Constants.expirationTimeSRX);
+		initSensors();
 	}
 	
-	public static void elevatorTeleopInit()
+	public static void initSensors()
 	{
 		//Config Sensors for encoder
 		elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		elevatorMaster.setSensorPhase(true);
 
-		// Configure PID Values
-		elevatorMaster.selectProfileSlot(Constants.interstageSlotIdx, 0);
-
-		elevatorMaster.config_kP(Constants.interstageSlotIdx, Constants.interstagePIDF[0], Constants.kTimeoutMs);		
-		elevatorMaster.config_kI(Constants.interstageSlotIdx, Constants.interstagePIDF[1], Constants.kTimeoutMs);	
-		elevatorMaster.config_kD(Constants.interstageSlotIdx, Constants.interstagePIDF[2], Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstageSlotIdx, Constants.interstagePIDF[3], Constants.kTimeoutMs);
-		
-		// GearboxMaster.config_IntegralZone(Constants.carriagePIDX, Constants.carriageIZone, Constants.kTimeoutMs);
-
-		// //Motion Magic Constants
-		elevatorMaster.configMotionCruiseVelocity(Constants.kElevatorCruiseVelocity, Constants.kTimeoutMs);
-		elevatorMaster.configMotionAcceleration(Constants.kElevatorAcceleration, Constants.kTimeoutMs);
+		configurePIDFMM(Constants.interstagePIDF[0], Constants.interstagePIDF[1], Constants.interstagePIDF[2], 
+			Constants.interstagePIDF[3], Constants.kElevatorCruiseVelocity, Constants.kElevatorAcceleration);
 
 		GearboxSPX2.follow(elevatorMaster);
 		GearboxSPX1.follow(elevatorMaster);
@@ -105,6 +61,7 @@ public class Elevator
 		elevatorMaster.setNeutralMode(NeutralMode.Brake);
 		elevatorMaster.setName("Elevator", "elevatorMaster");
 		elevatorMaster.setExpiration(Constants.expirationTimeSRX);
+		bannerSensor = limitSwitch.get();
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -145,38 +102,21 @@ public class Elevator
 		}
 	}
 
-	public static void setManualController(Joysticks controller)
+	private static void updateBannerSensor()
 	{
-			if(controller.buttonA)
-				aimedState = ElevatorLevel.BOTTOM;     //if hatch
-			else if(controller.buttonB)
-				aimedState = ElevatorLevel.HATCHL2;
-			else if(controller.buttonY)
-				aimedState = ElevatorLevel.HATCHL3;
-			else if(controller.buttonX)
-				aimedState = ElevatorLevel.MINROTATE;
+		bannerSensor = limitSwitch.get();
 	}
 
-	public static void setElevatorManualControl(Joysticks controller)
+	public static void run()
 	{
-		setManualOverride(controller.leftJoyStickY);
-	}
-
-	public static void runElevator()
-	{
-		setElevatorEncoder();
-		updateLivePosition();
+		updateBannerSensor();
+		updateEncoder();
 		if(aimedState != null)
 		{
 			switch(aimedState) //check if aimed state has a value
 			{
-				case MANUAL:
-					// if(!manualOverride)
-					// 	overrideValue = 0;
-					// moveManual(overrideValue);
-					break;
 				case STOP:
-					stopElevator();
+					stop();
 					break;
 				case START:
 					moveToBottomStart();
@@ -201,27 +141,54 @@ public class Elevator
 	}
 	static void moveToBottomStart()
 	{
-		if(getLimitSwitch())
+		if(getBannerSenor())
 		{
-			stopElevator();
+			stop();
 			resetElevatorEncoder();
 		}
 		else
 			setOpenLoop(-.3);
 	}
-	
+	static boolean reachedZeroButNotBottom = false;
 	private static void moveToBottom()
 	{
-		if(positionThreshold(0) && !getLimitSwitch())
+		if(positionThreshold(0) && !getBannerSenor())
+			reachedZeroButNotBottom = true;
+
+		if(reachedZeroButNotBottom)
+		{
 			moveToBottomStart();
-		else
+			reachedZeroButNotBottom = !getBannerSenor();
+		}
+		else if(!getBannerSenor() && !reachedZeroButNotBottom)
 			setPosition(0);
-		
+
+
 	}
+
     
 	//----------------------------------------------------------
 
 	//Manual movement-------------------------------------------
+
+	public static void setManualController(Joysticks controller)
+	{
+			if(controller.buttonA)
+				aimedState = ElevatorLevel.BOTTOM;     //if hatch
+			else if(controller.buttonB)
+				aimedState = ElevatorLevel.HATCHL2;
+			else if(controller.buttonY)
+				aimedState = ElevatorLevel.HATCHL3;
+			else if(controller.buttonX)
+				aimedState = ElevatorLevel.MINROTATE;
+	}
+
+	public static void setElevatorManualControl(Joysticks controller)
+	{
+		setManualOverride(controller.leftJoyStickY);
+	}
+
+
 	public static void setManualOverride(double jValue)
 	{
 		if(Math.abs(jValue) > .15) //deadzone
@@ -240,8 +207,8 @@ public class Elevator
 
 	public static void moveManual(double jValue)
 	{
-		setElevatorEncoder();
-		updateLivePosition();
+		updateEncoder();
+		// updateLivePosition();
 		if(jValue > 0)
 		{
 			setOpenLoop(jValue * 0.5);
@@ -259,7 +226,7 @@ public class Elevator
 			switch(encoderState)
 			{
 				case 0:
-					manualEncoderValue = elevatorEncoderValue + manualAdjustment;
+					manualEncoderValue = encoderValue + manualAdjustment;
 					encoderState = 1;
 					break;
 				case 1:
@@ -277,44 +244,30 @@ public class Elevator
 
 	private static boolean positionThreshold(double constant)
 	{
-		return (constant + Constants.kElevatorPositionThreshold) > elevatorEncoderValue && 
-				(constant - Constants.kElevatorPositionThreshold) < elevatorEncoderValue;
+		return (constant + Constants.kElevatorPositionThreshold) > encoderValue && 
+				(constant - Constants.kElevatorPositionThreshold) < encoderValue;
 	}
 
-	private static void updateLivePosition()
+	public static boolean reachedState(ElevatorLevel nAimedState)
 	{
-		if(getLimitSwitch())
-			currentState = ElevatorLevel.BOTTOM;
-		else if(positionThreshold(Constants.elevatorCargoHandoff))
-			currentState = ElevatorLevel.CARGOHANDOFF;
-		else if(positionThreshold(Constants.elevatorHatchHandoff))
-			currentState = ElevatorLevel.HATCHHANDOFF;
-		else if(positionThreshold(Constants.elevatorHatchL2))
-			currentState = ElevatorLevel.HATCHL2;
-		else if(positionThreshold(Constants.elevatorHatchL3))
-			currentState = ElevatorLevel.HATCHL3;
-		else if(positionThreshold(Constants.elevatorCargoL2))
-			currentState = ElevatorLevel.CARGOL2;
-		else if(positionThreshold(Constants.elevatorCargoShip))
-			currentState = ElevatorLevel.CARGOSHIP;
-		else if(positionThreshold(Constants.elevatorStowed) || positionThreshold(Constants.elevatorStartingStowed))
-			currentState = ElevatorLevel.STOWED;
-		else if(positionThreshold(Constants.elevatorMinRotation))
-			currentState = ElevatorLevel.MINROTATE;
-		else if(positionThreshold(Constants.elevatorVerticalStowed))
-			currentState = ElevatorLevel.VERTICALSTOWED;
-		else
-			currentState = ElevatorLevel.MANUAL;
+		if(aimedState != null)
+			return positionThreshold(nAimedState.encoderVal);
+		return false;
+	}
+
+	public static boolean reachedAimedState()
+	{
+		return reachedState(aimedState);
 	}
 
 	//Encoder Methods-------------------------------------------
-	public static void setElevatorEncoder()
+	public static void updateEncoder()
 	{
-		if(getLimitSwitch())
+		if(bannerSensor)
 			resetElevatorEncoder();
-		elevatorEncoderValue = elevatorMaster.getSelectedSensorPosition(0);
-		elevatorEncoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
-		elevatorEncoderCCL = elevatorMaster.getClosedLoopError(0);
+		encoderValue = elevatorMaster.getSelectedSensorPosition(0);
+		encoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
+		encoderError = elevatorMaster.getClosedLoopError(0);
 	}
 
 	private static void setEncoderValue(int encoderValue)
@@ -326,38 +279,42 @@ public class Elevator
 	{
 		setEncoderValue(0);
 	}
-
-	public static int getStateEncoder(ElevatorLevel futureAimedState)
-	{
-		if(futureAimedState != null && futureAimedState.encoderVal != -1)
-			return futureAimedState.encoderVal;
-		return -1;
-	}
 	//----------------------------------------------------------
 
-	private static boolean getLimitSwitch()
+	private static boolean getBannerSenor()
 	{
-		return limitSwitch.get();
+		return bannerSensor;
 	}
 	
-	public static void stopElevator()
+	public static void stop()
 	{
 		elevatorMaster.stopMotor();
 	}
 
 	public static boolean isAboveMinRotate(int threshold)
 	{
-		return (elevatorEncoderValue >= Constants.elevatorMinRotation + threshold);
+		return (encoderValue >= Constants.elevatorMinRotation + threshold);
+	}
+
+	private static boolean isValueAboveMinRotate(int val)
+	{
+		return (val >= Constants.elevatorMinRotation + 500);
+	}
+	public static boolean isStateAboveMinRotate(ElevatorLevel state)
+	{
+		if(state != null)
+			return isValueAboveMinRotate(state.encoderVal);
+		return false;
 	}
 	
 	public static void printElevatorEncoders()
     {
-        System.out.println("Elevator Encoder Value: " + elevatorEncoderValue );//+ "\nElevator Velocity: " + elevatorEncoderVelocity);
+        System.out.println("Elevator Encoder Value: " + encoderValue );//+ "\nElevator Velocity: " + elevatorEncoderVelocity);
 	}
 
 	public static void printBannerSensor()
     {
-    	System.out.println("Banner Sensor Value: " + getLimitSwitch());
+    	System.out.println("Banner Sensor Value: " + getBannerSenor());
     }
 
     public static void printElevatorCurrent()
@@ -369,6 +326,6 @@ public class Elevator
 	{
 		aimedState = null;
 		elevatorMaster.setNeutralMode(NeutralMode.Coast);
-		stopElevator();
+		stop();
 	}
 }

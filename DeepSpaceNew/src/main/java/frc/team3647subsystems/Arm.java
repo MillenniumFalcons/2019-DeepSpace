@@ -9,56 +9,31 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.team3647inputs.*;
 
 public class Arm
 {
-	public static ArmPosition currentState, lastState, aimedState;
+	public static ArmPosition aimedState;
 
 	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);	
 	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	public static CANDigitalInput revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen); 
 	public static CANDigitalInput fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen); ;
 
-	public static int armEncoderCCL, armEncoderValue, armEncoderVelocity;
+	public static int encoderError, encoderValue, encoderVelocity;
 
 	public static double overrideValue;
 	public static boolean manualOverride;
-	
-	static Notifier followerThread;
-	
-    public static void armInitialization()
+		
+    public static void init()
 	{
-		currentState = null;
 		aimedState = ArmPosition.STOPPED;
-		lastState = null;
-		//Encoder for arm motor
-		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		armSRX.setSensorPhase(true);
-		armSRX.setInverted(false);
-
-		armNEO.restoreFactoryDefaults();
-		armNEO.setIdleMode(IdleMode.kBrake);
-		armNEO.enableVoltageCompensation(12);//max voltage of 12v to scale output better
-
-		// PID for motors
-		armSRX.selectProfileSlot(Constants.armPID, 0);
-		armSRX.config_kP(Constants.armPID, Constants.armPIDF[0], Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armPID, Constants.armPIDF[1], Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armPID, Constants.armPIDF[2], Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armPID, Constants.armPIDF[3], Constants.kTimeoutMs);
-		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);
-		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
-
-
-		armSRX.setName("Arm", "armSRX");
-		armSRX.setExpiration(Constants.expirationTimeSRX);
+		
+		initSensors();
 	}
 	
-	public static void armInitSensors()
+	public static void initSensors()
 	{
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		armSRX.setSensorPhase(true);
@@ -68,17 +43,12 @@ public class Arm
 		armNEO.setIdleMode(IdleMode.kBrake);
 		armNEO.enableVoltageCompensation(12);//max voltage of 12v to scale output better
 
-		// PID for motors
-		armSRX.selectProfileSlot(Constants.armPID, 0);
-		armSRX.config_kP(Constants.armPID, Constants.armPIDF[0], Constants.kTimeoutMs);
-		armSRX.config_kI(Constants.armPID, Constants.armPIDF[1], Constants.kTimeoutMs);
-		armSRX.config_kD(Constants.armPID, Constants.armPIDF[2], Constants.kTimeoutMs);
-		armSRX.config_kF(Constants.armPID, Constants.armPIDF[3], Constants.kTimeoutMs);
-		armSRX.configMotionCruiseVelocity(Constants.kArmSRXCruiseVelocity, Constants.kTimeoutMs);
-		armSRX.configMotionAcceleration(Constants.kArmSRXAcceleration, Constants.kTimeoutMs);
+		configPIDFMM(Constants.armPIDF[0], Constants.armPIDF[1], Constants.armPIDF[2], Constants.armPIDF[3], 
+					Constants.kArmSRXCruiseVelocity, Constants.kArmSRXAcceleration);
+
 	}
 
-	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
+	public static void configPIDFMM(double p, double i, double d, double f, int vel, int accel)
 	{
 		armSRX.selectProfileSlot(Constants.armPID, 0);
 		armSRX.config_kP(Constants.armPID, p, Constants.kTimeoutMs);		
@@ -123,6 +93,168 @@ public class Arm
 	{
 		armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
 	}
+
+	/**
+	 * The main arm method, switches the aimedState variable to determine which position to move to next
+	 */
+	public static void run()
+	{
+		updateEncoder();
+		// updateLivePosition();
+		if(aimedState != null) //check if aimed state has a value
+		{
+			switch(aimedState)
+			{
+				case MANUAL:
+					// if(!manualOverride)
+					// 	overrideValue = 0;
+					// moveManual(overrideValue);
+					break;
+				case STOPPED:
+					Arm.stop();
+					break;
+				case FWDLIMITSWITCH:
+					moveToFwdLimitSwitch();
+					break;
+				case REVLIMITSWITCH:
+					moveToRevLimitSwitch();
+					break;
+				default:
+					if(aimedState.encoderVal != -1)
+						setPosition(aimedState.encoderVal);
+					break;
+			}
+		}
+	}
+
+
+	
+	// Limit switch based movement: -------
+	public static void moveToFwdLimitSwitch()
+	{
+		if(!getFwdLimitSwitch())
+			setOpenLoop(.2);
+		else
+			stop();
+	}
+
+	public static void moveToRevLimitSwitch()
+	{
+		if(!getRevLimitSwitch())
+			setOpenLoop(-.5);
+		else
+		{
+			resetEncoder();
+			setPosition(0);
+		}
+	}
+	//---------------------------------------
+	//MotionMagic movement-------------------
+	private static void setPosition(int position)
+	{
+		// Motion Magic
+		try{ armSRX.set(ControlMode.MotionMagic, position); }
+		catch(NullPointerException e)
+		{
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+			armSRX.set(ControlMode.MotionMagic, position);
+		}
+	}
+	//-----------------------------------------
+	
+	public static void setOpenLoop(double demand)
+	{
+		try{ armSRX.set(ControlMode.PercentOutput, demand); }
+		catch(NullPointerException e){ armSRX = new WPI_TalonSRX(Constants.armSRXPin); }
+	}
+
+	public static void stop()
+	{
+		armSRX.stopMotor();
+		armNEO.stopMotor();
+	}
+	//-------------------------------------------------
+
+	private static boolean positionThreshold(double constant)
+	{
+		return  (constant + Constants.kArmSRXPositionThreshold) > encoderValue && 
+				(constant - Constants.kArmSRXPositionThreshold) < encoderValue;
+	}
+
+	public static boolean reachedState(ArmPosition nAimedState)
+	{
+		if(aimedState != null)
+			return positionThreshold(nAimedState.encoderVal);
+		return false;
+	}
+
+	public static boolean reachedAimedState()
+	{
+		return reachedState(aimedState);
+	}
+	
+	// Encoder Methods ----------------------------------------
+	public static void updateEncoder()
+	{
+		// When the arm rotates all the way to the back encoder resets
+		// Gets encoder from SRX
+		try
+		{
+			encoderValue = armSRX.getSelectedSensorPosition(0);
+			encoderVelocity = armSRX.getSelectedSensorVelocity(0);
+			encoderError = armSRX.getClosedLoopError(0); // Gets difference between aimed encoder value and current encoder value
+		}
+		catch(NullPointerException e)
+		{
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+			armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+		}
+	}
+
+	private static void setEncoderValue(int encoderValue)
+	{
+		armSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+	}
+
+	public static void resetEncoder()
+	{
+		armSRX.setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
+	}
+
+	public static boolean isEncoderInThreshold()
+	{
+		// Checks the difference between the aimed encoder value and the current encoder value
+		// If difference less than a constant, assume current and aimed positions are the same
+		if(Math.abs(encoderError) < 80)
+			return true;
+		return false;
+	}
+	//----------------------------------------------------------
+	// Limit switch methods ------------------------------------
+	public static boolean getRevLimitSwitch()
+	{
+		try{return revNeoLimitSwitch.get();}
+		catch(NullPointerException e)
+		{
+			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+			revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+			return revNeoLimitSwitch.get();
+		}
+	}
+
+	public static boolean getFwdLimitSwitch()
+	{
+		try{return fwdNeoLimitSwitch.get();}
+		catch(NullPointerException e)
+		{
+			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+			fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+			return fwdNeoLimitSwitch.get();
+		}
+	}
+	//----------------------------------------------------------
+	
+	// Manual Movement-------------------------
 	public static void setManualController(Joysticks controller)
 	{
 		setManualOverride(controller.leftJoyStickY);
@@ -154,72 +286,6 @@ public class Arm
 	{
 		setManualOverride(controller.rightJoyStickX);
 	}
-	/**
-	 * The main arm method, switches the aimedState variable to determine which position to move to next
-	 */
-	public static void runArm()
-	{
-		setArmEncoder();
-		updateLivePosition();
-		if(aimedState != null) //check if aimed state has a value
-		{
-			switch(aimedState)
-			{
-				case MANUAL:
-					// if(!manualOverride)
-					// 	overrideValue = 0;
-					// moveManual(overrideValue);
-					break;
-				case STOPPED:
-					Arm.stopArm();
-					break;
-				case FWDLIMITSWITCH:
-					moveToFwdLimitSwitch();
-					break;
-				case REVLIMITSWITCH:
-					moveToRevLimitSwitch();
-					break;
-				default:
-					if(aimedState.encoderVal != -1)
-						setPosition(aimedState.encoderVal);
-					break;
-			}
-		}
-	}
-
-	public static void updateLivePosition()
-	{
-		if(aimedState != null)
-		{
-			if(positionThreshold(aimedState.encoderVal))
-				currentState = aimedState;
-		}
-		else if(getFwdLimitSwitch())
-			currentState = ArmPosition.FWDLIMITSWITCH;
-		else if(positionThreshold(Constants.armSRXCargoHandoff))
-			currentState = ArmPosition.CARGOHANDOFF;
-		else if(positionThreshold(Constants.armSRXHatchHandoff))
-			currentState = ArmPosition.HATCHHANDOFF;
-		else if(positionThreshold(Constants.armSRXFlatForwards))
-			currentState = ArmPosition.FLATFORWARDS;
-		else if(positionThreshold(Constants.armSRXFlatBackwards))
-			currentState = ArmPosition.FLATBACKWARDS;
-		else if(positionThreshold(Constants.armSRXCargoL3Front))
-			currentState = ArmPosition.CARGOL3FRONT;
-		else if(positionThreshold(Constants.armSRXCargoL3Back))
-			currentState = ArmPosition.CARGOL3BACK;
-		else if(positionThreshold(Constants.armSRXStowed))
-			currentState = ArmPosition.STOWED;
-		else if(positionThreshold(Constants.armSRXVerticalStowed))
-			currentState = ArmPosition.VERTICALSTOWED;
-		else if(positionThreshold(Constants.armSRXBackwardVision))
-			currentState = ArmPosition.VISIONB;
-		else if(positionThreshold(Constants.armSRXForwardVision))
-			currentState = ArmPosition.VISIONF;
-		else
-			currentState = null;
-	}
-
 	public static void setManualOverride(double jValue)
 	{
 		if(Math.abs(jValue) > .1) //deadzone
@@ -231,45 +297,12 @@ public class Arm
 		else 
 			manualOverride = false;
 	}
-	// Limit switch based movement: -------
-	public static void moveToFwdLimitSwitch()
-	{
-		if(!getFwdLimitSwitch())
-			setOpenLoop(.2);
-		else
-			stopArm();
-	}
-
-	public static void moveToRevLimitSwitch()
-	{
-		if(!getRevLimitSwitch())
-			setOpenLoop(-.5);
-		else
-		{
-			resetArmEncoder();
-			setPosition(0);
-		}
-	}
-	//---------------------------------------
-	//MotionMagic movement-------------------
-	private static void setPosition(int position)
-	{
-		// Motion Magic
-		try{ armSRX.set(ControlMode.MotionMagic, position); }
-		catch(NullPointerException e)
-		{
-			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
-			armSRX.set(ControlMode.MotionMagic, position);
-		}
-	}
-	//-----------------------------------------
-	// Manual Movement-------------------------
 	private static int encoderState, manualAdjustment, manualEncoderValue;
 
     public static void moveManual(double jValue)
 	{
-		setArmEncoder();
-		updateLivePosition();
+		updateEncoder();
+		// updateLivePosition();
 		if(jValue > 0)
 		{
 			setOpenLoop(overrideValue * 0.5);
@@ -287,7 +320,7 @@ public class Arm
 			switch(encoderState)
 			{
 				case 0:
-					manualEncoderValue = armEncoderValue + manualAdjustment;
+					manualEncoderValue = encoderValue + manualAdjustment;
 					encoderState = 1;
 					break;
 				case 1:
@@ -297,112 +330,21 @@ public class Arm
 		}
 	}
 
-	public static void setOpenLoop(double demand)
-	{
-		try{ armSRX.set(ControlMode.PercentOutput, demand); }
-		catch(NullPointerException e){ armSRX = new WPI_TalonSRX(Constants.armSRXPin); }
-	}
-
-	public static void stopArm()
-	{
-		armSRX.stopMotor();
-		armNEO.stopMotor();
-	}
-	//-------------------------------------------------
-
-	public static boolean positionThreshold(double constant)
-	{
-		return  (constant + Constants.kArmSRXPositionThreshold) > armEncoderValue && 
-				(constant - Constants.kArmSRXPositionThreshold) < armEncoderValue;
-	}
-
-	public static ArmPosition livePosition()
-	{
-		return ArmPosition.FLATBACKWARDS;
-	}
-
-	// Encoder Methods ----------------------------------------
-	public static void setArmEncoder()
-	{
-		// When the arm rotates all the way to the back encoder resets
-		// Gets encoder from SRX
-		try
-		{
-			armEncoderValue = armSRX.getSelectedSensorPosition(0);
-			armEncoderVelocity = armSRX.getSelectedSensorVelocity(0);
-			armEncoderCCL = armSRX.getClosedLoopError(0); // Gets difference between aimed encoder value and current encoder value
-		}
-		catch(NullPointerException e)
-		{
-			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
-			armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		}
-	}
-
-	public static void setEncoderValue(int encoderValue)
-	{
-		armSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
-	}
-
-	public static void resetArmEncoder()
-	{
-		armSRX.setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
-	}
-
-	public static boolean isEncoderInThreshold()
-	{
-		// Checks the difference between the aimed encoder value and the current encoder value
-		// If difference less than a constant, assume current and aimed positions are the same
-		if(Math.abs(armEncoderCCL) < 80)
-			return true;
-		return false;
-	}
-	//----------------------------------------------------------
-	// Limit switch methods ------------------------------------
-	public static boolean getRevLimitSwitch()
-	{
-		try
-		{
-			return revNeoLimitSwitch.get();
-		}
-		catch(NullPointerException e)
-		{
-			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
-			revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-			return revNeoLimitSwitch.get();
-		}
-	}
-
-	public static boolean getFwdLimitSwitch()
-	{
-		try
-		{
-			return fwdNeoLimitSwitch.get();
-		}
-		catch(NullPointerException e)
-		{
-			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
-			fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-			return fwdNeoLimitSwitch.get();
-		}
-	}
-	//----------------------------------------------------------
-	
 	public static void setToBrake()
 	{
 		armNEO.setIdleMode(IdleMode.kBrake);
 	}
-	public static void printArmEncoders()
+	public static void printEncoders()
     {
-        System.out.println("\nArm Encoder Value: " + armEncoderValue);
+        System.out.println("\nArm Encoder Value: " + encoderValue);
 	}
 
-	public static void printArmLimitSwitches()
+	public static void printLimitSwitches()
 	{
 		System.out.println("\nRev Limit Switch: " + getRevLimitSwitch() + "\nFwd Limit Swtich: " + getFwdLimitSwitch());
 	}
 
-    public static void printArmCurrent()
+    public static void printCurrent()
     {
         System.out.println("ArmCurrent: " + armNEO.getOutputCurrent());
 	}
@@ -414,7 +356,7 @@ public class Arm
 
 	public static void disableArm()
 	{
-		stopArm();
+		stop();
 		armNEO.setIdleMode(IdleMode.kCoast);
 	}
 }

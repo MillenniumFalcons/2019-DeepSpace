@@ -1,10 +1,8 @@
 package frc.team3647autonomous;
 
-import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Robot;
 import frc.team3647subsystems.Drivetrain;
 import frc.team3647utility.Units;
-import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 
 public class Odometry 
@@ -13,7 +11,6 @@ public class Odometry
     private volatile double currentEncoderPosition, lastPosition, deltaPosition;
 
     private static Odometry instance;
-    private Notifier odoThread;
 
     private Odometry()
     {
@@ -55,7 +52,7 @@ public class Odometry
 
     public void runOdometry()
     {
-        currentEncoderPosition = (Drivetrain.leftSRX.getSelectedSensorPosition(0) + Drivetrain.rightSRX.getSelectedSensorPosition(0)) / 2.0;
+        currentEncoderPosition = (Drivetrain.leftEncoder + Drivetrain.rightEncoder) / 2.0;
         deltaPosition = Units.ticksToMeters(currentEncoderPosition - lastPosition); // delta position calculated by
         // difference in encoder ticks
         theta = Math.toRadians(Robot.gyro.getYaw());// Gyro angle in Radians
@@ -63,12 +60,6 @@ public class Odometry
         y += Math.sin(theta) * deltaPosition; //Getting y position from sine of the change in position
         
         lastPosition = currentEncoderPosition;
-    }
-
-    private boolean bwd = false;
-    public void setReverse(boolean bwd)
-    {
-        this.bwd = bwd;
     }
 
     public double getX() 
@@ -157,10 +148,5 @@ public class Odometry
     public String toString()
     {
         return "X Position: " + x + " Y Position: " + y + " Heading: " + theta;
-    }
-
-    public void closeNotifier()
-    {
-        odoThread.close();
     }
 }

@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,14 +21,17 @@ public class Drivetrain
 	private static VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
 	private static VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
 	private static VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
-  private static VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
+	private static VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
+
+	
+	public static int leftEncoder, rightEncoder;
 
   public static double supposedAngle;
 
   private static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 
 
-  public static void drivetrainInitialization()
+  public static void init()
 	{
 		// Config left side PID settings
 		leftSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
@@ -111,6 +115,12 @@ public class Drivetrain
 			curvatureDrive(xValue, yValue);
 		}
 	}
+
+	public static void updateEncoders()
+	{
+		leftEncoder = leftSRX.getSelectedSensorPosition(0);
+		rightEncoder = rightSRX.getSelectedSensorPosition(0);
+	}
     
   public static void setPercentOutput(double lOutput, double rOutput)
 	{
@@ -151,7 +161,7 @@ public class Drivetrain
 	{
 		try
 		{
-			drive.curvatureDrive(throttle, turn, false);	//curvature drive from WPILIB libraries.
+			drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
 		}
 		catch(NullPointerException e)
 		{
@@ -162,7 +172,7 @@ public class Drivetrain
 	}
 
 	//USED BY AUTO FOR SOME REASON
-    public static void setVelocity(double lSpeed, double rSpeed)
+  public static void setVelocity(double lSpeed, double rSpeed)
 	{
 		double targetVelocityRight = rSpeed * Constants.velocityConstant;
 		double targetVelocityLeft = lSpeed * Constants.velocityConstant;
@@ -267,7 +277,7 @@ public class Drivetrain
 	private static double prevLeftAccel, prevRightAccel;
 	private static double maxLeftAccel, maxRightAccel;
 
-	private static double prevRightJerk, prevLeftJerk;
+	// private static double prevRightJerk, prevLeftJerk;
 	private static double maxRightJerk, maxLeftJerk;
 	private static Timer maxVelAccelTimer;
 	public static void initializeVelAccel()
@@ -297,8 +307,8 @@ public class Drivetrain
 		maxLeftAccel = 0;
 		maxRightAccel = 0;
 
-		prevLeftJerk = 0;
-		prevRightJerk = 0;
+		// prevLeftJerk = 0;
+		// prevRightJerk = 0;
 
 		maxRightJerk = 0;
 		maxLeftJerk = 0;

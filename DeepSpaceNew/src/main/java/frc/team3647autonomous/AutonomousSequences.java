@@ -30,7 +30,6 @@ public class AutonomousSequences
 	public static Trajectory.Segment current;
 	public static double leftSpeed;
 	public static double rightSpeed;
-	private static Timer autoTimer;
 
 	public static void autoInitFWD(String trajectoryName) 
 	{
@@ -87,9 +86,7 @@ public class AutonomousSequences
 
 	public static void runPath()
 	{
-		if(Arm.currentState != null && Elevator.currentState != null)
-			initializedRobot = Arm.currentState.equals(ArmPosition.FLATFORWARDS) && 
-			Elevator.currentState.equals(ElevatorLevel.BOTTOM);
+		initializedRobot = Arm.reachedState(ArmPosition.FLATFORWARDS) && Elevator.reachedState(ElevatorLevel.BOTTOM);
 
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
@@ -102,7 +99,7 @@ public class AutonomousSequences
 			{
 				case -2:
 					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-					if(Elevator.elevatorEncoderValue > 10000)
+					if(Elevator.encoderValue > 10000)
 						afterAutoStep = -1;
 					break;
 				case -1:
@@ -217,7 +214,7 @@ public class AutonomousSequences
 					}
 					else
 					{
-						if(Elevator.elevatorEncoderValue != 0 || Arm.currentState != ArmPosition.FLATBACKWARDS)
+						if(Elevator.encoderValue != 0 || !Arm.reachedState(ArmPosition.FLATBACKWARDS))
 							SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL1BACKWARDS);
 						else
 							autoStep = 0;
