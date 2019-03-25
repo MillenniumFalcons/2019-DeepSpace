@@ -4,6 +4,7 @@ package frc.team3647subsystems;
 
 import frc.robot.Constants;
 import frc.team3647inputs.Limelight;
+import frc.team3647utility.RollingAverage;
 
 public class VisionController 
 {
@@ -18,6 +19,8 @@ public class VisionController
 	// prevError is the global variable to keep track of the previous error in the
 	// PID loop
 	public Limelight limelight;
+
+	private RollingAverage tXAvg = new RollingAverage(4);
 
 	public VisionController(String orientation) 
 	{
@@ -41,7 +44,8 @@ public class VisionController
 
 		limelight.updateLimelight();
 		updateInputs();
-		double error = limelight.getX() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
+		tXAvg.add(this.x);
+		double error = tXAvg.getAverage() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
 												// get a value from -1 to 1 to scale for speed output
 		if (limelight.getValidTarget() && Math.abs(error) < errorThreshold) // checking if the error is within a threshold to stop
 		{
@@ -59,7 +63,8 @@ public class VisionController
 	public void follow(double kp, double ki, double kd, double errorThreshold, double defaultSpeed, double targetArea)
 	{
 		updateInputs();
-		double error = this.x / 27; // error is x / 27. x is measured in degrees, where the max x is 27. We get a
+		tXAvg.add(this.x);
+		double error = tXAvg.getAverage() / 27; // error is x / 27. x is measured in degrees, where the max x is 27. We get a
 									// value from -1 to 1 to scale for speed output
 		if (this.area >= targetArea / 2) // redundant "if" in order to make sure the robot stops
 		{
