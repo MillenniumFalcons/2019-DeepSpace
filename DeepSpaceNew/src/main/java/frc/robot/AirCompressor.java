@@ -1,5 +1,3 @@
-//Class not created by Kunal Singla
-
 package frc.robot;
 
 import frc.robot.Constants;

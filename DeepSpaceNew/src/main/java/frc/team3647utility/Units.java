@@ -29,7 +29,6 @@ public interface Units
         return (feet * Constants.kEncoderTicks) / (Math.PI * .5);
     }
 
-
     public static double feetToMeters(double ft)
     {
         return inchesToMeters(ft*12);

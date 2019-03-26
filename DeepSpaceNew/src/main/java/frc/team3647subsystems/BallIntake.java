@@ -18,7 +18,7 @@ public class BallIntake
 
 	public static void run()
 	{
-		if(BallShooter.cargoDetection())
+		if(Robot.cargoDetection)
 		{
 			intake(.2);
 		}

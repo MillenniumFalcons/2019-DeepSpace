@@ -3,7 +3,6 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
-import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -30,12 +29,12 @@ public class Elevator
 
 	public static int encoderError, encoderValue, encoderVelocity;
 	
-	private static double overrideValue;
-	private static boolean manualOverride;
+	// private static double overrideValue;
+	// private static boolean manualOverride;
     
     public static void init()
 	{
-		aimedState = null;
+		aimedState = ElevatorLevel.STOP;
 		initSensors();
 	}
 	
@@ -81,7 +80,7 @@ public class Elevator
 	{
 		MANUAL(-1),
 		STOP(-1),
-		BOTTOM(0),
+		BOTTOM(-1),
         CARGOHANDOFF(Constants.elevatorCargoHandoff),
         HATCHHANDOFF(Constants.elevatorHatchHandoff),
 		HATCHL2(Constants.elevatorHatchL2),
@@ -110,24 +109,26 @@ public class Elevator
 	public static void run()
 	{
 		updateBannerSensor();
-		updateEncoder();
 		if(aimedState != null)
 		{
-			switch(aimedState) //check if aimed state has a value
+			if(aimedState.encoderVal != -1)
+				setPosition(aimedState.encoderVal);
+			else
 			{
-				case STOP:
-					stop();
-					break;
-				case START:
-					moveToBottomStart();
-					break;
-				case BOTTOM:
-					moveToBottom();
-					break;
-				default:
-					if(aimedState.encoderVal != -1)
-						setPosition(aimedState.encoderVal);
-					break;
+				switch(aimedState) //check if aimed state has a value
+				{
+					case BOTTOM:
+						moveToBottom();
+						break;
+					case STOP:
+						stop();
+						break;
+					case START:
+						moveToBottomStart();
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	}
@@ -169,72 +170,72 @@ public class Elevator
     
 	//----------------------------------------------------------
 
-	//Manual movement-------------------------------------------
+	// //Manual movement-------------------------------------------
 
-	public static void setManualController(Joysticks controller)
-	{
-			if(controller.buttonA)
-				aimedState = ElevatorLevel.BOTTOM;     //if hatch
-			else if(controller.buttonB)
-				aimedState = ElevatorLevel.HATCHL2;
-			else if(controller.buttonY)
-				aimedState = ElevatorLevel.HATCHL3;
-			else if(controller.buttonX)
-				aimedState = ElevatorLevel.MINROTATE;
-	}
+	// public static void setManualController(Joysticks controller)
+	// {
+	// 		if(controller.buttonA)
+	// 			aimedState = ElevatorLevel.BOTTOM;     //if hatch
+	// 		else if(controller.buttonB)
+	// 			aimedState = ElevatorLevel.HATCHL2;
+	// 		else if(controller.buttonY)
+	// 			aimedState = ElevatorLevel.HATCHL3;
+	// 		else if(controller.buttonX)
+	// 			aimedState = ElevatorLevel.MINROTATE;
+	// }
 
-	public static void setElevatorManualControl(Joysticks controller)
-	{
-		setManualOverride(controller.leftJoyStickY);
-	}
+	// public static void setElevatorManualControl(Joysticks controller)
+	// {
+	// 	setManualOverride(controller.leftJoyStickY);
+	// }
 
 
-	public static void setManualOverride(double jValue)
-	{
-		if(Math.abs(jValue) > .15) //deadzone
-		{
-			manualOverride = true;
-			aimedState = ElevatorLevel.MANUAL;
-            overrideValue = jValue;
-		} 
-		else 
-		{
-			manualOverride = false;
-		}
-	}
+	// public static void setManualOverride(double jValue)
+	// {
+	// 	if(Math.abs(jValue) > .15) //deadzone
+	// 	{
+	// 		manualOverride = true;
+	// 		aimedState = ElevatorLevel.MANUAL;
+    //         overrideValue = jValue;
+	// 	} 
+	// 	else 
+	// 	{
+	// 		manualOverride = false;
+	// 	}
+	// }
 
-	private static int encoderState, manualAdjustment, manualEncoderValue;
+	// private static int encoderState, manualAdjustment, manualEncoderValue;
 
-	public static void moveManual(double jValue)
-	{
-		updateEncoder();
-		// updateLivePosition();
-		if(jValue > 0)
-		{
-			setOpenLoop(jValue * 0.5);
-			manualAdjustment = 50;
-			encoderState = 0;
-		}
-		else if(jValue < 0)
-		{
-			setOpenLoop(jValue * 0.5);
-			manualAdjustment = 0;
-			encoderState = 0;
-		}
-		else
-		{
-			switch(encoderState)
-			{
-				case 0:
-					manualEncoderValue = encoderValue + manualAdjustment;
-					encoderState = 1;
-					break;
-				case 1:
-					setPosition(manualEncoderValue);
-					break;
-			}
-		}
-	}
+	// public static void moveManual(double jValue)
+	// {
+	// 	updateEncoder();
+	// 	// updateLivePosition();
+	// 	if(jValue > 0)
+	// 	{
+	// 		setOpenLoop(jValue * 0.5);
+	// 		manualAdjustment = 50;
+	// 		encoderState = 0;
+	// 	}
+	// 	else if(jValue < 0)
+	// 	{
+	// 		setOpenLoop(jValue * 0.5);
+	// 		manualAdjustment = 0;
+	// 		encoderState = 0;
+	// 	}
+	// 	else
+	// 	{
+	// 		switch(encoderState)
+	// 		{
+	// 			case 0:
+	// 				manualEncoderValue = encoderValue + manualAdjustment;
+	// 				encoderState = 1;
+	// 				break;
+	// 			case 1:
+	// 				setPosition(manualEncoderValue);
+	// 				break;
+	// 		}
+	// 	}
+	// }
 
     public static void setOpenLoop(double power)
     {
@@ -309,7 +310,7 @@ public class Elevator
 	
 	public static void printElevatorEncoders()
     {
-        System.out.println("Elevator Encoder Value: " + encoderValue );//+ "\nElevator Velocity: " + elevatorEncoderVelocity);
+        System.out.println("Elevator Encoder Value: " + encoderValue );
 	}
 
 	public static void printBannerSensor()

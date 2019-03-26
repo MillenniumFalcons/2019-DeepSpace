@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
-import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.Arm.ArmPosition;
@@ -21,8 +20,7 @@ public class Robot extends TimedRobot
 	public static Joysticks coController;
 	public static Gyro gyro;
   
-	public static Notifier autoNotifier, drivetrainNotifier, armFollowerNotifier, subsystemsUpdateNotifier,
-		stateMachineRunnerNotifier, armRunner, elevatorRunner;
+	public static Notifier autoNotifier, drivetrainNotifier, armFollowerNotifier, stateMachineRunnerNotifier;
 
 	
 
@@ -37,14 +35,12 @@ public class Robot extends TimedRobot
 
 	public Robot()
 	{
-		super(.07);
+		super(.02);
 	}
 
 	@Override
 	public void robotInit()
 	{
-		
-
 		pDistributionPanel = new PowerDistributionPanel();
 		
 		AutonomousSequences.limelightClimber.limelight.setToBlack();
@@ -68,8 +64,8 @@ public class Robot extends TimedRobot
 		});
 
 		drivetrainNotifier = new Notifier(() ->{
-			driveVisionTeleop();
 			updateJoysticks();
+			driveVisionTeleop();
 		});
 
 		stateMachineRunnerNotifier = new Notifier(() ->{
@@ -78,16 +74,6 @@ public class Robot extends TimedRobot
 			SeriesStateMachine.setControllers(mainController, coController);
 			SeriesStateMachine.run();
 		});
-
-		armRunner = new Notifier(() ->{
-			Arm.run();
-			HatchGrabber.run(coController);
-		});
-
-		elevatorRunner = new Notifier(() ->{
-			Elevator.run();
-		});
-
 
 
 		
@@ -98,7 +84,7 @@ public class Robot extends TimedRobot
 	public void robotPeriodic()	
 	{
 		gyro.update();
-		// updateJoysticks();
+		// updateJoysticks(); Done in drivetrain notifier!
 		SmartDashboard.putNumber("Match Timer", 150 - matchTimer.get());
 		cargoDetection = BallShooter.cargoDetection();
 	}
@@ -114,24 +100,19 @@ public class Robot extends TimedRobot
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
 		Drivetrain.init();
-		Drivetrain.resetEncoders();
-		// AutonomousSequences.autoInitFWD("TestPath2");
-		SeriesStateMachine.init();
-		Elevator.init();
-		// Drivetrain.setToBrake();
 		Arm.init();
+		Elevator.init();
+		SeriesStateMachine.init();
+		AirCompressor.run();
 		BallIntake.init();
+		Drivetrain.resetEncoders();
+
+		Drivetrain.setToCoast();
 
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
 		stateMachineRunnerNotifier.startPeriodic(.02);
-		armRunner.startPeriodic(.02);
-		elevatorRunner.startPeriodic(.02);
-
 	}
-  
-	double left;
-	double right;
   
 	@Override
 	public void autonomousPeriodic() 
@@ -142,20 +123,18 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopInit()
 	{
-		Arm.initSensors();
 		Drivetrain.init();
+		Arm.initSensors();
 		Elevator.initSensors();
+
 		AirCompressor.run();
 		BallIntake.init();
+
 		Drivetrain.setToCoast();
 
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
-		 subsystemsUpdateNotifier.startPeriodic(.02);
 		stateMachineRunnerNotifier.startPeriodic(.02);
-		armRunner.startPeriodic(.02);
-		elevatorRunner.startPeriodic(.02);
-
 	}
 
 	//Teleop Code
@@ -165,13 +144,17 @@ public class Robot extends TimedRobot
 		Arm.run();
 		Elevator.run(); 
 		HatchGrabber.run(coController);
-		SeriesStateMachine.setControllers(mainController, coController); 
-		SeriesStateMachine.run();
+		//State machine will run with notifier
+		//Drivetrain runs with notifier
 	}
 
 	@Override
 	public void disabledInit()
 	{
+		drivetrainNotifier.stop();
+		armFollowerNotifier.stop();
+		stateMachineRunnerNotifier.stop();
+
 		Shuffleboard.stopRecording();
 		matchTimer.stop();
 		matchTimer.reset();

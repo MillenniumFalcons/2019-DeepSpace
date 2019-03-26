@@ -10,7 +10,6 @@ import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.robot.Constants;
-import frc.team3647inputs.*;
 
 public class Arm
 {
@@ -23,8 +22,8 @@ public class Arm
 
 	public static int encoderError, encoderValue, encoderVelocity;
 
-	public static double overrideValue;
-	public static boolean manualOverride;
+	// public static double overrideValue;
+	// public static boolean manualOverride;
 		
     public static void init()
 	{
@@ -62,7 +61,7 @@ public class Arm
 	
 	public enum ArmPosition
 	{
-		FWDLIMITSWITCH(Constants.armSRXFwdLimitSwitch),
+		FWDLIMITSWITCH(-1),
 		REVLIMITSWITCH(-1),
 		FLATFORWARDS(Constants.armSRXFlatForwards),
 		FLATVISIONFORWARDS(Constants.armSRXForwardVision),
@@ -99,30 +98,29 @@ public class Arm
 	 */
 	public static void run()
 	{
-		updateEncoder();
 		// updateLivePosition();
 		if(aimedState != null) //check if aimed state has a value
 		{
-			switch(aimedState)
+			if(aimedState.encoderVal != -1)
+				setPosition(aimedState.encoderVal);
+			else
 			{
-				case MANUAL:
-					// if(!manualOverride)
-					// 	overrideValue = 0;
-					// moveManual(overrideValue);
-					break;
-				case STOPPED:
-					Arm.stop();
-					break;
-				case FWDLIMITSWITCH:
-					moveToFwdLimitSwitch();
-					break;
-				case REVLIMITSWITCH:
-					moveToRevLimitSwitch();
-					break;
-				default:
-					if(aimedState.encoderVal != -1)
-						setPosition(aimedState.encoderVal);
-					break;
+				switch(aimedState)
+				{
+					case STOPPED:
+						stop();
+						break;
+					case REVLIMITSWITCH:
+						moveToRevLimitSwitch();
+						break;
+					case FWDLIMITSWITCH:
+						moveToFwdLimitSwitch();
+						break;
+					default:
+						stop();
+						break;
+					
+				}
 			}
 		}
 	}
@@ -211,7 +209,7 @@ public class Arm
 		}
 	}
 
-	private static void setEncoderValue(int encoderValue)
+	public static void setEncoderValue(int encoderValue)
 	{
 		armSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
 	}
@@ -254,81 +252,81 @@ public class Arm
 	}
 	//----------------------------------------------------------
 	
-	// Manual Movement-------------------------
-	public static void setManualController(Joysticks controller)
-	{
-		setManualOverride(controller.leftJoyStickY);
-		if(manualOverride)
-			aimedState = ArmPosition.MANUAL;
-		else if(controller.buttonA)
-			aimedState = ArmPosition.VERTICALSTOWED;
-		else if(controller.buttonY)
-			aimedState = ArmPosition.STOWED;
-		 else if(controller.buttonB)
-			aimedState = ArmPosition.HATCHHANDOFF;
-		else if(controller.buttonX)
-			aimedState = ArmPosition.CARGOHANDOFF;
-		 else if(controller.leftBumper)
-			aimedState = ArmPosition.FLATBACKWARDS;
-		 else if(controller.rightBumper)
-			aimedState = ArmPosition.FLATFORWARDS;	
-		 else if(controller.dPadRight)
-			aimedState = ArmPosition.FWDLIMITSWITCH;
-		else if(controller.dPadLeft)
-			aimedState = ArmPosition.REVLIMITSWITCH;
-		 else if(controller.dPadUp)
-			aimedState = ArmPosition.CARGOL3BACK;
-		 else if(controller.dPadDown)
-			aimedState = ArmPosition.CARGOL3FRONT;
-	}
+	// // Manual Movement-------------------------
+	// public static void setManualController(Joysticks controller)
+	// {
+	// 	setManualOverride(controller.leftJoyStickY);
+	// 	if(manualOverride)
+	// 		aimedState = ArmPosition.MANUAL;
+	// 	else if(controller.buttonA)
+	// 		aimedState = ArmPosition.VERTICALSTOWED;
+	// 	else if(controller.buttonY)
+	// 		aimedState = ArmPosition.STOWED;
+	// 	 else if(controller.buttonB)
+	// 		aimedState = ArmPosition.HATCHHANDOFF;
+	// 	else if(controller.buttonX)
+	// 		aimedState = ArmPosition.CARGOHANDOFF;
+	// 	 else if(controller.leftBumper)
+	// 		aimedState = ArmPosition.FLATBACKWARDS;
+	// 	 else if(controller.rightBumper)
+	// 		aimedState = ArmPosition.FLATFORWARDS;	
+	// 	 else if(controller.dPadRight)
+	// 		aimedState = ArmPosition.FWDLIMITSWITCH;
+	// 	else if(controller.dPadLeft)
+	// 		aimedState = ArmPosition.REVLIMITSWITCH;
+	// 	 else if(controller.dPadUp)
+	// 		aimedState = ArmPosition.CARGOL3BACK;
+	// 	 else if(controller.dPadDown)
+	// 		aimedState = ArmPosition.CARGOL3FRONT;
+	// }
 
-	public static void setArmManualControl(Joysticks controller)
-	{
-		setManualOverride(controller.rightJoyStickX);
-	}
-	public static void setManualOverride(double jValue)
-	{
-		if(Math.abs(jValue) > .1) //deadzone
-		{
-			manualOverride = true;
-			overrideValue = jValue;
-			aimedState = ArmPosition.MANUAL;
-		} 
-		else 
-			manualOverride = false;
-	}
-	private static int encoderState, manualAdjustment, manualEncoderValue;
+	// public static void setArmManualControl(Joysticks controller)
+	// {
+	// 	setManualOverride(controller.rightJoyStickX);
+	// }
+	// public static void setManualOverride(double jValue)
+	// {
+	// 	if(Math.abs(jValue) > .1) //deadzone
+	// 	{
+	// 		manualOverride = true;
+	// 		overrideValue = jValue;
+	// 		aimedState = ArmPosition.MANUAL;
+	// 	} 
+	// 	else 
+	// 		manualOverride = false;
+	// }
+	// private static int encoderState, manualAdjustment, manualEncoderValue;
 
-    public static void moveManual(double jValue)
-	{
-		updateEncoder();
-		// updateLivePosition();
-		if(jValue > 0)
-		{
-			setOpenLoop(overrideValue * 0.5);
-			manualAdjustment = 0;
-			encoderState = 0;
-		}
-		else if(jValue < 0)
-		{
-			setOpenLoop(overrideValue * 0.5);
-			manualAdjustment = 0;
-			encoderState = 0;
-		}
-		else
-		{
-			switch(encoderState)
-			{
-				case 0:
-					manualEncoderValue = encoderValue + manualAdjustment;
-					encoderState = 1;
-					break;
-				case 1:
-					setPosition(manualEncoderValue);
-					break;
-			}
-		}
-	}
+    // public static void moveManual(double jValue)
+	// {
+	// 	updateEncoder();
+	// 	// updateLivePosition();
+	// 	if(jValue > 0)
+	// 	{
+	// 		setOpenLoop(overrideValue * 0.5);
+	// 		manualAdjustment = 0;
+	// 		encoderState = 0;
+	// 	}
+	// 	else if(jValue < 0)
+	// 	{
+	// 		setOpenLoop(overrideValue * 0.5);
+	// 		manualAdjustment = 0;
+	// 		encoderState = 0;
+	// 	}
+	// 	else
+	// 	{
+	// 		switch(encoderState)
+	// 		{
+	// 			case 0:
+	// 				manualEncoderValue = encoderValue + manualAdjustment;
+	// 				encoderState = 1;
+	// 				break;
+	// 			case 1:
+	// 				setPosition(manualEncoderValue);
+	// 				break;
+	// 		}
+	// 	}
+	// }
 
 	public static void setToBrake()
 	{
