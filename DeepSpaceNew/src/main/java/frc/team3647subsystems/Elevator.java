@@ -1,5 +1,3 @@
-//Class not created by Kunal Singla
-
 package frc.team3647subsystems;
 
 import frc.robot.*;

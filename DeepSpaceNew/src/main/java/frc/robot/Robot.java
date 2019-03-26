@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
+import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.Arm.ArmPosition;
@@ -75,7 +76,10 @@ public class Robot extends TimedRobot
 			SeriesStateMachine.run();
 		});
 
-
+		autoNotifier = new Notifier(() ->{
+			Drivetrain.updateEncoders();
+			Odometry.getInstance().runOdometry();
+		});
 		
 		
 	}
@@ -86,7 +90,8 @@ public class Robot extends TimedRobot
 		gyro.update();
 		// updateJoysticks(); Done in drivetrain notifier!
 		SmartDashboard.putNumber("Match Timer", 150 - matchTimer.get());
-		cargoDetection = BallShooter.cargoDetection();
+		// cargoDetection = BallShooter.cargoDetection();
+		cargoDetection = false;
 	}
 	
   
@@ -95,29 +100,32 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() 
 	{
-
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
 		Drivetrain.init();
-		Arm.init();
-		Elevator.init();
-		SeriesStateMachine.init();
-		AirCompressor.run();
-		BallIntake.init();
+		// Arm.init();
+		// Elevator.init();
+		// SeriesStateMachine.init();
+		// AirCompressor.run();
+		// BallIntake.init();
 		Drivetrain.resetEncoders();
 
-		Drivetrain.setToCoast();
+		Drivetrain.setToBrake();
 
-		drivetrainNotifier.startPeriodic(.02);
-		armFollowerNotifier.startPeriodic(.01);
-		stateMachineRunnerNotifier.startPeriodic(.02);
+		// drivetrainNotifier.startPeriodic(.02);
+		// armFollowerNotifier.startPeriodic(.01);
+		// stateMachineRunnerNotifier.startPeriodic(.02);
+		AutonomousSequences.autoInitFWD("TestPath2");
+
+		autoNotifier.startPeriodic(.01);
 	}
   
 	@Override
 	public void autonomousPeriodic() 
 	{
-		teleopPeriodic();
+		AutonomousSequences.runPath();
+		// teleopPeriodic();
 	}
 
 	@Override
@@ -170,17 +178,14 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		// Drivetrain.init();
-		// Drivetrain.resetEncoders();
-		// Drivetrain.setToCoast();
+		Drivetrain.init();
 		// drivetrainNotifier.startPeriodic(.02);
-		
 	}
 	@Override
 	public void testPeriodic()
 	{
-		// Drivetrain.setPercentOutput(-.5, .5);
-		
+		updateJoysticks();
+		Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY);	
 	}
 
 	private void updateJoysticks()

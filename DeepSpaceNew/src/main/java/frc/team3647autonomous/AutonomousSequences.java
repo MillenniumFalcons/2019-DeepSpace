@@ -39,12 +39,12 @@ public class AutonomousSequences
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 		Odometry.getInstance().setInitialOdometry(trajectory);
 		Odometry.getInstance().odometryInit();
-		limelightClimber.limelight.setToRightContour();
-		afterAutoTimer = new Timer();
-		afterAutoTimer.reset();
-		afterAutoStep = -2;
-		autoStep = -1;
-		hey = false;
+		// limelightClimber.limelight.setToRightContour();
+		// afterAutoTimer = new Timer();
+		// afterAutoTimer.reset();
+		// afterAutoStep = -2;
+		// autoStep = -1;
+		// hey = false;
 	}
 
 	public static void autoInitBWD(String trajectoryName) 
@@ -86,92 +86,92 @@ public class AutonomousSequences
 
 	public static void runPath()
 	{
-		initializedRobot = Arm.reachedState(ArmPosition.FLATFORWARDS) && Elevator.reachedState(ElevatorLevel.BOTTOM);
+		// initializedRobot = Arm.reachedState(ArmPosition.FLATFORWARDS) && Elevator.reachedState(ElevatorLevel.BOTTOM);
 
 		ramsetePeriodic();
 		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-		if((ramseteFollower.isFinished() && initializedRobot) || hey)
-		{
-			// System.out.println("After auto");
-			hey = true;
-			switch(afterAutoStep)
-			{
-				case -2:
-					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-					if(Elevator.encoderValue > 10000)
-						afterAutoStep = -1;
-					break;
-				case -1:
-					if(limelightClimber.limelight.getValidTarget())
-						Drivetrain.setPercentOutput(-.5, .5);
-					else
-					{
-						Drivetrain.stop();
-						afterAutoStep = 66;
-					}
-					break;
-				case 66:
-					if(limelightClimber.area < 5.5 && limelightClimber.limelight.getValidTarget())
-					{
-						// System.out.println("CENTERING");
-						limelightClimber.center(.0037);
-						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .4, limelightClimber.rightSpeed + .4);
-					}
-					else
-					{
-						Drivetrain.stop();
-						afterAutoStep = 0;
-					}
-					break;
-				case 0:
-					afterAutoTimer.reset();
-					afterAutoTimer.start();
-					afterAutoStep = 1;
-					break;
-				case 1:
-					Drivetrain.setPercentOutput(.24, .24);
-					if(afterAutoTimer.get() > 1)
-					{
-						Drivetrain.stop();
-						afterAutoTimer.reset();
-						afterAutoTimer.start();
-						afterAutoStep = 2;
-					}
-					break;
-				case 2:
-					HatchGrabber.releaseHatch();
-					if(afterAutoTimer.get() > .4)
-					{
-						HatchGrabber.stopMotor();
-						afterAutoTimer.reset();
-						afterAutoTimer.start();
-						afterAutoStep = 3;
-					}
-					break;
-				case 3:
-					Drivetrain.setPercentOutput(-.24, -.24);
-					if(afterAutoTimer.get() > 1)
-					{
-						Drivetrain.stop();
-						afterAutoTimer.reset();
-						afterAutoTimer.start();
-						afterAutoStep = 4;
-					}
-					break;
-				case 4:
-					SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
-					Drivetrain.stop();
-					// System.out.println("DONE!");
-					autoInitBWD("RocketToStation");
-					afterAutoStep = 5;
-					break;
-				case 5:
-					System.out.println("running step 5");
-					runPathBWD();
-					break;
-			}
-		}
+		// if((ramseteFollower.isFinished() && initializedRobot) || hey)
+		// {
+		// 	// System.out.println("After auto");
+		// 	hey = true;
+		// 	switch(afterAutoStep)
+		// 	{
+		// 		case -2:
+		// 			SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+		// 			if(Elevator.encoderValue > 10000)
+		// 				afterAutoStep = -1;
+		// 			break;
+		// 		case -1:
+		// 			if(limelightClimber.limelight.getValidTarget())
+		// 				Drivetrain.setPercentOutput(-.5, .5);
+		// 			else
+		// 			{
+		// 				Drivetrain.stop();
+		// 				afterAutoStep = 66;
+		// 			}
+		// 			break;
+		// 		case 66:
+		// 			if(limelightClimber.area < 5.5 && limelightClimber.limelight.getValidTarget())
+		// 			{
+		// 				// System.out.println("CENTERING");
+		// 				limelightClimber.center(.0037);
+		// 				Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .4, limelightClimber.rightSpeed + .4);
+		// 			}
+		// 			else
+		// 			{
+		// 				Drivetrain.stop();
+		// 				afterAutoStep = 0;
+		// 			}
+		// 			break;
+		// 		case 0:
+		// 			afterAutoTimer.reset();
+		// 			afterAutoTimer.start();
+		// 			afterAutoStep = 1;
+		// 			break;
+		// 		case 1:
+		// 			Drivetrain.setPercentOutput(.24, .24);
+		// 			if(afterAutoTimer.get() > 1)
+		// 			{
+		// 				Drivetrain.stop();
+		// 				afterAutoTimer.reset();
+		// 				afterAutoTimer.start();
+		// 				afterAutoStep = 2;
+		// 			}
+		// 			break;
+		// 		case 2:
+		// 			HatchGrabber.releaseHatch();
+		// 			if(afterAutoTimer.get() > .4)
+		// 			{
+		// 				HatchGrabber.stopMotor();
+		// 				afterAutoTimer.reset();
+		// 				afterAutoTimer.start();
+		// 				afterAutoStep = 3;
+		// 			}
+		// 			break;
+		// 		case 3:
+		// 			Drivetrain.setPercentOutput(-.24, -.24);
+		// 			if(afterAutoTimer.get() > 1)
+		// 			{
+		// 				Drivetrain.stop();
+		// 				afterAutoTimer.reset();
+		// 				afterAutoTimer.start();
+		// 				afterAutoStep = 4;
+		// 			}
+		// 			break;
+		// 		case 4:
+		// 			SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
+		// 			Drivetrain.stop();
+		// 			// System.out.println("DONE!");
+		// 			autoInitBWD("RocketToStation");
+		// 			afterAutoStep = 5;
+		// 			break;
+		// 		case 5:
+		// 			System.out.println("running step 5");
+		// 			runPathBWD();
+		// 			break;
+		// 	}
+		// }
 	}
 
 
