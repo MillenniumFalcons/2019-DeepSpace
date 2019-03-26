@@ -290,6 +290,7 @@ public class SeriesStateMachine
         }
     }
 
+    private static boolean startedBallIntakeTimer = false;
     private static void extendCargoGroundIntake()
     {
         if(!arrivedAtMidPos)
@@ -299,15 +300,18 @@ public class SeriesStateMachine
             {
                 arrivedAtMidPos = true;
             }
-            else
-                ballIntakeTimer.reset();
-
+            ballIntakeTimer.reset();
+            startedBallIntakeTimer = false;
         }
         if(arrivedAtMidPos)
         {
             System.out.println("Starting timer");
             BallIntake.extend(); 
-            ballIntakeTimer.start();
+            if(!startedBallIntakeTimer)
+            {
+                ballIntakeTimer.start();
+                startedBallIntakeTimer = true;
+            }
         }
     }
 
