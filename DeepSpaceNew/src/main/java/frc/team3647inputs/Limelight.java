@@ -98,9 +98,24 @@ public class Limelight
         return this.area;
     }
 
+    public void blink()
+    {
+        set("ledMode", 2);
+    }
+
     public boolean getValidTarget()         //get area, because area is private
     {
-        return table.getEntry("tv").getDouble(-3647) == 1;
+        return get("tv") == 1;
+    }
+
+    private double get(String input)
+    {
+        return table.getEntry(input).getDouble(-3647);
+    }
+
+    private void set(String input, int input2)
+    {
+        table.getEntry(input).setNumber(input2);
     }
 
 }
