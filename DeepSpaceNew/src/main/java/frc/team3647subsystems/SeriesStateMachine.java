@@ -23,7 +23,7 @@ public class SeriesStateMachine
     public static boolean forceCargoOn = false;
 
     //Variables to control ground cargo intake
-    private static boolean arrivedAtMidPos=false, prevCargoIntakeExtended=false;
+    private static boolean arrivedAtMidPos = false, prevCargoIntakeExtended = false;
 
     private static Timer ballIntakeTimer = new Timer(), climbTimer = new Timer();
 
@@ -176,6 +176,8 @@ public class SeriesStateMachine
         {
             BallIntake.retract();
             prevCargoIntakeExtended = false;
+            ballIntakeTimer.reset();
+            ballIntakeTimer.stop();
         }
 
         if (mainController.buttonA)
@@ -294,12 +296,16 @@ public class SeriesStateMachine
         {
             goToAimedState(ScoringPosition.BEFORECARGOHANDOFF);
             if(Elevator.isAboveMinRotate(-500))
+            {
                 arrivedAtMidPos = true;
+            }
+            else
+                ballIntakeTimer.reset();
 
-            ballIntakeTimer.reset();
         }
         if(arrivedAtMidPos)
         {
+            System.out.println("Starting timer");
             BallIntake.extend(); 
             ballIntakeTimer.start();
         }
@@ -479,8 +485,6 @@ public class SeriesStateMachine
 
     private static Movement movementCheck(SeriesStateMachine.ScoringPosition aimedState)
     {
-
-
         if(elevatorReachedState && armReachedState) 
         {
             return Movement.ARRIVED;

@@ -187,15 +187,15 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		Drivetrain.init();
-		Drivetrain.resetEncoders();
-		Drivetrain.setToCoast();
-		drivetrainNotifier.startPeriodic(.02);
+		// Drivetrain.init();
+		// Drivetrain.resetEncoders();
+		// Drivetrain.setToCoast();
+		// drivetrainNotifier.startPeriodic(.02);
+		
 	}
 	@Override
 	public void testPeriodic()
 	{
-			
 		// Drivetrain.setPercentOutput(-.5, .5);
 		
 	}
