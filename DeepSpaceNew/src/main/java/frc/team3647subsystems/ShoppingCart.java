@@ -72,7 +72,7 @@ public class ShoppingCart
 
     public static void runShoppingCart()
     {
-        setShoppinCartEncoder();
+        
         if(aimedState != null)
         {
             switch(aimedState)
@@ -118,7 +118,7 @@ public class ShoppingCart
     private static int encoderState, manualAdjustment, manualEncoderValue;
 	public static void moveManual(double jValue)
 	{
-		setShoppinCartEncoder();
+		updateEncoder();
 		if(jValue > 0)
 		{
 			setOpenLoop(jValue * 0.5);
@@ -179,7 +179,7 @@ public class ShoppingCart
 	}
 
 	// Encoder methods------------------------------------------
-	public static void setShoppinCartEncoder()
+	public static void updateEncoder()
 	{
 		shoppingCartEncoderValue = shoppingCartMotor.getSelectedSensorPosition(0);
 		shoppingCartEncoderVelocity = shoppingCartMotor.getSelectedSensorVelocity(0);

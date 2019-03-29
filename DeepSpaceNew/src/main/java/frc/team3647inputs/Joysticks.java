@@ -85,7 +85,7 @@ public class Joysticks
 	 * @param joystick object
 	 * @param power power of rumble from 0 to 1
 	 */
-	private void setRumble(double power)
+	public void setRumble(double power)
 	{
 		controller.setRumble(GenericHID.RumbleType.kLeftRumble, power);
 		controller.setRumble(GenericHID.RumbleType.kRightRumble, power);

@@ -103,6 +103,11 @@ public class Limelight
         set("ledMode", 2);
     }
 
+    public void pipeLineLED()
+    {
+        set("ledMode", 0);
+    }
+
     public boolean getValidTarget()         //get area, because area is private
     {
         return get("tv") == 1;

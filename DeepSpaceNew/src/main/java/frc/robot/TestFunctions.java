@@ -41,10 +41,10 @@ public class TestFunctions
 		// Robot.PIDFleft[2] = SmartDashboard.getNumber("kDleft", 0);
 		// Robot.PIDFleft[3] = SmartDashboard.getNumber("kFleft", 0.26);
 
-		Robot.PIDF[0] = SmartDashboard.getNumber("kP", 0.45);
-		Robot.PIDF[1] = SmartDashboard.getNumber("kI", 0.035);
-		Robot.PIDF[2] = SmartDashboard.getNumber("kD", 0.9);
-		Robot.PIDF[3] = SmartDashboard.getNumber("kF", 0.0);
+		// Robot.PIDF[0] = SmartDashboard.getNumber("kP", 0.45);
+		// Robot.PIDF[1] = SmartDashboard.getNumber("kI", 0.035);
+		// Robot.PIDF[2] = SmartDashboard.getNumber("kD", 0.9);
+		// Robot.PIDF[3] = SmartDashboard.getNumber("kF", 0.0);
 
 		// Robot.mVel = (int)SmartDashboard.getNumber("MM Velocity", 1000);
 		// Robot.mAccel = (int)SmartDashboard.getNumber("MM Acceleration", 1000);

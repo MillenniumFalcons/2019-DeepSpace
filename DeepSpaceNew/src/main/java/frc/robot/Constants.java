@@ -16,6 +16,7 @@ public class Constants
 	public static final int ElevatorGearboxSRX = 8;
 	public static final int ElevatorGearboxSPX1 = 10; // 12
 	public static final int ElevatorGearboxSPX2 = 11; // 13
+	public static final int ElevatorGearboxSPX3 = 14; // 13
 
 	// Arm Motor Pins
 	public static final int armSRXPin = 18;
@@ -24,14 +25,14 @@ public class Constants
 	// Hatch Intake Motor Pins
 	public static final int shoppingCartMotorPin = 3;
 	public static final int shoppingCartSPXPin = 1;
-	public static final int hatchGrabberPDPpin = 6;
+	public static final int hatchGrabberPDPpin = 7; // 6 pratice, 7 comp
 
 	// Ball Intake
 	public static final int ballMotorPin = 2;
 
 	// Ball Shooter
 	public static final int ballShooterPin = 15;
-	public static final int ballShooterPDPpin = 9;
+	public static final int ballShooterPDPpin = 8; // 9 practice, 8 comp
 
 	// Gyro Pin
 	public static final int gyroPin = 16;
@@ -101,8 +102,10 @@ public class Constants
 	public static final double[] leftVelocityPIDF = {  .341* 1.05, 0, 3.4, .281417 }; // .281417
 	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
 
-	public static final double[] limelightPID = { .24, 0, 0 };
+	public static final double[] limelightPID = { .14, 0, 0 };
 	public static final double limelightThreshold = .0037;
+	public static final double limelightAreaThreshold = 5;
+	
 
 	public static final double velocityConstant = 3600; // 3600enc / 100ms
 
@@ -127,9 +130,9 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXForwardVision = 4200;
-	public static final int armSRXFlatForwards = 4290;
+	public static final int armSRXFlatForwards = 4590;
 	public static final int armSRXBackwardVision = 22650;
-	public static final int armSRXFlatBackwards = 22200; //22200
+	public static final int armSRXFlatBackwards = 22400; //22000
 	public static final int armSRXCargoL3Front = 24200;
 	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1

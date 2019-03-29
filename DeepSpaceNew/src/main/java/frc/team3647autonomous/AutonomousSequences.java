@@ -10,7 +10,7 @@ import frc.team3647subsystems.HatchGrabber;
 import frc.team3647subsystems.SeriesStateMachine;
 import frc.team3647subsystems.VisionController;
 import frc.team3647subsystems.Arm.ArmPosition;
-import frc.team3647subsystems.Elevator.ElevatorLevel;
+// import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 import frc.team3647utility.Units;
 import jaci.pathfinder.Trajectory;
@@ -19,8 +19,8 @@ public class AutonomousSequences
 {
 	public static VisionController limelightFourBar = new VisionController("fourbar");
 	public static VisionController limelightClimber = new VisionController("climber");
-	public static VisionController limelightArmTop = new VisionController("top");
-	public static VisionController limelightArmBottom = new VisionController("bottom");
+	// public static VisionController limelightArmTop = new VisionController("top");
+	// public static VisionController limelightArmBottom = new VisionController("bottom");
 
 	public static int autoStep = -1;
 

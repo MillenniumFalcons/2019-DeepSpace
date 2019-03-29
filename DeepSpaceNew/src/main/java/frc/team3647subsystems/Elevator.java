@@ -23,7 +23,7 @@ public class Elevator
     public static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
 	public static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
 	public static VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
-	public static VictorSPX GearBoxSPX3 = new VictorSPX(14);
+	public static VictorSPX GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
 
 	public static int encoderError, encoderValue, encoderVelocity;
 	
@@ -99,7 +99,7 @@ public class Elevator
 		}
 	}
 
-	private static void updateBannerSensor()
+	public static void updateBannerSensor()
 	{
 		bannerSensor = limitSwitch.get();
 	}
@@ -297,7 +297,7 @@ public class Elevator
 
 	private static boolean isValueAboveMinRotate(int val)
 	{
-		return (val >= Constants.elevatorMinRotation + 500);
+		return (val >= Constants.elevatorMinRotation - 500);
 	}
 	public static boolean isStateAboveMinRotate(ElevatorLevel state)
 	{

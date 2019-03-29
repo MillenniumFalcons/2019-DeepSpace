@@ -150,6 +150,8 @@ public class SeriesStateMachine
 
         if(coController.leftTrigger > .15)
             aimedRobotState = ScoringPosition.CARGOHANDOFF;
+        else if(mainController.leftTrigger > .15)
+            BallIntake.setOpenLoop(1);
         else
         {
             ballIntakeTimer.reset();
@@ -260,6 +262,7 @@ public class SeriesStateMachine
                 break;
             case SAFEZUMOVE:
                 safetyRotateArmUp(aimedState.armPos, aimedState.eLevel);
+                System.out.println("Running movement up");
                 break;
             case FREEMOVE:
                 Arm.aimedState = aimedState.armPos;
@@ -296,8 +299,8 @@ public class SeriesStateMachine
         }
         else
         {
-            System.out.println("Starting timer");
             BallIntake.extend(); 
+            BallIntake.stopMotor();
             if(!startedBallIntakeTimer)
             {
                 ballIntakeTimer.start();
@@ -318,7 +321,6 @@ public class SeriesStateMachine
     // Cannot run again
     private static void initializeRobotPosition()
     {
-        System.out.println("Initializing State machine");
         if(!ranOnce)
         {
             switch(initStep)
@@ -431,7 +433,7 @@ public class SeriesStateMachine
                 return Movement.FREEMOVE;
             else if(elevatorAboveMinRotate && !elevatorAimedStateAboveMinRotate)
                 return Movement.SAFEZDMOVE;
-            else if(!elevatorAboveMinRotate && elevatorAimedStateAboveMinRotate)
+            else if(elevatorAimedStateAboveMinRotate)
                 return Movement.SAFEZUMOVE;
             else
                 return Movement.SAFEZMOVE;
