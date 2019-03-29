@@ -205,8 +205,8 @@ public class SeriesStateMachine
 
     public static void run()
     {
-        elevatorReachedState = Elevator.reachedAimedState();
-        armReachedState = Arm.reachedAimedState();
+        elevatorReachedState = Elevator.reachedState(aimedRobotState.eLevel);
+        armReachedState = Arm.reachedState(aimedRobotState.armPos);
         elevatorAboveMinRotate = Elevator.isAboveMinRotate(-550);          
 
         if(aimedRobotState != null)
@@ -240,12 +240,13 @@ public class SeriesStateMachine
 
     private static void goToAimedState(ScoringPosition aimedState)
     {
+        boolean aimedStateIsCargoHandoff = aimedState == ScoringPosition.CARGOHANDOFF;
         switch(movementCheck(aimedState))
         {
             case ARRIVED:
                 Arm.aimedState = aimedState.armPos;
                 Elevator.aimedState = aimedState.eLevel;
-                if(aimedState == ScoringPosition.CARGOHANDOFF)
+                if(aimedStateIsCargoHandoff)
                     runCargoHandoff();
                 break;
             case MOVEELEV:
@@ -262,7 +263,6 @@ public class SeriesStateMachine
                 break;
             case SAFEZUMOVE:
                 safetyRotateArmUp(aimedState.armPos, aimedState.eLevel);
-                System.out.println("Running movement up");
                 break;
             case FREEMOVE:
                 Arm.aimedState = aimedState.armPos;
