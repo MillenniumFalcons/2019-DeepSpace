@@ -78,7 +78,7 @@ public class Robot extends TimedRobot
 		AirCompressor.run();
 		BallIntake.init();
 		Drivetrain.resetEncoders();
-
+		ShoppingCart.init();
 		Drivetrain.setToBrake();
 
 		drivetrainNotifier.startPeriodic(.02);
@@ -113,7 +113,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopPeriodic()
 	{
-		// HatchGrabber.run(coController);
+		HatchGrabber.run(coController);
 		SeriesStateMachine.setControllers(mainController, coController);
 		Arm.updateEncoder();
 		Elevator.updateEncoder();
@@ -123,12 +123,22 @@ public class Robot extends TimedRobot
 		Elevator.run(); 
 		BallShooter.runBlink();
 		//Drivetrain uses the notifier
-		ShoppingCart.updateEncoder();
-		if(SeriesStateMachine.elevatorManual && mainController.leftJoyStickY > .15)
-		{
-			ShoppingCart.runSPX(1);
-		}
-		ShoppingCart.printPosition();
+		
+		// ShoppingCart.updateEncoder();
+		// if(SeriesStateMachine.elevatorManual)
+		// {
+		// 	if(mainController.leftJoyStickY > .15)
+		// 	{
+		// 		ShoppingCart.runSPX(1);
+		// 	}
+		// 	else if(mainController.leftJoyStickY < -.15)
+		// 	{
+		// 		ShoppingCart.runSPX(-1);
+		// 	}
+		// 	else
+		// 		ShoppingCart.runSPX(0);
+		// }
+		
 	}
 
 	@Override

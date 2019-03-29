@@ -151,7 +151,10 @@ public class SeriesStateMachine
         if(coController.leftTrigger > .15)
             aimedRobotState = ScoringPosition.CARGOHANDOFF;
         else if(mainController.leftTrigger > .15)
-            BallIntake.setOpenLoop(1);
+        {
+            if(!elevatorManual)
+                BallIntake.setOpenLoop(1);
+        }
         else
         {
             ballIntakeTimer.reset();
@@ -202,10 +205,10 @@ public class SeriesStateMachine
             forceCargoOff = true;
         }
 
-        if(mainController.buttonX)
-        {
-            aimedRobotState = ScoringPosition.CLIMB;
-        }
+        // if(mainController.buttonX)
+        // {
+        //     aimedRobotState = ScoringPosition.CLIMB;
+        // }
     }
 
     public static void run()
@@ -508,7 +511,7 @@ public class SeriesStateMachine
         else if(elevatorManual)
         {
             Elevator.aimedState = null;
-            Arm.aimedState = ArmPosition.STOPPED;
+            Arm.aimedState = ArmPosition.CLIMB;
             climbMode = true;
             if (Robot.mainController.leftTrigger > .1) {
                 Elevator.setOpenLoop(Robot.mainController.leftTrigger * .75);
