@@ -18,47 +18,47 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
  */
 public class ShoppingCart 
 {
-	public static WPI_TalonSRX shoppingCartMotor = new WPI_TalonSRX(Constants.shoppingCartMotorPin);
+	public static WPI_TalonSRX shoppingCartSRX = new WPI_TalonSRX(Constants.shoppingCartMotorPin);
 	private static VictorSPX shoppingCartSPX = new VictorSPX(Constants.shoppingCartSPXPin); // motor for shopping cart wheels
     public static ShoppingCartPosition currentState, aimedState;
-    public static int shoppingCartEncoderCCL, shoppingCartEncoderValue, shoppingCartEncoderVelocity;
+    public static int encoderError, encoderValue, encoderVelocity;
 	public static double overrideValue;
 	public static boolean manualOverride;
 
-    public static void shoppingCartInit()
+    public static void init()
 	{
 		//Motor & Sensor Direction
-		shoppingCartMotor.setInverted(false);
-		shoppingCartMotor.setSensorPhase(true);
+		shoppingCartSRX.setInverted(false);
+		shoppingCartSRX.setSensorPhase(true);
 		
 		//Current Limiting
-		shoppingCartMotor.configPeakCurrentLimit(Constants.kHatchWristPeakCurrent, Constants.kTimeoutMs);
-		shoppingCartMotor.configPeakCurrentDuration(Constants.kHatchWristPeakCurrentDuration);
-		shoppingCartMotor.configContinuousCurrentLimit(Constants.kHatchWristContinuousCurrent, Constants.kTimeoutMs);
-		shoppingCartMotor.enableCurrentLimit(true);
+		shoppingCartSRX.configPeakCurrentLimit(Constants.kHatchWristPeakCurrent, Constants.kTimeoutMs);
+		shoppingCartSRX.configPeakCurrentDuration(Constants.kHatchWristPeakCurrentDuration);
+		shoppingCartSRX.configContinuousCurrentLimit(Constants.kHatchWristContinuousCurrent, Constants.kTimeoutMs);
+		shoppingCartSRX.enableCurrentLimit(true);
 		//PID
-		shoppingCartMotor.config_kP(Constants.kHatchWristPID, Constants.kHatchWristP, Constants.kTimeoutMs);
-		shoppingCartMotor.config_kI(Constants.kHatchWristPID, Constants.kHatchWristI, Constants.kTimeoutMs);
-		shoppingCartMotor.config_kD(Constants.kHatchWristPID, Constants.kHatchWristD, Constants.kTimeoutMs);
-		shoppingCartMotor.config_kF(Constants.kHatchWristPID, Constants.kHatchWristF, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kP(Constants.kHatchWristPID, Constants.kHatchWristP, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kI(Constants.kHatchWristPID, Constants.kHatchWristI, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kD(Constants.kHatchWristPID, Constants.kHatchWristD, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kF(Constants.kHatchWristPID, Constants.kHatchWristF, Constants.kTimeoutMs);
 
 		//Motion Magic Constants
-		shoppingCartMotor.configMotionAcceleration(Constants.kHatchWristAcceleration, Constants.kTimeoutMs);
-        shoppingCartMotor.configMotionCruiseVelocity(Constants.kHatchWristCruiseVelocity, Constants.kTimeoutMs);
+		shoppingCartSRX.configMotionAcceleration(Constants.kHatchWristAcceleration, Constants.kTimeoutMs);
+        shoppingCartSRX.configMotionCruiseVelocity(Constants.kHatchWristCruiseVelocity, Constants.kTimeoutMs);
         resetEncoder();
     }
 
     public void configPIDFVA(double p, double i, double d, double f, int vel, int accel) //for configuring PID values
 	{
 		//PID
-		shoppingCartMotor.config_kP(Constants.kHatchWristPID, p, Constants.kTimeoutMs);
-		shoppingCartMotor.config_kI(Constants.kHatchWristPID, i, Constants.kTimeoutMs);
-		shoppingCartMotor.config_kD(Constants.kHatchWristPID, d, Constants.kTimeoutMs);
-		shoppingCartMotor.config_kF(Constants.kHatchWristPID, f, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kP(Constants.kHatchWristPID, p, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kI(Constants.kHatchWristPID, i, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kD(Constants.kHatchWristPID, d, Constants.kTimeoutMs);
+		shoppingCartSRX.config_kF(Constants.kHatchWristPID, f, Constants.kTimeoutMs);
 		
 		// motion magic
-		shoppingCartMotor.configMotionAcceleration(accel, Constants.kTimeoutMs);
-		shoppingCartMotor.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
+		shoppingCartSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+		shoppingCartSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
 
 	}
     
@@ -70,7 +70,7 @@ public class ShoppingCart
 		MIDDLE
     }
 
-    public static void runShoppingCart()
+    public static void run()
     {
         
         if(aimedState != null)
@@ -95,7 +95,7 @@ public class ShoppingCart
         }
     }
     
-	public static void runShoppingCartSPX(double demand)
+	public static void runSPX(double demand)
 	{
 		shoppingCartSPX.set(ControlMode.PercentOutput, -demand);
 	}
@@ -136,7 +136,7 @@ public class ShoppingCart
 			switch(encoderState)
 			{
 				case 0:
-					manualEncoderValue = shoppingCartEncoderValue + manualAdjustment;
+					manualEncoderValue = encoderValue + manualAdjustment;
 					encoderState = 1;
 					break;
 				case 1:
@@ -148,7 +148,7 @@ public class ShoppingCart
     
     public static void setOpenLoop(double power)
 	{
-		shoppingCartMotor.set(ControlMode.PercentOutput, power);
+		shoppingCartSRX.set(ControlMode.PercentOutput, power);
 
     }
     
@@ -162,13 +162,13 @@ public class ShoppingCart
     }
     public static void setPosition(int position)
 	{
-		shoppingCartMotor.set(ControlMode.MotionMagic, position);
+		shoppingCartSRX.set(ControlMode.MotionMagic, position);
 	}
 	//---------------------------------------------------------
 
 	public static boolean positionThreshold(double constant)
 	{
-		if((constant + Constants.kWristPositionThreshold) > shoppingCartEncoderValue && (constant - Constants.kWristPositionThreshold) < shoppingCartEncoderValue)
+		if((constant + Constants.kWristPositionThreshold) > encoderValue && (constant - Constants.kWristPositionThreshold) < encoderValue)
 		{
 			return true;
 		}
@@ -181,30 +181,30 @@ public class ShoppingCart
 	// Encoder methods------------------------------------------
 	public static void updateEncoder()
 	{
-		shoppingCartEncoderValue = shoppingCartMotor.getSelectedSensorPosition(0);
-		shoppingCartEncoderVelocity = shoppingCartMotor.getSelectedSensorVelocity(0);
-		shoppingCartEncoderCCL = shoppingCartMotor.getClosedLoopError(0);
+		encoderValue = shoppingCartSRX.getSelectedSensorPosition(0);
+		encoderVelocity = shoppingCartSRX.getSelectedSensorVelocity(0);
+		encoderError = shoppingCartSRX.getClosedLoopError(0);
 	}
 
 	public static void setEncoderValue(int encoderValue)
 	{
-		shoppingCartMotor.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+		shoppingCartSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
 	}
 	//----------------------------------------------------------
 
 	public static void resetEncoder()
 	{
-		shoppingCartMotor.setSelectedSensorPosition(0, Constants.kHatchWristPID, Constants.kTimeoutMs);
-		shoppingCartEncoderValue = 0;
+		shoppingCartSRX.setSelectedSensorPosition(0, Constants.kHatchWristPID, Constants.kTimeoutMs);
+		encoderValue = 0;
     }
     
     public static void printPosition()
 	{
-		// System.out.println("Encoder Value: " + shoppingCartEncoderValue);
+		System.out.println("Encoder Value: " + encoderValue);
 	}
 
 	public static void stopWrist()
 	{
-		shoppingCartMotor.stopMotor();
+		shoppingCartSRX.stopMotor();
 	}
 }

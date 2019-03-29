@@ -9,6 +9,7 @@ import frc.team3647autonomous.AutonomousSequences;
 // import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 
 public class Robot extends TimedRobot 
 {
@@ -105,13 +106,14 @@ public class Robot extends TimedRobot
 
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
+		ShoppingCart.init();
 	}
 
 	//Teleop Code
 	@Override
 	public void teleopPeriodic()
 	{
-		HatchGrabber.run(coController);
+		// HatchGrabber.run(coController);
 		SeriesStateMachine.setControllers(mainController, coController);
 		Arm.updateEncoder();
 		Elevator.updateEncoder();
@@ -120,9 +122,13 @@ public class Robot extends TimedRobot
 		Arm.run();
 		Elevator.run(); 
 		BallShooter.runBlink();
-		Elevator.printElevatorEncoders();
-		System.out.println("Elev aimed state above min rotate: " + Elevator.isStateAboveMinRotate(Elevator.aimedState));
 		//Drivetrain uses the notifier
+		ShoppingCart.updateEncoder();
+		if(SeriesStateMachine.elevatorManual && mainController.leftJoyStickY > .15)
+		{
+			ShoppingCart.runSPX(1);
+		}
+		ShoppingCart.printPosition();
 	}
 
 	@Override
@@ -143,10 +149,13 @@ public class Robot extends TimedRobot
 	public void testInit()
 	{
 		// drivetrainNotifier.startPeriodic(.02);
+		ShoppingCart.init();
 	}
 	@Override
 	public void testPeriodic()
 	{
+		ShoppingCart.updateEncoder();
+		ShoppingCart.printPosition();
 		// HatchGrabber.run(coController);
 	}
 

@@ -249,7 +249,7 @@ public class Elevator
 
 	public static boolean reachedState(ElevatorLevel nAimedState)
 	{
-		if(aimedState != null)
+		if(aimedState != null && nAimedState.encoderVal != -1)
 			return positionThreshold(nAimedState.encoderVal);
 		return false;
 	}

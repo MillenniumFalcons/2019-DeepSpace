@@ -87,8 +87,8 @@ public class Constants
 	public static final double kHatchWristF = 0;
 
 	// Hatch Intake Motion Magic Values
-	public static final int kHatchWristCruiseVelocity = 1750;
-	public static final int kHatchWristAcceleration = 2500;
+	public static final int kHatchWristCruiseVelocity = 1000;
+	public static final int kHatchWristAcceleration = 1700;
 
 	// Drive PID Slot
 	public static final int driveSlotIdx = 0;
@@ -177,7 +177,7 @@ public class Constants
 	public static final int hatchIntakeScore = 1840;
 	public static final int hatchIntakeHandoff = 2000;
 
-	public static final int shoppingCartDeployed = 2428;
+	public static final int shoppingCartDeployed = 2500;
 
 	/************** AUTONOMOUS CONSTANTS ******************/
 

@@ -1,7 +1,6 @@
 package frc.team3647subsystems;
 
 import frc.robot.*;
-import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;

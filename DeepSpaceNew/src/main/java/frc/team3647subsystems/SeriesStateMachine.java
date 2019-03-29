@@ -201,12 +201,25 @@ public class SeriesStateMachine
             forceCargoOn = false;
             forceCargoOff = true;
         }
+
+        if(mainController.buttonX)
+        {
+            aimedRobotState = ScoringPosition.CLIMB;
+        }
     }
 
     public static void run()
     {
-        elevatorReachedState = Elevator.reachedState(aimedRobotState.eLevel);
-        armReachedState = Arm.reachedState(aimedRobotState.armPos);
+        if(aimedRobotState.eLevel!=null && aimedRobotState.armPos != null)
+        {
+            elevatorReachedState = Elevator.reachedState(aimedRobotState.eLevel);
+            armReachedState = Arm.reachedState(aimedRobotState.armPos);
+        }
+        else
+        {
+            elevatorReachedState = false;
+            armReachedState = false;
+        }
         elevatorAboveMinRotate = Elevator.isAboveMinRotate(-550);          
 
         if(aimedRobotState != null)
@@ -472,7 +485,7 @@ public class SeriesStateMachine
                 case 2:
                     // System.out.println("Deploying shopping cart!");
                     ShoppingCart.deployShoppingCart();
-                    if (inThreshold(ShoppingCart.shoppingCartEncoderValue, Constants.shoppingCartDeployed, 1000))
+                    if (inThreshold(ShoppingCart.encoderValue, Constants.shoppingCartDeployed, 1000))
                         climbStep = 3;
                     break;
                 case 3:
