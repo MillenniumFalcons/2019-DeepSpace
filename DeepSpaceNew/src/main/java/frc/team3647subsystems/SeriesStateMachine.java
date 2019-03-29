@@ -152,7 +152,7 @@ public class SeriesStateMachine
             aimedRobotState = ScoringPosition.CARGOHANDOFF;
         else if(mainController.leftTrigger > .15)
         {
-            if(!elevatorManual)
+            //if(!elevatorManual)
                 BallIntake.setOpenLoop(1);
         }
         else

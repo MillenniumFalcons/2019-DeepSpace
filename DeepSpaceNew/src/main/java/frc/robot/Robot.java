@@ -123,7 +123,7 @@ public class Robot extends TimedRobot
 		Elevator.run(); 
 		BallShooter.runBlink();
 		//Drivetrain uses the notifier
-		
+
 		// ShoppingCart.updateEncoder();
 		// if(SeriesStateMachine.elevatorManual)
 		// {
@@ -255,7 +255,14 @@ public class Robot extends TimedRobot
 	{
 		double joyY = mainController.leftJoyStickY;
 		double joyX = mainController.rightJoyStickX;
+		
 		VisionController mVision = getLimelight();
+
+		VisionController mVisionDriver = mVision;
+		if(mVision.equals(AutonomousSequences.limelightClimber))
+			mVisionDriver = AutonomousSequences.limelightFourBar;
+		else
+			mVisionDriver = AutonomousSequences.limelightClimber;
 
 		if(scaleJoy)
 		{
@@ -263,22 +270,28 @@ public class Robot extends TimedRobot
 			joyX *= .65;
 		}
 
+		
+
 		switch(contour)
 		{
 			case kClosest:
 				mVision.closestMode();
+				mVisionDriver.driverMode();
 				break;
 			case kDriver:
 				mVision.driverMode();
+				mVisionDriver.driverMode();
 				break;
 			case kBlack:
 				mVision.disabledMode();
 				break;
 			case kRight:
 				mVision.rightMost();
+				mVisionDriver.driverMode();
 				break;
 			case kLeft:
 				mVision.leftMost();
+				mVisionDriver.driverMode();
 				break;
 		}
 
