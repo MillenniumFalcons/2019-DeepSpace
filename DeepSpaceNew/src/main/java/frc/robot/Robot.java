@@ -158,15 +158,16 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
+		Elevator.init();
 		// drivetrainNotifier.startPeriodic(.02);
-		ShoppingCart.init();
+		// ShoppingCart.init();
 	}
 	@Override
 	public void testPeriodic()
 	{
-		ShoppingCart.updateEncoder();
-		ShoppingCart.printPosition();
-		// HatchGrabber.run(coController);
+		Elevator.updateEncoder();
+		Elevator.updateBannerSensor();
+		Elevator.printElevatorEncoders();
 	}
 
 	private void updateJoysticks()
