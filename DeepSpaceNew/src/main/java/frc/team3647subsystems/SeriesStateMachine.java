@@ -113,7 +113,7 @@ public class SeriesStateMachine
             if(coController.buttonA)
                 aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
             else if(coController.buttonX)
-                aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONBWD;
+                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
             else if(coController.buttonB)
                 aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
             else if(coController.buttonY)
@@ -121,7 +121,7 @@ public class SeriesStateMachine
             else if(coController.dPadDown)
                 aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
             else if(coController.dPadLeft)
-                aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONFWD;
+                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
             else if(coController.dPadRight)
                 aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
             else if(coController.dPadUp)
@@ -209,6 +209,10 @@ public class SeriesStateMachine
             forceCargoOff = true;
         }
 
+        if(mainController.dPadLeft)
+            aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONBWD;
+        else if(mainController.dPadRight)
+            aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONFWD;
         // if(mainController.buttonX)
         // {
         //     aimedRobotState = ScoringPosition.CLIMB;
