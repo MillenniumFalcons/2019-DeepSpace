@@ -49,6 +49,8 @@ public class SeriesStateMachine
         CARGOL3FORWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.CARGOL3FRONT), // Move elevator first
         CARGOL3BACKWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.CARGOL3BACK), // move elevator first
         CARGOHANDOFF(Elevator.ElevatorLevel.CARGOHANDOFF, Arm.ArmPosition.CARGOHANDOFF), //ARM HIT, make sure cargo ground intake is deployed
+        CARGOLOADINGSTATIONFWD(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.FLATBACKWARDS),
+        CARGOLOADINGSTATIONBWD(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.FLATFORWARDS),
         STOWED(Elevator.ElevatorLevel.STOWED, Arm.ArmPosition.STOWED), //ARM HIT, Hatch intake is stowed
         VERTICALSTOWED(Elevator.ElevatorLevel.VERTICALSTOWED, Arm.ArmPosition.VERTICALSTOWED), //ARM HIT
         REVLIMITSWITCH(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.REVLIMITSWITCH),
@@ -111,7 +113,7 @@ public class SeriesStateMachine
             if(coController.buttonA)
                 aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
             else if(coController.buttonX)
-                aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+                aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONFWD;
             else if(coController.buttonB)
                 aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
             else if(coController.buttonY)
@@ -119,7 +121,7 @@ public class SeriesStateMachine
             else if(coController.dPadDown)
                 aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
             else if(coController.dPadLeft)
-                aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
+                aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONBWD;
             else if(coController.dPadRight)
                 aimedRobotState = ScoringPosition.HATCHL2BACKWARDS;
             else if(coController.dPadUp)
@@ -165,6 +167,8 @@ public class SeriesStateMachine
 
         if(coController.rightTrigger > .15)
             BallShooter.shootBall(coController.rightTrigger);
+        else if(coController.rightBumper &&(aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONBWD || aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONFWD))
+            BallShooter.intakeCargo(1);
         else if(coController.leftTrigger < .15 && (Math.abs(Arm.encoderVelocity) > 500 || Math.abs(Elevator.encoderVelocity) > 500))
             BallShooter.intakeCargo(.45);
         else
