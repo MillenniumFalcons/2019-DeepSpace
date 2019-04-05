@@ -93,6 +93,12 @@ public class Robot extends TimedRobot
 	{
 		AutonomousSequences.runPath();
 		// teleopPeriodic();
+		Arm.updateEncoder();
+		Elevator.updateEncoder();
+		ShoppingCart.updateEncoder();		
+		SeriesStateMachine.run();
+		Arm.run();
+		Elevator.run(); 
 	}
 
 	@Override
@@ -242,7 +248,7 @@ public class Robot extends TimedRobot
 		}
 		else
 		{
-			mVision.center(Constants.limelightThreshold);
+			mVision.center();
 			Drivetrain.setPercentOutput(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY);
 		}
 	}

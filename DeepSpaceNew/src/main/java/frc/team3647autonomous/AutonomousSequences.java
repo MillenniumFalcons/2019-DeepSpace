@@ -20,10 +20,10 @@ public class AutonomousSequences
 {
 	public static VisionController limelightFourBar = new VisionController("fourbar");
 	public static VisionController limelightClimber = new VisionController("climber");
-	// public static VisionController limelightArmTop = new VisionController("top");
-	// public static VisionController limelightArmBottom = new VisionController("bottom");
+	
+	public static int autoStep = 0;
+	private static Timer autoTimer = new Timer(); 
 
-	public static int autoStep = -1;
 
 	public static DriveSignal driveSignal;
 	public static Trajectory trajectory;
@@ -40,12 +40,10 @@ public class AutonomousSequences
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 		Odometry.getInstance().setInitialOdometry(trajectory);
 		Odometry.getInstance().odometryInit();
-		// limelightClimber.limelight.setToRightContour();
-		// afterAutoTimer = new Timer();
-		// afterAutoTimer.reset();
-		// afterAutoStep = -2;
-		// autoStep = -1;
-		// hey = false;
+		autoStep = 0;
+		autoTimer.stop();
+		autoTimer.reset();
+		limelightClimber.set(VisionMode.kClosest);
 	}
 
 	public static void autoInitBWD(String trajectoryName) 
@@ -54,7 +52,6 @@ public class AutonomousSequences
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
-		hey = false;
 	}
 
 	public static void testing()
@@ -80,229 +77,77 @@ public class AutonomousSequences
 		leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
 	}
 
-	static Timer afterAutoTimer = new Timer();
-	static int afterAutoStep = -2;
-	static boolean hey = false;
-	static boolean initializedRobot = false;
-
 	public static void runPath()
 	{
-		// initializedRobot = Arm.reachedState(ArmPosition.FLATFORWARDS) && Elevator.reachedState(ElevatorLevel.BOTTOM);
-
 		ramsetePeriodic();
-		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-		// if((ramseteFollower.isFinished() && initializedRobot) || hey)
-		// {
-		// 	// System.out.println("After auto");
-		// 	hey = true;
-		// 	switch(afterAutoStep)
-		// 	{
-		// 		case -2:
-		// 			SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
-		// 			if(Elevator.encoderValue > 10000)
-		// 				afterAutoStep = -1;
-		// 			break;
-		// 		case -1:
-		// 			if(limelightClimber.limelight.getValidTarget())
-		// 				Drivetrain.setPercentOutput(-.5, .5);
-		// 			else
-		// 			{
-		// 				Drivetrain.stop();
-		// 				afterAutoStep = 66;
-		// 			}
-		// 			break;
-		// 		case 66:
-		// 			if(limelightClimber.area < 5.5 && limelightClimber.limelight.getValidTarget())
-		// 			{
-		// 				// System.out.println("CENTERING");
-		// 				limelightClimber.center(.0037);
-		// 				Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .4, limelightClimber.rightSpeed + .4);
-		// 			}
-		// 			else
-		// 			{
-		// 				Drivetrain.stop();
-		// 				afterAutoStep = 0;
-		// 			}
-		// 			break;
-		// 		case 0:
-		// 			afterAutoTimer.reset();
-		// 			afterAutoTimer.start();
-		// 			afterAutoStep = 1;
-		// 			break;
-		// 		case 1:
-		// 			Drivetrain.setPercentOutput(.24, .24);
-		// 			if(afterAutoTimer.get() > 1)
-		// 			{
-		// 				Drivetrain.stop();
-		// 				afterAutoTimer.reset();
-		// 				afterAutoTimer.start();
-		// 				afterAutoStep = 2;
-		// 			}
-		// 			break;
-		// 		case 2:
-		// 			HatchGrabber.releaseHatch();
-		// 			if(afterAutoTimer.get() > .4)
-		// 			{
-		// 				HatchGrabber.stopMotor();
-		// 				afterAutoTimer.reset();
-		// 				afterAutoTimer.start();
-		// 				afterAutoStep = 3;
-		// 			}
-		// 			break;
-		// 		case 3:
-		// 			Drivetrain.setPercentOutput(-.24, -.24);
-		// 			if(afterAutoTimer.get() > 1)
-		// 			{
-		// 				Drivetrain.stop();
-		// 				afterAutoTimer.reset();
-		// 				afterAutoTimer.start();
-		// 				afterAutoStep = 4;
-		// 			}
-		// 			break;
-		// 		case 4:
-		// 			SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
-		// 			Drivetrain.stop();
-		// 			// System.out.println("DONE!");
-		// 			autoInitBWD("RocketToStation");
-		// 			afterAutoStep = 5;
-		// 			break;
-		// 		case 5:
-		// 			System.out.println("running step 5");
-		// 			runPathBWD();
-		// 			break;
-		// 	}
-		// }
-	}
 
-
-	private static int hatchGrabbingCase = -1;
-	private static Timer hatchGrabbingTimer = new Timer();
-	private static boolean grabbedHatch = false;
-	private static boolean hey2 = false;
-	public static void runPathBWD()
-	{
-		System.out.println("running backwards");
-		ramsetePeriodic();
-		// System.out.println("leftSpeed = " + leftSpeed + " rightSpeed = " + rightSpeed);
-		Drivetrain.setAutoVelocity(-rightSpeed, -leftSpeed);
-		if(ramseteFollower.isFinished() || hey2)
+		if(ramseteFollower.isFinished())
 		{
-			System.out.println("AutoStep: " + autoStep + " LIMELIGHT: " + limelightFourBar.limelight.getValidTarget());
-			hey2 = true;
 			switch(autoStep)
 			{
-				case -1:
-					if(limelightFourBar.limelight.getValidTarget())
+				case 0:
+					if(limelightClimber.limelight.getValidTarget() && limelightClimber.area < Constants.limelightAreaThreshold)
 					{
-						limelightFourBar.limelight.set(VisionMode.kRight);
-						Drivetrain.setPercentOutput(.65, -.65);
+						limelightClimber.center();
+						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .35, limelightClimber.rightSpeed + .35);
+					}
+					else if(!limelightClimber.limelight.getValidTarget())
+					{
+						Drivetrain.setPercentOutput(.55, + -.75);;
 					}
 					else
 					{
 						Drivetrain.stop();
-						autoStep = 66;
-						// System.out.println("AUTO STEP: " + autoStep);
+						autoStep = 1;
+						autoTimer.reset();
+						autoTimer.start();
 					}
-					break;
-				case 66:
-					if(limelightFourBar.area < 5)
-					{
-						SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2BACKWARDS);
-						System.out.println("CENTERING");
-						limelightFourBar.center(.0037);
-						Drivetrain.setPercentOutput(-limelightFourBar.rightSpeed - .4, -limelightFourBar.leftSpeed - .4);					
-					}
-					else
-					{
-						if(Elevator.encoderValue != 0 || !Arm.reachedState(ArmPosition.FLATBACKWARDS))
-							SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL1BACKWARDS);
-						else
-							autoStep = 0;
-					}
-					break;
-				case 0:
-					afterAutoTimer.reset();
-					afterAutoTimer.start();
-					autoStep = 1;
 					break;
 				case 1:
-					Drivetrain.setPercentOutput(-.24, -.24);
-					if(afterAutoTimer.get() > 1)
+					if(autoTimer.get() < 0.7)
 					{
-						Drivetrain.stop();
-						afterAutoTimer.reset();
-						afterAutoTimer.start();
+						Drivetrain.setAutoVelocity(500, 500);
+					}
+					else
+					{
+						autoTimer.stop();
+						autoTimer.reset();
 						autoStep = 2;
+						autoTimer.start();
 					}
 					break;
 				case 2:
-					HatchGrabber.grabHatch();
-					if(Robot.pDistributionPanel.getCurrent(6) > 17 && afterAutoTimer.get() > .4)
+					if(autoTimer.get() < 0.5)
 					{
-						hatchGrabbingCase = 0;
+						HatchGrabber.releaseHatch();
 					}
-					else if(afterAutoTimer.get() > 1)
+					else
 					{
-						Drivetrain.setPercentOutput(.2, .2);
-						afterAutoStep = 66;
-						hatchGrabbingCase = -1;
-					}
-					switch(hatchGrabbingCase)
-					{
-						case 0:
-							hatchGrabbingTimer.reset();
-							hatchGrabbingTimer.start();
-							hatchGrabbingCase = 1;
-							break;
-						case 1:
-							Drivetrain.setPercentOutput(.2, .2);
-							if(hatchGrabbingTimer.get() > 1.3)
-							{
-								Drivetrain.stop();
-								if(Robot.pDistributionPanel.getCurrent(6) > 17)
-								{
-									grabbedHatch = true;
-									hatchGrabbingCase = -1;
-								}
-								else
-								{
-									grabbedHatch = false;
-									autoStep = 66;
-									hatchGrabbingCase = -1;
-								}	
-							}
-							break;
-						case 2:
-							Drivetrain.setPercentOutput(.18, .18);
-							afterAutoStep = 66;
-							break;
-					}
-					if(grabbedHatch)
-					{
-						HatchGrabber.runConstant();
-						afterAutoTimer.reset();
-						afterAutoTimer.start();
+						HatchGrabber.stopMotor();
 						autoStep = 3;
+						autoTimer.stop();
+						autoTimer.reset();
+						autoTimer.start();
 					}
 					break;
 				case 3:
-					Drivetrain.setPercentOutput(.24, .24);
-					if(afterAutoTimer.get() > 1)
+					if(autoTimer.get() < 1)
+					{
+						Drivetrain.setAutoVelocity(-500, -500);
+					}
+					else
 					{
 						Drivetrain.stop();
-						afterAutoTimer.reset();
-						afterAutoTimer.start();
-						SeriesStateMachine.setAimedRobotState(ScoringPosition.HATCHL2FORWARDS);
 						autoStep = 4;
+						autoTimer.stop();
+						autoTimer.reset();
 					}
 					break;
 				case 4:
-					Drivetrain.stop();
-					// System.out.println("DONE!");
+					System.out.println("1 Hatch Auto DONE!");
 					break;
 			}
 		}
 	}
-
 }

@@ -222,13 +222,12 @@ public class SeriesStateMachine
 
     public static void run()
     {
-        boolean aimedStatesAreNotNull = aimedRobotState.eLevel!=null && aimedRobotState.armPos != null;
-
-        
         elevatorAboveMinRotate = Elevator.isAboveMinRotate(-550);          
 
         if(aimedRobotState != null)
         {
+            boolean aimedStatesAreNotNull = aimedRobotState.eLevel!=null && aimedRobotState.armPos != null;
+
             if(aimedStatesAreNotNull)
             {
                 elevatorReachedState = Elevator.reachedState(aimedRobotState.eLevel);
