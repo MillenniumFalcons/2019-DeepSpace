@@ -12,6 +12,7 @@ import frc.team3647subsystems.VisionController;
 import frc.team3647subsystems.Arm.ArmPosition;
 // import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
+import frc.team3647subsystems.VisionController.VisionMode;
 import frc.team3647utility.Units;
 import jaci.pathfinder.Trajectory;
 
@@ -194,7 +195,7 @@ public class AutonomousSequences
 				case -1:
 					if(limelightFourBar.limelight.getValidTarget())
 					{
-						limelightFourBar.limelight.setToRightContour();
+						limelightFourBar.limelight.set(VisionMode.kRight);
 						Drivetrain.setPercentOutput(.65, -.65);
 					}
 					else

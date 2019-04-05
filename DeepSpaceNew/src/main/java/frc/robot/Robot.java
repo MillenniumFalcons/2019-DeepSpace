@@ -9,7 +9,7 @@ import frc.team3647autonomous.AutonomousSequences;
 // import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
-import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
+import frc.team3647subsystems.VisionController.VisionMode;
 
 public class Robot extends TimedRobot 
 {
@@ -28,8 +28,8 @@ public class Robot extends TimedRobot
 	{
 		pDistributionPanel = new PowerDistributionPanel();
 		
-		AutonomousSequences.limelightClimber.limelight.setToBlack();
-		AutonomousSequences.limelightFourBar.limelight.setToBlack();
+		AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
+		AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
 		mainController = new Joysticks(0); 
 		coController = new Joysticks(1); 
 		gyro = new Gyro();
@@ -193,13 +193,13 @@ public class Robot extends TimedRobot
 	private void driveVisionTeleop()
 	{
 		if(mainController.leftBumper)
-			vision((Elevator.encoderValue > 27000), VisionContour.kDriver);
+			vision((Elevator.encoderValue > 27000), VisionMode.kDriver);
 		else if(mainController.rightBumper)
-			vision((Elevator.encoderValue > 27000), VisionContour.kClosest);
+			vision((Elevator.encoderValue > 27000), VisionMode.kClosest);
 		else 
 		{
-			AutonomousSequences.limelightClimber.limelight.setToBlack();
-			AutonomousSequences.limelightFourBar.limelight.setToBlack();
+			AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
+			AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
 			if(Elevator.encoderValue > 27000)
 				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6);
 			else
@@ -207,52 +207,9 @@ public class Robot extends TimedRobot
 		}
 	}
 
-	// private VisionSide getVisionSide()
-	// {
-	// 	boolean armAfterVerticalStowed = Arm.encoderValue > Constants.armSRXVerticalStowed;
-	// 	if(Arm.aimedState != null)
-	// 	{
-	// 		if(Arm.aimedState.equals(ArmPosition.FLATBACKWARDS) || 
-	// 			armAfterVerticalStowed || 
-	// 			Arm.aimedState.equals(ArmPosition.CARGOL3FRONT)
-	// 		  )
-	// 			return VisionSide.kBackwards;
-			
-	// 		else if(Arm.aimedState.equals(ArmPosition.FLATFORWARDS) || 
-	// 				!armAfterVerticalStowed || 
-	// 				Arm.aimedState.equals(ArmPosition.CARGOL3BACK)
-	// 	  		   )
-	// 			return VisionSide.kForwards;
-
-
-	// 		return VisionSide.kForwards;
-	// 	}
-	// 	else
-	// 	{
-	// 		if(armAfterVerticalStowed)
-	// 			return VisionSide.kBackwards;
-	// 		return VisionSide.kForwards;
-	// 	}	
-	// }
 	
-	// private enum VisionSide
-	// {
-	// 	kBackwards,
-	// 	kForwards,
-	// 	kTop,
-	// 	kBottom,
-	// 	kUnknown,
-	// }
-	private enum VisionContour
-	{
-		kRight,
-		kLeft,
-		kClosest,
-		kDriver,
-		kBlack
-	}
 
-	private void vision(boolean scaleJoy, VisionContour contour)
+	private void vision(boolean scaleJoy, VisionMode mode)
 	{
 		double joyY = mainController.leftJoyStickY;
 		double joyX = mainController.rightJoyStickX;
@@ -271,32 +228,11 @@ public class Robot extends TimedRobot
 			joyX *= .65;
 		}
 
-		
+		mVision.set(mode);
+		if(mode != VisionMode.kBlack)
+			mVisionDriver.set(VisionMode.kDriver);
 
-		switch(contour)
-		{
-			case kClosest:
-				mVision.closestMode();
-				mVisionDriver.driverMode();
-				break;
-			case kDriver:
-				mVision.driverMode();
-				mVisionDriver.driverMode();
-				break;
-			case kBlack:
-				mVision.disabledMode();
-				break;
-			case kRight:
-				mVision.rightMost();
-				mVisionDriver.driverMode();
-				break;
-			case kLeft:
-				mVision.leftMost();
-				mVisionDriver.driverMode();
-				break;
-		}
-
-		if(contour == VisionContour.kDriver)
+		if(mode == VisionMode.kDriver)
 		{
 			Drivetrain.customArcadeDrive(joyX, joyY);
 		}
