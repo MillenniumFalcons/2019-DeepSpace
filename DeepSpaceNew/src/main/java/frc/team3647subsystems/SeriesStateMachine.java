@@ -46,8 +46,8 @@ public class SeriesStateMachine
         CARGOSHIPBACKWARDS(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.CARGOSHIPBACKWARDS),
         CARGOL2FORWARDS(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATBACKWARDS),
         CARGOL2BACKWARDS(Elevator.ElevatorLevel.CARGOL2, Arm.ArmPosition.FLATFORWARDS),
-        CARGOL3FORWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.CARGOL3FRONT), // Move elevator first
-        CARGOL3BACKWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.CARGOL3BACK), // move elevator first
+        CARGOL3FORWARDS(Elevator.ElevatorLevel.CARGOL3, Arm.ArmPosition.CARGOL3FRONT), // Move elevator first
+        CARGOL3BACKWARDS(Elevator.ElevatorLevel.CARGOL3, Arm.ArmPosition.CARGOL3BACK), // move elevator first
         CARGOHANDOFF(Elevator.ElevatorLevel.CARGOHANDOFF, Arm.ArmPosition.CARGOHANDOFF), //ARM HIT, make sure cargo ground intake is deployed
         CARGOLOADINGSTATIONFWD(Elevator.ElevatorLevel.CARGOLOADINGSTATION, Arm.ArmPosition.FLATBACKWARDS),
         CARGOLOADINGSTATIONBWD(Elevator.ElevatorLevel.CARGOLOADINGSTATION, Arm.ArmPosition.FLATFORWARDS),
@@ -151,7 +151,10 @@ public class SeriesStateMachine
             aimedRobotState = ScoringPosition.STOWED;
 
         if(coController.leftTrigger > .15)
-            aimedRobotState = ScoringPosition.CARGOHANDOFF;
+            if(aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONBWD || aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONFWD)
+                BallShooter.intakeCargo(1);
+            else
+                aimedRobotState = ScoringPosition.CARGOHANDOFF;
         else if(mainController.leftTrigger > .15)
         {
             //if(!elevatorManual)
@@ -167,8 +170,6 @@ public class SeriesStateMachine
 
         if(coController.rightTrigger > .15)
             BallShooter.shootBall(coController.rightTrigger);
-        else if(coController.rightBumper &&(aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONBWD || aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONFWD))
-            BallShooter.intakeCargo(1);
         else if(coController.leftTrigger < .15 && (Math.abs(Arm.encoderVelocity) > 500 || Math.abs(Elevator.encoderVelocity) > 500))
             BallShooter.intakeCargo(.45);
         else
@@ -221,20 +222,23 @@ public class SeriesStateMachine
 
     public static void run()
     {
-        if(aimedRobotState.eLevel!=null && aimedRobotState.armPos != null)
-        {
-            elevatorReachedState = Elevator.reachedState(aimedRobotState.eLevel);
-            armReachedState = Arm.reachedState(aimedRobotState.armPos);
-        }
-        else
-        {
-            elevatorReachedState = false;
-            armReachedState = false;
-        }
+        boolean aimedStatesAreNotNull = aimedRobotState.eLevel!=null && aimedRobotState.armPos != null;
+
+        
         elevatorAboveMinRotate = Elevator.isAboveMinRotate(-550);          
 
         if(aimedRobotState != null)
         {
+            if(aimedStatesAreNotNull)
+            {
+                elevatorReachedState = Elevator.reachedState(aimedRobotState.eLevel);
+                armReachedState = Arm.reachedState(aimedRobotState.armPos);
+            }
+            else
+            {
+                elevatorReachedState = false;
+                armReachedState = false;
+            }
             elevatorAimedStateAboveMinRotate = aimedRobotState.eLevel != null ? Elevator.isStateAboveMinRotate(aimedRobotState.eLevel) : false;
 
             switch(aimedRobotState)
@@ -249,7 +253,7 @@ public class SeriesStateMachine
                     climbing();
                     break;
                 default:
-                    if(aimedRobotState.eLevel != null && aimedRobotState.armPos != null)
+                    if(aimedStatesAreNotNull)
                         goToAimedState();
                     break;
 

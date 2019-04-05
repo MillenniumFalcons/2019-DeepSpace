@@ -42,21 +42,21 @@ public class Joysticks
 		rightBumper 	=	controller.getBumper(XboxController.Hand.kRight);
 		leftTrigger 	= 	joystickThreshold(controller.getTriggerAxis(XboxController.Hand.kLeft));
 		rightTrigger 	= 	joystickThreshold(controller.getTriggerAxis(XboxController.Hand.kRight));
-		buttonA 		=	controller.getAButtonPressed();
-		buttonB 		= 	controller.getBButtonPressed();
-		buttonX 		= 	controller.getXButtonPressed();
-		buttonY 		= 	controller.getYButtonPressed();
+		buttonA 		=	controller.getAButton();
+		buttonB 		= 	controller.getBButton();
+		buttonX 		= 	controller.getXButton();
+		buttonY 		= 	controller.getYButton();
 
 		leftJoyStickX 	= 	joystickThreshold(controller.getX(XboxController.Hand.kLeft));
 		leftJoyStickY 	= 	joystickThreshold(-controller.getY(XboxController.Hand.kLeft));
 		rightJoyStickX 	= 	joystickThreshold(controller.getX(XboxController.Hand.kRight));
 		rightJoyStickY 	= 	joystickThreshold(-controller.getY(XboxController.Hand.kRight)); 
 
-		rightJoyStickPress= controller.getStickButtonPressed(XboxController.Hand.kRight);
-		leftJoyStickPress = controller.getStickButtonPressed(XboxController.Hand.kLeft);
+		rightJoyStickPress= controller.getStickButton(XboxController.Hand.kRight);
+		leftJoyStickPress = controller.getStickButton(XboxController.Hand.kLeft);
 
-		leftMidButton = controller.getBackButtonPressed();
-		rightMidButton = controller.getStartButtonPressed();
+		leftMidButton = controller.getBackButton();
+		rightMidButton = controller.getStartButton();
 		
 		dPadValue = controller.getPOV();
 		setDPadValues();
@@ -94,7 +94,7 @@ public class Joysticks
 	/**
 	 * Set co driver dPad values. 0 degrees = top, 180 = down, 90 right 270 == left
 	 */
-	public void setDPadValues()
+	private void setDPadValues()
 	{
 		if(dPadValue == 0)
 		{

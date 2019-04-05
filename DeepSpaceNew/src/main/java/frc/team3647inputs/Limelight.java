@@ -1,6 +1,7 @@
 package frc.team3647inputs;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team3647subsystems.VisionController.VisionMode;
 import edu.wpi.first.networktables.*;
 
 public class Limelight
@@ -16,7 +17,7 @@ public class Limelight
     public Limelight(String orientation)  //used to initalize the main, important things
     {
         table = NetworkTableInstance.getDefault().getTable("limelight-" + orientation);    //initializing the network table to grab values from limelight
-        updateLimelight();
+        update();
     }
 
     // public void setToDriver()
@@ -37,38 +38,17 @@ public class Limelight
     // {
     //     table.getEntry("ledMode").setNumber(3);
     // }
+    public void set(VisionMode mode)
+    {
+        setPipeline(mode.pipeline);
+    }
     
-    public void setToBlack()
-    {
-        setPipeline(0);
-    }
-
-    public void setToDriverCam()
-    {
-        setPipeline(1);
-    }
-
-    public void setToRightContour()
-    {
-        setPipeline(2);
-    }
-
-    public void setToLeftContour()
-    {
-        setPipeline(3);
-    }
-
-    public void setToCloseContour()
-    {
-        setPipeline(4);
-    }
-
     private void setPipeline(int pipeline)
     {
-        table.getEntry("pipeline").setNumber(pipeline);
+        set("pipeline", pipeline);
     }
 
-    public void updateLimelight()
+    public void update()
     {
         NetworkTableEntry tx = table.getEntry("tx"); //setting the N.T. entry to the tx value from limelight N.T.
 		NetworkTableEntry ty = table.getEntry("ty"); //setting the N.T. entry to the ty value from limelight N.T.
@@ -118,7 +98,7 @@ public class Limelight
         return table.getEntry(input).getDouble(-3647);
     }
 
-    private void set(String input, int input2)
+    public void set(String input, int input2)
     {
         table.getEntry(input).setNumber(input2);
     }

@@ -10,6 +10,11 @@ public class VisionController
 {
 
 	public double x, y, speed, area, sumError, prevError, leftSpeed, rightSpeed;
+
+	private double kp = Constants.limelightPID[0];
+	private double ki = Constants.limelightPID[1];
+	private double kd = Constants.limelightPID[2];
+
 	// x is the tx degree value from Limelight Class
 	// y is the ty degree value from Limelight Class
 	// area is the ta value from Limelight Class. The ratio of the object area to
@@ -20,16 +25,32 @@ public class VisionController
 	// PID loop
 	public Limelight limelight;
 
+	public enum VisionMode
+	{
+		kRight(2),
+		kLeft(3),
+		kClosest(4),
+		kDriver(1),
+		kBlack(0);
+
+		public int pipeline;
+		VisionMode(int pipeline)
+		{
+			this.pipeline = pipeline;
+		}
+	}
+
 	private RollingAverage tXAvg = new RollingAverage(4);
 
 	public VisionController(String orientation) 
 	{
 		limelight = new Limelight(orientation);
+		limelight.set("streamMode", 0);
 	}
 
 	public void updateInputs() // update Limelight Inputs
 	{
-		limelight.updateLimelight();
+		limelight.update();
 		x = limelight.getX();
 		y = limelight.getY();
 		area = limelight.getArea();
@@ -38,11 +59,9 @@ public class VisionController
 	// Drivebase Bot -> kP = .45, kI = 0.035, kD = .9
 	public void center(double errorThreshold) // method to center the robot to target without moving toward target
 	{
-		double kp = Constants.limelightPID[0];
-		double ki = Constants.limelightPID[1];
-		double kd = Constants.limelightPID[2];
+		
 
-		limelight.updateLimelight();
+		limelight.update();
 		updateInputs();
 		tXAvg.add(this.x);
 		double error = tXAvg.getAverage() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
@@ -56,7 +75,7 @@ public class VisionController
 		} 
 		else 
 		{
-			centerAlgorithm(error, kp, ki, kd); // Center robot if outside the error threshold
+			centerAlgorithm(error, this.kp, this.ki, this.kd); // Center robot if outside the error threshold
 		}
 	}
 
@@ -146,37 +165,13 @@ public class VisionController
 
 	public boolean centered(double threshold) 
 	{
-		if (Math.abs(this.x) < 0.1)
-			return true;
-		else
-			return false;
+		return (Math.abs(this.x) < 0.1);
 	}
 
-	public void disabledMode() 
-	{
-		limelight.setToBlack();
-	}
-
-	public void driverMode()
-	{
-		limelight.setToDriverCam();
-	}
-
-	public void rightMost()
+	public void set(VisionMode mode)
 	{
 		updateInputs();
-		limelight.setToRightContour();
-	}
-
-	public void leftMost()
-	{
-		updateInputs();
-		limelight.setToLeftContour();
-	}
-
-	public void closestMode()
-	{
-		limelight.setToCloseContour();
+		limelight.set(mode);
 	}
 
 	public double getPrevError() // get prevError, because prevError is private

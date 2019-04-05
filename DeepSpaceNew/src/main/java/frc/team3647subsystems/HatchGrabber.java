@@ -17,7 +17,7 @@ public class HatchGrabber
 	
 	public static void run(Joysticks coController)
 	{
-		hatchIn = hatchIn();
+		// hatchIn = hatchIn();
 		if(coController.rightBumper)
 			grabHatch();
 		else if(coController.leftBumper)
