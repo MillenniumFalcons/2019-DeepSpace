@@ -25,14 +25,14 @@ public class Constants
 	// Hatch Intake Motor Pins
 	public static final int shoppingCartMotorPin = 3;
 	public static final int shoppingCartSPXPin = 1;
-	public static final int hatchGrabberPDPpin = 7; // 6 pratice, 7 comp
+	public static final int hatchGrabberPDPpin = 6; // 6 pratice, 7 comp
 
 	// Ball Intake
 	public static final int ballMotorPin = 2;
 
 	// Ball Shooter
 	public static final int ballShooterPin = 15;
-	public static final int ballShooterPDPpin = 8; // 9 practice, 8 comp
+	public static final int ballShooterPDPpin = 9; // 9 practice, 8 comp
 
 	// Gyro Pin
 	public static final int gyroPin = 16;

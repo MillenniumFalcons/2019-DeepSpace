@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
+import frc.team3647autonomous.Odometry;
 // import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
@@ -19,7 +20,7 @@ public class Robot extends TimedRobot
 	public static Joysticks coController;
 	public static Gyro gyro;
   
-	public static Notifier drivetrainNotifier, armFollowerNotifier; //autoNotifier;
+	public static Notifier drivetrainNotifier, armFollowerNotifier, autoNotifier;
 
 	public static boolean cargoDetection;
 
@@ -47,10 +48,10 @@ public class Robot extends TimedRobot
 			driveVisionTeleop();
 		});
 
-		// autoNotifier = new Notifier(() ->{
-		// 	Drivetrain.updateEncoders();
-		// 	Odometry.getInstance().runOdometry();
-		// });
+		autoNotifier = new Notifier(() ->{
+			Drivetrain.updateEncoders();
+			Odometry.getInstance().runOdometry();
+		});
 		
 		
 	}
@@ -81,15 +82,17 @@ public class Robot extends TimedRobot
 		ShoppingCart.init();
 		Drivetrain.setToBrake();
 
-		drivetrainNotifier.startPeriodic(.02);
+		// drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
+		autoNotifier.startPeriodic(.01);
+		AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocket");
 	}
   
 	@Override
 	public void autonomousPeriodic() 
 	{
-		// AutonomousSequences.runPath();
-		teleopPeriodic();
+		AutonomousSequences.runPath();
+		// teleopPeriodic();
 	}
 
 	@Override
@@ -158,16 +161,17 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		Elevator.init();
+		// Elevator.init();
 		// drivetrainNotifier.startPeriodic(.02);
 		// ShoppingCart.init();
 	}
 	@Override
 	public void testPeriodic()
 	{
-		Elevator.updateEncoder();
+		// Elevator.updateEncoder();
 		Elevator.updateBannerSensor();
-		Elevator.printElevatorEncoders();
+		Elevator.printBannerSensor();
+		BallShooter.printBeamBreak();
 	}
 
 	private void updateJoysticks()
