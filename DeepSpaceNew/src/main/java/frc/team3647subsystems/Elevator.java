@@ -150,6 +150,18 @@ public class Elevator
 		else
 			setOpenLoop(-.3);
 	}
+
+	static void moveToBottomStart(double speed)
+	{
+		if(getBannerSenor())
+		{
+			stop();
+			resetElevatorEncoder();
+		}
+		else
+			setOpenLoop(-speed);
+	}
+
 	static boolean reachedZeroButNotBottom = false;
 	private static void moveToBottom()
 	{
@@ -158,7 +170,7 @@ public class Elevator
 
 		if(reachedZeroButNotBottom)
 		{
-			moveToBottomStart();
+			moveToBottomStart(.2);
 			reachedZeroButNotBottom = !getBannerSenor();
 		}
 		else if(!getBannerSenor() && !reachedZeroButNotBottom)

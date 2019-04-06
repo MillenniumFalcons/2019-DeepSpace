@@ -20,7 +20,7 @@ public class Robot extends TimedRobot
 	public static Joysticks coController;
 	public static Gyro gyro;
   
-	public static Notifier drivetrainNotifier, armFollowerNotifier, autoNotifier;
+	public static Notifier drivetrainNotifier, armFollowerNotifier, autoNotifier, pathNotifier;
 
 	public static boolean cargoDetection;
 
@@ -53,6 +53,9 @@ public class Robot extends TimedRobot
 			Odometry.getInstance().runOdometry();
 		});
 		
+		pathNotifier = new Notifier(() ->{
+			AutonomousSequences.runPath();
+		});
 		
 	}
 
@@ -83,15 +86,17 @@ public class Robot extends TimedRobot
 		Drivetrain.setToBrake();
 
 		// drivetrainNotifier.startPeriodic(.02);
+		AutonomousSequences.autoStep = 0;
 		armFollowerNotifier.startPeriodic(.01);
 		autoNotifier.startPeriodic(.01);
 		AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocket");
+		pathNotifier.startPeriodic(.02);
 	}
   
 	@Override
 	public void autonomousPeriodic() 
 	{
-		AutonomousSequences.runPath();
+		// AutonomousSequences.runPath();
 		// teleopPeriodic();
 		Arm.updateEncoder();
 		Elevator.updateEncoder();
@@ -154,6 +159,7 @@ public class Robot extends TimedRobot
 	public void disabledInit()
 	{
 		drivetrainNotifier.stop();
+		pathNotifier.stop();
 		// armFollowerNotifier.stop();
 		// stateMachineRunnerNotifier.stop();
 	}
@@ -255,24 +261,27 @@ public class Robot extends TimedRobot
 
 	private VisionController getLimelight()
 	{
-
-		//Arm is flipped bwds
-		if(Arm.aimedState.encoderVal < Constants.armSRXVerticalStowed)
+		if(Arm.aimedState != null)
 		{
-			//If cargo then its actually forwards
-			if(!cargoDetection)
-				return AutonomousSequences.limelightClimber;
+			//Arm is flipped bwds
+			if(Arm.aimedState.encoderVal < Constants.armSRXVerticalStowed)
+			{
+				//If cargo then its actually forwards
+				if(!cargoDetection)
+					return AutonomousSequences.limelightClimber;
+				else
+					return AutonomousSequences.limelightFourBar;
+			}
+			//Arm is forwards
 			else
-				return AutonomousSequences.limelightFourBar;
+			{
+				// if cargo its actually backwards
+				if(!cargoDetection)
+					return AutonomousSequences.limelightFourBar;
+				else
+					return AutonomousSequences.limelightClimber;
+			}
 		}
-		//Arm is forwards
-		else
-		{
-			// if cargo its actually backwards
-			if(!cargoDetection)
-				return AutonomousSequences.limelightFourBar;
-			else
-				return AutonomousSequences.limelightClimber;
-		}	
+		return AutonomousSequences.limelightClimber;
 	}
 }

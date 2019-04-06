@@ -10,25 +10,6 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "0,0": {
-            "size": [
-              4,
-              4
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://USB Camera 0",
-              "_title": "USB Camera Climber",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 100.0,
-              "fps": 10,
-              "imageWidth": -1,
-              "imageHeight": -1
-            }
-          },
           "4,0": {
             "size": [
               3,
@@ -50,38 +31,6 @@
             ],
             "content": {
               "_type": "Camera Stream",
-              "_source0": "camera_server://USB Camera 1",
-              "_title": "USB Camera Fourbar",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": 100.0,
-              "fps": 10,
-              "imageWidth": -1,
-              "imageHeight": -1
-            }
-          }
-        }
-      }
-    },
-    {
-      "title": "Limelight Stream",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 120.0,
-        "showGrid": false,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "tiles": {
-          "4,0": {
-            "size": [
-              4,
-              4
-            ],
-            "content": {
-              "_type": "Camera Stream",
               "_source0": "camera_server://limelight-climber",
               "_title": "limelight-climber",
               "Crosshair/Show crosshair": true,
@@ -90,8 +39,8 @@
               "Controls/Rotation": "NONE",
               "compression": -1.0,
               "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
+              "imageWidth": 0,
+              "imageHeight": 0
             }
           },
           "0,0": {

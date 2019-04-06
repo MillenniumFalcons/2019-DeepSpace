@@ -102,7 +102,7 @@ public class Constants
 	public static final double[] leftVelocityPIDF = {  .341* 1.05, 0, 3.4, .281417 }; // .281417
 	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
 
-	public static final double[] limelightPID = { .17, 0, 1.7 };
+	public static final double[] limelightPID = { .2, 0, 1.5 };
 	public static final double limelightThreshold = .0037;
 	public static final double limelightAreaThreshold = 5;
 	
