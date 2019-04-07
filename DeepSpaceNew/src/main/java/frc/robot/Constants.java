@@ -104,7 +104,7 @@ public class Constants
 
 	public static final double[] limelightPID = { .2, 0, 1.5 };
 	public static final double limelightThreshold = .0037;
-	public static final double limelightAreaThreshold = 5;
+	public static final double limelightAreaThreshold = 10;
 	
 
 	public static final double velocityConstant = 3600; // 3600enc / 100ms
