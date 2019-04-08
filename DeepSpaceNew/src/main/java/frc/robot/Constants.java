@@ -104,7 +104,8 @@ public class Constants
 
 	public static final double[] limelightPID = { .2, 0, 1.5 };
 	public static final double limelightThreshold = .0037;
-	public static final double limelightAreaThreshold = 10;
+	public static final double limelightYOffset = -8;
+	public static final double limelightAreaThreshold = 9.5;
 	
 
 	public static final double velocityConstant = 3600; // 3600enc / 100ms
@@ -130,7 +131,7 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXForwardVision = 4200;
-	public static final int armSRXFlatForwards = 4590;
+	public static final int armSRXFlatForwards = 4750;
 	public static final int armSRXBackwardVision = 22650;
 	public static final int armSRXFlatBackwards = 22400; //22000
 	public static final int armSRXCargoL3Front = 24200;
@@ -188,7 +189,7 @@ public class Constants
 	public static final double kWheelBase = .7112;
 	public static final double kMaxVelocity = 4.22;
 
-	public static final double kBeta = 1.62; // b > 0 Correction
+	public static final double kBeta = 1.6; // b > 0 Correction
 	public static final double kZeta = 0.17; // 0 < z < 1 Dampening
 
 	public static final double kFieldWidth = 8.2296;

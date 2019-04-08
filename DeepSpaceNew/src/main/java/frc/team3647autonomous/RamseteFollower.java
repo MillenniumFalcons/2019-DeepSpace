@@ -33,7 +33,7 @@ public class RamseteFollower
     // Variable used to calculate linear and angular velocity
     private double lastTheta, nextTheta;
     private double k, thetaError, sinThetaErrorOverThetaError;
-    private double desiredAngularVelocity, linearVelocity, angularVelocity;
+    public double desiredAngularVelocity, linearVelocity, angularVelocity;
     private double odometryError;
 
     // Constants
@@ -193,6 +193,11 @@ public class RamseteFollower
     public int getSegmentIndex()
     {
         return this.segmentIndex;
+    }
+
+    public boolean pathFractionSegment(double fraction)
+    {
+        return (this.segmentIndex > trajectory.length()*fraction) && (this.segmentIndex < trajectory.length());
     }
 
     public void printDeltaDist()

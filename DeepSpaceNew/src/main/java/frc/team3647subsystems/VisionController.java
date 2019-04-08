@@ -66,10 +66,9 @@ public class VisionController
 												// get a value from -1 to 1 to scale for speed output
 		if (limelight.getValidTarget() && Math.abs(error) < Constants.limelightThreshold) // checking if the error is within a threshold to stop
 		{
-			speed = 0; // setting global variable speed equal to zero
-			// drivesignal.setBoth(speed, speed); //setting Drivetrain to 0 speed
-			leftSpeed = speed;
-			rightSpeed = speed;
+			// speed = 0; // setting global variable speed equal to zero
+			leftSpeed = 0;
+			rightSpeed = 0;
 		} 
 		else 
 		{
@@ -126,10 +125,10 @@ public class VisionController
 			speed = 0.1;
 		else if (speed < 0 && speed > -.1) // Speed threshold if in between -.25 and 0, set speed to -.25
 			speed = -0.1;
-		else if (speed > 0.85) // Speed threshold if greater than 1, set speed to 1
-			speed = .85;
-		else if (speed < -0.85) // Speed threshold if less than -1, set speed to -1
-			speed = -0.85;
+		else if (speed > 1) // Speed threshold if greater than 1, set speed to 1
+			speed = 1;
+		else if (speed < -1) // Speed threshold if less than -1, set speed to -1
+			speed = -1;
 
 		prevError = error; // update prevError to current Error
 

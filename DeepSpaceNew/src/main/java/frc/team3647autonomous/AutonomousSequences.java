@@ -1,17 +1,11 @@
 package frc.team3647autonomous;
 
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.team3647subsystems.Arm;
 import frc.team3647subsystems.Drivetrain;
-import frc.team3647subsystems.Elevator;
 import frc.team3647subsystems.HatchGrabber;
 import frc.team3647subsystems.SeriesStateMachine;
 import frc.team3647subsystems.VisionController;
-import frc.team3647subsystems.Arm.ArmPosition;
-// import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 import frc.team3647subsystems.VisionController.VisionMode;
 import frc.team3647utility.Units;
@@ -32,6 +26,8 @@ public class AutonomousSequences
 	public static Trajectory.Segment current;
 	public static double leftSpeed;
 	public static double rightSpeed;
+	public static double leftSpeedLin;
+	public static double rightSpeedLin;
 	private static boolean grabbedSecondHatch = false;
 
 	public static void autoInitFWD(String trajectoryName) 
@@ -46,6 +42,8 @@ public class AutonomousSequences
 		autoTimer.reset();
 		limelightClimber.set(VisionMode.kClosest);
 		grabbedSecondHatch = false;
+		autoStep = 0;
+		
 	}
 
 	public static void autoInitFWD2(String trajectoryName) 
@@ -87,6 +85,225 @@ public class AutonomousSequences
 		current = ramseteFollower.currentSegment();
 		rightSpeed = Units.metersToEncoderTicks(driveSignal.getRight() / 10);
 		leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
+		rightSpeedLin = Units.metersToEncoderTicks(ramseteFollower.linearVelocity / 10);
+		leftSpeedLin = Units.metersToEncoderTicks(ramseteFollower.linearVelocity / 10);
+	}
+
+	public static void runVision()
+	{
+		ramsetePeriodic();
+		if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
+		{
+			Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+		}
+		else if(ramseteFollower.pathFractionSegment(.5))
+		{
+			limelightClimber.center();
+			Drivetrain.setAutoVelocity(leftSpeed + (2500)*limelightClimber.leftSpeed, rightSpeed + (2500)*limelightClimber.rightSpeed);
+			// System.out.println(limelightClimber.leftSpeed);
+		}
+		else if(ramseteFollower.isFinished() && limelightClimber.y > Constants.limelightYOffset)
+		{
+			limelightClimber.center();
+			Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+		}
+		else
+		{
+			HatchGrabber.releaseHatch();
+			Drivetrain.setAutoVelocity(-500, -500);
+		}
+	}
+
+	public static void runPath()
+	{
+		ramsetePeriodic();
+		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+		// System.out.println(ramseteFollower.pathHalfway());
+	}
+
+	public static void rocketAutoIntegrated()
+	{
+		ramsetePeriodic();
+		switch(autoStep)
+		{
+			case 0:
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+				}
+				else
+				{
+					autoStep = 1;
+				}
+				break;
+			case 1:
+				if(ramseteFollower.pathFractionSegment(.6))
+				{
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
+				}
+				else
+				{
+					autoStep = 2;
+				}
+				break;
+			case 2:
+				if(ramseteFollower.isFinished() && limelightClimber.area < Constants.limelightAreaThreshold)
+				{
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+				}
+				else
+				{
+					autoStep = 3;
+					autoTimer.stop();
+					autoTimer.reset();
+					autoTimer.start();
+				}
+				break;
+			case 3:
+				if(autoTimer.get() < 0.3)
+				{
+					HatchGrabber.releaseHatch();
+					Drivetrain.setAutoVelocity(-500, -500);
+				}
+				else if(autoTimer.get() < 0.6)
+				{
+					Drivetrain.stop();
+				}
+				else
+				{
+					HatchGrabber.stopMotor();
+					Drivetrain.stop();
+					autoStep = 4;
+					autoTimer.stop();
+					autoTimer.reset();
+				}
+				break;
+			case 4:
+				autoInitBWD("LeftRocketToStation");
+				limelightClimber.set(VisionMode.kBlack);
+				limelightFourBar.set(VisionMode.kClosest);
+				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+				HatchGrabber.grabHatch();
+				autoStep = 5;
+				break;
+			case 5:
+				if(!ramseteFollower.pathFractionSegment(.57) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+				}
+				else
+				{
+					autoStep = 6;
+				}
+				break;
+			case 6:
+				if(ramseteFollower.pathFractionSegment(.57))
+				{
+					limelightFourBar.center();
+					Drivetrain.setAutoVelocity(leftSpeedLin - (2500)*limelightClimber.leftSpeed, rightSpeedLin - (2500)*limelightClimber.rightSpeed);
+				}
+				else
+				{
+					autoStep = 7;
+				}
+				break;
+			case 7:
+				if(ramseteFollower.isFinished() && limelightFourBar.area < Constants.limelightAreaThreshold)
+				{
+					limelightFourBar.center();
+					Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+				}
+				else
+				{
+					autoStep = 8;
+					autoTimer.stop();
+					autoTimer.reset();
+					autoTimer.start();
+				}
+				break;
+			case 8:
+				if(autoTimer.get() < .35)
+				{
+					HatchGrabber.grabHatch();
+				}
+				else
+				{
+					autoTimer.stop();
+					autoTimer.reset();
+					autoStep = 9;
+				}
+				break;
+			case 9:
+				grabbedSecondHatch = true;
+				autoInitFWD2("StationToLeftRocket");
+				limelightFourBar.set(VisionMode.kBlack);
+				limelightClimber.set(VisionMode.kClosest);
+				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+				autoStep = 10;
+				break;
+			case 10:
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+				}
+				else
+				{
+					autoStep = 11;
+				}
+				break;
+			case 11:
+				if(ramseteFollower.pathFractionSegment(.6))
+				{
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
+				}
+				else
+				{
+					autoStep = 12;
+				}
+				break;
+			case 12:
+				if(ramseteFollower.isFinished() && limelightClimber.area < Constants.limelightAreaThreshold)
+				{
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+				}
+				else
+				{
+					autoStep = 13;
+					autoTimer.stop();
+					autoTimer.reset();
+					autoTimer.start();
+				}
+				break;
+			case 13:
+				if(autoTimer.get() < 0.3)
+				{
+					HatchGrabber.releaseHatch();
+					Drivetrain.setAutoVelocity(-500, -500);
+				}
+				else if(autoTimer.get() < 0.6)
+				{
+					Drivetrain.stop();
+				}
+				else
+				{
+					HatchGrabber.stopMotor();
+					Drivetrain.stop();
+					autoStep = 14;
+					autoTimer.stop();
+					autoTimer.reset();
+				}
+				break;
+			case 14:
+				//TwoHatchAuto.exe failed
+				break;
+			default:
+				Drivetrain.stop();
+				break;
+		}
 	}
 
 	public static void rocketAuto()
@@ -102,7 +319,7 @@ public class AutonomousSequences
 			switch(autoStep)
 			{
 				case 0:
-					if(limelightClimber.limelight.getValidTarget() && limelightClimber.area < Constants.limelightAreaThreshold)
+					if(limelightClimber.limelight.getValidTarget() && limelightClimber.y < Constants.limelightYOffset)
 					{
 						limelightClimber.center();
 						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .65, limelightClimber.rightSpeed + .65);
@@ -164,11 +381,11 @@ public class AutonomousSequences
 					limelightClimber.set(VisionMode.kBlack);
 					limelightFourBar.set(VisionMode.kClosest);
 					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-					System.out.println("1 Hatch Auto DONE!");
+					// System.out.println("1 Hatch Auto DONE!");
 					autoStep = 5;
 					break;
 				case 5:
-					if(limelightFourBar.limelight.getValidTarget() && limelightFourBar.area < Constants.limelightAreaThreshold)
+					if(limelightFourBar.limelight.getValidTarget() && limelightFourBar.y < Constants.limelightYOffset)
 					{
 						limelightFourBar.center();
 						Drivetrain.setPercentOutput(limelightFourBar.leftSpeed - .55, limelightFourBar.rightSpeed - .55);
@@ -217,7 +434,7 @@ public class AutonomousSequences
 					autoStep = 9;
 					break;
 				case 9:
-					System.out.println("Grabbed Second Hatch!");
+					// System.out.println("Grabbed Second Hatch!");
 					grabbedSecondHatch = true;
 					autoInitFWD2("StationToLeftRocket");
 					limelightFourBar.set(VisionMode.kBlack);
@@ -225,11 +442,11 @@ public class AutonomousSequences
 					autoStep = 10;
 					break;
 				case 10:
-					System.out.println("Worked?");
+					// System.out.println("Worked?");
 					autoStep = 11;
 					break;
 				case 11:
-					if(limelightClimber.limelight.getValidTarget() && limelightClimber.area < Constants.limelightAreaThreshold)
+					if(limelightClimber.limelight.getValidTarget() && limelightClimber.y < Constants.limelightYOffset)
 					{
 						limelightClimber.center();
 						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .55, limelightClimber.rightSpeed + .55);
@@ -274,7 +491,7 @@ public class AutonomousSequences
 					}
 					break;
 				case 14:
-					System.out.println("2 HATCH AUTOO!!!!!");
+					// System.out.println("2 HATCH AUTOO!!!!!");
 					if(autoTimer.get() < 0.1)
 					{
 						HatchGrabber.releaseHatch();
@@ -304,7 +521,7 @@ public class AutonomousSequences
 			switch(autoStep)
 			{
 				case 0:
-					if(limelightClimber.limelight.getValidTarget() && limelightClimber.area < Constants.limelightAreaThreshold)
+					if(limelightClimber.limelight.getValidTarget() && limelightClimber.y < Constants.limelightYOffset)
 					{
 						limelightClimber.center();
 						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .35, limelightClimber.rightSpeed + .35);
@@ -366,11 +583,11 @@ public class AutonomousSequences
 					limelightClimber.set(VisionMode.kBlack);
 					limelightFourBar.set(VisionMode.kClosest);
 					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-					System.out.println("1 Hatch Auto DONE!");
+					// System.out.println("1 Hatch Auto DONE!");
 					autoStep = 5;
 					break;
 				case 5:
-					if(limelightFourBar.limelight.getValidTarget() && limelightFourBar.area < Constants.limelightAreaThreshold)
+					if(limelightFourBar.limelight.getValidTarget() && limelightFourBar.y < Constants.limelightYOffset)
 					{
 						limelightFourBar.center();
 						Drivetrain.setPercentOutput(limelightFourBar.leftSpeed - .55, limelightFourBar.rightSpeed - .55);
@@ -419,7 +636,7 @@ public class AutonomousSequences
 					autoStep = 9;
 					break;
 				case 9:
-					System.out.println("Grabbed Second Hatch!");
+					// System.out.println("Grabbed Second Hatch!");
 					grabbedSecondHatch = true;
 					autoInitFWD2("StationToLeftRocket");
 					limelightFourBar.set(VisionMode.kBlack);
@@ -427,11 +644,11 @@ public class AutonomousSequences
 					autoStep = 10;
 					break;
 				case 10:
-					System.out.println("Worked?");
+					// System.out.println("Worked?");
 					autoStep = 11;
 					break;
 				case 11:
-					if(limelightClimber.limelight.getValidTarget() && limelightClimber.area < Constants.limelightAreaThreshold)
+					if(limelightClimber.limelight.getValidTarget() && limelightClimber.y < Constants.limelightYOffset)
 					{
 						limelightClimber.center();
 						Drivetrain.setPercentOutput(limelightClimber.leftSpeed + .55, limelightClimber.rightSpeed + .55);
@@ -476,7 +693,7 @@ public class AutonomousSequences
 					}
 					break;
 				case 14:
-					System.out.println("2 HATCH AUTOO!!!!!");
+					// System.out.println("2 HATCH AUTOO!!!!!");
 					if(autoTimer.get() < 0.1)
 					{
 						HatchGrabber.releaseHatch();

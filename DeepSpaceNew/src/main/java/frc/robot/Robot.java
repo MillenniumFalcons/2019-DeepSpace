@@ -54,7 +54,7 @@ public class Robot extends TimedRobot
 		});
 		
 		pathNotifier = new Notifier(() ->{
-			AutonomousSequences.rocketAuto();
+			AutonomousSequences.rocketAutoIntegrated();
 			// AutonomousSequences.cargoShipAuto();
 		});
 		
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot
 		armFollowerNotifier.startPeriodic(.01);
 		autoNotifier.startPeriodic(.01);
 		// AutonomousSequences.autoInitFWD("LeftPlatformToFarSideRocket");
-		AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocket");
+		AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocketExtended");
 		// AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1");
 		pathNotifier.startPeriodic(.02);
 	}
@@ -115,7 +115,7 @@ public class Robot extends TimedRobot
 		Drivetrain.init();
 		Arm.initSensors();
 		Elevator.initSensors();
-
+		
 		AirCompressor.run();
 		BallIntake.init();
 
