@@ -53,6 +53,27 @@ public class TrajectoryUtil
         return correctPath(trajectory);
     }
 
+    public static Trajectory getTrajectoryFromNameHigherAccel(String trajectoryName)
+    {
+        File trajectoryFile = new File("/home/lvuser/paths/" + trajectoryName + ".pf1.csv");
+
+        Trajectory trajectory; // = trajectoryFile.exists() ? Pathfinder.readFromFile(trajectoryFile) : null;
+        trajectory = Pathfinder.readFromCSV(trajectoryFile);
+        if(trajectory == null)
+        {
+            System.out.println("FILE DOES NOT EXIST");
+            // trajectoryFile = new File("C:\\Users\\brian\\OneDrive\\Projects\\FRC_2018_Offseason\\PathPlanner\\Trajectories\\" + trajectoryName + "\\" + trajectoryName + "_source_detailed.traj");
+            // trajectory = trajectoryFile.exists() ? Pathfinder.readFromFile(trajectoryFile): null;
+        }
+        else
+            System.out.println("CSV READ SUCCESSFUL");
+
+        return correctPath(trajectory);
+    }
+
+
+
+
     public static Trajectory getTrajectoryFromNameJaci(String trajectoryName)
     {
         File trajectoryFile = new File("/home/lvuser/paths/" + trajectoryName + ".csv");
