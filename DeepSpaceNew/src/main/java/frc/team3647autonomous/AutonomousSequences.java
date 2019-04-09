@@ -240,11 +240,6 @@ public class AutonomousSequences
 				break;
 		}
 	}
-	
-	public static void bruteForceAuto()
-	{
-		//lol u rlly thought i was going to make new autos? lmao
-	}
 
 	public static void sideCargoShipAuto()
 	{
