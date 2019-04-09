@@ -54,8 +54,8 @@ public class Robot extends TimedRobot
 		});
 		
 		pathNotifier = new Notifier(() ->{
-			AutonomousSequences.rocketAutoIntegrated();
-			// AutonomousSequences.cargoShipAuto();
+			//AutonomousSequences.rocketAutoIntegrated();
+			AutonomousSequences.sideCargoShipAuto();
 		});
 		
 	}
@@ -91,7 +91,8 @@ public class Robot extends TimedRobot
 		armFollowerNotifier.startPeriodic(.01);
 		autoNotifier.startPeriodic(.01);
 		// AutonomousSequences.autoInitFWD("LeftPlatformToFarSideRocket");
-		AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocketExtended");
+		//AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocketExtended");
+		AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1");
 		// AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1");
 		pathNotifier.startPeriodic(.02);
 		AirCompressor.run();
@@ -112,6 +113,8 @@ public class Robot extends TimedRobot
 		System.out.println(SeriesStateMachine.aimedRobotState);
 		Elevator.printElevatorEncoders();
 		Arm.printEncoders();
+		System.out.println("ARM ES: " + Arm.aimedState);
+		System.out.println("ELEV ES: " + Elevator.aimedState);
 	}
 
 	@Override

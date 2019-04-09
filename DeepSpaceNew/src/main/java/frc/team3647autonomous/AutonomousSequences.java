@@ -129,6 +129,7 @@ public class AutonomousSequences
 			case 0:
 				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
 				{
+					System.out.println("running first path");
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				}
 				else
@@ -139,61 +140,24 @@ public class AutonomousSequences
 			case 1:
 				if(ramseteFollower.pathFractionSegment(.6))
 				{
+					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
 				}
-				else
+				else if(ramseteFollower.isFinished())
 				{
-					autoStep = 2;
-				}
-				break;
-			case 2:
-				// if(ramseteFollower.isFinished() || limelightClimber.area < Constants.limelightAreaThreshold)
-				// {
-				// 	limelightClimber.center();
-				// 	Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
-				// 	System.out.println("Vision finished");
-				// }
-				// else
-				// {
-					autoStep = 3;
-					autoTimer.stop();
-					autoTimer.reset();
-					autoTimer.start();
-				//}
-				//break;
-			case 3:
-				if(autoTimer.get() < 0.3)
-				{
+					System.out.println("First path finished");
 					HatchGrabber.releaseHatch();
-					Drivetrain.setAutoVelocity(-500, -500);
-				}
-				// else if(autoTimer.get() < 0.6)
-				// {
-				// 	Drivetrain.stop();
-				// }
-				else
-				{
-					HatchGrabber.stopMotor();
-					// Drivetrain.stop();
 					autoStep = 4;
-					autoTimer.stop();
-					autoTimer.reset();
 				}
 				break;
 			case 4:
 				autoInitBWD("LeftRocketToStation");
+				System.out.println("second path started");
 				limelightClimber.set(VisionMode.kBlack);
 				limelightFourBar.set(VisionMode.kRight);
 				autoStep = 5;
 				break;
-			// case 69:
-			// 	if(ramseteFollower.pathFractionSegment(.25))
-			// 	{
-			// 		SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-			// 		autoStep  = 5;
-			// 	}
-			// 	break;
 			case 5:
 				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
 				{
@@ -201,6 +165,7 @@ public class AutonomousSequences
 					if(ramseteFollower.pathFractionSegment(.15))
 					{
 						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+						HatchGrabber.stopMotor();
 					}
 				}
 				else
@@ -211,55 +176,28 @@ public class AutonomousSequences
 			case 6:
 				if(ramseteFollower.pathFractionSegment(.5))
 				{
+					System.out.println("Going to loading statio");
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
 					Drivetrain.setAutoVelocity(leftSpeedLin +  (2500)*limelightFourBar.leftSpeed,  rightSpeedLin + (2500)*limelightFourBar.rightSpeed);
 				}
 				else
 				{
-					autoStep = 7;
+					grabbedSecondHatch = true;
+					autoInitFWD2("StationToLeftRocket");
+					limelightFourBar.set(VisionMode.kBlack);
+					limelightClimber.set(VisionMode.kLeft);
+					autoStep = 10;
 				}
-				break;
-			case 7:
-				// if(ramseteFollower.isFinished() || limelightFourBar.area < Constants.limelightAreaThreshold)
-				// {
-				// 	limelightFourBar.center();
-				// 	Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
-				// }
-				// else
-				// {
-					autoStep = 9;
-					autoTimer.stop();
-					autoTimer.reset();
-					autoTimer.start();
-				// }
-				// break;
-			case 8:
-				if(autoTimer.get() < .1)
-				{
-					HatchGrabber.grabHatch();
-				}
-				else
-				{
-					autoTimer.stop();
-					autoTimer.reset();
-					autoStep = 9;
-				}
-				break;
-			case 9:
-				grabbedSecondHatch = true;
-				autoInitFWD2("StationToLeftRocket");
-				limelightFourBar.set(VisionMode.kBlack);
-				limelightClimber.set(VisionMode.kLeft);
-				autoStep = 10;
 				break;
 			case 10:
 				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-					if(ramseteFollower.pathFractionSegment(.15))
+					if(ramseteFollower.pathFractionSegment(.2))
 					{
 						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+						HatchGrabber.runConstant();
 					}	
 				}
 				else
@@ -268,40 +206,23 @@ public class AutonomousSequences
 				}
 				break;
 			case 11:
-				if(ramseteFollower.pathFractionSegment(.5))
+				if(ramseteFollower.pathFractionSegment(.6))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
 				}
-				else
+				else if(ramseteFollower.isFinished())
 				{
-					autoStep = 12;
+					HatchGrabber.releaseHatch();
+					autoStep = 13;
 				}
 				break;
-			case 12:
-				// if(ramseteFollower.isFinished() || limelightClimber.area < Constants.limelightAreaThreshold)
-				// {
-				// 	limelightClimber.center();
-				// 	Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
-				// }
-				// else
-				// {
-					autoStep = 13;
-					autoTimer.stop();
-					autoTimer.reset();
-					autoTimer.start();
-				// }
-				// break;
 			case 13:
 				if(autoTimer.get() < 0.3)
 				{
 					HatchGrabber.releaseHatch();
 					Drivetrain.setAutoVelocity(-500, -500);
 				}
-				// else if(autoTimer.get() < 0.6)
-				// {
-				// 	Drivetrain.stop();
-				// }
 				else
 				{
 					HatchGrabber.stopMotor();
@@ -319,6 +240,130 @@ public class AutonomousSequences
 				break;
 		}
 	}
+
+	public static void sideCargoShipAuto()
+	{
+		ramsetePeriodic();
+		switch(autoStep)
+		{
+			case 0:
+				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
+				{
+					System.out.println("running first path");
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+				}
+				else
+				{
+					limelightClimber.set(VisionMode.kRight);
+					autoStep = 1;
+				}
+				break;
+			case 1:
+				if(ramseteFollower.pathFractionSegment(.8))
+				{
+					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
+				}
+				else if(ramseteFollower.isFinished())
+				{
+					System.out.println("First path finished");
+					HatchGrabber.releaseHatch();
+					autoStep = 4;
+				}
+				break;
+			case 4:
+				autoInitBWD("LeftCargoShipBay1ToStation");
+				System.out.println("second path started");
+				limelightClimber.set(VisionMode.kBlack);
+				limelightFourBar.set(VisionMode.kRight);
+				autoStep = 5;
+				break;
+			case 5:
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+					if(ramseteFollower.pathFractionSegment(.15))
+					{
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+						HatchGrabber.stopMotor();
+					}
+				}
+				else
+				{
+					autoStep = 6;
+				}
+				break;
+			case 6:
+				if(ramseteFollower.pathFractionSegment(.6))
+				{
+					System.out.println("Going to loading statio");
+					limelightFourBar.center();
+					HatchGrabber.grabHatch();
+					Drivetrain.setAutoVelocity(leftSpeedLin +  (2500)*limelightFourBar.leftSpeed,  rightSpeedLin + (2500)*limelightFourBar.rightSpeed);
+				}
+				else
+				{
+					grabbedSecondHatch = true;
+					System.out.println("Transition to next path");
+					autoInitFWD2("StationToLeftCargoShipBay2");
+					limelightFourBar.set(VisionMode.kBlack);
+					limelightClimber.set(VisionMode.kClosest);
+					autoStep = 10;
+				}
+				break;
+			case 10:
+				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
+				{
+					System.out.println("Third path");
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+					if(ramseteFollower.pathFractionSegment(.2))
+					{
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+						HatchGrabber.runConstant();
+					}	
+				}
+				else
+				{
+					autoStep = 11;
+				}
+				break;
+			case 11:
+				if(ramseteFollower.pathFractionSegment(.8))
+				{
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
+				}
+				else if(ramseteFollower.isFinished())
+				{
+					HatchGrabber.releaseHatch();
+					autoStep = 13;
+				}
+				break;
+			case 13:
+				if(autoTimer.get() < 0.3)
+				{
+					HatchGrabber.releaseHatch();
+					Drivetrain.setAutoVelocity(-500, -500);
+				}
+				else
+				{
+					HatchGrabber.stopMotor();
+					//Drivetrain.stop();
+					autoStep = 14;
+					autoTimer.stop();
+					autoTimer.reset();
+				}
+				break;
+			case 14:
+				//TwoHatchAuto.exe failed
+				break;
+			default:
+				Drivetrain.stop();
+				break;
+		}
+	}
+
 
 	public static void rocketAuto()
 	{
