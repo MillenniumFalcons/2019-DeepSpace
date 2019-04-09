@@ -1,10 +1,10 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
+// import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
 // import frc.team3647autonomous.Odometry;
@@ -65,7 +65,7 @@ public class Robot extends TimedRobot
 	{
 		gyro.update();
 		// updateJoysticks(); Done in drivetrain notifier!
-		SmartDashboard.putNumber("Match Timer", DriverStation.getInstance().getMatchTime());
+		// SmartDashboard.putNumber("Match Timer", DriverStation.getInstance().getMatchTime());
 		cargoDetection = BallShooter.cargoDetection();
 	}
 	
@@ -80,7 +80,7 @@ public class Robot extends TimedRobot
 		Arm.init();
 		Elevator.init();
 		SeriesStateMachine.init();
-		AirCompressor.run();
+		
 		BallIntake.init();
 		Drivetrain.resetEncoders();
 		ShoppingCart.init();
@@ -91,9 +91,10 @@ public class Robot extends TimedRobot
 		armFollowerNotifier.startPeriodic(.01);
 		autoNotifier.startPeriodic(.01);
 		// AutonomousSequences.autoInitFWD("LeftPlatformToFarSideRocket");
-		AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocketExtended");
+		AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocketExtended");
 		// AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1");
 		pathNotifier.startPeriodic(.02);
+		AirCompressor.run();
 	}
   
 	@Override
@@ -107,6 +108,10 @@ public class Robot extends TimedRobot
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
+
+		System.out.println(SeriesStateMachine.aimedRobotState);
+		Elevator.printElevatorEncoders();
+		Arm.printEncoders();
 	}
 
 	@Override
@@ -115,8 +120,6 @@ public class Robot extends TimedRobot
 		Drivetrain.init();
 		Arm.initSensors();
 		Elevator.initSensors();
-		
-		AirCompressor.run();
 		BallIntake.init();
 
 		Drivetrain.setToBrake();
@@ -124,6 +127,9 @@ public class Robot extends TimedRobot
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
 		ShoppingCart.init();
+
+		if(!AirCompressor.running)
+			AirCompressor.run();
 	}
 
 	//Teleop Code

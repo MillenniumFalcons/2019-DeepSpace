@@ -18,6 +18,7 @@ deploy {
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
             team = frc.getTeamNumber()
+
         }
     }
     artifacts {
@@ -25,6 +26,15 @@ deploy {
             targets << "roborio"
             // Debug can be overridden by command line, for use with VSCode
             debug = frc.getDebugOrDefault(false)
+            // ADDED SECTION TO ENABLE visualvm
+            jvmArgs = [ "-Dcom.sun.management.jmxremote=true",
+                        "-Dcom.sun.management.jmxremote.port=1099",
+                        "-Dcom.sun.management.jmxremote.local.only=false",
+                        "-Dcom.sun.management.jmxremote.ssl=false",
+                        "-Dcom.sun.management.jmxremote.authenticate=false",
+                        "-Djava.rmi.server.hostname=10.36.47.2"
+                     ]
+             // END OF ADDED SECTION
         }
         // Built in artifact to deploy arbitrary files to the roboRIO.
         fileTreeArtifact('frcStaticFileDeploy') {

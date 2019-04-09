@@ -148,33 +148,34 @@ public class AutonomousSequences
 				}
 				break;
 			case 2:
-				if(ramseteFollower.isFinished() && limelightClimber.area < Constants.limelightAreaThreshold)
-				{
-					limelightClimber.center();
-					Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
-				}
-				else
-				{
+				// if(ramseteFollower.isFinished() || limelightClimber.area < Constants.limelightAreaThreshold)
+				// {
+				// 	limelightClimber.center();
+				// 	Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+				// 	System.out.println("Vision finished");
+				// }
+				// else
+				// {
 					autoStep = 3;
 					autoTimer.stop();
 					autoTimer.reset();
 					autoTimer.start();
-				}
-				break;
+				//}
+				//break;
 			case 3:
 				if(autoTimer.get() < 0.3)
 				{
 					HatchGrabber.releaseHatch();
 					Drivetrain.setAutoVelocity(-500, -500);
 				}
-				else if(autoTimer.get() < 0.6)
-				{
-					Drivetrain.stop();
-				}
+				// else if(autoTimer.get() < 0.6)
+				// {
+				// 	Drivetrain.stop();
+				// }
 				else
 				{
 					HatchGrabber.stopMotor();
-					Drivetrain.stop();
+					// Drivetrain.stop();
 					autoStep = 4;
 					autoTimer.stop();
 					autoTimer.reset();
@@ -183,15 +184,24 @@ public class AutonomousSequences
 			case 4:
 				autoInitBWD("LeftRocketToStation");
 				limelightClimber.set(VisionMode.kBlack);
-				limelightFourBar.set(VisionMode.kClosest);
-				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-				HatchGrabber.grabHatch();
+				limelightFourBar.set(VisionMode.kRight);
 				autoStep = 5;
 				break;
+			// case 69:
+			// 	if(ramseteFollower.pathFractionSegment(.25))
+			// 	{
+			// 		SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+			// 		autoStep  = 5;
+			// 	}
+			// 	break;
 			case 5:
-				if(!ramseteFollower.pathFractionSegment(.57) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+					if(ramseteFollower.pathFractionSegment(.15))
+					{
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+					}
 				}
 				else
 				{
@@ -199,10 +209,11 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.57))
+				if(ramseteFollower.pathFractionSegment(.5))
 				{
 					limelightFourBar.center();
-					Drivetrain.setAutoVelocity(leftSpeedLin - (2500)*limelightClimber.leftSpeed, rightSpeedLin - (2500)*limelightClimber.rightSpeed);
+					HatchGrabber.grabHatch();
+					Drivetrain.setAutoVelocity(leftSpeedLin +  (2500)*limelightFourBar.leftSpeed,  rightSpeedLin + (2500)*limelightFourBar.rightSpeed);
 				}
 				else
 				{
@@ -210,21 +221,21 @@ public class AutonomousSequences
 				}
 				break;
 			case 7:
-				if(ramseteFollower.isFinished() && limelightFourBar.area < Constants.limelightAreaThreshold)
-				{
-					limelightFourBar.center();
-					Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
-				}
-				else
-				{
-					autoStep = 8;
+				// if(ramseteFollower.isFinished() || limelightFourBar.area < Constants.limelightAreaThreshold)
+				// {
+				// 	limelightFourBar.center();
+				// 	Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+				// }
+				// else
+				// {
+					autoStep = 9;
 					autoTimer.stop();
 					autoTimer.reset();
 					autoTimer.start();
-				}
-				break;
+				// }
+				// break;
 			case 8:
-				if(autoTimer.get() < .35)
+				if(autoTimer.get() < .1)
 				{
 					HatchGrabber.grabHatch();
 				}
@@ -239,14 +250,17 @@ public class AutonomousSequences
 				grabbedSecondHatch = true;
 				autoInitFWD2("StationToLeftRocket");
 				limelightFourBar.set(VisionMode.kBlack);
-				limelightClimber.set(VisionMode.kClosest);
-				SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+				limelightClimber.set(VisionMode.kLeft);
 				autoStep = 10;
 				break;
 			case 10:
-				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+					if(ramseteFollower.pathFractionSegment(.15))
+					{
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+					}	
 				}
 				else
 				{
@@ -254,7 +268,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 11:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.5))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(leftSpeedLin + (2500)*limelightClimber.leftSpeed, rightSpeedLin + (2500)*limelightClimber.rightSpeed);
@@ -265,33 +279,33 @@ public class AutonomousSequences
 				}
 				break;
 			case 12:
-				if(ramseteFollower.isFinished() && limelightClimber.area < Constants.limelightAreaThreshold)
-				{
-					limelightClimber.center();
-					Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
-				}
-				else
-				{
+				// if(ramseteFollower.isFinished() || limelightClimber.area < Constants.limelightAreaThreshold)
+				// {
+				// 	limelightClimber.center();
+				// 	Drivetrain.setAutoVelocity((2500)*limelightClimber.leftSpeed, (2500)*limelightClimber.rightSpeed);
+				// }
+				// else
+				// {
 					autoStep = 13;
 					autoTimer.stop();
 					autoTimer.reset();
 					autoTimer.start();
-				}
-				break;
+				// }
+				// break;
 			case 13:
 				if(autoTimer.get() < 0.3)
 				{
 					HatchGrabber.releaseHatch();
 					Drivetrain.setAutoVelocity(-500, -500);
 				}
-				else if(autoTimer.get() < 0.6)
-				{
-					Drivetrain.stop();
-				}
+				// else if(autoTimer.get() < 0.6)
+				// {
+				// 	Drivetrain.stop();
+				// }
 				else
 				{
 					HatchGrabber.stopMotor();
-					Drivetrain.stop();
+					//Drivetrain.stop();
 					autoStep = 14;
 					autoTimer.stop();
 					autoTimer.reset();

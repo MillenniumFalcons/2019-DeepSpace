@@ -131,9 +131,9 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXForwardVision = 4200;
-	public static final int armSRXFlatForwards = 4750;
-	public static final int armSRXBackwardVision = 22650;
-	public static final int armSRXFlatBackwards = 22400; //22000
+	public static final int armSRXFlatForwards = 4750; //4290;
+	public static final int armSRXBackwardVision = 22000; //22650; 
+	public static final int armSRXFlatBackwards = 22000; //22400
 	public static final int armSRXCargoL3Front = 24200;
 	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
