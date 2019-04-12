@@ -28,7 +28,9 @@ public class Drivetrain
 
   public static double supposedAngle;
 
-  private static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
+	private static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
+	
+	public static boolean initialized = false;
 
 
   public static void init()
@@ -73,6 +75,8 @@ public class Drivetrain
 		// resetEncoders();
 
 		setToBrake();
+
+		initialized = true;
 	}
 	
 	public static void selectPIDF(int slot, double[] right, double[] left)

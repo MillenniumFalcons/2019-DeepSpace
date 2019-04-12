@@ -12,13 +12,9 @@ import edu.wpi.first.wpilibj.Timer;
 public class HatchGrabber
 {
 	private static VictorSPX hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
-	private static Timer hatchIntakeTimer = new Timer();
-	private static boolean hatchIn = false, flashed = false, startedTimer = false;
-	private static int hatchStep = 0;
 	
 	public static void run(Joysticks coController)
 	{
-		// hatchIn = hatchIn();
 		if(coController.rightBumper)
 			grabHatch();
 		else if(coController.leftBumper)
@@ -27,67 +23,12 @@ public class HatchGrabber
 			runConstant();
 		else
 			stopMotor();
-		
-
-		// if(hatchIn)
-		// {
-		// 	if(!startedTimer)
-		// 	{
-		// 		hatchIntakeTimer.reset();
-		// 		hatchIntakeTimer.start();
-		// 		startedTimer = true;
-		// 	}
-		// 	else if(!flashed && startedTimer && hatchIntakeTimer.get() > .1)
-		// 	{
-		// 		Robot.mainController.setRumble(.5);
-		// 		if(hatchIntakeTimer.get() > 1.1)
-		// 		{
-		// 			flashed = true;
-		// 		}
-		// 	}
-		// 	if(flashed)
-		// 	{
-		// 		Robot.mainController.setRumble(0);
-		// 	}
-		// }
-		// else
-		// {
-		// 	hatchIntakeTimer.reset();
-		// 	Robot.mainController.setRumble(0);
-		// 	hatchIntakeTimer.stop();
-		// 	flashed = false;
-		// 	startedTimer = false;
-		// }
 	}
 
 	public static boolean hatchIn()
 	{
 		double current = Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin);
-		// switch(hatchStep)
-		// {
-		// 	case 0:
-		// 		if(current > 20 && hatchSucker.getMotorOutputPercent() > .4);
-		// 		{
-		// 			hatchIntakeTimer.stop();
-		// 			hatchIntakeTimer.reset();
-		// 			hatchIntakeTimer.start();
-		// 			hatchStep = 1;
-		// 		}
-		// 		break;
-		// 	case 1:
-		// 		if(hatchIntakeTimer.get() > .2 && current > 20)
-		// 		{
-		// 			hatchStep = 0;
-		// 			return true;
-		// 		}
-		// 		break;
-		// }
-
-		if(current > 30)
-		{
-			return true;
-		}
-		return false;
+		return current > 3.5 && current < 5.5;
 	}
 	
 	public static void grabHatch()

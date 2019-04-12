@@ -29,6 +29,8 @@ public class Elevator
 	
 	// private static double overrideValue;
 	// private static boolean manualOverride;
+
+	public static boolean initialized = false;
     
     public static void init()
 	{
@@ -59,6 +61,7 @@ public class Elevator
 		elevatorMaster.setName("Elevator", "elevatorMaster");
 		elevatorMaster.setExpiration(Constants.expirationTimeSRX);
 		bannerSensor = limitSwitch.get();
+		initialized = true;
 	}
 
 	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -108,6 +111,9 @@ public class Elevator
 
 	public static void run()
 	{
+		if(!initialized)
+			initSensors();
+			
 		updateBannerSensor();
 		if(aimedState != null)
 		{
@@ -145,7 +151,7 @@ public class Elevator
 		if(getBannerSenor())
 		{
 			stop();
-			resetElevatorEncoder();
+			resetEncoder();
 		}
 		else
 			setOpenLoop(-.3);
@@ -156,7 +162,7 @@ public class Elevator
 		if(getBannerSenor())
 		{
 			stop();
-			resetElevatorEncoder();
+			resetEncoder();
 		}
 		else
 			setOpenLoop(-speed);
@@ -179,7 +185,101 @@ public class Elevator
 
 	}
 
-    
+    public static void setOpenLoop(double power)
+    {
+		elevatorMaster.set(ControlMode.PercentOutput, power);
+	}
+	//----------------------------------------------------------
+
+	private static boolean positionThreshold(double constant)
+	{
+		return (constant + Constants.kElevatorPositionThreshold) > encoderValue && 
+				(constant - Constants.kElevatorPositionThreshold) < encoderValue;
+	}
+
+	public static boolean reachedState(ElevatorLevel nAimedState)
+	{
+		if(aimedState != null && nAimedState.encoderVal != -1)
+			return positionThreshold(nAimedState.encoderVal);
+		return false;
+	}
+
+	public static boolean reachedAimedState()
+	{
+		return reachedState(aimedState);
+	}
+
+	//Encoder Methods-------------------------------------------
+	public static void updateEncoder()
+	{
+		if(bannerSensor)
+			resetEncoder();
+		else
+			encoderValue = elevatorMaster.getSelectedSensorPosition(0);
+
+		encoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
+		encoderError = elevatorMaster.getClosedLoopError(0);
+	}
+
+	private static void setEncoderValue(int encoderValue)
+	{
+		elevatorMaster.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+	}
+	
+	private static void resetEncoder()
+	{
+		setEncoderValue(0);
+	}
+	//----------------------------------------------------------
+
+	private static boolean getBannerSenor()
+	{
+		return bannerSensor;
+	}
+	
+	public static void stop()
+	{
+		elevatorMaster.stopMotor();
+	}
+
+	public static boolean isAboveMinRotate(int threshold)
+	{
+		return (encoderValue >= Constants.elevatorMinRotation + threshold);
+	}
+
+	private static boolean isValueAboveMinRotate(int val)
+	{
+		return (val >= Constants.elevatorMinRotation - 500);
+	}
+	public static boolean isStateAboveMinRotate(ElevatorLevel state)
+	{
+		if(state != null)
+			return isValueAboveMinRotate(state.encoderVal);
+		return false;
+	}
+	
+	public static void printElevatorEncoders()
+    {
+        System.out.println("Elevator Encoder Value: " + encoderValue );
+	}
+
+	public static void printBannerSensor()
+    {
+    	System.out.println("Banner Sensor Value: " + getBannerSenor());
+    }
+
+    public static void printElevatorCurrent()
+    {
+        System.out.println("Elevator Current: " + elevatorMaster.getOutputCurrent());
+	}
+
+	public static void disableElevator()
+	{
+		aimedState = null;
+		elevatorMaster.setNeutralMode(NeutralMode.Coast);
+		stop();
+	}
+
 	//----------------------------------------------------------
 
 	// //Manual movement-------------------------------------------
@@ -248,97 +348,4 @@ public class Elevator
 	// 		}
 	// 	}
 	// }
-
-    public static void setOpenLoop(double power)
-    {
-		elevatorMaster.set(ControlMode.PercentOutput, power);
-	}
-	//----------------------------------------------------------
-
-	private static boolean positionThreshold(double constant)
-	{
-		return (constant + Constants.kElevatorPositionThreshold) > encoderValue && 
-				(constant - Constants.kElevatorPositionThreshold) < encoderValue;
-	}
-
-	public static boolean reachedState(ElevatorLevel nAimedState)
-	{
-		if(aimedState != null && nAimedState.encoderVal != -1)
-			return positionThreshold(nAimedState.encoderVal);
-		return false;
-	}
-
-	public static boolean reachedAimedState()
-	{
-		return reachedState(aimedState);
-	}
-
-	//Encoder Methods-------------------------------------------
-	public static void updateEncoder()
-	{
-		if(bannerSensor)
-			resetElevatorEncoder();
-		encoderValue = elevatorMaster.getSelectedSensorPosition(0);
-		encoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
-		encoderError = elevatorMaster.getClosedLoopError(0);
-	}
-
-	private static void setEncoderValue(int encoderValue)
-	{
-		elevatorMaster.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
-	}
-	
-	private static void resetElevatorEncoder()
-	{
-		setEncoderValue(0);
-	}
-	//----------------------------------------------------------
-
-	private static boolean getBannerSenor()
-	{
-		return bannerSensor;
-	}
-	
-	public static void stop()
-	{
-		elevatorMaster.stopMotor();
-	}
-
-	public static boolean isAboveMinRotate(int threshold)
-	{
-		return (encoderValue >= Constants.elevatorMinRotation + threshold);
-	}
-
-	private static boolean isValueAboveMinRotate(int val)
-	{
-		return (val >= Constants.elevatorMinRotation - 500);
-	}
-	public static boolean isStateAboveMinRotate(ElevatorLevel state)
-	{
-		if(state != null)
-			return isValueAboveMinRotate(state.encoderVal);
-		return false;
-	}
-	
-	public static void printElevatorEncoders()
-    {
-        System.out.println("Elevator Encoder Value: " + encoderValue );
-	}
-
-	public static void printBannerSensor()
-    {
-    	System.out.println("Banner Sensor Value: " + getBannerSenor());
-    }
-
-    public static void printElevatorCurrent()
-    {
-        System.out.println("Elevator Current: " + elevatorMaster.getOutputCurrent());
-	}
-
-	public static void disableElevator()
-	{
-		aimedState = null;
-		elevatorMaster.setNeutralMode(NeutralMode.Coast);
-		stop();
-	}
 }
