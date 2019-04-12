@@ -29,6 +29,7 @@ public class SeriesStateMachine
 
     private static boolean elevatorReachedState, armReachedState, elevatorAboveMinRotate, elevatorAimedStateAboveMinRotate;
 
+    public static boolean initialized = false;
 
     public enum ScoringPosition
     {
@@ -56,7 +57,6 @@ public class SeriesStateMachine
         REVLIMITSWITCH(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.REVLIMITSWITCH),
         FWDLIMITSWITCH(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.FWDLIMITSWITCH),
         START(null, null),
-        CARGOGROUNDINTAKE(null, null), 
         BOTTOMSTART(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS),
         CLIMB(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CLIMB),
         BEFORECARGOHANDOFF(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CARGOHANDOFF);
@@ -88,7 +88,8 @@ public class SeriesStateMachine
         initializedRobot = false;
         initStep = 0;
         ranOnce = false;
-
+        //Init aimed state
+        aimedRobotState = ScoringPosition.START;
 
         //Variables to control cargo intake
         arrivedAtMidPos=false;
@@ -102,8 +103,7 @@ public class SeriesStateMachine
         climbStep = 0;
         startedBallIntakeTimer = false;
 
-        //Init aimed state
-        aimedRobotState = ScoringPosition.START;
+        initialized = true;
     }
 
     public static void setControllers(Joysticks mainController, Joysticks coController)
@@ -151,14 +151,13 @@ public class SeriesStateMachine
             aimedRobotState = ScoringPosition.STOWED;
 
         if(coController.leftTrigger > .15)
-            if(aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONBWD || aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONFWD)
+            if(aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD) || aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONFWD))
                 BallShooter.intakeCargo(1);
             else
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;
         else if(mainController.leftTrigger > .15)
         {
-            //if(!elevatorManual)
-                BallIntake.setOpenLoop(1);
+           BallIntake.setOpenLoop(1);
         }
         else
         {

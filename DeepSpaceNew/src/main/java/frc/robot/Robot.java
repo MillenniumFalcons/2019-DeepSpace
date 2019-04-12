@@ -4,12 +4,14 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
 // import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 import frc.team3647subsystems.VisionController.VisionMode;
 
 public class Robot extends TimedRobot 
@@ -27,6 +29,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit()
 	{
+		LiveWindow.disableAllTelemetry();
+		LiveWindow.setEnabled(false);
 		pDistributionPanel = new PowerDistributionPanel();
 		
 		AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
@@ -299,7 +303,7 @@ public class Robot extends TimedRobot
 			if(Arm.aimedState.encoderVal < Constants.armSRXVerticalStowed)
 			{
 				//If cargo then its actually forwards
-				if(!cargoDetection)
+				if(!cargoDetection || SeriesStateMachine.aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONFWD)
 					return AutonomousSequences.limelightClimber;
 				else
 					return AutonomousSequences.limelightFourBar;
@@ -308,7 +312,7 @@ public class Robot extends TimedRobot
 			else
 			{
 				// if cargo its actually backwards
-				if(!cargoDetection)
+				if(!cargoDetection|| SeriesStateMachine.aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONBWD)
 					return AutonomousSequences.limelightFourBar;
 				else
 					return AutonomousSequences.limelightClimber;

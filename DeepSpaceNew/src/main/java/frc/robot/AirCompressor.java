@@ -1,12 +1,13 @@
 package frc.robot;
 
 import frc.robot.Constants;
-import edu.wpi.first.wpilibj.Compressor;
+import frc.team3647utility.CustomCompressor;
 
 public class AirCompressor
 {
-	private static Compressor compressor = new Compressor(Constants.CompressorPCMPin);
+	private static CustomCompressor compressor = new CustomCompressor(Constants.CompressorPCMPin);
 	public static boolean running = false;
+	
 	public static void run()
 	{
 		running = true;

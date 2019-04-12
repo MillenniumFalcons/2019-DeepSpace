@@ -1,14 +1,15 @@
 package frc.team3647subsystems;
 
-import frc.robot.*;
+import frc.robot.Robot;
+import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import edu.wpi.first.wpilibj.*;
+import frc.team3647utility.CustomSolenoid;
 
 public class BallIntake 
 {
-	private static Solenoid extensionCylinder = new Solenoid(Constants.ballIntakeSolinoidPin);
-	private static Solenoid extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
+	private static CustomSolenoid extensionCylinder = new CustomSolenoid(Constants.ballIntakeSolinoidPin);
+	private static CustomSolenoid extensionCylinder2 = new CustomSolenoid(Constants.ballIntakeSolinoidPin2);
 	private static VictorSPX intakeMotor = new VictorSPX(Constants.ballMotorPin);
 	
 	public static void init()

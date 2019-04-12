@@ -24,12 +24,13 @@ public class Arm
 
 	// public static double overrideValue;
 	// public static boolean manualOverride;
-		
+	public static boolean initialized = false;
     public static void init()
 	{
 		aimedState = ArmPosition.STOPPED;
 		
 		initSensors();
+		
 	}
 	
 	public static void initSensors()
@@ -44,6 +45,7 @@ public class Arm
 
 		configPIDFMM(Constants.armPIDF[0], Constants.armPIDF[1], Constants.armPIDF[2], Constants.armPIDF[3], 
 					Constants.kArmSRXCruiseVelocity, Constants.kArmSRXAcceleration);
+		initialized = true;
 
 	}
 
@@ -98,6 +100,8 @@ public class Arm
 	 */
 	public static void run()
 	{
+		if(!initialized)
+			initSensors();
 		// updateLivePosition();
 		if(aimedState != null) //check if aimed state has a value
 		{
@@ -216,7 +220,7 @@ public class Arm
 
 	public static void resetEncoder()
 	{
-		armSRX.setSelectedSensorPosition(0, 0, Constants.kTimeoutMs);
+		setEncoderValue(0);
 	}
 
 	public static boolean isEncoderInThreshold()
@@ -251,82 +255,6 @@ public class Arm
 		}
 	}
 	//----------------------------------------------------------
-	
-	// // Manual Movement-------------------------
-	// public static void setManualController(Joysticks controller)
-	// {
-	// 	setManualOverride(controller.leftJoyStickY);
-	// 	if(manualOverride)
-	// 		aimedState = ArmPosition.MANUAL;
-	// 	else if(controller.buttonA)
-	// 		aimedState = ArmPosition.VERTICALSTOWED;
-	// 	else if(controller.buttonY)
-	// 		aimedState = ArmPosition.STOWED;
-	// 	 else if(controller.buttonB)
-	// 		aimedState = ArmPosition.HATCHHANDOFF;
-	// 	else if(controller.buttonX)
-	// 		aimedState = ArmPosition.CARGOHANDOFF;
-	// 	 else if(controller.leftBumper)
-	// 		aimedState = ArmPosition.FLATBACKWARDS;
-	// 	 else if(controller.rightBumper)
-	// 		aimedState = ArmPosition.FLATFORWARDS;	
-	// 	 else if(controller.dPadRight)
-	// 		aimedState = ArmPosition.FWDLIMITSWITCH;
-	// 	else if(controller.dPadLeft)
-	// 		aimedState = ArmPosition.REVLIMITSWITCH;
-	// 	 else if(controller.dPadUp)
-	// 		aimedState = ArmPosition.CARGOL3BACK;
-	// 	 else if(controller.dPadDown)
-	// 		aimedState = ArmPosition.CARGOL3FRONT;
-	// }
-
-	// public static void setArmManualControl(Joysticks controller)
-	// {
-	// 	setManualOverride(controller.rightJoyStickX);
-	// }
-	// public static void setManualOverride(double jValue)
-	// {
-	// 	if(Math.abs(jValue) > .1) //deadzone
-	// 	{
-	// 		manualOverride = true;
-	// 		overrideValue = jValue;
-	// 		aimedState = ArmPosition.MANUAL;
-	// 	} 
-	// 	else 
-	// 		manualOverride = false;
-	// }
-	// private static int encoderState, manualAdjustment, manualEncoderValue;
-
-    // public static void moveManual(double jValue)
-	// {
-	// 	updateEncoder();
-	// 	// updateLivePosition();
-	// 	if(jValue > 0)
-	// 	{
-	// 		setOpenLoop(overrideValue * 0.5);
-	// 		manualAdjustment = 0;
-	// 		encoderState = 0;
-	// 	}
-	// 	else if(jValue < 0)
-	// 	{
-	// 		setOpenLoop(overrideValue * 0.5);
-	// 		manualAdjustment = 0;
-	// 		encoderState = 0;
-	// 	}
-	// 	else
-	// 	{
-	// 		switch(encoderState)
-	// 		{
-	// 			case 0:
-	// 				manualEncoderValue = encoderValue + manualAdjustment;
-	// 				encoderState = 1;
-	// 				break;
-	// 			case 1:
-	// 				setPosition(manualEncoderValue);
-	// 				break;
-	// 		}
-	// 	}
-	// }
 
 	public static void setToBrake()
 	{
