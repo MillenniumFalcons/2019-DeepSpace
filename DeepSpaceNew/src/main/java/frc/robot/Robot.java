@@ -54,8 +54,9 @@ public class Robot extends TimedRobot
 		});
 		
 		pathNotifier = new Notifier(() ->{
-			//AutonomousSequences.leftFrontRocketAuto();
-			AutonomousSequences.sideCargoShipAuto();
+			// AutonomousSequences.frontRocketAuto("Right");
+			// AutonomousSequences.sideCargoShipAuto();
+			AutonomousSequences.mixedRocketAuto("Right");
 		});
 		
 	}
@@ -92,8 +93,10 @@ public class Robot extends TimedRobot
 		autoNotifier.startPeriodic(.01);
 		//AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocket"); //off lvl 2
 		//AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocket"); //off lvl 1
-		AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1");
-		// AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1");
+		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
+		// AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1"); //cargoship left
+		AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
+		AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
 		pathNotifier.startPeriodic(.02);
 		AirCompressor.run();
 	}
@@ -109,12 +112,6 @@ public class Robot extends TimedRobot
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
-
-		System.out.println(SeriesStateMachine.aimedRobotState);
-		Elevator.printElevatorEncoders();
-		Arm.printEncoders();
-		System.out.println("ARM ES: " + Arm.aimedState);
-		System.out.println("ELEV ES: " + Elevator.aimedState);
 	}
 
 	@Override
@@ -142,12 +139,15 @@ public class Robot extends TimedRobot
 		HatchGrabber.run(coController);
 		SeriesStateMachine.setControllers(mainController, coController);
 		Arm.updateEncoder();
+		Arm.printEncoders();
 		Elevator.updateEncoder();
 		ShoppingCart.updateEncoder();		
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
 		BallShooter.runBlink();
+		System.out.println(HatchGrabber.hatchIn());
+		//System.out.println(Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin));
 		//Drivetrain uses the notifier
 
 		// ShoppingCart.updateEncoder();
@@ -186,7 +186,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		// Elevator.init();
+		Elevator.init();
+		Arm.init();
 		// drivetrainNotifier.startPeriodic(.02);
 		// ShoppingCart.init();
 	}
@@ -194,9 +195,20 @@ public class Robot extends TimedRobot
 	public void testPeriodic()
 	{
 		// Elevator.updateEncoder();
-		Elevator.updateBannerSensor();
-		Elevator.printBannerSensor();
-		BallShooter.printBeamBreak();
+		// Elevator.printElevatorEncoders();
+		Arm.updateEncoder();
+		Arm.printEncoders();
+		System.out.println("FWD: " + Arm.getFwdLimitSwitch());
+		System.out.println("REV: " + Arm.getRevLimitSwitch());
+
+		if(Arm.getRevLimitSwitch())
+		{
+			Arm.resetEncoder();
+		}
+		
+		// Elevator.updateBannerSensor();
+		// Elevator.printBannerSensor();
+		// BallShooter.printBeamBreak();
 	}
 
 	private void updateJoysticks()

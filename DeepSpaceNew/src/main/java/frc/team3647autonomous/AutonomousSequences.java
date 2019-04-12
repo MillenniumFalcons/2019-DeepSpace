@@ -40,7 +40,6 @@ public class AutonomousSequences
 		autoTimer.stop();
 		autoTimer.reset();
 		autoStep = 0;
-		
 	}
 
 	public static void autoInitFWD2(String trajectoryName) 
@@ -113,8 +112,13 @@ public class AutonomousSequences
 		Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 	}
 
-	public static void leftFrontRocketAuto()
+	public static void frontRocketAuto(String LeftOrRight)
 	{
+		// if(autoStep == -1)
+		// {
+		// 	autoInitFWD(LeftOrRight + "PlatformTo" + LeftOrRight + "Rocket");
+		// 	autoStep = 0;
+		// }
 		ramsetePeriodic();
 		switch(autoStep)
 		{
@@ -125,7 +129,14 @@ public class AutonomousSequences
 				}
 				else
 				{
-					limelightClimber.set(VisionMode.kClosest);
+					if(LeftOrRight.equals("Left"))
+					{
+						limelightClimber.set(VisionMode.kLeft);
+					}
+					else
+					{
+						limelightClimber.set(VisionMode.kRight);
+					}
 					autoStep = 1;
 				}
 				break;
@@ -143,7 +154,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 4:
-				autoInitBWD("LeftFrontRocketToStation");
+				autoInitBWD(LeftOrRight + "FrontRocketToStation");
 				limelightClimber.set(VisionMode.kBlack);
 				limelightFourBar.set(VisionMode.kRight);
 				autoStep = 5;
@@ -172,9 +183,18 @@ public class AutonomousSequences
 				}
 				else
 				{
-					autoInitFWD2("StationToLeftFrontRocket");
+					autoInitFWD2("StationTo" + LeftOrRight + "FrontRocket");
 					limelightFourBar.set(VisionMode.kBlack);
-					limelightClimber.set(VisionMode.kLeft);
+
+					if(LeftOrRight.equals("Left"))
+					{
+						limelightClimber.set(VisionMode.kLeft);
+					}
+					else
+					{
+						limelightClimber.set(VisionMode.kRight);
+					}
+
 					autoStep = 10;
 				}
 				break;
@@ -194,7 +214,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 11:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.5))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
@@ -228,26 +248,33 @@ public class AutonomousSequences
 		}
 	}
 
-	public static void mixedLeftRocketAuto()
+	public static void mixedRocketAuto(String LeftOrRight)
 	{
 		ramsetePeriodic();
 		switch(autoStep)
 		{
 			case 0:
-				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.75) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				}
 				else
 				{
-					limelightClimber.set(VisionMode.kClosest);
+					if(LeftOrRight.equals("Left"))
+					{
+						limelightClimber.set(VisionMode.kRight);
+					}
+					else
+					{
+						limelightClimber.set(VisionMode.kLeft);
+					}
 					autoStep = 1;
 				}
 				break;
 			case 1:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.75))
 				{
-					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
 				}
@@ -258,13 +285,20 @@ public class AutonomousSequences
 				}
 				break;
 			case 4:
-				autoInitBWD("LeftBackRocketToStation");
+				autoInitBWD(LeftOrRight + "BackRocketToStation");
 				limelightClimber.set(VisionMode.kBlack);
-				limelightFourBar.set(VisionMode.kRight);
+				if(LeftOrRight.equals("Left"))
+				{
+					limelightFourBar.set(VisionMode.kRight);
+				}
+				else
+				{
+					limelightFourBar.set(VisionMode.kLeft);
+				}
 				autoStep = 5;
 				break;
 			case 5:
-				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.15))
@@ -279,7 +313,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.5))
+				if(ramseteFollower.pathFractionSegment(.6))
 				{
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
@@ -287,9 +321,16 @@ public class AutonomousSequences
 				}
 				else
 				{
-					autoInitFWD2("StationToLeftFrontRocket");
+					autoInitFWD2("StationTo" + LeftOrRight + "FrontRocket");
 					limelightFourBar.set(VisionMode.kBlack);
-					limelightClimber.set(VisionMode.kLeft);
+					if(LeftOrRight.equals("Left"))
+					{
+						limelightClimber.set(VisionMode.kLeft);
+					}
+					else
+					{
+						limelightClimber.set(VisionMode.kRight);
+					}
 					autoStep = 10;
 				}
 				break;
@@ -299,7 +340,7 @@ public class AutonomousSequences
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.2))
 					{
-						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
 						HatchGrabber.runConstant();
 					}	
 				}
@@ -309,7 +350,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 11:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.5))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
@@ -349,13 +390,13 @@ public class AutonomousSequences
 		switch(autoStep)
 		{
 			case 0:
+				limelightClimber.set(VisionMode.kRight);
 				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				}
 				else
 				{
-					limelightClimber.set(VisionMode.kRight);
 					autoStep = 1;
 				}
 				break;
@@ -385,7 +426,7 @@ public class AutonomousSequences
 					if(ramseteFollower.pathFractionSegment(.15))
 					{
 						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
-						HatchGrabber.stopMotor();
+						HatchGrabber.runConstant();
 					}
 				}
 				else
@@ -394,7 +435,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.6) && !HatchGrabber.hatchIn())
 				{
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
@@ -404,7 +445,7 @@ public class AutonomousSequences
 				{
 					autoInitFWD2("StationToLeftCargoShipBay2");
 					limelightFourBar.set(VisionMode.kBlack);
-					limelightClimber.set(VisionMode.kClosest);
+					limelightClimber.set(VisionMode.kRight);
 					autoStep = 10;
 				}
 				break;
@@ -457,4 +498,11 @@ public class AutonomousSequences
 				break;
 		}
 	}
+
+	public static void farsideLeftRocketAuto()
+	{
+		
+	}
+
+
 }

@@ -14,6 +14,7 @@ public class HatchGrabber
 	private static VictorSPX hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
 	private static Timer hatchIntakeTimer = new Timer();
 	private static boolean hatchIn = false, flashed = false, startedTimer = false;
+	private static int hatchStep = 0;
 	
 	public static void run(Joysticks coController)
 	{
@@ -62,7 +63,27 @@ public class HatchGrabber
 	public static boolean hatchIn()
 	{
 		double current = Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin);
-		if(current > 3.5 && current < 5.5)
+		// switch(hatchStep)
+		// {
+		// 	case 0:
+		// 		if(current > 20 && hatchSucker.getMotorOutputPercent() > .4);
+		// 		{
+		// 			hatchIntakeTimer.stop();
+		// 			hatchIntakeTimer.reset();
+		// 			hatchIntakeTimer.start();
+		// 			hatchStep = 1;
+		// 		}
+		// 		break;
+		// 	case 1:
+		// 		if(hatchIntakeTimer.get() > .2 && current > 20)
+		// 		{
+		// 			hatchStep = 0;
+		// 			return true;
+		// 		}
+		// 		break;
+		// }
+
+		if(current > 30)
 		{
 			return true;
 		}
@@ -71,7 +92,7 @@ public class HatchGrabber
 	
 	public static void grabHatch()
 	{
-		hatchSucker.set(ControlMode.PercentOutput, .5);
+		hatchSucker.set(ControlMode.PercentOutput, .6);
 	}
 	
 	public static void releaseHatch()
