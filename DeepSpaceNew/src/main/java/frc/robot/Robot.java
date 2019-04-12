@@ -187,16 +187,35 @@ public class Robot extends TimedRobot
 	public void testInit()
 	{
 		// Elevator.init();
-		// drivetrainNotifier.startPeriodic(.02);
-		// ShoppingCart.init();
+		drivetrainNotifier.startPeriodic(.02);
+		ShoppingCart.init();
+		// Arm.init();
+		// armFollowerNotifier.startPeriodic(.01);
 	}
 	@Override
 	public void testPeriodic()
 	{
 		// Elevator.updateEncoder();
-		Elevator.updateBannerSensor();
-		Elevator.printBannerSensor();
-		BallShooter.printBeamBreak();
+		//Elevator.updateBannerSensor();
+		//Elevator.printBannerSensor();
+		//BallShooter.printBeamBreak();
+		if(mainController.rightTrigger > 0)
+		{
+			ShoppingCart.shoppingCartSRX.set(mainController.rightTrigger);
+		}
+		else if(mainController.leftTrigger > 0)
+		{
+			ShoppingCart.shoppingCartSRX.set(-mainController.leftTrigger);
+		}
+		else
+		{
+			ShoppingCart.shoppingCartSRX.set(0);
+		}
+		// mainController.update();
+		// Arm.setOpenLoop(mainController.leftJoyStickY);
+		// System.out.println(Arm.encoderVelocity);
+
+
 	}
 
 	private void updateJoysticks()
