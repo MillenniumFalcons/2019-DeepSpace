@@ -39,6 +39,7 @@ public class AutonomousSequences
 		Odometry.getInstance().odometryInit();
 		autoTimer.stop();
 		autoTimer.reset();
+		// autoTimer.start();
 		autoStep = 0;
 	}
 
@@ -301,7 +302,7 @@ public class AutonomousSequences
 				autoStep = 5;
 				break;
 			case 5:
-				if(!ramseteFollower.pathFractionSegment(.55) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.15))
@@ -316,7 +317,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.55))
+				if(ramseteFollower.pathFractionSegment(.6))
 				{
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
@@ -338,7 +339,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 10:
-				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.2))
@@ -353,7 +354,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 11:
-				if(ramseteFollower.pathFractionSegment(.5))
+				if(ramseteFollower.pathFractionSegment(.6))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
@@ -502,8 +503,125 @@ public class AutonomousSequences
 		}
 	}
 
-	public static void farsideLeftRocketAuto()
+	public static void mixedCargoShipAuto()
 	{
+		if(autoTimer.get() > 2)
+		{
+			ramsetePeriodic();
+			autoStep = 0;
+		}
+		switch(autoStep)
+		{
+			case 0:
+				limelightClimber.set(VisionMode.kLeft);
+				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+				}
+				else
+				{
+					autoStep = 1;
+				}
+				break;
+			case 1:
+				if(ramseteFollower.pathFractionSegment(.8))
+				{
+					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
+				}
+				else if(ramseteFollower.isFinished())
+				{
+					HatchGrabber.releaseHatch();
+					autoStep = 4;
+				}
+				break;
+			case 4:
+				autoInitBWD("MiddleLeftCargoShipToStation");
+				limelightClimber.set(VisionMode.kBlack);
+				limelightFourBar.set(VisionMode.kRight);
+				autoStep = 5;
+				break;
+			case 5:
+				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+					if(ramseteFollower.pathFractionSegment(.15))
+					{
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
+						HatchGrabber.runConstant();
+					}
+				}
+				else
+				{
+					autoStep = 6;
+				}
+				break;
+			case 6:
+				if(ramseteFollower.pathFractionSegment(.6))
+				{
+					limelightFourBar.center();
+					HatchGrabber.grabHatch();
+					Drivetrain.setAutoVelocity(linearVelocity +  (visionVelocityConstant)*limelightFourBar.leftSpeed,  linearVelocity + (visionVelocityConstant)*limelightFourBar.rightSpeed);
+				}
+				else
+				{
+					autoInitFWD2("StationToLeftCargoShipBay2");
+					limelightFourBar.set(VisionMode.kBlack);
+					limelightClimber.set(VisionMode.kRight);
+					autoStep = 10;
+				}
+				break;
+			case 10:
+				if(!ramseteFollower.pathFractionSegment(.82) && !ramseteFollower.isFinished())
+				{
+					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
+					if(ramseteFollower.pathFractionSegment(.2))
+					{
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+						HatchGrabber.runConstant();
+					}	
+				}
+				else
+				{
+					autoStep = 11;
+				}
+				break;
+			case 11:
+				if(ramseteFollower.pathFractionSegment(.82))
+				{
+					limelightClimber.center();
+					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
+				}
+				else if(ramseteFollower.isFinished())
+				{
+					HatchGrabber.releaseHatch();
+					autoTimer.stop();
+					autoTimer.reset();
+					autoStep = 13;
+				}
+				break;
+			case 13:
+				if(autoTimer.get() < 0.3)
+				{
+					HatchGrabber.releaseHatch();
+					Drivetrain.setAutoVelocity(-500, -500);
+				}
+				else
+				{
+					HatchGrabber.stopMotor();
+					Drivetrain.stop();
+					autoStep = 14;
+					autoTimer.stop();
+					autoTimer.reset();
+				}
+				break;
+			case 14:
+				break;
+			default:
+				Drivetrain.stop();
+				break;
+		}
 		
 	}
 
