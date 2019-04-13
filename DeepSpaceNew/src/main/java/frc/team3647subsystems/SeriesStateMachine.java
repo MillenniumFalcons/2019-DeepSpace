@@ -151,7 +151,7 @@ public class SeriesStateMachine
             aimedRobotState = ScoringPosition.STOWED;
 
         if(coController.leftTrigger > .15)
-            if(aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD) || aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONFWD))
+            if((aimedRobotState != null) && (aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD) || aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONFWD)))
                 BallShooter.intakeCargo(1);
             else
                 aimedRobotState = ScoringPosition.CARGOHANDOFF;

@@ -120,12 +120,12 @@ public class Constants
 	public static int kElevatorPeakCurrent = 50;
 	public static int kElevatorPeakCurrentDuration = 5000;
 	public static int kElevatorContinuousCurrent = 4;
-
+	
 	// Hatch Current Limiting
 	public static final int kHatchWristPeakCurrent = 40;
 	public static int kHatchWristPeakCurrentDuration = 5000;
 	public static final int kHatchWristContinuousCurrent = 5;
-
+	
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~POSITION & THRESHOLD VALUES FOR MECHANISMS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Arm Positions
 	// SRX MAG Encoder Positions
@@ -133,7 +133,7 @@ public class Constants
 	public static final int armSRXForwardVision = 4200;
 	public static final int armSRXFlatForwards = 4750; //4290;
 	public static final int armSRXBackwardVision = 22000; //22650; 
-	public static final int armSRXFlatBackwards = 22000; //22400
+	public static final int armSRXFlatBackwards = 22400; //22400
 	public static final int armSRXCargoL3Front = 24200;
 	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
@@ -145,6 +145,7 @@ public class Constants
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
 	public static final int armSRXClimb = 20500;
+	public static int armSRXResetEncoderVal = 3000;
 
 	// NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;

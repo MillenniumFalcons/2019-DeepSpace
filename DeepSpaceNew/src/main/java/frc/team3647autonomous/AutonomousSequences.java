@@ -254,7 +254,11 @@ public class AutonomousSequences
 		switch(autoStep)
 		{
 			case 0:
-				if(!ramseteFollower.pathFractionSegment(.75) && !ramseteFollower.isFinished())
+				if(ramseteFollower.pathFractionSegment(.65))
+				{
+					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+				}
+				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				}
@@ -272,9 +276,8 @@ public class AutonomousSequences
 				}
 				break;
 			case 1:
-				if(ramseteFollower.pathFractionSegment(.75))
+				if(ramseteFollower.pathFractionSegment(.8))
 				{
-					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
 				}
@@ -298,7 +301,7 @@ public class AutonomousSequences
 				autoStep = 5;
 				break;
 			case 5:
-				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.55) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.15))
@@ -313,7 +316,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.55))
 				{
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
@@ -340,7 +343,7 @@ public class AutonomousSequences
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.2))
 					{
-						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL3FORWARDS;
+						SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
 						HatchGrabber.runConstant();
 					}	
 				}
@@ -435,7 +438,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.6) && !HatchGrabber.hatchIn())
+				if(ramseteFollower.pathFractionSegment(.6))
 				{
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
@@ -450,7 +453,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 10:
-				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.82) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.2))
@@ -465,7 +468,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 11:
-				if(ramseteFollower.pathFractionSegment(.8))
+				if(ramseteFollower.pathFractionSegment(.82))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);

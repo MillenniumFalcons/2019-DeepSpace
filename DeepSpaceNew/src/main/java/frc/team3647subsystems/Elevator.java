@@ -36,6 +36,9 @@ public class Elevator
 	{
 		aimedState = ElevatorLevel.STOP;
 		initSensors();
+
+		setEncoderValue(5000);
+		updateEncoder();
 	}
 	
 	public static void initSensors()

@@ -20,8 +20,10 @@ public class Arm
 	public static CANDigitalInput revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen); 
 	public static CANDigitalInput fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen); ;
 
+	private static int startEncoderValue;
 	public static int encoderError, encoderValue, encoderVelocity;
 
+	private static boolean reachedOnce = false;
 	// public static double overrideValue;
 	// public static boolean manualOverride;
 	public static boolean initialized = false;
@@ -30,7 +32,13 @@ public class Arm
 		aimedState = ArmPosition.STOPPED;
 		
 		initSensors();
-		
+		while(encoderValue != 67)
+		{
+			setEncoderValue(67);
+			updateEncoder();
+		}		
+		startEncoderValue = encoderValue;
+		reachedOnce = false;		
 	}
 	
 	public static void initSensors()
@@ -46,7 +54,6 @@ public class Arm
 		configPIDFMM(Constants.armPIDF[0], Constants.armPIDF[1], Constants.armPIDF[2], Constants.armPIDF[3], 
 					Constants.kArmSRXCruiseVelocity, Constants.kArmSRXAcceleration);
 		initialized = true;
-
 	}
 
 	public static void configPIDFMM(double p, double i, double d, double f, int vel, int accel)
@@ -81,7 +88,8 @@ public class Arm
 		VISIONF(Constants.armSRXForwardVision),
 		VISIONB(Constants.armSRXBackwardVision), 
 		CARGOSHIPBACKWARDS(Constants.armSRXCargoShipBack), 
-		CARGOSHIPFORWARDS(Constants.armSRXCargoShipFront);
+		CARGOSHIPFORWARDS(Constants.armSRXCargoShipFront),
+		REVLIMSWITCHSTART(-1);
 
 		public int encoderVal;
 		ArmPosition(int encoderVal)
@@ -113,6 +121,9 @@ public class Arm
 				{
 					case STOPPED:
 						stop();
+						break;
+					case REVLIMSWITCHSTART:
+						resetToRevLimitSwitch();
 						break;
 					case REVLIMITSWITCH:
 						moveToRevLimitSwitch();
@@ -147,6 +158,32 @@ public class Arm
 		else
 		{
 			resetEncoder();
+			setPosition(0);
+		}
+	}
+
+	public static void resetToRevLimitSwitch()
+	{
+		System.out.println("Resetting to limit switch");
+		if(!getRevLimitSwitch())
+		{
+			System.out.println("startEncoderValue:" + startEncoderValue);
+			if(!positionThreshold(startEncoderValue - Constants.armSRXResetEncoderVal) && !reachedOnce)
+			{
+				System.out.println("Motion Magic Going to: " + (startEncoderValue - Constants.armSRXResetEncoderVal));
+				setPosition(startEncoderValue - Constants.armSRXResetEncoderVal);
+			}
+			else
+			{
+				System.out.println("openLoop part");
+				setOpenLoop(-.1);
+				reachedOnce = true;
+			}
+		}
+		else
+		{
+			resetEncoder();
+			updateEncoder();			
 			setPosition(0);
 		}
 	}

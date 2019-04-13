@@ -59,8 +59,8 @@ public class Robot extends TimedRobot
 		
 		pathNotifier = new Notifier(() ->{
 			// AutonomousSequences.frontRocketAuto("Right");
-			// AutonomousSequences.sideCargoShipAuto();
-			AutonomousSequences.mixedRocketAuto("Right");
+			AutonomousSequences.sideCargoShipAuto();
+			// AutonomousSequences.mixedRocketAuto("Left");
 		});
 		
 	}
@@ -98,9 +98,9 @@ public class Robot extends TimedRobot
 		//AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocket"); //off lvl 2
 		//AutonomousSequences.autoInitFWD("LeftPlatformToLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
-		// AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1"); //cargoship left
-		AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
-		AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
+		AutonomousSequences.autoInitFWD("LeftPlatformToLeftCargoShipBay1"); //cargoship left
+		// AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
+		// AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
 		pathNotifier.startPeriodic(.02);
 		AirCompressor.run();
 	}
@@ -143,14 +143,13 @@ public class Robot extends TimedRobot
 		HatchGrabber.run(coController);
 		SeriesStateMachine.setControllers(mainController, coController);
 		Arm.updateEncoder();
-		Arm.printEncoders();
 		Elevator.updateEncoder();
 		ShoppingCart.updateEncoder();		
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
 		BallShooter.runBlink();
-		System.out.println(HatchGrabber.hatchIn());
+
 		//System.out.println(Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin));
 		//Drivetrain uses the notifier
 
@@ -191,10 +190,11 @@ public class Robot extends TimedRobot
 	public void testInit()
 	{
 		// Elevator.init();
-		drivetrainNotifier.startPeriodic(.02);
-		ShoppingCart.init();
+		// drivetrainNotifier.startPeriodic(.02);
+		// ShoppingCart.init();
 		// Arm.init();
 		// armFollowerNotifier.startPeriodic(.01);
+		Arm.initSensors();
 	}
 	@Override
 	public void testPeriodic()
@@ -203,18 +203,18 @@ public class Robot extends TimedRobot
 		//Elevator.updateBannerSensor();
 		//Elevator.printBannerSensor();
 		//BallShooter.printBeamBreak();
-		if(mainController.rightTrigger > 0)
-		{
-			ShoppingCart.shoppingCartSRX.set(mainController.rightTrigger);
-		}
-		else if(mainController.leftTrigger > 0)
-		{
-			ShoppingCart.shoppingCartSRX.set(-mainController.leftTrigger);
-		}
-		else
-		{
-			ShoppingCart.shoppingCartSRX.set(0);
-		}
+		// if(mainController.rightTrigger > 0)
+		// {
+		// 	ShoppingCart.shoppingCartSRX.set(mainController.rightTrigger);
+		// }
+		// else if(mainController.leftTrigger > 0)
+		// {
+		// 	ShoppingCart.shoppingCartSRX.set(-mainController.leftTrigger);
+		// }
+		// else
+		// {
+		// 	ShoppingCart.shoppingCartSRX.set(0);
+		// }
 		// mainController.update();
 		// Arm.setOpenLoop(mainController.leftJoyStickY);
 		// System.out.println(Arm.encoderVelocity);
