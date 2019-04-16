@@ -92,7 +92,7 @@ public class BallShooter
 
 	public static boolean cargoDetection()
 	{
-    return (Canifier.cargoBeamBreak() || SeriesStateMachine.forceCargoOn) && !SeriesStateMachine.forceCargoOff;
+    return (Canifier.cargoBeamBreak()); // || SeriesStateMachine.forceCargoOn) && !SeriesStateMachine.forceCargoOff;
 	}
 
 	public static void printBeamBreak()

@@ -105,7 +105,7 @@ public class SeriesStateMachine
     {
         try
         {
-            if(!Robot.cargoDetection)
+            if(!Robot.cargoDetection || forceCargoOff)
             {
                 if(coController.buttonA)
                     aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
@@ -124,7 +124,7 @@ public class SeriesStateMachine
                 else if(coController.dPadUp)
                     aimedRobotState = ScoringPosition.HATCHL3BACKWARDS;
             }
-            else if(Robot.cargoDetection) //If the robot has a ball:
+            else if(Robot.cargoDetection || forceCargoOn) //If the robot has a ball:
             {
                 if(coController.buttonA)
                     aimedRobotState = ScoringPosition.CARGOL1FORWARDS;
