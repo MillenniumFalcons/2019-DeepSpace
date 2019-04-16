@@ -32,11 +32,8 @@ public class Arm
 		aimedState = ArmPosition.STOPPED;
 		
 		initSensors();
-		while(encoderValue != 67)
-		{
-			setEncoderValue(67);
-			updateEncoder();
-		}		
+		setEncoderValue(67);
+		updateEncoder();		
 		startEncoderValue = encoderValue;
 		reachedOnce = false;		
 	}

@@ -143,8 +143,9 @@ public class AutonomousSequences
 				break;
 			case 1:
 				if(ramseteFollower.pathFractionSegment(.6))
-				{
 					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+				if(ramseteFollower.pathFractionSegment(.5))
+				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
 				}

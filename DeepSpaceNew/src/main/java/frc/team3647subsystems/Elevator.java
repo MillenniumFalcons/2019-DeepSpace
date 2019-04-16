@@ -37,11 +37,8 @@ public class Elevator
 		aimedState = ElevatorLevel.STOPPED;
 		initSensors();
 
-		while(encoderValue != 5000)
-		{
-			setEncoderValue(5000);
-			updateEncoder();
-		}
+		setEncoderValue(5000);
+		updateEncoder();
 	}
 	
 	public static void initSensors()

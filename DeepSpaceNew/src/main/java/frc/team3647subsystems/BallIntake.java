@@ -4,7 +4,7 @@ import frc.robot.Robot;
 import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import frc.team3647utility.CustomSolenoid;
+import frc.team3647utility.CustomSolenoid;;
 
 public class BallIntake 
 {
