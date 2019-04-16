@@ -24,6 +24,8 @@ public class Robot extends TimedRobot
   
 	public static Notifier drivetrainNotifier, armFollowerNotifier, autoNotifier, pathNotifier;
 
+	public static boolean runAuto = true;
+
 	public static boolean cargoDetection;
 
 	@Override
@@ -48,7 +50,7 @@ public class Robot extends TimedRobot
 		});
 
 		drivetrainNotifier = new Notifier(() ->{
-			updateJoysticks();
+			mainController.update();
 			driveVisionTeleop();
 		});
 
@@ -68,7 +70,10 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotPeriodic()	
 	{
-		gyro.update();
+		if(isAutonomous())
+			gyro.update();
+		if(isEnabled())
+			coController.update();
 		// updateJoysticks(); Done in drivetrain notifier!
 		// SmartDashboard.putNumber("Match Timer", DriverStation.getInstance().getMatchTime());
 		cargoDetection = BallShooter.cargoDetection();
@@ -81,59 +86,92 @@ public class Robot extends TimedRobot
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
+		runAuto = true;
+		AutonomousSequences.autoStep = 0;
+		
 		Drivetrain.init();
+		Drivetrain.setToBrake();
+		Drivetrain.resetEncoders();
+
 		Arm.init();
 		Elevator.init();
 		SeriesStateMachine.init();
-		
 		BallIntake.init();
-		Drivetrain.resetEncoders();
-		ShoppingCart.init();
-		Drivetrain.setToBrake();
+		MiniShoppingCart.init();
+		
 
-		// drivetrainNotifier.startPeriodic(.02);
-		AutonomousSequences.autoStep = 0;
-		armFollowerNotifier.startPeriodic(.01);
-		autoNotifier.startPeriodic(.01);
+		
+		
+
+		pathNotifier = new Notifier(() ->{
+			// AutonomousSequences.frontRocketAuto("Right");
+			// AutonomousSequences.sideCargoShipAuto();
+			AutonomousSequences.mixedRocketAuto("Left");
+		});
+
 		// AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocket"); //off lvl 2
 		AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
 		// AutonomousSequences.autoInitFWD("PlatformToLeftMiddleLeftCargoShip"); //cargoship left
 		// AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
 		// AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
-		pathNotifier.startPeriodic(.02);
+
+		if(!runAuto)
+		{
+			drivetrainNotifier.startPeriodic(.02);
+		}
+		else
+		{
+			pathNotifier.startPeriodic(.02);
+			armFollowerNotifier.startPeriodic(.01);
+			autoNotifier.startPeriodic(.01);
+		}
+		
+
 		AirCompressor.run();
+		Arm.updateEncoder();
+		Elevator.updateEncoder();
 	}
   
 	@Override
 	public void autonomousPeriodic() 
 	{
-		// AutonomousSequences.runPath();
-		// teleopPeriodic();
-		Arm.updateEncoder();
-		Elevator.updateEncoder();
-		ShoppingCart.updateEncoder();		
-		SeriesStateMachine.run();
-		Arm.run();
-		Elevator.run(); 
+		if(mainController.buttonB)
+		{
+			runAuto = false;
+			disabledInit();
+			teleopInit();
+		}
+
+		if(!runAuto)
+			teleopPeriodic();
+		else
+		{
+			Arm.updateEncoder();
+			Elevator.updateEncoder();
+			SeriesStateMachine.run();
+			Arm.run();
+			Elevator.run();
+		}
+
+		 
 	}
 
 	@Override
 	public void teleopInit()
 	{
-		Drivetrain.init();
+		disableAuto();
+
+
 		Arm.initSensors();
 		Elevator.initSensors();
 		BallIntake.init();
-
-		Drivetrain.setToBrake();
+		MiniShoppingCart.init();
+		
 
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
-		ShoppingCart.init();
-
-		if(!AirCompressor.running)
-			AirCompressor.run();
+		AirCompressor.run();
 	}
 
 	//Teleop Code
@@ -144,30 +182,26 @@ public class Robot extends TimedRobot
 		SeriesStateMachine.setControllers(mainController, coController);
 		Arm.updateEncoder();
 		Elevator.updateEncoder();
-		ShoppingCart.updateEncoder();		
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
 		BallShooter.runBlink();
 
-		//System.out.println(Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin));
 		//Drivetrain uses the notifier
 
-		// ShoppingCart.updateEncoder();
-		// if(SeriesStateMachine.elevatorManual)
-		// {
-		// 	if(mainController.leftJoyStickY > .15)
-		// 	{
-		// 		ShoppingCart.runSPX(1);
-		// 	}
-		// 	else if(mainController.leftJoyStickY < -.15)
-		// 	{
-		// 		ShoppingCart.runSPX(-1);
-		// 	}
-		// 	else
-		// 		ShoppingCart.runSPX(0);
-		// }
+		if(SeriesStateMachine.runClimberManually)
+		{
+			MiniShoppingCart.run(mainController);
+		}
 		
+	}
+
+	private static void disableAuto()
+	{
+		Drivetrain.init();
+		Drivetrain.setToBrake();
+		autoNotifier.stop();
+		pathNotifier.stop();
 	}
 
 	@Override
@@ -244,9 +278,7 @@ public class Robot extends TimedRobot
 	double threshold = Constants.limelightThreshold;
 	private void driveVisionTeleop()
 	{
-		if(mainController.leftBumper)
-			vision((Elevator.encoderValue > 27000), VisionMode.kDriver);
-		else if(mainController.rightBumper)
+		if(mainController.rightBumper && mainController.rightJoyStickX < .1)
 			vision((Elevator.encoderValue > 27000), VisionMode.kClosest);
 		else 
 		{

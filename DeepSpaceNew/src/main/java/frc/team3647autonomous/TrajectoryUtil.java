@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class TrajectoryUtil 
 {
@@ -44,6 +45,7 @@ public class TrajectoryUtil
         if(trajectory == null)
         {
             System.out.println("FILE DOES NOT EXIST");
+            Robot.runAuto = false;
             // trajectoryFile = new File("C:\\Users\\brian\\OneDrive\\Projects\\FRC_2018_Offseason\\PathPlanner\\Trajectories\\" + trajectoryName + "\\" + trajectoryName + "_source_detailed.traj");
             // trajectory = trajectoryFile.exists() ? Pathfinder.readFromFile(trajectoryFile): null;
         }

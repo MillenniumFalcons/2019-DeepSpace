@@ -34,11 +34,14 @@ public class Elevator
     
     public static void init()
 	{
-		aimedState = ElevatorLevel.STOP;
+		aimedState = ElevatorLevel.STOPPED;
 		initSensors();
 
-		setEncoderValue(5000);
-		updateEncoder();
+		while(encoderValue != 5000)
+		{
+			setEncoderValue(5000);
+			updateEncoder();
+		}
 	}
 	
 	public static void initSensors()
@@ -83,7 +86,7 @@ public class Elevator
 	public enum ElevatorLevel
 	{
 		MANUAL(-1),
-		STOP(-1),
+		STOPPED(-1),
 		BOTTOM(-1),
         CARGOHANDOFF(Constants.elevatorCargoHandoff),
         HATCHHANDOFF(Constants.elevatorHatchHandoff),
@@ -129,7 +132,7 @@ public class Elevator
 					case BOTTOM:
 						moveToBottom();
 						break;
-					case STOP:
+					case STOPPED:
 						stop();
 						break;
 					case START:

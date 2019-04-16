@@ -18,7 +18,7 @@ public class Arm
 	public static WPI_TalonSRX armSRX = new WPI_TalonSRX(Constants.armSRXPin);	
 	public static CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
 	public static CANDigitalInput revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen); 
-	public static CANDigitalInput fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen); ;
+	public static CANDigitalInput fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
 
 	private static int startEncoderValue;
 	public static int encoderError, encoderValue, encoderVelocity;
@@ -108,35 +108,40 @@ public class Arm
 	 */
 	public static void run()
 	{
-		if(!initialized)
-			initSensors();
-		// updateLivePosition();
-		if(aimedState != null) //check if aimed state has a value
+		try
 		{
-			if(aimedState.encoderVal != -1)
-				setPosition(aimedState.encoderVal);
-			else
+			if(!initialized)
+				initSensors();
+			// updateLivePosition();
+			if(aimedState != null) //check if aimed state has a value
 			{
-				switch(aimedState)
+				if(aimedState.encoderVal != -1)
+					setPosition(aimedState.encoderVal);
+				else
 				{
-					case STOPPED:
-						stop();
-						break;
-					case REVLIMSWITCHSTART:
-						resetToRevLimitSwitch();
-						break;
-					case REVLIMITSWITCH:
-						moveToRevLimitSwitch();
-						break;
-					case FWDLIMITSWITCH:
-						moveToFwdLimitSwitch();
-						break;
-					default:
-						stop();
-						break;
-					
+					switch(aimedState)
+					{
+						case STOPPED:
+							stop();
+							break;
+						case REVLIMITSWITCH:
+							moveToRevLimitSwitch();
+							break;
+						case FWDLIMITSWITCH:
+							moveToFwdLimitSwitch();
+							break;
+						default:
+							stop();
+							break;
+						
+					}
 				}
 			}
+		}
+		catch(NullPointerException e)
+		{
+			initSensors();
+			aimedState = ArmPosition.STOPPED;
 		}
 	}
 
@@ -162,31 +167,31 @@ public class Arm
 		}
 	}
 
-	public static void resetToRevLimitSwitch()
-	{
-		System.out.println("Resetting to limit switch");
-		if(!getRevLimitSwitch())
-		{
-			System.out.println("startEncoderValue:" + startEncoderValue);
-			if(!positionThreshold(startEncoderValue - Constants.armSRXResetEncoderVal) && !reachedOnce)
-			{
-				System.out.println("Motion Magic Going to: " + (startEncoderValue - Constants.armSRXResetEncoderVal));
-				setPosition(startEncoderValue - Constants.armSRXResetEncoderVal);
-			}
-			else
-			{
-				System.out.println("openLoop part");
-				setOpenLoop(-.1);
-				reachedOnce = true;
-			}
-		}
-		else
-		{
-			resetEncoder();
-			updateEncoder();			
-			setPosition(0);
-		}
-	}
+	// public static void resetToRevLimitSwitch()
+	// {
+	// 	System.out.println("Resetting to limit switch");
+	// 	if(!getRevLimitSwitch())
+	// 	{
+	// 		System.out.println("startEncoderValue:" + startEncoderValue);
+	// 		if(!positionThreshold(startEncoderValue - Constants.armSRXResetEncoderVal) && !reachedOnce)
+	// 		{
+	// 			System.out.println("Motion Magic Going to: " + (startEncoderValue - Constants.armSRXResetEncoderVal));
+	// 			setPosition(startEncoderValue - Constants.armSRXResetEncoderVal);
+	// 		}
+	// 		else
+	// 		{
+	// 			System.out.println("openLoop part");
+	// 			setOpenLoop(-.1);
+	// 			reachedOnce = true;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		resetEncoder();
+	// 		updateEncoder();			
+	// 		setPosition(0);
+	// 	}
+	// }
 	//---------------------------------------
 	//MotionMagic movement-------------------
 	private static void setPosition(int position)
@@ -204,13 +209,29 @@ public class Arm
 	public static void setOpenLoop(double demand)
 	{
 		try{ armSRX.set(ControlMode.PercentOutput, demand); }
-		catch(NullPointerException e){ armSRX = new WPI_TalonSRX(Constants.armSRXPin); }
+		catch(NullPointerException e)
+		{ 
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin); 
+			initSensors();
+		}
 	}
 
 	public static void stop()
 	{
-		armSRX.stopMotor();
-		armNEO.stopMotor();
+		try
+		{
+			armSRX.stopMotor();
+			armNEO.stopMotor();
+		}
+		catch(NullPointerException e)
+		{
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+			armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+			revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen); 
+			fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+			initSensors();
+		}
+		
 	}
 	//-------------------------------------------------
 
@@ -246,13 +267,21 @@ public class Arm
 		catch(NullPointerException e)
 		{
 			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
-			armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
+			initSensors();
 		}
 	}
 
 	public static void setEncoderValue(int encoderValue)
 	{
-		armSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+		try
+		{
+			armSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
+		}
+		catch(NullPointerException e)
+		{
+			armSRX = new WPI_TalonSRX(Constants.armSRXPin);
+			initSensors();
+		}
 	}
 
 	public static void resetEncoder()
