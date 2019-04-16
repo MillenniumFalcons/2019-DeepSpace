@@ -152,7 +152,7 @@ public class SeriesStateMachine
                     BallShooter.intakeCargo(1);
                 else
                     aimedRobotState = ScoringPosition.CARGOHANDOFF;
-            else if(mainController.leftTrigger > .15)
+            else if(mainController.leftTrigger > .15 && !runClimberManually)
             {
                 BallIntake.setOpenLoop(1);
             }
@@ -174,7 +174,7 @@ public class SeriesStateMachine
                 BallShooter.stopMotor();
 
             //Main controller controls
-            if(mainController.rightTrigger > .3)
+            if(mainController.rightTrigger > .3  && !runClimberManually)
             {
                 BallIntake.retract();
                 prevCargoIntakeExtended = false;
@@ -241,7 +241,7 @@ public class SeriesStateMachine
 
     public static void run()
     {
-        elevatorAboveMinRotate = Elevator.isAboveMinRotate(-550);          
+        elevatorAboveMinRotate = Elevator.isAboveMinRotate(-550);
 
         if(aimedRobotState != null)
         {
@@ -269,6 +269,10 @@ public class SeriesStateMachine
                     break;
                 case CLIMB:
                     climbing();
+                    break;
+                case STOPPED:
+                    Elevator.aimedState = ElevatorLevel.STOPPED;
+                    Arm.aimedState = ArmPosition.STOPPED;
                     break;
                 default:
                     if(aimedStatesAreNotNull)
@@ -500,20 +504,24 @@ public class SeriesStateMachine
     {
         if(!ranClimbSequenceOnce)
         {
-            
-            if(!climbTimer.isRunning())
-            {
-                climbTimer.reset();
-                climbTimer.start();
-            }
-            else if(climbTimer.get() < 2)
-            {
-                MiniShoppingCart.setOpenLoop(-1);
-            }
+            if(!Elevator.isAboveMinRotate(-18000))
+                goToAimedState(ScoringPosition.HATCHL2FORWARDS);
             else
             {
-                MiniShoppingCart.stop();
-                ranClimbSequenceOnce = true;
+                if(!climbTimer.isRunning())
+                {
+                    climbTimer.reset();
+                    climbTimer.start();
+                }
+                else if(climbTimer.get() < 1)
+                {
+                    MiniShoppingCart.setOpenLoop(-1);
+                }
+                else
+                {
+                    MiniShoppingCart.stop();
+                    ranClimbSequenceOnce = true;
+                }
             }
         }
         else

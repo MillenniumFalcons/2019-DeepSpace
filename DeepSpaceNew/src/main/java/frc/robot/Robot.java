@@ -106,11 +106,11 @@ public class Robot extends TimedRobot
 		pathNotifier = new Notifier(() ->{
 			// AutonomousSequences.frontRocketAuto("Right");
 			// AutonomousSequences.sideCargoShipAuto();
-			AutonomousSequences.mixedRocketAuto("Left");
+			AutonomousSequences.frontRocketAuto("Left");
 		});
 
-		// AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocket"); //off lvl 2
-		AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
+		AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocket"); //off lvl 2
+		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
 		// AutonomousSequences.autoInitFWD("PlatformToLeftMiddleLeftCargoShip"); //cargoship left
 		// AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
@@ -136,8 +136,10 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic() 
 	{
+
 		if(mainController.buttonB)
 		{
+			Drivetrain.stop();
 			runAuto = false;
 			disabledInit();
 			teleopInit();
@@ -152,23 +154,19 @@ public class Robot extends TimedRobot
 			SeriesStateMachine.run();
 			Arm.run();
 			Elevator.run();
-		}
-
-		 
+			updateJoysticks();
+		}	 
 	}
 
 	@Override
 	public void teleopInit()
 	{
 		disableAuto();
-
-
 		Arm.initSensors();
 		Elevator.initSensors();
 		BallIntake.init();
 		MiniShoppingCart.init();
 		
-
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
 		AirCompressor.run();
@@ -193,6 +191,8 @@ public class Robot extends TimedRobot
 		{
 			MiniShoppingCart.run(mainController);
 		}
+
+		
 		
 	}
 
@@ -228,11 +228,13 @@ public class Robot extends TimedRobot
 		// ShoppingCart.init();
 		// Arm.init();
 		// armFollowerNotifier.startPeriodic(.01);
-		Arm.initSensors();
+		// Arm.initSensors();
 	}
 	@Override
 	public void testPeriodic()
 	{
+		MiniShoppingCart.run(mainController);
+		mainController.update();
 		// Elevator.updateEncoder();
 		//Elevator.updateBannerSensor();
 		//Elevator.printBannerSensor();

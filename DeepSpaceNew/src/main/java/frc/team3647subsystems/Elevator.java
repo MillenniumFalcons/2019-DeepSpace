@@ -46,6 +46,7 @@ public class Elevator
 	
 	public static void initSensors()
 	{
+		aimedState = ElevatorLevel.STOPPED;
 		//Config Sensors for encoder
 		elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		elevatorMaster.setSensorPhase(true);
