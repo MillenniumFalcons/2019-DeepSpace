@@ -1,5 +1,6 @@
 package frc.team3647utility;
 
+import frc.team3647autonomous.AutonomousSequences;
 
 public class Path
 {
@@ -8,6 +9,8 @@ public class Path
     private Structure structure;
     private AutoMode autoMode;
     private String intialPath;
+
+    private Runnable method;
 
     public enum Direction
     {
@@ -49,6 +52,7 @@ public class Path
         this.structure = structure;
         this.autoMode = autoMode;
         this.intialPath = buildInitialPathString(direction, structure, autoMode);
+        updateMethod();        
     }
 
     public void update(Direction direction, Structure structure, AutoMode autoMode)
@@ -57,8 +61,26 @@ public class Path
         this.structure = structure;
         this.autoMode = autoMode;
         this.intialPath = buildInitialPathString(direction, structure, autoMode);
+        updateMethod();
+    }
 
-        
+    private void updateMethod(){
+        if(structure.equals(Structure.kRocket))
+        {
+            if(autoMode.equals(AutoMode.kRegular)){
+                method = () -> {AutonomousSequences.frontRocketAuto(direction.str);};
+            }else{
+                method = () -> {AutonomousSequences.mixedRocketAuto(direction.str);};
+            }
+        }
+        else
+        {
+            if(autoMode.equals(AutoMode.kRegular)){
+                method = () -> {AutonomousSequences.sideCargoShipAuto(direction.str);};
+            }else{
+                method = () -> {AutonomousSequences.mixedCargoShipAuto(direction.str);};
+            }
+        }
     }
 
     public String getDirection(Direction direction)
@@ -78,25 +100,11 @@ public class Path
 
     private String buildInitialPathString(Direction direction, Structure structure, AutoMode autoMode)
     {
-        String toReturn = "";
-        switch(autoMode)
-        {
-            case kMixed:
-                if(structure == Structure.kCargoship)
-                    toReturn = "PlatformTo" + getDirection(direction) + "Middle" + getDirection(direction) + getStructure(structure);
-                else
-                    toReturn = "PlatformTo" + getDirection(direction) + getAutoMode(autoMode) + getStructure(structure);
-                break;
-            case kRegular:
-                if(structure == Structure.kCargoship)
-                    toReturn = "PlatformTo" + getDirection(direction) + getStructure(structure) + "Bay1";
-                else
-                    toReturn = "PlatformTo" + getDirection(direction) + getAutoMode(autoMode) + getStructure(structure);
-                break;
-            default:
-                toReturn = "PlatformTo" + getDirection(direction) + getAutoMode(autoMode) + getStructure(structure);
-                break;
-        }
+        String toReturn = direction.str + "Platform2To" + direction.str + structure.str;
+
+        if(autoMode.equals(AutoMode.kRegular) && structure.equals(Structure.kCargoship))
+            toReturn += "Bay1";
+            
         return toReturn;
     }
 
@@ -105,5 +113,7 @@ public class Path
         return this.intialPath;
     }
 
-    
+    public void run(){
+        method.run();
+    }
 }

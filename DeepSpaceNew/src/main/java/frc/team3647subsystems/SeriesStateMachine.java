@@ -505,7 +505,9 @@ public class SeriesStateMachine
     
     private static void climbing() 
     {
-        if(!ranClimbSequenceOnce)
+        if(Robot.mainController.leftTrigger > .15 || Robot.mainController.rightTrigger > .15)
+            runClimberManually = true;
+        if(!ranClimbSequenceOnce && !runClimberManually)
         {
             if(!Elevator.isAboveMinRotate(-18000))
                 goToAimedState(ScoringPosition.HATCHL2FORWARDS);

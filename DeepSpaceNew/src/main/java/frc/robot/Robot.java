@@ -102,6 +102,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() 
 	{
+		System.out.println("1");
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
@@ -121,20 +122,19 @@ public class Robot extends TimedRobot
 
 		
 		
-
+		
 		pathNotifier = new Notifier(() ->{
-			// AutonomousSequences.frontRocketAuto("Right");
-			// AutonomousSequences.sideCargoShipAuto();
-			AutonomousSequences.frontRocketAuto("Left");
+			p.run();
 		});
-
+		System.out.println("2");
 		AutonomousSequences.autoInitFWD(p.getIntialPath()); //off lvl 2
+
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
 		// AutonomousSequences.autoInitFWD("PlatformToLeftMiddleLeftCargoShip"); //cargoship left
 		// AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
 		// AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
-
+		System.out.println("3");
 		if(!runAuto)
 		{
 			drivetrainNotifier.startPeriodic(.02);

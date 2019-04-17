@@ -240,6 +240,8 @@ public class AutonomousSequences
 				break;
 			case 14:
 				Robot.runAuto = false;
+				Drivetrain.stop();
+				HatchGrabber.stopMotor();
 				break;
 			default:
 				Drivetrain.stop();
@@ -257,7 +259,7 @@ public class AutonomousSequences
 				{
 					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
 				}
-				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.9) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				}
@@ -380,6 +382,8 @@ public class AutonomousSequences
 				break;
 			case 14:
 				Robot.runAuto = false;
+				Drivetrain.stop();
+				HatchGrabber.stopMotor();
 				break;
 			default:
 				Drivetrain.stop();
@@ -518,6 +522,8 @@ public class AutonomousSequences
 				break;
 			case 14:
 				Robot.runAuto = false;
+				Drivetrain.stop();
+				HatchGrabber.stopMotor();
 				break;
 			default:
 				Drivetrain.stop();
@@ -657,6 +663,8 @@ public class AutonomousSequences
 				break;
 			case 14:
 				Robot.runAuto = false;
+				Drivetrain.stop();
+				HatchGrabber.stopMotor();
 				break;
 			default:
 				Drivetrain.stop();
