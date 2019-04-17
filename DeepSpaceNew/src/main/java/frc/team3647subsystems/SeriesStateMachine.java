@@ -166,12 +166,15 @@ public class SeriesStateMachine
 
             if(coController.rightTrigger > .15)
                 BallShooter.shootBall(coController.rightTrigger);
-            else if(coController.leftTrigger < .15 && (Math.abs(Arm.encoderVelocity) > 500 || Math.abs(Elevator.encoderVelocity) > 500))
-                BallShooter.intakeCargo(.45);
-            else if(aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD) || aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD))
-                BallShooter.stopMotor();
-            else
-                BallShooter.stopMotor();
+            else if(coController.leftTrigger < .15)
+            {
+                if((Math.abs(Arm.encoderVelocity) > 500 || Math.abs(Elevator.encoderVelocity) > 500))
+                    BallShooter.intakeCargo(.45);
+                else
+                    BallShooter.stopMotor();
+            }
+
+
 
             //Main controller controls
             if(mainController.rightTrigger > .3  && !runClimberManually)

@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
@@ -13,6 +15,8 @@ import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 import frc.team3647subsystems.VisionController.VisionMode;
+import frc.team3647utility.AutoChooser;
+import frc.team3647utility.Path;
 
 public class Robot extends TimedRobot 
 {
@@ -22,11 +26,15 @@ public class Robot extends TimedRobot
 	public static Joysticks coController;
 	public static Gyro gyro;
   
-	public static Notifier drivetrainNotifier, armFollowerNotifier, autoNotifier, pathNotifier;
+	public static Notifier drivetrainNotifier, armFollowerNotifier, autoNotifier, pathNotifier, subsystemsEncodersNotifier;
 
 	public static boolean runAuto = true;
 
 	public static boolean cargoDetection;
+
+	private AutoChooser AC;
+
+	private Path p;
 
 	@Override
 	public void robotInit()
@@ -44,7 +52,10 @@ public class Robot extends TimedRobot
 		Drivetrain.init();
 
 		Arm.setToBrake();
-		
+		subsystemsEncodersNotifier = new Notifier(() -> {
+			Elevator.updateEncoder();
+			Arm.updateEncoder();
+		});
 		armFollowerNotifier = new Notifier(() -> {
 			Arm.armNEOFollow();
 		});
@@ -64,7 +75,10 @@ public class Robot extends TimedRobot
 			// AutonomousSequences.sideCargoShipAuto();
 			AutonomousSequences.mixedRocketAuto("Left");
 		});
-		
+
+		AC = new AutoChooser();	
+		AC.update();
+		p = new Path(AC.getSide(), AC.getStruct(), AC.getMode());
 	}
 
 	@Override
@@ -74,6 +88,11 @@ public class Robot extends TimedRobot
 			gyro.update();
 		if(isEnabled())
 			coController.update();
+		else{
+			AC.update();
+			p.update(AC.getSide(), AC.getStruct(), AC.getMode());
+			SmartDashboard.putString("Path running first", p.getIntialPath());
+		}
 		// updateJoysticks(); Done in drivetrain notifier!
 		// SmartDashboard.putNumber("Match Timer", DriverStation.getInstance().getMatchTime());
 		cargoDetection = BallShooter.cargoDetection();
@@ -109,7 +128,7 @@ public class Robot extends TimedRobot
 			AutonomousSequences.frontRocketAuto("Left");
 		});
 
-		AutonomousSequences.autoInitFWD("LeftPlatform2ToLeftRocket"); //off lvl 2
+		AutonomousSequences.autoInitFWD(p.getIntialPath()); //off lvl 2
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
 		// AutonomousSequences.autoInitFWD("PlatformToLeftMiddleLeftCargoShip"); //cargoship left
@@ -123,14 +142,13 @@ public class Robot extends TimedRobot
 		else
 		{
 			pathNotifier.startPeriodic(.02);
-			armFollowerNotifier.startPeriodic(.01);
 			autoNotifier.startPeriodic(.01);
 		}
 		
+		armFollowerNotifier.startPeriodic(.01);
+		subsystemsEncodersNotifier.startPeriodic(.05);
 
 		AirCompressor.run();
-		Arm.updateEncoder();
-		Elevator.updateEncoder();
 	}
   
 	@Override
@@ -149,8 +167,6 @@ public class Robot extends TimedRobot
 			teleopPeriodic();
 		else
 		{
-			Arm.updateEncoder();
-			Elevator.updateEncoder();
 			SeriesStateMachine.run();
 			Arm.run();
 			Elevator.run();
@@ -169,6 +185,8 @@ public class Robot extends TimedRobot
 		
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
+
+		subsystemsEncodersNotifier.startPeriodic(.02);
 		AirCompressor.run();
 	}
 
@@ -178,8 +196,8 @@ public class Robot extends TimedRobot
 	{
 		HatchGrabber.run(coController);
 		SeriesStateMachine.setControllers(mainController, coController);
-		Arm.updateEncoder();
-		Elevator.updateEncoder();
+		// Arm.updateEncoder();
+		// Elevator.updateEncoder();
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
@@ -210,6 +228,7 @@ public class Robot extends TimedRobot
 		drivetrainNotifier.stop();
 		Drivetrain.stop();
 		pathNotifier.stop();
+		subsystemsEncodersNotifier.stop();
 		// armFollowerNotifier.stop();
 		// stateMachineRunnerNotifier.stop();
 	}
@@ -229,33 +248,16 @@ public class Robot extends TimedRobot
 		// Arm.init();
 		// armFollowerNotifier.startPeriodic(.01);
 		// Arm.initSensors();
+		drivetrainNotifier.startPeriodic(.02);
 	}
 	@Override
 	public void testPeriodic()
 	{
 		MiniShoppingCart.run(mainController);
 		mainController.update();
-		// Elevator.updateEncoder();
-		//Elevator.updateBannerSensor();
-		//Elevator.printBannerSensor();
-		//BallShooter.printBeamBreak();
-		// if(mainController.rightTrigger > 0)
-		// {
-		// 	ShoppingCart.shoppingCartSRX.set(mainController.rightTrigger);
-		// }
-		// else if(mainController.leftTrigger > 0)
-		// {
-		// 	ShoppingCart.shoppingCartSRX.set(-mainController.leftTrigger);
-		// }
-		// else
-		// {
-		// 	ShoppingCart.shoppingCartSRX.set(0);
-		// }
-		// mainController.update();
-		// Arm.setOpenLoop(mainController.leftJoyStickY);
-		// System.out.println(Arm.encoderVelocity);
 
-
+		BallShooter.stopMotor();
+		HatchGrabber.stopMotor();
 	}
 
 	private void updateJoysticks()
@@ -289,7 +291,7 @@ public class Robot extends TimedRobot
 			if(Elevator.encoderValue > 27000)
 				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6);
 			else
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX * .7, mainController.leftJoyStickY);
+				Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY);
 		}
 	}
 
@@ -337,7 +339,7 @@ public class Robot extends TimedRobot
 			if(Arm.aimedState.encoderVal < Constants.armSRXVerticalStowed)
 			{
 				//If cargo then its actually forwards
-				if(!cargoDetection || SeriesStateMachine.aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONFWD)
+				if(!cargoDetection || SeriesStateMachine.aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONFWD))
 					return AutonomousSequences.limelightClimber;
 				else
 					return AutonomousSequences.limelightFourBar;
@@ -346,7 +348,7 @@ public class Robot extends TimedRobot
 			else
 			{
 				// if cargo its actually backwards
-				if(!cargoDetection|| SeriesStateMachine.aimedRobotState == ScoringPosition.CARGOLOADINGSTATIONBWD)
+				if(!cargoDetection || SeriesStateMachine.aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD))
 					return AutonomousSequences.limelightFourBar;
 				else
 					return AutonomousSequences.limelightClimber;

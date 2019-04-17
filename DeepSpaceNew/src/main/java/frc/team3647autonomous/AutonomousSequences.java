@@ -2,6 +2,7 @@ package frc.team3647autonomous;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.team3647subsystems.Drivetrain;
 import frc.team3647subsystems.HatchGrabber;
 import frc.team3647subsystems.SeriesStateMachine;
@@ -115,11 +116,6 @@ public class AutonomousSequences
 
 	public static void frontRocketAuto(String LeftOrRight)
 	{
-		// if(autoStep == -1)
-		// {
-		// 	autoInitFWD(LeftOrRight + "PlatformTo" + LeftOrRight + "Rocket");
-		// 	autoStep = 0;
-		// }
 		ramsetePeriodic();
 		switch(autoStep)
 		{
@@ -243,6 +239,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 14:
+				Robot.runAuto = false;
 				break;
 			default:
 				Drivetrain.stop();
@@ -382,6 +379,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 14:
+				Robot.runAuto = false;
 				break;
 			default:
 				Drivetrain.stop();
@@ -497,6 +495,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 14:
+				Robot.runAuto = false;
 				break;
 			default:
 				Drivetrain.stop();
@@ -618,6 +617,7 @@ public class AutonomousSequences
 				}
 				break;
 			case 14:
+				Robot.runAuto = false;
 				break;
 			default:
 				Drivetrain.stop();

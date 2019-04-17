@@ -7,26 +7,40 @@ public class Path
     private Direction direction;
     private Structure structure;
     private AutoMode autoMode;
-    private Runnable runner;
     private String intialPath;
 
     public enum Direction
     {
-        kRight,
-        kLeft,
-        kMiddle;
+        kRight("Right"),
+        kLeft("Left"),
+        kMiddle("Middle");
+
+        public String str;
+        Direction(String str){
+            this.str = str;
+        }
     }
 
     public enum Structure
     {
-        kRocket,
-        kCargoship;
+        kRocket("Rocket"),
+        kCargoship("CargoShip");
+
+        public String str;
+        Structure(String str){
+            this.str = str;
+        }
     }
 
     public enum AutoMode
     {
-        kRegular,
-        kMixed;
+        kRegular("Front"),
+        kMixed("Back");
+
+        public String str;
+        AutoMode(String str){
+            this.str = str;
+        }
     }
 
     public Path(Direction direction, Structure structure, AutoMode autoMode)
@@ -37,69 +51,29 @@ public class Path
         this.intialPath = buildInitialPathString(direction, structure, autoMode);
     }
 
-    public void run()
+    public void update(Direction direction, Structure structure, AutoMode autoMode)
     {
-        runner.run();
+        this.direction = direction;
+        this.structure = structure;
+        this.autoMode = autoMode;
+        this.intialPath = buildInitialPathString(direction, structure, autoMode);
+
+        
     }
 
     public String getDirection(Direction direction)
     {
-        String toReturn = "";
-
-        switch(direction)
-        {
-            case kLeft:
-                toReturn = "Left";
-                break;
-            case kRight:
-                toReturn = "Right";
-                break;
-            default:
-                toReturn = "Middle";
-
-        }
-
-        return toReturn;
+        return direction.str;
     }
 
     public String getStructure(Structure structure)
     {
-        String toReturn = "";
-
-        switch(structure)
-        {
-            case kCargoship:
-                toReturn = "CargoShip";
-                break;
-            case kRocket:
-                toReturn = "Rocket";
-                break;
-            default:
-                toReturn = "";
-
-        }
-
-        return toReturn;
+       return structure.str;
     }
 
     public String getAutoMode(AutoMode autoMode)
     {
-        String toReturn = "";
-
-        switch(autoMode)
-        {
-            case kMixed:
-                toReturn = "Back";
-                break;
-            case kRegular:
-                toReturn = "Front";
-                break;
-            default:
-                toReturn = "";
-
-        }
-
-        return toReturn;
+        return autoMode.str;
     }
 
     private String buildInitialPathString(Direction direction, Structure structure, AutoMode autoMode)
@@ -130,4 +104,6 @@ public class Path
     {
         return this.intialPath;
     }
+
+    
 }

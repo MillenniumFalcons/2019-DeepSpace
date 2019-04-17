@@ -76,7 +76,7 @@ public class Elevator
 		elevatorMaster.config_kI(Constants.interstageSlotIdx, i, Constants.kTimeoutMs);	
 		elevatorMaster.config_kD(Constants.interstageSlotIdx, d, Constants.kTimeoutMs);
 		elevatorMaster.config_kF(Constants.interstageSlotIdx, f, Constants.kTimeoutMs);
-		//Motion Magic Constants
+		//Motion Magic ConstantsMain
 		elevatorMaster.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
         elevatorMaster.configMotionAcceleration(accel, Constants.kTimeoutMs);
 	}

@@ -21,11 +21,11 @@ public class BallIntake
 	{
 		if(Robot.cargoDetection)
 		{
-			intake(.2);
+			intake(.3);
 		}
 		else
 		{
-			intake(.6);
+			intake(.8);
 		}
 		BallShooter.intakeCargo(1);
 	}
