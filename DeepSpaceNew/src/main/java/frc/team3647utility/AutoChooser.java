@@ -17,24 +17,19 @@ public class AutoChooser{
     private Structure struct;
    
     public AutoChooser(){
-        rocket = Shuffleboard.getTab("DriverStation")
-        .add("ROCKET", false)
-        .withWidget("true - rocket, false - cargo ship")
-        .getEntry();
+        SmartDashboard.putBoolean("ROCKET", true);
+        SmartDashboard.putBoolean("REGULAR", true);
+        SmartDashboard.putBoolean("RIGHT", true);
 
-        reg = Shuffleboard.getTab("DriverStation")
-        .add("REGULAR", false)
-        .withWidget("true - regular, false - mixed")
-        .getEntry();
-
-        right = Shuffleboard.getTab("DriverStation")
-        .add("RIGHT", false)
-        .withWidget("Side, true- right, false-left")
-        .getEntry();
+        rocket = SmartDashboard.getEntry("ROCKET");
+        reg = SmartDashboard.getEntry("REGULAR");
+        right = SmartDashboard.getEntry("RIGHT");
     }
 
     public void update(){
         Shuffleboard.update();
+        SmartDashboard.updateValues();
+
         if(rocket.getBoolean(true)){
             struct = Structure.kRocket;
         }else{

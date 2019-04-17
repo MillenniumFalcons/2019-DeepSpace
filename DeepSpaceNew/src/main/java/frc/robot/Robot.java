@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647autonomous.AutonomousSequences;
@@ -32,9 +33,9 @@ public class Robot extends TimedRobot
 
 	public static boolean cargoDetection;
 
-	private AutoChooser AC;
+	private AutoChooser mAutoChooser;
 
-	private Path p;
+	private Path mPath;
 
 	@Override
 	public void robotInit()
@@ -76,9 +77,9 @@ public class Robot extends TimedRobot
 			AutonomousSequences.mixedRocketAuto("Left");
 		});
 
-		AC = new AutoChooser();	
-		AC.update();
-		p = new Path(AC.getSide(), AC.getStruct(), AC.getMode());
+		mAutoChooser = new AutoChooser();	
+		mAutoChooser.update();
+		mPath = new Path(mAutoChooser.getSide(), mAutoChooser.getStruct(), mAutoChooser.getMode());
 	}
 
 	@Override
@@ -89,11 +90,11 @@ public class Robot extends TimedRobot
 		if(isEnabled())
 			coController.update();
 		else{
-			AC.update();
-			p.update(AC.getSide(), AC.getStruct(), AC.getMode());
-			SmartDashboard.putString("Path running first", p.getIntialPath());
+			mAutoChooser.update();
+			mPath.update(mAutoChooser.getSide(), mAutoChooser.getStruct(), mAutoChooser.getMode());
+			SmartDashboard.putString("Path running first", mPath.getIntialPath());
 		}
-		// updateJoysticks(); Done in drivetrain notifier!
+		// mainController.update(); Done in drivetrain notifier!
 		// SmartDashboard.putNumber("Match Timer", DriverStation.getInstance().getMatchTime());
 		cargoDetection = BallShooter.cargoDetection();
 	}
@@ -102,7 +103,6 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit() 
 	{
-		System.out.println("1");
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
@@ -124,17 +124,15 @@ public class Robot extends TimedRobot
 		
 		
 		pathNotifier = new Notifier(() ->{
-			p.run();
+			mPath.run();
 		});
-		System.out.println("2");
-		AutonomousSequences.autoInitFWD(p.getIntialPath()); //off lvl 2
+		AutonomousSequences.autoInitFWD(mPath.getIntialPath()); //off lvl 2
 
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
 		// AutonomousSequences.autoInitFWD("PlatformToLeftMiddleLeftCargoShip"); //cargoship left
 		// AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
 		// AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
-		System.out.println("3");
 		if(!runAuto)
 		{
 			drivetrainNotifier.startPeriodic(.02);
