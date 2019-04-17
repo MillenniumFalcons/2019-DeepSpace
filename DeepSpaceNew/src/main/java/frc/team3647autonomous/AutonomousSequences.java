@@ -387,12 +387,20 @@ public class AutonomousSequences
 		}
 	}
 
-	public static void sideCargoShipAuto()
+	public static void sideCargoShipAuto(String LeftOrRight)
 	{
 		ramsetePeriodic();
 		switch(autoStep)
 		{
 			case 0:
+				if(LeftOrRight.equals("Left"))
+				{
+					limelightClimber.set(VisionMode.kRight);
+				}
+				else
+				{
+					limelightClimber.set(VisionMode.kLeft);
+				}
 				limelightClimber.set(VisionMode.kRight);
 				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
 				{
@@ -417,9 +425,16 @@ public class AutonomousSequences
 				}
 				break;
 			case 4:
-				autoInitBWD("LeftCargoShipBay1ToStation");
+				autoInitBWD(LeftOrRight + "CargoShipBay1ToStation");
 				limelightClimber.set(VisionMode.kBlack);
-				limelightFourBar.set(VisionMode.kRight);
+				if(LeftOrRight.equals("Left"))
+				{
+					limelightClimber.set(VisionMode.kRight);
+				}
+				else
+				{
+					limelightClimber.set(VisionMode.kLeft);
+				}
 				autoStep = 5;
 				break;
 			case 5:
@@ -446,9 +461,16 @@ public class AutonomousSequences
 				}
 				else
 				{
-					autoInitFWD2("StationToLeftCargoShipBay2");
+					autoInitFWD2("StationTo" + LeftOrRight + "CargoShipBay2");
 					limelightFourBar.set(VisionMode.kBlack);
-					limelightClimber.set(VisionMode.kRight);
+					if(LeftOrRight.equals("Left"))
+					{
+						limelightClimber.set(VisionMode.kRight);
+					}
+					else
+					{
+						limelightClimber.set(VisionMode.kLeft);
+					}
 					autoStep = 10;
 				}
 				break;
@@ -503,17 +525,20 @@ public class AutonomousSequences
 		}
 	}
 
-	public static void mixedCargoShipAuto()
+	public static void mixedCargoShipAuto(String LeftOrRight)
 	{
-		if(autoTimer.get() > 2)
-		{
-			ramsetePeriodic();
-			autoStep = 0;
-		}
+		ramsetePeriodic();
 		switch(autoStep)
 		{
 			case 0:
-				limelightClimber.set(VisionMode.kLeft);
+				if(LeftOrRight.equals("Left"))
+				{
+					limelightClimber.set(VisionMode.kLeft);
+				}
+				else
+				{
+					limelightClimber.set(VisionMode.kRight);
+				}
 				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
@@ -537,9 +562,16 @@ public class AutonomousSequences
 				}
 				break;
 			case 4:
-				autoInitBWD("MiddleLeftCargoShipToStation");
+				autoInitBWD("Middle" + LeftOrRight + "CargoShipToStation");
 				limelightClimber.set(VisionMode.kBlack);
-				limelightFourBar.set(VisionMode.kRight);
+				if(LeftOrRight.equals("Left"))
+				{
+					limelightClimber.set(VisionMode.kRight);
+				}
+				else
+				{
+					limelightClimber.set(VisionMode.kLeft);
+				}
 				autoStep = 5;
 				break;
 			case 5:
@@ -566,9 +598,16 @@ public class AutonomousSequences
 				}
 				else
 				{
-					autoInitFWD2("StationToLeftCargoShipBay2");
+					autoInitFWD2("StationTo" + LeftOrRight + "CargoShipBay2");
 					limelightFourBar.set(VisionMode.kBlack);
-					limelightClimber.set(VisionMode.kRight);
+					if(LeftOrRight.equals("Left"))
+					{
+						limelightClimber.set(VisionMode.kRight);
+					}
+					else
+					{
+						limelightClimber.set(VisionMode.kLeft);
+					}
 					autoStep = 10;
 				}
 				break;
