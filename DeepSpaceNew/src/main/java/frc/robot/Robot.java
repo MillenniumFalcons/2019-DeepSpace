@@ -283,6 +283,8 @@ public class Robot extends TimedRobot
 	{
 		if(mainController.rightBumper && mainController.rightJoyStickX < .1)
 			vision((Elevator.encoderValue > 27000), VisionMode.kClosest);
+		else if(mainController.leftBumper)
+			vision((Elevator.encoderValue > 27000), VisionMode.kDriver);
 		else 
 		{
 			AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
