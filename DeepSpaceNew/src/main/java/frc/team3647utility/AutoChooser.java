@@ -1,6 +1,7 @@
 package frc.team3647utility;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3647utility.Path.AutoMode;
@@ -11,6 +12,11 @@ public class AutoChooser{
     
     //1st rocket or CS, mixed or reg, left right
     private NetworkTableEntry rocket, reg, right;
+
+
+
+    private DigitalInput rocketDI, regDI, rightDI;
+
 
     private AutoMode mode;
     private Direction side;

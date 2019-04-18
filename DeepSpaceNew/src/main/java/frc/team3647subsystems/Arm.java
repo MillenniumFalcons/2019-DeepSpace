@@ -32,7 +32,7 @@ public class Arm
 		aimedState = ArmPosition.STOPPED;
 		
 		initSensors();
-		setEncoderValue(67);
+		setEncoderValue(15000);
 		updateEncoder();		
 		startEncoderValue = encoderValue;
 		reachedOnce = false;		
@@ -164,31 +164,6 @@ public class Arm
 		}
 	}
 
-	// public static void resetToRevLimitSwitch()
-	// {
-	// 	System.out.println("Resetting to limit switch");
-	// 	if(!getRevLimitSwitch())
-	// 	{
-	// 		System.out.println("startEncoderValue:" + startEncoderValue);
-	// 		if(!positionThreshold(startEncoderValue - Constants.armSRXResetEncoderVal) && !reachedOnce)
-	// 		{
-	// 			System.out.println("Motion Magic Going to: " + (startEncoderValue - Constants.armSRXResetEncoderVal));
-	// 			setPosition(startEncoderValue - Constants.armSRXResetEncoderVal);
-	// 		}
-	// 		else
-	// 		{
-	// 			System.out.println("openLoop part");
-	// 			setOpenLoop(-.1);
-	// 			reachedOnce = true;
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		resetEncoder();
-	// 		updateEncoder();			
-	// 		setPosition(0);
-	// 	}
-	// }
 	//---------------------------------------
 	//MotionMagic movement-------------------
 	private static void setPosition(int position)
@@ -322,6 +297,11 @@ public class Arm
 	public static void setToBrake()
 	{
 		armNEO.setIdleMode(IdleMode.kBrake);
+	}
+
+	public static void setToCoast()
+	{
+		armNEO.setIdleMode(IdleMode.kCoast);
 	}
 	public static void printEncoders()
     {
