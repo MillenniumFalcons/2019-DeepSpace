@@ -32,7 +32,7 @@ public class Constants
 
 	// Ball Shooter
 	public static final int ballShooterPin = 15;
-	public static final int ballShooterPDPpin = 9; // 9 practice, 8 comp
+	public static final int ballShooterPDPpin = 8; // 9 practice, 8 comp
 
 	// Gyro Pin
 	public static final int gyroPin = 16;
@@ -174,6 +174,7 @@ public class Constants
 	public static final int elevatorMinRotation = 20000; // Might want to combine with hatch lvl2
 	public static final int elevatorStartingStowed = 5000;
 	public static final int elevatorCargoLoadingStation = 18300;
+	public static final int elevatorBeforeCargoHandoff = 18000;
 
 	// Hatch Intake Positions
 	public static final int kWristPositionThreshold = 25;

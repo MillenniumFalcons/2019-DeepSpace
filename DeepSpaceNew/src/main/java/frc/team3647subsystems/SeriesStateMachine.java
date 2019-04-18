@@ -59,7 +59,7 @@ public class SeriesStateMachine
         START(null, null),
         BOTTOMSTART(Elevator.ElevatorLevel.START, Arm.ArmPosition.FLATFORWARDS),
         CLIMB(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CLIMB),
-        BEFORECARGOHANDOFF(Elevator.ElevatorLevel.MINROTATE, Arm.ArmPosition.CARGOHANDOFF),
+        BEFORECARGOHANDOFF(Elevator.ElevatorLevel.BEFORECARGOHANDOFF, Arm.ArmPosition.CARGOHANDOFF),
         STOPPED(Elevator.ElevatorLevel.STOPPED, Arm.ArmPosition.STOPPED);
 
         public Elevator.ElevatorLevel eLevel;
@@ -343,7 +343,7 @@ public class SeriesStateMachine
         if(!arrivedAtMidPos)
         {
             goToAimedState(ScoringPosition.BEFORECARGOHANDOFF);
-            if(Elevator.isAboveMinRotate(-500))
+            if(Elevator.reachedState(ScoringPosition.BEFORECARGOHANDOFF.eLevel))
             {
                 arrivedAtMidPos = true;
             }

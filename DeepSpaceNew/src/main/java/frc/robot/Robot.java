@@ -242,11 +242,11 @@ public class Robot extends TimedRobot
 	{
 		// Elevator.init();
 		// drivetrainNotifier.startPeriodic(.02);
-		// ShoppingCart.init();
+		MiniShoppingCart.init();
 		// Arm.init();
 		// armFollowerNotifier.startPeriodic(.01);
 		// Arm.initSensors();
-		drivetrainNotifier.startPeriodic(.02);
+		// drivetrainNotifier.startPeriodic(.02);
 	}
 	@Override
 	public void testPeriodic()
@@ -254,8 +254,9 @@ public class Robot extends TimedRobot
 		MiniShoppingCart.run(mainController);
 		mainController.update();
 
-		BallShooter.stopMotor();
-		HatchGrabber.stopMotor();
+		// BallShooter.stopMotor();
+		// HatchGrabber.stopMotor();
+		// AirCompressor.run();
 	}
 
 	private void updateJoysticks()

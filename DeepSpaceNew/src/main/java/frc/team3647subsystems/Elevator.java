@@ -98,6 +98,7 @@ public class Elevator
 		MINROTATE(Constants.elevatorMinRotation),
 		VERTICALSTOWED(Constants.elevatorMinRotation),
 		CARGOLOADINGSTATION(Constants.elevatorCargoLoadingStation),
+		BEFORECARGOHANDOFF(Constants.elevatorBeforeCargoHandoff),
 		START(-1);
 
 		public int encoderVal;

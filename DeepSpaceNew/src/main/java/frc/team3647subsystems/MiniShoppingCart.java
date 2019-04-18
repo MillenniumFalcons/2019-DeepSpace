@@ -12,6 +12,7 @@ import frc.robot.*;
 import frc.team3647inputs.Joysticks;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 /**
  * Add your docs here.
@@ -31,6 +32,7 @@ public class MiniShoppingCart
 		motorSRX.configPeakCurrentDuration(Constants.kHatchWristPeakCurrentDuration);
 		motorSRX.configContinuousCurrentLimit(Constants.kHatchWristContinuousCurrent, Constants.kTimeoutMs);
 		motorSRX.enableCurrentLimit(true);
+		motorSRX.setNeutralMode(NeutralMode.Brake);
     }
 
     public static void setOpenLoop(double demand)
