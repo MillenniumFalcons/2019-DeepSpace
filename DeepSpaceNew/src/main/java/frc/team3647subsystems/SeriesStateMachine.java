@@ -101,7 +101,7 @@ public class SeriesStateMachine
         initialized = true;
     }
 
-    public static void setControllers(Joysticks mainController, Joysticks coController)
+    public static void setControllers(Joysticks mainController, Joysticks coController, boolean isTeleop)
     {
         try
         {
@@ -216,7 +216,7 @@ public class SeriesStateMachine
             else if(mainController.dPadRight)
                 aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONFWD;
 
-            if(mainController.buttonXPressed)
+            if(mainController.buttonXPressed && isTeleop)
             {
                 if(aimedRobotState.equals(ScoringPosition.CLIMB))
                 {

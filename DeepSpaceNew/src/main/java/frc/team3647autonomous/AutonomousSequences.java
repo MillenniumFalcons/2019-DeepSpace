@@ -140,7 +140,7 @@ public class AutonomousSequences
 			case 1:
 				if(ramseteFollower.pathFractionSegment(.6))
 					SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
-				if(ramseteFollower.pathFractionSegment(.5))
+				if(ramseteFollower.pathFractionSegment(.6))
 				{
 					limelightClimber.center();
 					Drivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant)*limelightClimber.leftSpeed, linearVelocity + (visionVelocityConstant)*limelightClimber.rightSpeed);
@@ -393,6 +393,9 @@ public class AutonomousSequences
 
 	public static void sideCargoShipAuto(String LeftOrRight)
 	{
+		limelightFourBar.set(VisionMode.kClosest);
+		limelightFourBar.center();
+		
 		ramsetePeriodic();
 		switch(autoStep)
 		{
@@ -442,7 +445,7 @@ public class AutonomousSequences
 				autoStep = 5;
 				break;
 			case 5:
-				if(!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished())
+				if(!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 					if(ramseteFollower.pathFractionSegment(.15))
@@ -457,13 +460,13 @@ public class AutonomousSequences
 				}
 				break;
 			case 6:
-				if(ramseteFollower.pathFractionSegment(.6))
+				if(ramseteFollower.pathFractionSegment(.5))
 				{
 					limelightFourBar.center();
 					HatchGrabber.grabHatch();
 					Drivetrain.setAutoVelocity(linearVelocity +  (visionVelocityConstant)*limelightFourBar.leftSpeed,  linearVelocity + (visionVelocityConstant)*limelightFourBar.rightSpeed);
 				}
-				else
+				else if(ramseteFollower.isFinished())
 				{
 					autoInitFWD2("StationTo" + LeftOrRight + "CargoShipBay2");
 					limelightFourBar.set(VisionMode.kBlack);

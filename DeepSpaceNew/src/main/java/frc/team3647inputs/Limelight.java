@@ -92,6 +92,21 @@ public class Limelight
         return get("tv") == 1;
     }
 
+    public void setStream(int i)
+    {
+        set("stream", i);
+    }
+
+    public void setUSBStream()
+    {
+        setStream(2);
+    }
+
+    public void setRegularStream()
+    {
+        setStream(0);
+    }
+
     private double get(String input)
     {
         return table.getEntry(input).getDouble(-3647);

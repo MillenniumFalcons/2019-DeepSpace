@@ -66,20 +66,23 @@ public class Robot extends TimedRobot
 			driveVisionTeleop();
 		});
 
+		
+
 		autoNotifier = new Notifier(() ->{
 			Drivetrain.updateEncoders();
+			gyro.update();
 			Odometry.getInstance().runOdometry();
 		});
 		
-		pathNotifier = new Notifier(() ->{
-			// AutonomousSequences.frontRocketAuto("Right");
-			// AutonomousSequences.sideCargoShipAuto();
-			AutonomousSequences.mixedRocketAuto("Left");
-		});
 
 		mAutoChooser = new AutoChooser();	
 		mAutoChooser.update();
 		mPath = new Path(mAutoChooser.getSide(), mAutoChooser.getStruct(), mAutoChooser.getMode());
+
+		AutonomousSequences.limelightClimber.limelight.setUSBStream();
+		AutonomousSequences.limelightFourBar.limelight.setUSBStream();
+
+		runAuto = true;
 	}
 
 	@Override
@@ -89,10 +92,10 @@ public class Robot extends TimedRobot
 			gyro.update();
 		if(isEnabled())
 			coController.update();
-		else{
+		else if(runAuto){
 			mAutoChooser.update();
 			mPath.update(mAutoChooser.getSide(), mAutoChooser.getStruct(), mAutoChooser.getMode());
-			SmartDashboard.putString("Path running first", mPath.getIntialPath());
+			System.out.println("Path running first " + mPath.getIntialPath());
 		}
 		// mainController.update(); Done in drivetrain notifier!
 		// SmartDashboard.putNumber("Match Timer", DriverStation.getInstance().getMatchTime());
@@ -106,7 +109,6 @@ public class Robot extends TimedRobot
 		try{gyro.resetAngle();}
 		catch(NullPointerException e){ gyro = new Gyro(); }
 
-		runAuto = true;
 		AutonomousSequences.autoStep = 0;
 		
 		Drivetrain.init();
@@ -119,32 +121,25 @@ public class Robot extends TimedRobot
 		BallIntake.init();
 		MiniShoppingCart.init();
 		
-
-		
-		
-		
-		pathNotifier = new Notifier(() ->{
-			mPath.run();
-		});
-		AutonomousSequences.autoInitFWD(mPath.getIntialPath()); //off lvl 2
-
-		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
-		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left rocket
-		// AutonomousSequences.autoInitFWD("PlatformToLeftMiddleLeftCargoShip"); //cargoship left
-		// AutonomousSequences.autoInitFWD("RightPlatformToRightRocket"); //right Rocket
-		// AutonomousSequences.autoInitFWD("RightPlatformToBackRightRocket"); //right Rocket
 		if(!runAuto)
 		{
 			drivetrainNotifier.startPeriodic(.02);
 		}
 		else
 		{
+			pathNotifier = new Notifier(() ->{
+				mPath.run();
+			});
+			AutonomousSequences.autoInitFWD(mPath.getIntialPath()); //off lvl 2
+
 			pathNotifier.startPeriodic(.02);
 			autoNotifier.startPeriodic(.01);
 		}
 		
+				
+
 		armFollowerNotifier.startPeriodic(.01);
-		subsystemsEncodersNotifier.startPeriodic(.05);
+		subsystemsEncodersNotifier.startPeriodic(.02);
 
 		AirCompressor.run();
 	}
@@ -153,6 +148,7 @@ public class Robot extends TimedRobot
 	public void autonomousPeriodic() 
 	{
 
+		// teleopPeriodic();
 		if(mainController.buttonB)
 		{
 			Drivetrain.stop();
@@ -175,7 +171,7 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopInit()
 	{
-		disableAuto();
+		// disableAuto();
 		Arm.initSensors();
 		Elevator.initSensors();
 		BallIntake.init();
@@ -193,15 +189,14 @@ public class Robot extends TimedRobot
 	public void teleopPeriodic()
 	{
 		HatchGrabber.run(coController);
-		SeriesStateMachine.setControllers(mainController, coController);
-		// Arm.updateEncoder();
-		// Elevator.updateEncoder();
+		SeriesStateMachine.setControllers(mainController, coController, isOperatorControl());
 		SeriesStateMachine.run();
 		Arm.run();
 		Elevator.run(); 
 		BallShooter.runBlink();
 
 		//Drivetrain uses the notifier
+		// Subsystems encoders use notifier
 
 		if(SeriesStateMachine.runClimberManually)
 		{
@@ -223,18 +218,30 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledInit()
 	{
-		drivetrainNotifier.stop();
+		if(pathNotifier != null)
+			pathNotifier.stop();
+		if(drivetrainNotifier != null)
+			drivetrainNotifier.stop();
 		Drivetrain.stop();
-		pathNotifier.stop();
-		subsystemsEncodersNotifier.stop();
+		if(subsystemsEncodersNotifier != null)
+			subsystemsEncodersNotifier.stop();
 		// armFollowerNotifier.stop();
 		// stateMachineRunnerNotifier.stop();
+		AutonomousSequences.limelightClimber.limelight.setUSBStream();
+		AutonomousSequences.limelightFourBar.limelight.setUSBStream();
 	}
 
 	@Override
 	public void disabledPeriodic()
 	{
+		// AutonomousSequences.limelightClimber.limelight.setUSBStream();
+		// AutonomousSequences.limelightFourBar.limelight.setUSBStream();
 
+		AutonomousSequences.limelightClimber.limelight.setRegularStream();
+		AutonomousSequences.limelightFourBar.limelight.setRegularStream();
+
+		// AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
+		AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
 	}
 
 	@Override
@@ -242,21 +249,46 @@ public class Robot extends TimedRobot
 	{
 		// Elevator.init();
 		// drivetrainNotifier.startPeriodic(.02);
-		MiniShoppingCart.init();
+		// MiniShoppingCart.init();
 		// Arm.init();
 		// armFollowerNotifier.startPeriodic(.01);
 		// Arm.initSensors();
 		// drivetrainNotifier.startPeriodic(.02);
+		// Drivetrain.init();
+		// Drivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+
+		// gyro.reset();
+		// Drivetrain.init();
 	}
 	@Override
 	public void testPeriodic()
 	{
-		MiniShoppingCart.run(mainController);
-		mainController.update();
+		// AutonomousSequences.limelightFourBar.set(VisionMode.kClosest);
+		// MiniShoppingCart.run(mainController);
+		// mainController.update();
+		// AutonomousSequences.limelightClimber.set(VisionMode.kClosest);
+		// if(mainController.rightBumper)
+		// 	AutonomousSequences.limelightFourBar.set(VisionMode.kClosest);
+
+
+		// AutonomousSequences.limelightClimber.limelight.setRegularStream();
+		// AutonomousSequences.limelightFourBar.limelight.setRegularStream();
 
 		// BallShooter.stopMotor();
 		// HatchGrabber.stopMotor();
 		// AirCompressor.run();
+
+		// if(mainController.buttonA)
+		// 	BallShooter.intakeCargo(.5);
+		// else if(mainController.buttonY)
+		// 	BallShooter.shootBall(.5);
+		// else
+		// 	BallShooter.stopMotor();
+		// Drivetrain.printEncoders();
+		// Drivetrain.updateEncoders();
+
+		
+
 	}
 
 	private void updateJoysticks()
@@ -277,6 +309,7 @@ public class Robot extends TimedRobot
 		}
 		catch(Exception e){System.out.println(e);}
 	}
+
 	
 	double threshold = Constants.limelightThreshold;
 	private void driveVisionTeleop()

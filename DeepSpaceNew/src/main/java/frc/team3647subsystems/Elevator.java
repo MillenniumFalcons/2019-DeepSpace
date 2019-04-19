@@ -90,7 +90,7 @@ public class Elevator
         HATCHHANDOFF(Constants.elevatorHatchHandoff),
 		HATCHL2(Constants.elevatorHatchL2),
 		HATCHL3(Constants.elevatorHatchL3), //also cargo lvl3
-		CARGOL3(Constants.elevatorCargoL3),
+		CARGOL3(Constants.elevatorHatchL3),
 		CARGOL2(Constants.elevatorCargoL2),
 		CARGO1(Constants.elevatorCargoL1),
         CARGOSHIP(Constants.elevatorCargoShip),
