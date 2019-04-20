@@ -40,7 +40,8 @@ public class Robot extends TimedRobot
 	public enum LastMethod{
 		kAuto,
 		kTeleop,
-		kStarted
+		kStarted,
+		kTesting;
 	}
 
 	public static LastMethod lastMethod = LastMethod.kStarted;
@@ -225,22 +226,22 @@ public class Robot extends TimedRobot
 	public void disabledInit()
 	{
 		if(pathNotifier != null)
-			pathNotifier.close();
+			pathNotifier.stop();
 		if(autoNotifier != null)
-			autoNotifier.close();
+			autoNotifier.stop();
 
-		if(lastMethod.equals(LastMethod.kTeleop))
+		if(!lastMethod.equals(LastMethod.kAuto))
 		{
 			if(drivetrainNotifier != null)
-			drivetrainNotifier.close();
+				drivetrainNotifier.stop();
 
 			Drivetrain.stop();
 
 			if(subsystemsEncodersNotifier != null)
-				subsystemsEncodersNotifier.close();
+				subsystemsEncodersNotifier.stop();
 			
 			if(armFollowerNotifier != null)
-				armFollowerNotifier.close();
+				armFollowerNotifier.stop();
 
 		}
 		// stateMachineRunnerNotifier.stop();
@@ -299,6 +300,8 @@ public class Robot extends TimedRobot
 		// 	BallShooter.stopMotor();
 		// Drivetrain.printEncoders();
 		// Drivetrain.updateEncoders();
+
+		lastMethod = LastMethod.kTesting;
 	}
 
 	private void updateJoysticks()
