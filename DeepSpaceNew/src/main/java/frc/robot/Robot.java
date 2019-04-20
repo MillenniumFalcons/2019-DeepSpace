@@ -37,9 +37,18 @@ public class Robot extends TimedRobot
 
 	private Path mPath;
 
+	public enum LastMethod{
+		kAuto,
+		kTeleop,
+		kStarted
+	}
+
+	public static LastMethod lastMethod = LastMethod.kStarted;
+
 	@Override
 	public void robotInit()
 	{
+		lastMethod = LastMethod.kStarted;
 		LiveWindow.disableAllTelemetry();
 		LiveWindow.setEnabled(false);
 		pDistributionPanel = new PowerDistributionPanel();
@@ -82,7 +91,7 @@ public class Robot extends TimedRobot
 		AutonomousSequences.limelightClimber.limelight.setUSBStream();
 		AutonomousSequences.limelightFourBar.limelight.setUSBStream();
 
-		runAuto = true;
+		runAuto = false;
 	}
 
 	@Override
@@ -142,13 +151,12 @@ public class Robot extends TimedRobot
 		subsystemsEncodersNotifier.startPeriodic(.02);
 
 		AirCompressor.run();
+		lastMethod = LastMethod.kAuto;
 	}
   
 	@Override
 	public void autonomousPeriodic() 
 	{
-
-		// teleopPeriodic();
 		if(mainController.buttonB)
 		{
 			Drivetrain.stop();
@@ -166,6 +174,7 @@ public class Robot extends TimedRobot
 			Elevator.run();
 			updateJoysticks();
 		}	 
+		lastMethod = LastMethod.kAuto;
 	}
 
 	@Override
@@ -182,6 +191,7 @@ public class Robot extends TimedRobot
 
 		subsystemsEncodersNotifier.startPeriodic(.02);
 		AirCompressor.run();
+		lastMethod = LastMethod.kTeleop;
 	}
 
 	//Teleop Code
@@ -198,13 +208,9 @@ public class Robot extends TimedRobot
 		//Drivetrain uses the notifier
 		// Subsystems encoders use notifier
 
-		if(SeriesStateMachine.runClimberManually)
-		{
-			MiniShoppingCart.run(mainController);
-		}
+		MiniShoppingCart.run(mainController);
 
-		
-		
+		lastMethod = LastMethod.kTeleop;
 	}
 
 	private static void disableAuto()
@@ -219,13 +225,24 @@ public class Robot extends TimedRobot
 	public void disabledInit()
 	{
 		if(pathNotifier != null)
-			pathNotifier.stop();
-		if(drivetrainNotifier != null)
-			drivetrainNotifier.stop();
-		Drivetrain.stop();
-		if(subsystemsEncodersNotifier != null)
-			subsystemsEncodersNotifier.stop();
-		// armFollowerNotifier.stop();
+			pathNotifier.close();
+		if(autoNotifier != null)
+			autoNotifier.close();
+
+		if(lastMethod.equals(LastMethod.kTeleop))
+		{
+			if(drivetrainNotifier != null)
+			drivetrainNotifier.close();
+
+			Drivetrain.stop();
+
+			if(subsystemsEncodersNotifier != null)
+				subsystemsEncodersNotifier.close();
+			
+			if(armFollowerNotifier != null)
+				armFollowerNotifier.close();
+
+		}
 		// stateMachineRunnerNotifier.stop();
 		AutonomousSequences.limelightClimber.limelight.setUSBStream();
 		AutonomousSequences.limelightFourBar.limelight.setUSBStream();
@@ -234,14 +251,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void disabledPeriodic()
 	{
-		// AutonomousSequences.limelightClimber.limelight.setUSBStream();
-		// AutonomousSequences.limelightFourBar.limelight.setUSBStream();
-
-		AutonomousSequences.limelightClimber.limelight.setRegularStream();
-		AutonomousSequences.limelightFourBar.limelight.setRegularStream();
-
-		// AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
-		AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
+		AutonomousSequences.limelightClimber.limelight.setUSBStream();
+		AutonomousSequences.limelightFourBar.limelight.setUSBStream();
 	}
 
 	@Override
@@ -249,7 +260,7 @@ public class Robot extends TimedRobot
 	{
 		// Elevator.init();
 		// drivetrainNotifier.startPeriodic(.02);
-		// MiniShoppingCart.init();
+		MiniShoppingCart.init();
 		// Arm.init();
 		// armFollowerNotifier.startPeriodic(.01);
 		// Arm.initSensors();
@@ -259,13 +270,15 @@ public class Robot extends TimedRobot
 
 		// gyro.reset();
 		// Drivetrain.init();
+		// Drivetrain.resetEncoders();
+		// drivetrainNotifier.startPeriodic(.02);
 	}
 	@Override
 	public void testPeriodic()
 	{
 		// AutonomousSequences.limelightFourBar.set(VisionMode.kClosest);
-		// MiniShoppingCart.run(mainController);
-		// mainController.update();
+		MiniShoppingCart.run(mainController);
+		mainController.update();
 		// AutonomousSequences.limelightClimber.set(VisionMode.kClosest);
 		// if(mainController.rightBumper)
 		// 	AutonomousSequences.limelightFourBar.set(VisionMode.kClosest);
@@ -286,9 +299,6 @@ public class Robot extends TimedRobot
 		// 	BallShooter.stopMotor();
 		// Drivetrain.printEncoders();
 		// Drivetrain.updateEncoders();
-
-		
-
 	}
 
 	private void updateJoysticks()
@@ -316,8 +326,6 @@ public class Robot extends TimedRobot
 	{
 		if(mainController.rightBumper && mainController.rightJoyStickX < .1)
 			vision((Elevator.encoderValue > 27000), VisionMode.kClosest);
-		else if(mainController.leftBumper)
-			vision((Elevator.encoderValue > 27000), VisionMode.kDriver);
 		else 
 		{
 			AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
@@ -338,11 +346,11 @@ public class Robot extends TimedRobot
 		
 		VisionController mVision = getLimelight();
 
-		VisionController mVisionDriver = mVision;
-		if(mVision.equals(AutonomousSequences.limelightClimber))
-			mVisionDriver = AutonomousSequences.limelightFourBar;
-		else
-			mVisionDriver = AutonomousSequences.limelightClimber;
+		// VisionController mVisionDriver = mVision;
+		// if(mVision.equals(AutonomousSequences.limelightClimber))
+		// 	mVisionDriver = AutonomousSequences.limelightFourBar;
+		// else
+		// 	mVisionDriver = AutonomousSequences.limelightClimber;
 
 		if(scaleJoy)
 		{
@@ -351,8 +359,8 @@ public class Robot extends TimedRobot
 		}
 
 		mVision.set(mode);
-		if(mode != VisionMode.kBlack)
-			mVisionDriver.set(VisionMode.kDriver);
+		// if(mode != VisionMode.kBlack)
+		// 	mVisionDriver.set(VisionMode.kDriver);
 
 		if(mode == VisionMode.kDriver)
 		{

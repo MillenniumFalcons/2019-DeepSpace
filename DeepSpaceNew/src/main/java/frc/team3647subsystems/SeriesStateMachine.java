@@ -2,6 +2,7 @@ package frc.team3647subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.*;
+import frc.robot.Robot.LastMethod;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.Elevator.ElevatorLevel;
@@ -39,8 +40,8 @@ public class SeriesStateMachine
         HATCHL1VISIONBACKWARDS(Elevator.ElevatorLevel.BOTTOM, Arm.ArmPosition.FLATVISIONBACKWARDS),
         HATCHL2FORWARDS(Elevator.ElevatorLevel.HATCHL2, Arm.ArmPosition.FLATFORWARDS),
         HATCHL2BACKWARDS(Elevator.ElevatorLevel.HATCHL2, Arm.ArmPosition.FLATBACKWARDS),
-        HATCHL3FORWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.FLATFORWARDS),
-        HATCHL3BACKWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.FLATBACKWARDS),
+        HATCHL3FORWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.HATCHL3FWD),
+        HATCHL3BACKWARDS(Elevator.ElevatorLevel.HATCHL3, Arm.ArmPosition.HATCHL3BWD),
         CARGOL1FORWARDS(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATBACKWARDS),
         CARGOL1BACKWARDS(Elevator.ElevatorLevel.CARGO1, Arm.ArmPosition.FLATFORWARDS),
         CARGOSHIPFORWARDS(Elevator.ElevatorLevel.CARGOSHIP, Arm.ArmPosition.CARGOSHIPFORWARDS),
@@ -152,10 +153,10 @@ public class SeriesStateMachine
                     BallShooter.intakeCargo(1);
                 else
                     aimedRobotState = ScoringPosition.CARGOHANDOFF;
-            else if(mainController.leftTrigger > .15 && !runClimberManually)
-            {
-                BallIntake.setOpenLoop(1);
-            }
+            // else if(mainController.leftTrigger > .15 && !runClimberManually)
+            // {
+            //     BallIntake.setOpenLoop(1);
+            // }
             else
             {
                 ballIntakeTimer.reset();
@@ -177,7 +178,7 @@ public class SeriesStateMachine
 
 
             //Main controller controls
-            if(mainController.rightTrigger > .3  && !runClimberManually)
+            if(mainController.leftBumper)
             {
                 BallIntake.retract();
                 prevCargoIntakeExtended = false;
@@ -211,30 +212,12 @@ public class SeriesStateMachine
                 forceCargoOff = true;
             }
 
+            if(mainController.buttonX)
+                aimedRobotState = ScoringPosition.CARGOSHIPFORWARDS;
             if(mainController.dPadLeft)
                 aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONBWD;
             else if(mainController.dPadRight)
                 aimedRobotState = ScoringPosition.CARGOLOADINGSTATIONFWD;
-
-            if(mainController.buttonXPressed && isTeleop)
-            {
-                if(aimedRobotState.equals(ScoringPosition.CLIMB))
-                {
-                    MiniShoppingCart.stop();
-                    runClimberManually = false;
-                    aimedRobotState = ScoringPosition.STOPPED;
-                }
-                else if(ranClimbSequenceOnce)
-                {
-                    runClimberManually = true;
-                    aimedRobotState = ScoringPosition.CLIMB;
-                }
-                else
-                {
-                    aimedRobotState = ScoringPosition.CLIMB;
-                }
-                
-            }
         }
         catch(NullPointerException e)
         {

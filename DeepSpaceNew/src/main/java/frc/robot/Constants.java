@@ -76,8 +76,8 @@ public class Constants
 	public static final double[] carriagePIDF = { 11, 0.00004, 80, 0 };
 
 	// Elevator Motion Magic
-	public static final int kElevatorCruiseVelocity = 6500;
-	public static final int kElevatorAcceleration = 13000;
+	public static final int kElevatorCruiseVelocity = 6500; //6500
+	public static final int kElevatorAcceleration = 13000; //13000
 
 	// Hatch Intake PID Values
 	public static final int kHatchWristPID = 0; // PID Slot Index
@@ -131,9 +131,12 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXForwardVision = 4200;
-	public static final int armSRXFlatForwards = 4750; //4290;
+	public static final int armSRXFlatForwards = 4290; //4750;
 	public static final int armSRXBackwardVision = 22000; //22650; 
-	public static final int armSRXFlatBackwards = 22400; //22400
+
+	public static final int armSRXL3HatchFWD = 4750;
+	public static final int armSRXL3HatchBWD = 22000;
+	public static final int armSRXFlatBackwards = 22200; //22400
 	public static final int armSRXCargoL3Front = 24200;
 	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
@@ -192,7 +195,7 @@ public class Constants
 	public static final double kMaxVelocity = 4.22;
 
 	public static final double kBeta = 1.6; // b > 0 Correction
-	public static final double kZeta = 0.18; // 0 < z < 1 Dampening //.17 hou 
+	public static final double kZeta = 0.17; // 0 < z < 1 Dampening //.17 hou apr 18th
 
 	public static final double kFieldWidth = 8.2296;
 	public static final double expirationTimeSRX = 2; // seconds	

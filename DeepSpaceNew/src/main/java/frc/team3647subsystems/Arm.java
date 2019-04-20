@@ -86,6 +86,8 @@ public class Arm
 		VISIONB(Constants.armSRXBackwardVision), 
 		CARGOSHIPBACKWARDS(Constants.armSRXCargoShipBack), 
 		CARGOSHIPFORWARDS(Constants.armSRXCargoShipFront),
+		HATCHL3FWD(Constants.armSRXL3HatchFWD),
+		HATCHL3BWD(Constants.armSRXL3HatchBWD),
 		REVLIMSWITCHSTART(-1);
 
 		public int encoderVal;
@@ -164,12 +166,20 @@ public class Arm
 		}
 	}
 
+	public static boolean hasArmReset()
+	{
+		return armSRX.hasResetOccurred();
+	}
+
 	//---------------------------------------
 	//MotionMagic movement-------------------
 	private static void setPosition(int position)
 	{
 		// Motion Magic
-		try{ armSRX.set(ControlMode.MotionMagic, position); }
+		try
+		{ 
+			armSRX.set(ControlMode.MotionMagic, position);
+		}
 		catch(NullPointerException e)
 		{
 			armSRX = new WPI_TalonSRX(Constants.armSRXPin);

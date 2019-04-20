@@ -408,7 +408,6 @@ public class AutonomousSequences
 				{
 					limelightClimber.set(VisionMode.kLeft);
 				}
-				limelightClimber.set(VisionMode.kRight);
 				if(!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished())
 				{
 					Drivetrain.setAutoVelocity(leftSpeed, rightSpeed);
