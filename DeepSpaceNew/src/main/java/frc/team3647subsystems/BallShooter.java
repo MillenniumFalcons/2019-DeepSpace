@@ -1,102 +1,98 @@
 package frc.team3647subsystems;
 
-import frc.robot.*;
-import frc.team3647autonomous.AutonomousSequences;
-import frc.team3647subsystems.Canifier;
-
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.Timer;
+import frc.team3647utility.Timer;
 
-public class BallShooter 
+import frc.robot.Constants;
+import frc.robot.Robot;
+
+
+public class BallShooter extends Subsystem
 {
-	
-	private static VictorSPX intakeMotor = new VictorSPX(Constants.ballShooterPin);
+	private CANifier can;
+	private VictorSPX intakeMotor;
 
-	private static boolean flashed = false, startedTimer = false;
-	private static Timer ballBlinkTimer = new Timer();
+	private boolean flashed, startedTimer;
+	private Timer ballBlinkTimer;
 	
-	
-	public static void ballShooterinitialization()
-	{
-		intakeMotor.setInverted(false);
-		
+	private static BallShooter INSTANCE = new BallShooter();
+
+	private BallShooter(){
+		intakeMotor = new VictorSPX(Constants.ballShooterPin);
+		ballBlinkTimer = new Timer();
+		flashed = false;
+		can = new CANifier(Constants.canifierPin);
+		startedTimer = false;
 	}
 
-	public static void runBlink()
+	public static BallShooter getInstance(){
+		return INSTANCE;
+	}
+	
+	public void init(){
+		intakeMotor.setInverted(false);
+	}
+
+	public void runBlink()
 	{
 		if(Robot.cargoDetection)
 		{
-			if(!startedTimer)
-			{
+			if(!startedTimer){
 				ballBlinkTimer.reset();
 				ballBlinkTimer.start();
 				startedTimer = true;
-			}
-			else if(!flashed && startedTimer && ballBlinkTimer.get() > .2)
-			{
-				AutonomousSequences.limelightClimber.limelight.blink();
-				AutonomousSequences.limelightFourBar.limelight.blink();
-				if(ballBlinkTimer.get() > 1.2)
-				{
+			}else if(!flashed && startedTimer && ballBlinkTimer.get() > .2){
+				VisionController.limelightClimber.blink();
+				VisionController.limelightFourbar.blink();
+				if(ballBlinkTimer.get() > 1.2){
 					flashed = true;
 				}
 			}
-			if(flashed)
-			{
-				AutonomousSequences.limelightClimber.limelight.pipeLineLED();
-				AutonomousSequences.limelightFourBar.limelight.pipeLineLED();
+			if(flashed){
+				VisionController.limelightClimber.setLED();
+				VisionController.limelightFourbar.setLED();
 			}
-		}
-		else
-		{
+		}else{
 			ballBlinkTimer.reset();
 			ballBlinkTimer.stop();
-			AutonomousSequences.limelightClimber.limelight.pipeLineLED();
-			AutonomousSequences.limelightFourBar.limelight.pipeLineLED();
+			VisionController.limelightClimber.setLED();
+			VisionController.limelightFourbar.setLED();
 			startedTimer = false;
 			flashed = false;
 		}
 	}
 	
-	private static void setOpenLoop(double demand)
-	{
+	public void setOpenLoop(double demand){
 		intakeMotor.set(ControlMode.PercentOutput, demand);
   }
-    
-  public static void stopMotor()
-	{
-		setOpenLoop(0);
-	}
 
-	public static void shootBall(double demand)
-	{
+
+	public void shootBall(double demand){
 		double mDemand = demand/2;
-		if(mDemand < .3)
+		if(mDemand < .3){
 			mDemand = .5;
+		}
 		setOpenLoop(limitCurrent(mDemand));
 	}
 	
-	public static void intakeCargo(double power) //40 amps limit
-	{
-
+	public void intakeCargo(double power){
 		setOpenLoop(-limitCurrent(.4));
 	}
 
-	private static double limitCurrent(double constant)
-	{
+	private double limitCurrent(double constant){
 		double current = Robot.pDistributionPanel.getCurrent(Constants.ballShooterPDPpin);
 		return (1.3 / current + constant);
 	}
 
-	public static boolean cargoDetection()
-	{
-    return (Canifier.cargoBeamBreak()); // || SeriesStateMachine.forceCargoOn) && !SeriesStateMachine.forceCargoOff;
+	public boolean cargoDetection(){
+    return !can.getGeneralInput(GeneralPin.LIMR);
 	}
 
-	public static void printBeamBreak()
-	{
+	public void printBeamBreak(){
 		System.out.println("Cargo Beam Break: " + Robot.cargoDetection);
 	}
 }

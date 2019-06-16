@@ -4,61 +4,58 @@ import frc.robot.Robot;
 import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import frc.team3647utility.CustomSolenoid;;
+import frc.team3647utility.Solenoid;;
 
-public class BallIntake 
+public class BallIntake extends Subsystem
 {
-	private static CustomSolenoid extensionCylinder = new CustomSolenoid(Constants.ballIntakeSolinoidPin);
-	private static CustomSolenoid extensionCylinder2 = new CustomSolenoid(Constants.ballIntakeSolinoidPin2);
-	private static VictorSPX intakeMotor = new VictorSPX(Constants.ballMotorPin);
+	private Solenoid extensionCylinder;
+	private Solenoid extensionCylinder2;
+	private VictorSPX intakeMotor;
 	
-	public static void init()
-	{
+	private static BallIntake INSTANCE = new BallIntake();
+
+	private BallIntake(){
+		extensionCylinder = new Solenoid(Constants.ballIntakeSolinoidPin);
+		extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
+		intakeMotor = new VictorSPX(Constants.ballMotorPin);
+	}
+
+	public static BallIntake getInstance(){
+		return INSTANCE;
+	}
+	public void init(){
 		intakeMotor.setInverted(false);
 	}
 
-	public static void run()
-	{
-		if(Robot.cargoDetection)
-		{
+	public void run(){
+		if(Robot.cargoDetection){
 			intake(.3);
-		}
-		else
-		{
+		}else{
 			intake(.8);
 		}
-		BallShooter.intakeCargo(1);
+		BallShooter.getInstance().intakeCargo(1);
 	}
 	
-	public static void setOpenLoop(double speed)
-	{
-		intakeMotor.set(ControlMode.PercentOutput, speed);
+	public void setOpenLoop(double demand){
+		intakeMotor.set(ControlMode.PercentOutput, demand);
 	}
 
-	public static void stopMotor()
-	{
-		setOpenLoop(0);
-	}
 
-	public static void extend()
-	{
+	public void extend(){
 		extensionCylinder.set(true);
 		extensionCylinder2.set(true);
 	}
 	
-	public static void retract()
-	{
+	public void retract(){
 		extensionCylinder.set(false);
 		extensionCylinder2.set(false);
 	}
 
-	public static void intake(double power)
-	{
+	public void intake(double power){
 		setOpenLoop(power);
 	}
 
-	public static void spitOut()
-	{
+	public void spitOut(){
 		setOpenLoop(-1);
 	}
 }

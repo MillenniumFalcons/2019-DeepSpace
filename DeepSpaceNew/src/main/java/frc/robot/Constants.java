@@ -60,6 +60,7 @@ public class Constants
 	public static final int kTimeoutMs = 10; // Universal Constant
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PID & MOTION MAGIC VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	public static final int allSRXPID = 0;
 	// Arm PID Values
 	public static final int armPID = 0;
 	public static final double[] armPIDF = { 1, 0, 20, 0 };

@@ -6,47 +6,49 @@ import frc.team3647inputs.Joysticks;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.Timer;
+public class HatchGrabber extends Subsystem {
+	private VictorSPX hatchSucker;
 
+	private static HatchGrabber INSTANCE = new HatchGrabber();
 
-public class HatchGrabber
-{
-	private static VictorSPX hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
-	
-	public static void run(Joysticks coController)
-	{
-		if(coController.rightBumper)
+	private HatchGrabber() {
+		hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
+	}
+
+	public static HatchGrabber getInstance() {
+		return INSTANCE;
+	}
+
+	public void run(Joysticks coController) {
+		if (coController.rightBumper)
 			grabHatch();
-		else if(coController.leftBumper)
+		else if (coController.leftBumper)
 			releaseHatch();
 		else if (!Robot.cargoDetection)
 			runConstant();
 		else
-			stopMotor();
+			stop();
 	}
 
-	public static boolean hatchIn()
-	{
+	public void setOpenLoop(double demand) {
+		hatchSucker.set(ControlMode.PercentOutput, demand);
+	}
+
+	public boolean hatchIn() {
 		double current = Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin);
 		return current > 3.5 && current < 5.5;
 	}
-	
-	public static void grabHatch()
-	{
-		hatchSucker.set(ControlMode.PercentOutput, .6);
-	}
-	
-	public static void releaseHatch()
-	{
-		hatchSucker.set(ControlMode.PercentOutput, -1);
+
+	public void grabHatch() {
+		setOpenLoop(.6);
 	}
 
-	public static void runConstant()
-	{
-		hatchSucker.set(ControlMode.PercentOutput, .2);
+	public void releaseHatch() {
+		setOpenLoop(-1);
 	}
-	public static void stopMotor()
-	{
-		hatchSucker.set(ControlMode.PercentOutput, 0);
+
+	public void runConstant() {
+		setOpenLoop(.2);
 	}
+
 }

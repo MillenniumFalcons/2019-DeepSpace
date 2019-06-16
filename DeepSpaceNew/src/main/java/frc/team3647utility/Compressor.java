@@ -24,7 +24,7 @@ import edu.wpi.first.hal.HAL;
  * 
  * <p> removed any sendableBase from the original Compressor class of WPILIB, directly call JNI methods instead.
  */
-public class CustomCompressor {
+public class Compressor {
   private int m_compressorHandle;
   private byte m_module;
 
@@ -34,7 +34,7 @@ public class CustomCompressor {
    *
    * @param module The PCM CAN device ID (0 - 62 inclusive)
    */
-  public CustomCompressor(int module) {
+  public Compressor(int module) {
     m_module = (byte) module;
 
     m_compressorHandle = CompressorJNI.initializeCompressor((byte) module);

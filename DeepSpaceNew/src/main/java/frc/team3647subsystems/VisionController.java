@@ -1,19 +1,22 @@
 //Class created by Kunal Singla
-
 package frc.team3647subsystems;
 
-import frc.robot.Constants;
-import frc.team3647inputs.Limelight;
-import frc.team3647utility.RollingAverage;
+import edu.wpi.first.networktables.*;
 
-public class VisionController 
-{
+import frc.robot.Constants;
+
+public class VisionController {
+
+	public static VisionController limelightClimber = new VisionController("climber");
+	public static VisionController limelightFourbar = new VisionController("fourbar");
 
 	public double x, y, speed, area, sumError, prevError, leftSpeed, rightSpeed;
 
 	private double kp = Constants.limelightPID[0];
 	private double ki = Constants.limelightPID[1];
 	private double kd = Constants.limelightPID[2];
+
+	private RollingAverage tXAvg = new RollingAverage();
 
 	// x is the tx degree value from Limelight Class
 	// y is the ty degree value from Limelight Class
@@ -23,33 +26,135 @@ public class VisionController
 	// values in the PID loop
 	// prevError is the global variable to keep track of the previous error in the
 	// PID loop
-	public Limelight limelight;
 
-	public enum VisionMode
-	{
-		kRight(2),
-		kLeft(3),
-		kClosest(4),
-		kDriver(1),
-		kBlack(0);
+	private class Limelight {
+		// x is the tx degree value from Limelight Network Table
+		private double x;
+
+		// y is the ty degree value from Limelight Network Table
+		private double y;
+
+		// area is the ta value from Limelight Network Table. The ratio of the object,
+		// area to the entire picture area, as a percent.
+		private double area;
+
+		// NetworkTable is the class used to grab values from the Limelight Network
+		// Table
+		public NetworkTable table;
+
+		// used to initalize the main, important things
+		public Limelight(String orientation) {
+			// initializing the network table to grab values from limelight
+			table = NetworkTableInstance.getDefault().getTable("limelight-" + orientation);
+			update();
+		}
+
+		public void set(int pipeline) {
+			setPipeline(pipeline);
+		}
+
+		private void setPipeline(int pipeline) {
+			set("pipeline", pipeline);
+		}
+
+		public void update() {
+			// x is set to tx, and setting the default value to -3647 if not recieving
+			// values from limelight
+			x = get("tx");
+
+			// y is set to ty, and setting the default value to -3647 if not recieving
+			// values from limelight
+			y = get("ty");
+
+			// area is set to ta, and setting the default value to -3647 if not recieving
+			// values from limelight
+			area = get("ta");
+		}
+
+		public double getX() {
+			return this.x;
+		}
+
+		public double getY() {
+			return this.y;
+		}
+
+		public double getArea() {
+			return this.area;
+		}
+
+		public void blink() {
+			set("ledMode", 2);
+		}
+
+		public void pipeLineLED() {
+			set("ledMode", 0);
+		}
+
+		public boolean getValidTarget() {
+			return get("tv") == 1;
+		}
+
+		private double get(String input) {
+			return table.getEntry(input).getDouble(-3647);
+		}
+
+		public void set(String input, int input2) {
+			table.getEntry(input).setNumber(input2);
+		}
+
+	}
+
+	private class RollingAverage {
+
+		private int size;
+		private double total = 0d;
+		private int index = 0;
+		private double samples[];
+
+		public RollingAverage(int size) {
+			this.size = size;
+			samples = new double[size];
+			for (int i = 0; i < size; i++)
+				samples[i] = 0d;
+		}
+
+		public RollingAverage() {
+			this(4);
+		}
+
+		public void add(double x) {
+			total -= samples[index];
+			samples[index] = x;
+			total += x;
+			if (++index == size)
+				index = 0;
+		}
+
+		public double getAverage() {
+			return total / size;
+		}
+	}
+
+	private Limelight limelight;
+
+	public enum VisionMode {
+		kRight(2), kLeft(3), kClosest(4), kDriver(1), kBlack(0);
 
 		public int pipeline;
-		VisionMode(int pipeline)
-		{
+
+		VisionMode(int pipeline) {
 			this.pipeline = pipeline;
 		}
 	}
 
-	private RollingAverage tXAvg = new RollingAverage(4);
-
-	public VisionController(String orientation) 
-	{
+	public VisionController(String orientation) {
 		limelight = new Limelight(orientation);
 		limelight.set("streamMode", 0);
 	}
 
-	public void updateInputs() // update Limelight Inputs
-	{
+	// update Limelight Inputs
+	public void updateInputs() {
 		limelight.update();
 		x = limelight.getX();
 		y = limelight.getY();
@@ -57,62 +162,55 @@ public class VisionController
 	}
 
 	// Drivebase Bot -> kP = .45, kI = 0.035, kD = .9
-	public void center() // method to center the robot to target without moving toward target
-	{
+	// method to center the robot to target without moving toward target
+	public void center() {
 		limelight.update();
 		updateInputs();
 		tXAvg.add(this.x);
-		double error = tXAvg.getAverage() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
-												// get a value from -1 to 1 to scale for speed output
-		if (limelight.getValidTarget() && Math.abs(error) < Constants.limelightThreshold) // checking if the error is within a threshold to stop
-		{
+		// error is x / 27. x is measured in degrees, where the max x is 27. We
+		// get a value from -1 to 1 to scale for speed output
+		double error = tXAvg.getAverage() / 27.0;
+
+		// checking if the error is within a threshold to stop
+		if (limelight.getValidTarget() && Math.abs(error) < Constants.limelightThreshold) {
 			// speed = 0; // setting global variable speed equal to zero
 			leftSpeed = 0;
 			rightSpeed = 0;
-		} 
-		else 
-		{
+		} else {
 			centerAlgorithm(error, this.kp, this.ki, this.kd); // Center robot if outside the error threshold
 		}
 	}
 
-	public void follow(double kp, double ki, double kd, double errorThreshold, double defaultSpeed, double targetArea)
-	{
+	public void follow(double kp, double ki, double kd, double errorThreshold, double defaultSpeed, double targetArea) {
 		updateInputs();
 		tXAvg.add(this.x);
-		double error = tXAvg.getAverage() / 27; // error is x / 27. x is measured in degrees, where the max x is 27. We get a
-									// value from -1 to 1 to scale for speed output
-		if (this.area >= targetArea / 2) // redundant "if" in order to make sure the robot stops
-		{
+		double error = tXAvg.getAverage() / 27; // error is x / 27. x is measured in degrees, where the max x is 27. We
+												// get a
+		// value from -1 to 1 to scale for speed output
+		// redundant "if" in order to make sure the robot stops
+		if (this.area >= targetArea / 2) {
 			// set drivetrain to 0 speed if target distance is reached
 			leftSpeed = 0;
 			rightSpeed = 0;
 		}
 
-		if ((error > -errorThreshold) && (error < errorThreshold)) // if error is in between the threshold execute following statements
-		{
+		// if error is in between the threshold execute following statements
+		if ((error > -errorThreshold) && (error < errorThreshold)) {
 			if (this.area < targetArea / 2) {
 				leftSpeed = defaultSpeed;
 				rightSpeed = defaultSpeed;
 				// set drivetrain to default speed if target distance is unreached
-			} 
-			else 
-			{
+			} else {
 				leftSpeed = 0;
 				rightSpeed = 0;
 				// set drivetrain to zero, stop robot if it has reached target distance
 			}
-		} 
-		else 
-		{
+		} else {
 			centerAlgorithm(error, kp, ki, kd); // use center algorithm to center the robot to target
 		}
 	}
 
-	
-
-	private void centerAlgorithm(double error, double kp, double ki, double kd) 
-	{
+	private void centerAlgorithm(double error, double kp, double ki, double kd) {
 		updateInputs();
 		double diffError = (error - prevError); // difference in the current error minus the (global variable) previous
 												// error
@@ -136,51 +234,50 @@ public class VisionController
 		rightSpeed = -speed;
 	}
 
-	public void bangBang(double speed, double threshold) // bang bang vision controller (simplest non-PID centering algorithm)
-	{
+	// bang bang vision controller (simplest non-PID centering algorithm)
+	public void bangBang(double speed, double threshold) {
 		updateInputs();
-		if (x > threshold && x < -threshold) // if x is between threshold, drivetrain is set to zero speed
-		{
+		// if x is between threshold, drivetrain is set to zero speed
+		if (x > threshold && x < -threshold) {
 			leftSpeed = 0;
 			rightSpeed = 0;
-		} 
-		else if (x > threshold) // if x is greater than threshold, then turn right
-		{
+		} else if (x > threshold) { // if x is greater than threshold, then turn right
 			leftSpeed = -speed;
 			rightSpeed = speed;
-		} 
-		else if (x < -threshold) // if x is less than -threshold, then turn left
-		{
+		} else if (x < -threshold) { // if x is less than -threshold, then turn left
 			leftSpeed = speed;
 			rightSpeed = -speed;
-		} else // if all else fails just stop the robot, redundant for safety
-		{
+		} else { // if all else fails just stop the robot, redundant for safety
 			leftSpeed = 0;
 			rightSpeed = 0;
 		}
 	}
 
-	public boolean centered(double threshold) 
-	{
+	public boolean centered(double threshold) {
 		return (Math.abs(this.x) < 0.1);
 	}
 
-	public void set(VisionMode mode)
-	{
+	public void set(VisionMode mode) {
 		updateInputs();
-		limelight.set(mode);
+		limelight.set(mode.pipeline);
 	}
 
-	public double getPrevError() // get prevError, because prevError is private
-	
-	{
+	public void setLED() {
+		limelight.pipeLineLED();
+	}
+
+	public void blink() {
+		limelight.blink();
+	}
+
+	// get prevError, because prevError is private
+	public double getPrevError() {
 		y = 2 * y * (1 / 2);
 		return this.prevError;
 	}
 
-	public double getSumError() // get sumError, because sumError is private
-	
-	{
+	// get sumError, because sumError is private
+	public double getSumError() {
 		return this.sumError;
 	}
 }

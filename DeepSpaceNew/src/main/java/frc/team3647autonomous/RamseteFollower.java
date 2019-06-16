@@ -1,24 +1,21 @@
 package frc.team3647autonomous;
 
 import frc.robot.Constants;
-import frc.team3647subsystems.Drivetrain;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Trajectory.Segment;
 
-@SuppressWarnings("FieldCanBeLocal")
 /**
  * Ramsete implementation by Brian for Team 321 based on Aaron's implementation
- * with help from Prateek and all on the FIRST programming discord server
- * yeeted by Kunal for Team 3647 (with permission of course)
+ * with help from Prateek and all on the FIRST programming discord server yeeted
+ * by Kunal for Team 3647 (with permission of course)
  */
-public class RamseteFollower 
-{
+public class RamseteFollower {
 
     // Should be greater than zero and this increases correction
-    private double kBeta = Constants.kBeta; //1.5;
+    private double kBeta = Constants.kBeta; // 1.5;
 
     // Should be between zero and one and this increases dampening
-    private double kZeta = Constants.kZeta; //0.7;
+    private double kZeta = Constants.kZeta; // 0.7;
 
     // Holds what segment we are on
     private int segmentIndex;
@@ -45,11 +42,11 @@ public class RamseteFollower
     private DriveSignal driveSignal;
     private double left, right;
 
-
-    public RamseteFollower(Trajectory trajectory, MotionProfileDirection direction) 
-    {
-        //ternary operator, if direction is forward return trajectory, else return the reversed path
-        this.trajectory = direction == MotionProfileDirection.FORWARD ? trajectory : TrajectoryUtil.reversePath(trajectory);
+    public RamseteFollower(Trajectory trajectory, MotionProfileDirection direction) {
+        // ternary operator, if direction is forward return trajectory, else return the
+        // reversed path
+        this.trajectory = direction == MotionProfileDirection.FORWARD ? trajectory
+                : TrajectoryUtil.reversePath(trajectory);
         // this.trajectory = TrajectoryUtil.correctPath(trajectory);
 
         segmentIndex = 0;
@@ -58,18 +55,15 @@ public class RamseteFollower
         driveSignal = new DriveSignal();
     }
 
-    public RamseteFollower(Trajectory trajectory, double b, double zeta, MotionProfileDirection direction) 
-    {
+    public RamseteFollower(Trajectory trajectory, double b, double zeta, MotionProfileDirection direction) {
         this(trajectory, direction);
 
         this.kBeta = b;
         this.kZeta = zeta;
     }
 
-    public Velocity getVelocity() 
-    {
-        if (isFinished()) 
-        {
+    public Velocity getVelocity() {
+        if (isFinished()) {
             return new Velocity(0, 0);
         }
 
@@ -77,15 +71,16 @@ public class RamseteFollower
 
         desiredAngularVelocity = calculateDesiredAngular();
 
-        linearVelocity = calculateLinearVelocity(current.x, current.y, current.heading, current.velocity, desiredAngularVelocity);
+        linearVelocity = calculateLinearVelocity(current.x, current.y, current.heading, current.velocity,
+                desiredAngularVelocity);
 
-        angularVelocity = calculateAngularVelocity(current.x, current.y, current.heading, current.velocity, desiredAngularVelocity);
+        angularVelocity = calculateAngularVelocity(current.x, current.y, current.heading, current.velocity,
+                desiredAngularVelocity);
 
         return new Velocity(linearVelocity, angularVelocity);
     }
 
-    public DriveSignal getNextDriveSignal() 
-    {
+    public DriveSignal getNextDriveSignal() {
         velocity = getVelocity();
 
         left = (-(velocity.getAngular() * Constants.kWheelBase) + (2 * velocity.getLinear())) / 2;
@@ -99,23 +94,18 @@ public class RamseteFollower
         return driveSignal;
     }
 
-    private double calculateDesiredAngular() 
-    {
-        if (segmentIndex < trajectory.length() - 1) 
-        {
+    private double calculateDesiredAngular() {
+        if (segmentIndex < trajectory.length() - 1) {
             lastTheta = trajectory.get(segmentIndex).heading;
             nextTheta = trajectory.get(segmentIndex + 1).heading;
             return boundHalfRadians(nextTheta - lastTheta) / current.dt;
-        } 
-        else 
-        {
+        } else {
             return 0;
         }
     }
 
     private double calculateLinearVelocity(double desiredX, double desiredY, double desiredTheta,
-            double desiredLinearVelocity, double desiredAngularVelocity) 
-    {
+            double desiredLinearVelocity, double desiredAngularVelocity) {
         // System.out.println("DesiredLinearVelocity: " + desiredLinearVelocity);
         // System.out.println("Desired X: " + desiredX);
         // System.out.println("Actual X : " + odometry.getX());
@@ -133,19 +123,15 @@ public class RamseteFollower
     }
 
     private double calculateAngularVelocity(double desiredX, double desiredY, double desiredTheta,
-            double desiredLinearVelocity, double desiredAngularVelocity) 
-    {
+            double desiredLinearVelocity, double desiredAngularVelocity) {
         k = calculateK(desiredLinearVelocity, desiredAngularVelocity);
 
         thetaError = boundHalfRadians(desiredTheta - odometry.getTheta());
 
-        if (Math.abs(thetaError) < EPSILON) 
-        {
+        if (Math.abs(thetaError) < EPSILON) {
             // This is for the limit as sin(x)/x approaches zero
             sinThetaErrorOverThetaError = 1;
-        } 
-        else 
-        {
+        } else {
             sinThetaErrorOverThetaError = Math.sin(thetaError) / thetaError;
         }
 
@@ -156,13 +142,12 @@ public class RamseteFollower
                 + (k * thetaError);
     }
 
-    private double calculateK(double desiredLinearVelocity, double desiredAngularVelocity) 
-    {
-        return 2 * kZeta * Math.sqrt(Math.pow(desiredAngularVelocity, 2) + (kBeta * Math.pow(desiredLinearVelocity, 2)));
+    private double calculateK(double desiredLinearVelocity, double desiredAngularVelocity) {
+        return 2 * kZeta
+                * Math.sqrt(Math.pow(desiredAngularVelocity, 2) + (kBeta * Math.pow(desiredLinearVelocity, 2)));
     }
 
-    private double boundHalfRadians(double radians) 
-    {
+    private double boundHalfRadians(double radians) {
         while (radians >= Math.PI)
             radians -= TWO_PI;
         while (radians < -Math.PI)
@@ -170,45 +155,36 @@ public class RamseteFollower
         return radians;
     }
 
-    public Segment currentSegment() 
-    {
+    public Segment currentSegment() {
         return current;
     }
 
-    public boolean isFinished() 
-    {
+    public boolean isFinished() {
         return segmentIndex >= trajectory.length();
     }
 
-    public void printOdometry()
-    {
+    public void printOdometry() {
         System.out.println("Segment index: " + segmentIndex);
         // // System.out.println("Trajectory.length: " + trajectory.length());
         // if(odometry.getX() < 3)
-        //     System.out.println(odometry.getX());
+        // System.out.println(odometry.getX());
         // else
-        //     System.out.println("PASSED 3");
+        // System.out.println("PASSED 3");
     }
 
-    public int getSegmentIndex()
-    {
+    public int getSegmentIndex() {
         return this.segmentIndex;
     }
 
-    public boolean pathFractionSegment(double fraction)
-    {
-        return (this.segmentIndex > trajectory.length()*fraction) && (this.segmentIndex < trajectory.length());
+    public boolean pathFractionSegment(double fraction) {
+        return (this.segmentIndex > trajectory.length() * fraction) && (this.segmentIndex < trajectory.length());
     }
 
-    public void printDeltaDist()
-    {
+    public void printDeltaDist() {
         System.out.println("Delta position in meters: " + odometry.getDeltaPosition());
     }
 
-    public void printCurrentEncoders()
-    {
+    public void printCurrentEncoders() {
         System.out.println("Odometry encoder: " + odometry.getCurrentEncoderPosition());
-        System.out.println("Actual encoder left: " + Drivetrain.leftSRX.getSelectedSensorPosition(0));
-        System.out.println("Actual encoder right: " + Drivetrain.rightSRX.getSelectedSensorPosition(0));
     }
 }

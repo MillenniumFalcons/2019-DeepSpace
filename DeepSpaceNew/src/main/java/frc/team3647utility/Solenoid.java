@@ -18,7 +18,7 @@ import edu.wpi.first.hal.SolenoidJNI;
  * 
  * <p> removed any sendableBase from the original Solenoid class of WPILIB, directly call JNI methods instead.
  */
-public class CustomSolenoid {
+public class Solenoid {
   private final int m_channel; // The channel to control.
   private int m_solenoidHandle;
   private int m_moduleNumber;
@@ -28,7 +28,7 @@ public class CustomSolenoid {
    *
    * @param channel The channel on the PCM to control (0..7).
    */
-  public CustomSolenoid(final int channel) {
+  public Solenoid(final int channel) {
     this(0, channel);
   }
 
@@ -38,7 +38,7 @@ public class CustomSolenoid {
    * @param moduleNumber The CAN ID of the PCM the solenoid is attached to.
    * @param channel      The channel on the PCM to control (0..7).
    */
-  public CustomSolenoid(final int moduleNumber, final int channel) {
+  public Solenoid(final int moduleNumber, final int channel) {
     m_moduleNumber = moduleNumber;
     m_channel = channel;
 

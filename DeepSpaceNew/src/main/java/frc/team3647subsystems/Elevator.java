@@ -1,356 +1,150 @@
 package frc.team3647subsystems;
 
-import frc.robot.*;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Constants;
+import frc.team3647StateMachine.ElevatorLevel;
 
+public class Elevator extends SRXSubsystem {
 
-public class Elevator
-{
+	private boolean bannerSensorValue = false;
 
-	public static ElevatorLevel aimedState;
-	private static boolean bannerSensor = false;
-	
 	// Sensor at bottom of elevator
-	public static DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
+	private DigitalInput limitSwitch;
 
 	// Elevator motors
-    public static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
-	public static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
-	public static VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
-	public static VictorSPX GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
+	private VictorSPX GearboxSPX1;
+	private VictorSPX GearboxSPX2;
+	private VictorSPX GearBoxSPX3;
 
-	public static int encoderError, encoderValue, encoderVelocity;
-	
-	// private static double overrideValue;
-	// private static boolean manualOverride;
+	private static Elevator INSTANCE = new Elevator();
 
-	public static boolean initialized = false;
-    
-    public static void init()
-	{
+	private Elevator() {
+		super(Constants.ElevatorGearboxSRX, Constants.interstagePIDF, Constants.kElevatorCruiseVelocity,
+				Constants.kElevatorAcceleration, Constants.kElevatorPositionThreshold);
+		aimedState = ElevatorLevel.STOPPED;
+		GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);
+		GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2);
+		GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
+		limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
+		bannerSensorValue = false;
+	}
+
+	public static Elevator getInstance() {
+		return INSTANCE;
+	}
+
+	@Override
+	public void init() {
 		aimedState = ElevatorLevel.STOPPED;
 		initSensors();
 
 		setEncoderValue(5000);
 		updateEncoder();
 	}
-	
-	public static void initSensors()
-	{
+
+	@Override
+	public void initSensors() {
+		super.initSensors();
+
 		aimedState = ElevatorLevel.STOPPED;
-		//Config Sensors for encoder
-		elevatorMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
-		elevatorMaster.setSensorPhase(true);
 
-		configurePIDFMM(Constants.interstagePIDF[0], Constants.interstagePIDF[1], Constants.interstagePIDF[2], 
-			Constants.interstagePIDF[3], Constants.kElevatorCruiseVelocity, Constants.kElevatorAcceleration);
-
-		GearboxSPX2.follow(elevatorMaster);
-		GearboxSPX1.follow(elevatorMaster);
-		GearBoxSPX3.follow(elevatorMaster);
+		GearboxSPX2.follow(getMaster());
+		GearboxSPX1.follow(getMaster());
+		GearBoxSPX3.follow(getMaster());
 		GearboxSPX2.setInverted(false);
-		elevatorMaster.setInverted(false);
+		getMaster().setInverted(false);
 		GearboxSPX1.setInverted(false);
 
-		Elevator.elevatorMaster.enableCurrentLimit(true);
-		Elevator.elevatorMaster.configContinuousCurrentLimit(35);
+		getMaster().enableCurrentLimit(true);
+		getMaster().configContinuousCurrentLimit(35);
 
-		elevatorMaster.setNeutralMode(NeutralMode.Brake);
-		elevatorMaster.setName("Elevator", "elevatorMaster");
-		elevatorMaster.setExpiration(Constants.expirationTimeSRX);
-		bannerSensor = limitSwitch.get();
+		getMaster().setNeutralMode(NeutralMode.Brake);
+		getMaster().setName("Elevator", "elevatorMaster");
+		getMaster().setExpiration(Constants.expirationTimeSRX);
+		updateBannerSensor();
 		initialized = true;
 	}
 
-	public static void configurePIDFMM(double p, double i, double d, double f, int vel, int accel)
-	{
-		elevatorMaster.selectProfileSlot(Constants.interstageSlotIdx, 0);
-
-		elevatorMaster.config_kP(Constants.interstageSlotIdx, p, Constants.kTimeoutMs);		
-		elevatorMaster.config_kI(Constants.interstageSlotIdx, i, Constants.kTimeoutMs);	
-		elevatorMaster.config_kD(Constants.interstageSlotIdx, d, Constants.kTimeoutMs);
-		elevatorMaster.config_kF(Constants.interstageSlotIdx, f, Constants.kTimeoutMs);
-		//Motion Magic ConstantsMain
-		elevatorMaster.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
-        elevatorMaster.configMotionAcceleration(accel, Constants.kTimeoutMs);
-	}
-
-	public enum ElevatorLevel
-	{
-		MANUAL(-1),
-		STOPPED(-1),
-		BOTTOM(-1),
-        CARGOHANDOFF(Constants.elevatorCargoHandoff),
-        HATCHHANDOFF(Constants.elevatorHatchHandoff),
-		HATCHL2(Constants.elevatorHatchL2),
-		HATCHL3(Constants.elevatorHatchL3), //also cargo lvl3
-		CARGOL3(Constants.elevatorCargoL3),
-		CARGOL2(Constants.elevatorCargoL2),
-		CARGO1(Constants.elevatorCargoL1),
-        CARGOSHIP(Constants.elevatorCargoShip),
-		STOWED(Constants.elevatorStowed),
-		MINROTATE(Constants.elevatorMinRotation),
-		VERTICALSTOWED(Constants.elevatorMinRotation),
-		CARGOLOADINGSTATION(Constants.elevatorCargoLoadingStation),
-		BEFORECARGOHANDOFF(Constants.elevatorBeforeCargoHandoff),
-		START(-1);
-
-		public int encoderVal;
-
-		ElevatorLevel(int encoderVal)
-		{
-			this.encoderVal = encoderVal;
-		}
-	}
-
-	public static void updateBannerSensor()
-	{
-		bannerSensor = limitSwitch.get();
-	}
-
-	public static void run()
-	{
-		if(!initialized)
+	public void run() {
+		if (!initialized)
 			initSensors();
-			
+
 		updateBannerSensor();
-		if(aimedState != null)
-		{
-			if(aimedState.encoderVal != -1)
-				setPosition(aimedState.encoderVal);
-			else
-			{
-				switch(aimedState) //check if aimed state has a value
-				{
-					case BOTTOM:
-						moveToBottom();
-						break;
-					case STOPPED:
-						stop();
-						break;
-					case START:
-						moveToBottomStart();
-						break;
-					default:
-						break;
-				}
+		if (aimedState != null) {
+			if (!aimedState.isSpecial()) {
+				setPosition(aimedState.getValue());
+			} else {
+				if (aimedState.equals(ElevatorLevel.BOTTOM))
+					moveToBottom();
+				else if (aimedState.equals(ElevatorLevel.STOPPED))
+					stop();
+				else if (aimedState.equals(ElevatorLevel.START))
+					moveToBottomStart();
 			}
 		}
 	}
-	
-	
 
-	// Motion Magic based movement------------------------------
-	public static void setPosition(int position)
-	{
-		elevatorMaster.set(ControlMode.MotionMagic, position);
-	}
-	static void moveToBottomStart()
-	{
-		if(getBannerSenor())
-		{
+	private void moveToBottomStart() {
+		if (getBannerSensorValue()) {
 			stop();
 			resetEncoder();
-		}
-		else
+		} else
 			setOpenLoop(-.3);
 	}
 
-	static void moveToBottomStart(double speed)
-	{
-		if(getBannerSenor())
-		{
+	private void moveToBottomStart(double speed) {
+		if (getBannerSensorValue()) {
 			stop();
 			resetEncoder();
-		}
-		else
+		} else
 			setOpenLoop(-speed);
 	}
 
-	static boolean reachedZeroButNotBottom = false;
-	private static void moveToBottom()
-	{
-		if(encoderValue <= 100 && !getBannerSenor())
+	boolean reachedZeroButNotBottom = false;
+
+	private void moveToBottom() {
+		if (getEncoderValue() <= 100 && !getBannerSensorValue())
 			reachedZeroButNotBottom = true;
 
-		if(reachedZeroButNotBottom)
-		{
+		if (reachedZeroButNotBottom) {
 			moveToBottomStart(.2);
-			reachedZeroButNotBottom = !getBannerSenor();
-		}
-		else if(!getBannerSenor() && !reachedZeroButNotBottom)
+			reachedZeroButNotBottom = !getBannerSensorValue();
+		} else if (!getBannerSensorValue() && !reachedZeroButNotBottom)
 			setPosition(0);
-
-
 	}
 
-    public static void setOpenLoop(double power)
-    {
-		elevatorMaster.set(ControlMode.PercentOutput, power);
-	}
-	//----------------------------------------------------------
-
-	private static boolean positionThreshold(double constant)
-	{
-		return (constant + Constants.kElevatorPositionThreshold) > encoderValue && 
-				(constant - Constants.kElevatorPositionThreshold) < encoderValue;
+	public void updateBannerSensor() {
+		bannerSensorValue = limitSwitch.get();
 	}
 
-	public static boolean reachedState(ElevatorLevel nAimedState)
-	{
-		if(aimedState != null && nAimedState.encoderVal != -1)
-			return positionThreshold(nAimedState.encoderVal);
-		return false;
+	public boolean getBannerSensorValue() {
+		return bannerSensorValue;
 	}
 
-	public static boolean reachedAimedState()
-	{
-		return reachedState(aimedState);
+	public boolean isAboveMinRotate() {
+		return getEncoderValue() >= Constants.elevatorMinRotation;
 	}
 
-	//Encoder Methods-------------------------------------------
-	public static void updateEncoder()
-	{
-		if(bannerSensor)
-			resetEncoder();
-		else
-			encoderValue = elevatorMaster.getSelectedSensorPosition(0);
-
-		encoderVelocity = elevatorMaster.getSelectedSensorVelocity(0);
-		encoderError = elevatorMaster.getClosedLoopError(0);
+	public boolean isAboveMinRotate(int threshold) {
+		return (getEncoderValue() >= Constants.elevatorMinRotation + threshold);
 	}
 
-	private static void setEncoderValue(int encoderValue)
-	{
-		elevatorMaster.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
-	}
-	
-	private static void resetEncoder()
-	{
-		setEncoderValue(0);
-	}
-	//----------------------------------------------------------
-
-	private static boolean getBannerSenor()
-	{
-		return bannerSensor;
-	}
-	
-	public static void stop()
-	{
-		elevatorMaster.stopMotor();
-	}
-
-	public static boolean isAboveMinRotate(int threshold)
-	{
-		return (encoderValue >= Constants.elevatorMinRotation + threshold);
-	}
-
-	private static boolean isValueAboveMinRotate(int val)
-	{
+	public boolean isValueAboveMinRotate(int val) {
 		return (val >= Constants.elevatorMinRotation - 500);
 	}
-	public static boolean isStateAboveMinRotate(ElevatorLevel state)
-	{
-		if(state != null)
-			return isValueAboveMinRotate(state.encoderVal);
+
+	public boolean isStateAboveMinRotate(ElevatorLevel state) {
+		if (state != null)
+			return state.isAboveMinRotate();
 		return false;
 	}
-	
-	public static void printElevatorEncoders()
-    {
-        System.out.println("Elevator Encoder Value: " + encoderValue );
-	}
 
-	public static void printBannerSensor()
-    {
-    	System.out.println("Banner Sensor Value: " + getBannerSenor());
-    }
-
-    public static void printElevatorCurrent()
-    {
-        System.out.println("Elevator Current: " + elevatorMaster.getOutputCurrent());
-	}
-
-	public static void disableElevator()
-	{
+	public void disableElevator() {
 		aimedState = null;
-		elevatorMaster.setNeutralMode(NeutralMode.Coast);
 		stop();
 	}
 
-	//----------------------------------------------------------
-
-	// //Manual movement-------------------------------------------
-
-	// public static void setManualController(Joysticks controller)
-	// {
-	// 		if(controller.buttonA)
-	// 			aimedState = ElevatorLevel.BOTTOM;     //if hatch
-	// 		else if(controller.buttonB)
-	// 			aimedState = ElevatorLevel.HATCHL2;
-	// 		else if(controller.buttonY)
-	// 			aimedState = ElevatorLevel.HATCHL3;
-	// 		else if(controller.buttonX)
-	// 			aimedState = ElevatorLevel.MINROTATE;
-	// }
-
-	// public static void setElevatorManualControl(Joysticks controller)
-	// {
-	// 	setManualOverride(controller.leftJoyStickY);
-	// }
-
-
-	// public static void setManualOverride(double jValue)
-	// {
-	// 	if(Math.abs(jValue) > .15) //deadzone
-	// 	{
-	// 		manualOverride = true;
-	// 		aimedState = ElevatorLevel.MANUAL;
-    //         overrideValue = jValue;
-	// 	} 
-	// 	else 
-	// 	{
-	// 		manualOverride = false;
-	// 	}
-	// }
-
-	// private static int encoderState, manualAdjustment, manualEncoderValue;
-
-	// public static void moveManual(double jValue)
-	// {
-	// 	updateEncoder();
-	// 	// updateLivePosition();
-	// 	if(jValue > 0)
-	// 	{
-	// 		setOpenLoop(jValue * 0.5);
-	// 		manualAdjustment = 50;
-	// 		encoderState = 0;
-	// 	}
-	// 	else if(jValue < 0)
-	// 	{
-	// 		setOpenLoop(jValue * 0.5);
-	// 		manualAdjustment = 0;
-	// 		encoderState = 0;
-	// 	}
-	// 	else
-	// 	{
-	// 		switch(encoderState)
-	// 		{
-	// 			case 0:
-	// 				manualEncoderValue = encoderValue + manualAdjustment;
-	// 				encoderState = 1;
-	// 				break;
-	// 			case 1:
-	// 				setPosition(manualEncoderValue);
-	// 				break;
-	// 		}
-	// 	}
-	// }
 }

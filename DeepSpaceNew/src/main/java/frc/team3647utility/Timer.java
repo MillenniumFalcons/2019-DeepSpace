@@ -3,16 +3,14 @@ package frc.team3647utility;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 
-public class CustomTimer {
+public class Timer {
 /**
    * Return the system clock time in seconds. Return the time from the FPGA hardware clock in
    * seconds since the FPGA started.
    *
    * @return Robot running time in seconds.
    */
-  @SuppressWarnings("AbbreviationAsWordInName")
   public static double getFPGATimestamp() {
     return RobotController.getFPGATime() / 1000000.0;
   }
@@ -50,8 +48,7 @@ public class CustomTimer {
   private double m_accumulatedTime;
   private boolean m_running;
 
-  @SuppressWarnings("JavadocMethod")
-  public CustomTimer() {
+  public Timer() {
     reset();
   }
 
