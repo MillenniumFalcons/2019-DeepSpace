@@ -64,7 +64,7 @@ public class VisionController
 		tXAvg.add(this.x);
 		double error = tXAvg.getAverage() / 27.0; // error is x / 27. x is measured in degrees, where the max x is 27. We
 												// get a value from -1 to 1 to scale for speed output
-		if (limelight.getValidTarget() && Math.abs(error) < Constants.limelightThreshold) // checking if the error is within a threshold to stop
+		if (limelight.isValidTarget() && Math.abs(error) < Constants.limelightThreshold) // checking if the error is within a threshold to stop
 		{
 			// speed = 0; // setting global variable speed equal to zero
 			leftSpeed = 0;

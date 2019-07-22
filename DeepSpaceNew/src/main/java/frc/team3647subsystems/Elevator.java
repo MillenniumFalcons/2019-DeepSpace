@@ -54,12 +54,14 @@ public class Elevator
 		GearboxSPX2.follow(elevatorMaster);
 		GearboxSPX1.follow(elevatorMaster);
 		GearBoxSPX3.follow(elevatorMaster);
+
 		GearboxSPX2.setInverted(false);
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
+		GearBoxSPX3.setInverted(false);
 
-		Elevator.elevatorMaster.enableCurrentLimit(true);
-		Elevator.elevatorMaster.configContinuousCurrentLimit(35);
+		elevatorMaster.enableCurrentLimit(true);
+		elevatorMaster.configContinuousCurrentLimit(25);
 
 		elevatorMaster.setNeutralMode(NeutralMode.Brake);
 		elevatorMaster.setName("Elevator", "elevatorMaster");
@@ -144,6 +146,11 @@ public class Elevator
 		}
 	}
 	
+
+	private static void protectElevator()
+	{
+
+	}
 	
 
 	// Motion Magic based movement------------------------------

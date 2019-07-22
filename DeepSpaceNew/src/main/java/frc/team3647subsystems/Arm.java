@@ -43,9 +43,11 @@ public class Arm
 		armSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		armSRX.setSensorPhase(true);
 		armSRX.setInverted(false);
-
+		armSRX.configContinuousCurrentLimit(35);
+		
 		armNEO.restoreFactoryDefaults();
 		armNEO.setIdleMode(IdleMode.kBrake);
+		armNEO.setSmartCurrentLimit(35);
 		armNEO.enableVoltageCompensation(12);//max voltage of 12v to scale output better
 
 		configPIDFMM(Constants.armPIDF[0], Constants.armPIDF[1], Constants.armPIDF[2], Constants.armPIDF[3], 
@@ -100,6 +102,7 @@ public class Arm
 	public static void armNEOFollow()
 	{
 		armNEO.set(armSRX.getMotorOutputVoltage()/12); //set to voltage that srx is output on a scale of -1 to 1
+		
 	}
 
 	/**

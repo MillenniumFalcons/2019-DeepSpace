@@ -18,25 +18,6 @@ public class Limelight
         table = NetworkTableInstance.getDefault().getTable("limelight-" + orientation);    //initializing the network table to grab values from limelight
         update();
     }
-
-    // public void setToDriver()
-    // {
-    //     table.getEntry("camMode").setNumber(1); //Limelight Network Table code to set camera mode to driver vision
-    // }
-
-    // public void ledPipeline()
-    // {
-    //     table.getEntry("ledMode").setNumber(0);
-    // }
-    // public void ledOff()
-    // {
-    //     table.getEntry("ledMode").setNumber(1);
-    // }
-
-    // public void ledOn()
-    // {
-    //     table.getEntry("ledMode").setNumber(3);
-    // }
     public void set(VisionMode mode)
     {
         setPipeline(mode.pipeline);
@@ -49,30 +30,22 @@ public class Limelight
 
     public void update()
     {
-        // NetworkTableEntry tx = table.getEntry("tx"); //setting the N.T. entry to the tx value from limelight N.T.
-		// NetworkTableEntry ty = table.getEntry("ty"); //setting the N.T. entry to the ty value from limelight N.T.
-        // NetworkTableEntry ta = table.getEntry("ta"); //setting the N.T. entry to the ta value from limelight N.T.
-        
 		x = get("tx");      //x is set to tx, and setting the default value to -3647 if not recieving values from limelight
 		y = get("ty");      //y is set to ty, and setting the default value to -3647 if not recieving values from limelight
 		area = get("ta");   //area is set to ta, and setting the default value to -3647 if not recieving values from limelight
-
-		// SmartDashboard.putNumber("LimelightX", x);          //adding the values to SmartDashboard
-		// SmartDashboard.putNumber("LimelightY", y);          //adding the values to SmartDashboard
-		// SmartDashboard.putNumber("LimelightArea", area);    //adding the values to SmartDashboard
     }
 
-    public double getX()            //get x, because x is private
+    public double getX()
     {
         return this.x;
     }
 
-    public double getY()            //get y, because y is private
+    public double getY()
     {
         return this.y;
     }
 
-    public double getArea()         //get area, because area is private
+    public double getArea()
     {
         return this.area;
     }
@@ -87,7 +60,7 @@ public class Limelight
         set("ledMode", 0);
     }
 
-    public boolean getValidTarget()         //get area, because area is private
+    public boolean isValidTarget()
     {
         return get("tv") == 1;
     }
@@ -104,7 +77,7 @@ public class Limelight
 
     public void setRegularStream()
     {
-        setStream(0);
+        setStream(1);
     }
 
     private double get(String input)

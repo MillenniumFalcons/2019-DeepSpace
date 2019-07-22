@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.team3647inputs.*;
 
 public class Drivetrain
@@ -28,7 +29,7 @@ public class Drivetrain
 
   public static double supposedAngle;
 
-	private static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
+	public static DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 	
 	public static boolean initialized = false;
 
@@ -68,6 +69,8 @@ public class Drivetrain
 		// rightSRX.setExpiration(Constants.expirationTimeSRX);
 		// drive.setExpiration(Constants.expirationTimeSRX);
 		drive.setSafetyEnabled(false);
+		drive.setRightSideInverted(false);
+
 		leftSRX.setSafetyEnabled(false);
 		rightSRX.setSafetyEnabled(false);
 
@@ -103,21 +106,10 @@ public class Drivetrain
 	 * @param yValue joystick y value
 	 * @param gyro gyro object
 	 */
-  public static void customArcadeDrive(double xValue, double yValue)
+  public static void customArcadeDrive(double xValue, double yValue, boolean quickTurn)
 	{
 		double threshold = 0.09;
-		if(yValue != 0 && Math.abs(xValue) < threshold)
-    {
-			setPercentOutput(yValue, yValue);
-	 	}
-		else if(yValue == 0 && Math.abs(xValue) < threshold)
-		{
-			stop();
-		}
-		else
-		{
-			curvatureDrive(xValue, yValue);
-		}
+		drive.curvatureDrive(yValue, xValue, quickTurn);
 	}
 
 	public static void updateEncoders()
@@ -161,11 +153,12 @@ public class Drivetrain
 			supposedAngle = gyro.getYaw();
 		}
 	}
+
 	private static void curvatureDrive(double throttle, double turn)
 	{
 		try
 		{
-			drive.curvatureDrive(throttle, turn, true);	//curvature drive from WPILIB libraries.
+			drive.curvatureDrive(throttle, turn, turn < .15);	//curvature drive from WPILIB libraries.
 		}
 		catch(NullPointerException e)
 		{

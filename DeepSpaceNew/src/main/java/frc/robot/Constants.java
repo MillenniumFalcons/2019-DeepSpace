@@ -106,6 +106,9 @@ public class Constants
 	public static final double limelightThreshold = .0037;
 	public static final double limelightYOffset = -8;
 	public static final double limelightAreaThreshold = 9.5;
+
+	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";
+	public static final String limelightClimberIP = "http://10.36.47.49:5801/";
 	
 
 	public static final double velocityConstant = 3600; // 3600enc / 100ms
@@ -171,7 +174,7 @@ public class Constants
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28400;
 	public static final int elevatorCargoL3 = 42800;
-	public static final int elevatorHatchL3 = 44000;
+	public static final int elevatorHatchL3 = 42800;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 14350;
 	public static final int elevatorMinRotation = 20000; // Might want to combine with hatch lvl2
