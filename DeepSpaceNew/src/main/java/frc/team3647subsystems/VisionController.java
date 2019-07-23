@@ -121,14 +121,14 @@ public class VisionController
 																			// a.k.a. actual speed output
 		speed = output;
 
-		if (speed > 0 && speed < .1) // Speed threshold if in between 0 and .25, set speed to .25
-			speed = 0.1;
-		else if (speed < 0 && speed > -.1) // Speed threshold if in between -.25 and 0, set speed to -.25
-			speed = -0.1;
-		else if (speed > 1) // Speed threshold if greater than 1, set speed to 1
-			speed = 1;
-		else if (speed < -1) // Speed threshold if less than -1, set speed to -1
-			speed = -1;
+		if (speed > 0 && speed < .05) // Speed threshold if in between 0 and .25, set speed to .25
+			speed = 0.05;
+		else if (speed < 0 && speed > -.05) // Speed threshold if in between -.25 and 0, set speed to -.25
+			speed = -.05;
+		else if (speed > .25) // Speed threshold if greater than 1, set speed to 1
+			speed = .25;
+		else if (speed < -.25) // Speed threshold if less than -1, set speed to -1
+			speed = -.25;
 
 		prevError = error; // update prevError to current Error
 

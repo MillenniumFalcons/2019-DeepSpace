@@ -12,6 +12,7 @@ import frc.team3647autonomous.Odometry;
 // import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
+import frc.team3647subsystems.Arm.ArmPosition;
 import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 import frc.team3647subsystems.VisionController.VisionMode;
 import frc.team3647utility.AutoChooser;
@@ -276,7 +277,10 @@ public class Robot extends TimedRobot
 		}
 		// stateMachineRunnerNotifier.stop();
 		AutonomousSequences.limelightClimber.limelight.setUSBStream();
-		AutonomousSequences.limelightFourBar.limelight.setUSBStream();
+		AutonomousSequences.limelightClimber.limelight.setUSBStream();
+
+		AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
+		AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
 	}
 
 	@Override
@@ -290,15 +294,23 @@ public class Robot extends TimedRobot
 	public void testInit()
 	{
 		// Elevator.init();
-		Drivetrain.init();
-		Drivetrain.resetEncoders();
+		
+		// Drivetrain.init();
+		// Drivetrain.resetEncoders();
 		// drivetrainNotifier.startPeriodic(.02);
+		Arm.initSensors();
 	}
 	@Override
 	public void testPeriodic()
 	{
-		mainController.update();
-		driveVisionTeleop();
+		Arm.updateEncoder();
+		if(Arm.getRevLimitSwitch())
+		{
+			Arm.resetEncoder();
+		}
+		System.out.println(Arm.encoderValue);
+		// mainController.update();
+		// driveVisionTeleop();	
 		lastMethod = LastMethod.kTesting;
 	}
 
@@ -400,6 +412,6 @@ public class Robot extends TimedRobot
 					return AutonomousSequences.limelightClimber;
 			}
 		}
-		return AutonomousSequences.limelightClimber;
+		return AutonomousSequences.limelightFourBar;
 	}
 }
