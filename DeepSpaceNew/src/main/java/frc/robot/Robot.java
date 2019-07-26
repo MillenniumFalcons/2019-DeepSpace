@@ -13,6 +13,7 @@ import frc.team3647autonomous.Odometry;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.Arm.ArmPosition;
+import frc.team3647subsystems.Elevator.ElevatorLevel;
 import frc.team3647subsystems.SeriesStateMachine.ScoringPosition;
 import frc.team3647subsystems.VisionController.VisionMode;
 import frc.team3647utility.AutoChooser;
@@ -294,19 +295,14 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		Arm.initSensors();
+		Drivetrain.init();
 	}
 	@Override
 	public void testPeriodic()
 	{
-		Arm.updateEncoder();
-		if(Arm.getRevLimitSwitch())
-		{
-			Arm.resetEncoder();
-		}
-		System.out.println(Arm.encoderValue);
-		// mainController.update();
-		// driveVisionTeleop();	
+		mainController.update();
+		Elevator.aimedState = ElevatorLevel.HATCHL2;
+		driveVisionTeleop();
 		lastMethod = LastMethod.kTesting;
 	}
 
@@ -350,25 +346,32 @@ public class Robot extends TimedRobot
 		double joyY = mainController.leftJoyStickY;
 		double joyX = mainController.rightJoyStickX;
 		VisionMode mode = VisionMode.kClosestLvl1;
-		VisionController mVision = getLimelight(aimedRobotState.armPos);
+		VisionController mVision = AutonomousSequences.limelightClimber;
+
+		if(aimedRobotState != null)
+		{
+			mVision = getLimelight(aimedRobotState.armPos);
+			
+			switch(aimedRobotState.eLevel)
+			{
+				case CARGO1: //fall through
+				case BOTTOM:
+					mode = VisionMode.kClosestLvl1;
+					break;
+				case CARGOL2: //fall through
+				case HATCHL2:
+					mode = VisionMode.kClosestLvl2;
+					break;
+				case CARGOL3: //fall through
+				case HATCHL3:
+					mode = VisionMode.kClosestLvl3;
+					break;
+			}
+		}
+
+		
 		boolean scaledJoyVals = false;
 		double speedReducer = mVision.speedReducer;
-		
-		switch(aimedRobotState.eLevel)
-		{
-			case CARGO1: //fall through
-			case BOTTOM:
-				mode = VisionMode.kClosestLvl1;
-				break;
-			case CARGOL2: //fall through
-			case HATCHL2:
-				mode = VisionMode.kClosestLvl2;
-				break;
-			case CARGOL3: //fall through
-			case HATCHL3:
-				mode = VisionMode.kClosestLvl3;
-				break;
-		}
 
 		mVision.set(mode);
 		// if(mode != VisionMode.kBlack)
