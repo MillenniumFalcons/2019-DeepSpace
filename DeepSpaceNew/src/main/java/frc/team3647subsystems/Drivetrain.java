@@ -105,10 +105,17 @@ public class Drivetrain
 	 * @param xValue joystick x value
 	 * @param yValue joystick y value
 	 * @param gyro gyro object
+	 * @param quickTurn can the robot turn on itself
+	 * @param scaleInputs 60% of input is used for forward and 65% for turn if true
 	 */
-  public static void customArcadeDrive(double xValue, double yValue, boolean quickTurn)
+  public static void customArcadeDrive(double xValue, double yValue, boolean quickTurn, boolean scaleInputs)
 	{
-		double threshold = 0.09;
+		if(scaleInputs)
+		{
+			xValue *= .65;
+			yValue *= .6;
+		}
+
 		drive.curvatureDrive(yValue, xValue, quickTurn);
 	}
 
@@ -120,6 +127,18 @@ public class Drivetrain
     
   public static void setPercentOutput(double lOutput, double rOutput)
 	{
+		rightSRX.set(ControlMode.PercentOutput, rOutput);
+		leftSRX.set(ControlMode.PercentOutput, lOutput);
+	}
+
+	public static void setPercentOutput(double lOutput, double rOutput, boolean scaleInputs)
+	{
+		if (scaleInputs)
+		{
+			rOutput *= .6;
+			lOutput *= .6;
+		}
+
 		rightSRX.set(ControlMode.PercentOutput, rOutput);
 		leftSRX.set(ControlMode.PercentOutput, lOutput);
 	}

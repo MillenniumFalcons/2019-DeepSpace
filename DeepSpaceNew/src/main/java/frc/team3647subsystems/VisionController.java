@@ -10,6 +10,12 @@ public class VisionController
 {
 
 	public double x, y, speed, area, sumError, prevError, leftSpeed, rightSpeed;
+	
+	//Is inversly proportional to area to reduce speed as robot gets closer to target.
+	public double speedReducer;
+
+	//Is the area of the target when hatch touches velcro
+	private double maxArea = Constants.limelightMaxArea;
 
 	private double kp = Constants.limelightPID[0];
 	private double ki = Constants.limelightPID[1];
@@ -27,12 +33,14 @@ public class VisionController
 
 	public enum VisionMode
 	{
+		kBlack(0),
+		kDriver(1),
 		kRight(2),
 		kLeft(3),
-		kClosest(4),
-		kDriver(1),
-		kBlack(0);
-
+		kClosestLvl1(4),
+		kClosestLvl2(5),
+		kClosestLvl3(6);
+		
 		public int pipeline;
 		VisionMode(int pipeline)
 		{

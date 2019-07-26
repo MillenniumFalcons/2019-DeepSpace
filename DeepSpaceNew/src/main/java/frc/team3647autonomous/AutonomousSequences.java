@@ -393,7 +393,7 @@ public class AutonomousSequences
 
 	public static void sideCargoShipAuto(String LeftOrRight)
 	{
-		limelightFourBar.set(VisionMode.kClosest);
+		limelightFourBar.set(VisionMode.kClosestLvl1);
 		limelightFourBar.center();
 		
 		ramsetePeriodic();

@@ -237,6 +237,7 @@ public class Robot extends TimedRobot
 		}
 		else
 		{
+			HatchGrabber.stopMotor();
 			drivetrainNotifier.stop();
 			Drivetrain.stop();
 			armFollowerNotifier.stop();
@@ -293,11 +294,6 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		// Elevator.init();
-		
-		// Drivetrain.init();
-		// Drivetrain.resetEncoders();
-		// drivetrainNotifier.startPeriodic(.02);
 		Arm.initSensors();
 	}
 	@Override
@@ -338,80 +334,92 @@ public class Robot extends TimedRobot
 	private void driveVisionTeleop()
 	{
 		if(mainController.rightBumper && mainController.rightJoyStickX < .1)
-			vision((Elevator.encoderValue > 27000), VisionMode.kClosest);
+			vision(SeriesStateMachine.aimedRobotState, Elevator.encoderValue  > 27000);
 		else 
 		{
 			AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
 			AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
-			if(Elevator.encoderValue > 27000)
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6, mainController.leftJoyStickY < .15);
-			else
-			{
-				// Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY);
-				Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY, mainController.leftJoyStickY < .15);
-			}
+			Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6, mainController.leftJoyStickY < .15, (Elevator.encoderValue > 27000));
 		}
 	}
 
 	
 
-	private void vision(boolean scaleJoy, VisionMode mode)
+	private void vision(SeriesStateMachine.ScoringPosition aimedRobotState, boolean scaleInputs)
 	{
 		double joyY = mainController.leftJoyStickY;
 		double joyX = mainController.rightJoyStickX;
+		VisionMode mode = VisionMode.kClosestLvl1;
+		VisionController mVision = getLimelight(aimedRobotState.armPos);
+		boolean scaledJoyVals = false;
+		double speedReducer = mVision.speedReducer;
 		
-		VisionController mVision = getLimelight();
-
-		// VisionController mVisionDriver = mVision;
-		// if(mVision.equals(AutonomousSequences.limelightClimber))
-		// 	mVisionDriver = AutonomousSequences.limelightFourBar;
-		// else
-		// 	mVisionDriver = AutonomousSequences.limelightClimber;
-
-		if(scaleJoy)
+		switch(aimedRobotState.eLevel)
 		{
-			joyY *= .6;
-			joyX *= .65;
+			case CARGO1: //fall through
+			case BOTTOM:
+				mode = VisionMode.kClosestLvl1;
+				break;
+			case CARGOL2: //fall through
+			case HATCHL2:
+				mode = VisionMode.kClosestLvl2;
+				break;
+			case CARGOL3: //fall through
+			case HATCHL3:
+				mode = VisionMode.kClosestLvl3;
+				break;
 		}
 
 		mVision.set(mode);
 		// if(mode != VisionMode.kBlack)
 		// 	mVisionDriver.set(VisionMode.kDriver);
 
+
+
 		if(mode == VisionMode.kDriver)
 		{
-			Drivetrain.customArcadeDrive(joyX, joyY, joyY < .15);
+			Drivetrain.customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		}
 		else
 		{
 			mVision.center();
-			Drivetrain.setPercentOutput(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY);
+			speedReducer = mVision.area;
+
+			//make sure robot drives forward only when joyY is positive, and also when speed reducer is greater than joyY.
+			joyY = joyY > 0 && joyY - speedReducer > 0 ? joyY - speedReducer : .2;
+
+			Drivetrain.setPercentOutput(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY, scaleInputs);
 		}
 	}
 
-	private VisionController getLimelight()
+	private VisionController getLimelight(Arm.ArmPosition armAimedState) // ( ) ball shooter, >< hatch intake, ---- arm, encoderVal is where the ball intake is.
 	{
-		if(Arm.aimedState != null)
+		if(armAimedState != null)
 		{
-			//Arm is flipped bwds
-			if(Arm.aimedState.encoderVal < Constants.armSRXVerticalStowed)
+			if(armAimedState.encoderVal < Constants.armSRXVerticalStowed) //Arm is, going to be, forwards )---->
 			{
-				//If cargo then its actually forwards
-				if(!cargoDetection || SeriesStateMachine.aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONFWD))
+				// if there is no cargo and the aimed state isn't cargo intake, use the front limelight
+				if(!cargoDetection && !SeriesStateMachine.aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD))
+				{
 					return AutonomousSequences.limelightClimber;
-				else
-					return AutonomousSequences.limelightFourBar;
+				}
+				//If there is cargo, or cargo loading station backwards is the aimed state, use the rear limelight
+				return AutonomousSequences.limelightFourBar;
 			}
-			//Arm is forwards
-			else
+			
+			else //Arm is backwards <----(
 			{
-				// if cargo its actually backwards
-				if(!cargoDetection || SeriesStateMachine.aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONBWD))
+				// If there is no cargo and the state isn't cargo forwards, use rear limelight
+				if(!cargoDetection && !SeriesStateMachine.aimedRobotState.equals(ScoringPosition.CARGOLOADINGSTATIONFWD))
+				{
 					return AutonomousSequences.limelightFourBar;
-				else
-					return AutonomousSequences.limelightClimber;
+				}
+				//If there is cargo, or state is cargo loading station front, use front limelight
+				return AutonomousSequences.limelightClimber;
 			}
 		}
-		return AutonomousSequences.limelightFourBar;
+
+		// if arm aimed state is null, return front limelight
+		return AutonomousSequences.limelightClimber;
 	}
 }

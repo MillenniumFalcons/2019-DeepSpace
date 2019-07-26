@@ -99,13 +99,15 @@ public class Constants
 	// public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF = {  .341* 1.05, 0, 3.4, .281417 }; // .281417
+	public static final double[] leftVelocityPIDF = {  .341 * 1.05, 0, 3.4, .281417 }; // .281417
 	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
 
 	public static final double[] limelightPID = { .19, 0, 1 }; // p = .2, i = 0, d = 1.5
 	public static final double limelightThreshold = .0037;
 	public static final double limelightYOffset = -8;
-	public static final double limelightAreaThreshold = 9.5;
+	private static final double limelightAreaThreshold = 9.5;
+	public static final double limelightMaxArea = 0;
+	public static final double limelightMinArea = 0;
 
 	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";
 	public static final String limelightClimberIP = "http://10.36.47.49:5801/";
@@ -202,5 +204,6 @@ public class Constants
 
 	public static final double kFieldWidth = 8.2296;
 	public static final double expirationTimeSRX = 2; // seconds	
+	
 	
 }
