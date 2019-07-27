@@ -1,5 +1,7 @@
  package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -105,6 +107,9 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotPeriodic()	
 	{
+		// AutonomousSequences.limelightClimber.set(VisionMode.kClosestLvl2);
+		// System.out.println(AutonomousSequences.limelightClimber.limelight.getArea());
+		
 		if(isAutonomous())
 			gyro.update();
 		if(isEnabled())
@@ -295,14 +300,18 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		Drivetrain.init();
+		// Drivetrain.init();
+		// SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
 	}
 	@Override
 	public void testPeriodic()
 	{
+		// mainController.update();
+		// driveVisionTeleop();
+
+		
 		mainController.update();
-		Elevator.aimedState = ElevatorLevel.HATCHL2;
-		driveVisionTeleop();
+
 		lastMethod = LastMethod.kTesting;
 	}
 
@@ -329,7 +338,7 @@ public class Robot extends TimedRobot
 	double threshold = Constants.limelightThreshold;
 	private void driveVisionTeleop()
 	{
-		if(mainController.rightBumper && mainController.rightJoyStickX < .1)
+		if(mainController.rightBumper && Math.abs(mainController.rightJoyStickX) < .1)
 			vision(SeriesStateMachine.aimedRobotState, Elevator.encoderValue  > 27000);
 		else 
 		{
@@ -386,11 +395,17 @@ public class Robot extends TimedRobot
 		else
 		{
 			mVision.center();
-			speedReducer = mVision.area;
+
+			speedReducer = mVision.area != 0 ? Constants.limelightMaxArea / mVision.area : 1;
+			if(speedReducer > 1)
+			{
+				speedReducer = 1;
+			}
 
 			//make sure robot drives forward only when joyY is positive, and also when speed reducer is greater than joyY.
-			joyY = joyY > 0 && joyY - speedReducer > 0 ? joyY - speedReducer : .2;
+			joyY *= speedReducer;
 
+			System.out.println("JoyY: " + joyY + "\nspeedReducer: " + speedReducer + "\nrightSpeed: " + mVision.rightSpeed + "\nleftSpeed: " + mVision.leftSpeed);
 			Drivetrain.setPercentOutput(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY, scaleInputs);
 		}
 	}

@@ -106,7 +106,7 @@ public class Constants
 	public static final double limelightThreshold = .0037;
 	public static final double limelightYOffset = -8;
 	private static final double limelightAreaThreshold = 9.5;
-	public static final double limelightMaxArea = 0;
+	public static final double limelightMaxArea = 11.9; //12%
 	public static final double limelightMinArea = 0;
 
 	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";

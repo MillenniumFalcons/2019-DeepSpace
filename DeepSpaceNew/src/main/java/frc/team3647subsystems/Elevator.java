@@ -23,7 +23,7 @@ public class Elevator
     public static WPI_TalonSRX elevatorMaster = new WPI_TalonSRX(Constants.ElevatorGearboxSRX); //8
 	public static VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);	//12
 	public static VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2); //13
-	public static VictorSPX GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
+	// public static VictorSPX GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
 
 	public static int encoderError, encoderValue, encoderVelocity;
 	
@@ -53,12 +53,12 @@ public class Elevator
 
 		GearboxSPX2.follow(elevatorMaster);
 		GearboxSPX1.follow(elevatorMaster);
-		GearBoxSPX3.follow(elevatorMaster);
+		// GearBoxSPX3.follow(elevatorMaster);
 
 		GearboxSPX2.setInverted(false);
 		elevatorMaster.setInverted(false);
 		GearboxSPX1.setInverted(false);
-		GearBoxSPX3.setInverted(false);
+		// GearBoxSPX3.setInverted(false);
 
 		elevatorMaster.enableCurrentLimit(true);
 		elevatorMaster.configContinuousCurrentLimit(25);
