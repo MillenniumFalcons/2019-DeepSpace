@@ -122,13 +122,13 @@ public class Robot extends TimedRobot
 			System.out.println("Path running first " + mPath.getIntialPath());
 		}
 
-		if(!isEnabled())
-		{
-			if(RobotController.getBatteryVoltage() <= 12)
-			{
-				run = false;
-			}
-		}
+		// if(!isEnabled())
+		// {
+		// 	if(RobotController.getBatteryVoltage() <= 12)
+		// 	{
+		// 		run = false;
+		// 	}
+		// }
 
 
 		if(RobotController.isBrownedOut())
@@ -158,8 +158,8 @@ public class Robot extends TimedRobot
 		BallIntake.init();
 		MiniShoppingCart.init();
 		
-		if(run)
-		{
+		// if(run)
+		// {
 			if(!runAuto)
 			{
 				drivetrainNotifier.startPeriodic(.02);
@@ -179,7 +179,7 @@ public class Robot extends TimedRobot
 			subsystemsEncodersNotifier.startPeriodic(.02);
 
 			AirCompressor.run();
-		}
+		// }
 		lastMethod = LastMethod.kAuto;
 	}
   
@@ -216,14 +216,14 @@ public class Robot extends TimedRobot
 		BallIntake.init();
 		MiniShoppingCart.init();
 		
-		if(run)
-		{
+		// if(run)
+		// {
 			drivetrainNotifier.startPeriodic(.02);
 			armFollowerNotifier.startPeriodic(.01);
 
 			subsystemsEncodersNotifier.startPeriodic(.02);
 			AirCompressor.run();
-		}
+		// }
 		lastMethod = LastMethod.kTeleop;
 	}
 
@@ -231,8 +231,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopPeriodic()
 	{
-		if(run)
-		{
+		// if(run)
+		// {
 			HatchGrabber.run(coController);
 			SeriesStateMachine.setControllers(mainController, coController, isOperatorControl());
 			SeriesStateMachine.run();
@@ -240,15 +240,15 @@ public class Robot extends TimedRobot
 			Elevator.run(); 
 			BallShooter.runBlink();
 			MiniShoppingCart.run(mainController);
-		}
-		else
-		{
-			HatchGrabber.stopMotor();
-			drivetrainNotifier.stop();
-			Drivetrain.stop();
-			armFollowerNotifier.stop();
-			AirCompressor.stop();
-		}
+		// }
+		// else
+		// {
+			// HatchGrabber.stopMotor();
+			// drivetrainNotifier.stop();
+			// Drivetrain.stop();
+			// armFollowerNotifier.stop();
+			// AirCompressor.stop();
+		// }
 		lastMethod = LastMethod.kTeleop;
 	}
 
@@ -300,14 +300,14 @@ public class Robot extends TimedRobot
 	@Override
 	public void testInit()
 	{
-		// Drivetrain.init();
-		// SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL2FORWARDS;
+		Drivetrain.init();
+		SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
 	}
 	@Override
 	public void testPeriodic()
 	{
-		// mainController.update();
-		// driveVisionTeleop();
+		mainController.update();
+		driveVisionTeleop();
 
 		
 		mainController.update();
@@ -396,7 +396,7 @@ public class Robot extends TimedRobot
 		{
 			mVision.center();
 
-			speedReducer = mVision.area != 0 ? Constants.limelightMaxArea / mVision.area : 1;
+			speedReducer = mVision.area != -Constants.limelightMaxArea ? (Constants.limelightMaxArea * .5 ) / (mVision.area + Constants.limelightMaxArea) : 1;
 			if(speedReducer > 1)
 			{
 				speedReducer = 1;
