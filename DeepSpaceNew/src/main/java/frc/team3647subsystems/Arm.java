@@ -161,7 +161,7 @@ public class Arm
 	public static void moveToRevLimitSwitch()
 	{
 		if(!getRevLimitSwitch())
-			setOpenLoop(-.5);
+			setOpenLoop(-.3);
 		else
 		{
 			resetEncoder();

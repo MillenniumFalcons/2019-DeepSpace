@@ -100,7 +100,9 @@ public class SeriesStateMachine
         startedBallIntakeTimer = false;
 
         initialized = true;
+
     }
+
 
     public static void setControllers(Joysticks mainController, Joysticks coController, boolean isTeleop)
     {

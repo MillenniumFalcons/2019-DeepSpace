@@ -301,16 +301,19 @@ public class Robot extends TimedRobot
 	public void testInit()
 	{
 		Drivetrain.init();
-		SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1FORWARDS;
+		// SeriesStateMachine.aimedRobotState = ScoringPosition.HATCHL1BACKWARDS;
 	}
 	@Override
 	public void testPeriodic()
 	{
-		mainController.update();
+		// System.out.println(Arm.revNeoLimitSwitch.get());
+
 		driveVisionTeleop();
 
+		// HatchGrabber.run(coController);
 		
 		mainController.update();
+		// coController.update();
 
 		lastMethod = LastMethod.kTesting;
 	}
@@ -339,12 +342,13 @@ public class Robot extends TimedRobot
 	private void driveVisionTeleop()
 	{
 		if(mainController.rightBumper && Math.abs(mainController.rightJoyStickX) < .1)
-			vision(SeriesStateMachine.aimedRobotState, Elevator.encoderValue  > 27000);
+			vision(SeriesStateMachine.aimedRobotState, Elevator.encoderValue  > 27000 && mainController.rightJoyStickPress);
 		else 
 		{
 			AutonomousSequences.limelightClimber.limelight.set(VisionMode.kBlack);
 			AutonomousSequences.limelightFourBar.limelight.set(VisionMode.kBlack);
-			Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6, mainController.leftJoyStickY < .15, (Elevator.encoderValue > 27000));
+			Drivetrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6, mainController.leftJoyStickY < .15, (Elevator.encoderValue > 27000) && mainController.rightJoyStickPress);
+			// Drivetrain.tankDrive(mainController.leftJoyStickY, mainController.rightJoyStickY, (Elevator.encoderValue > 27000));
 		}
 	}
 

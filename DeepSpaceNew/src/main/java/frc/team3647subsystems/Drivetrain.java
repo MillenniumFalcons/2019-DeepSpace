@@ -74,6 +74,8 @@ public class Drivetrain
 		leftSRX.setSafetyEnabled(false);
 		rightSRX.setSafetyEnabled(false);
 
+		drive.setDeadband(.09);
+
 		
 		// resetEncoders();
 
@@ -116,9 +118,21 @@ public class Drivetrain
 			yValue *= .6;
 		}
 
-		drive.curvatureDrive(yValue, xValue, quickTurn);
+
+		drive.curvatureDrive(yValue, xValue, true);
 	}
 
+	public static void tankDrive(double leftSpeed, double rightSpeed, boolean scaleInputs)
+	{
+		if (scaleInputs)
+		{
+			leftSpeed *= .6;
+			rightSpeed *= .6;
+		}
+
+
+		drive.tankDrive(leftSpeed * .8, rightSpeed * .8);
+	}
 	public static void updateEncoders()
 	{
 		leftEncoder = leftSRX.getSelectedSensorPosition(0);

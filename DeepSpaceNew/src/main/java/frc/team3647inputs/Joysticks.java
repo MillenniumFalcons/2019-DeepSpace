@@ -142,11 +142,11 @@ public class Joysticks
 	 */
 	public static double joystickThreshold(double jValue)
 	{
-		if(Math.abs(jValue) < .09)
-		{
-			return 0;
-		}
-		else
+		// if(Math.abs(jValue) < .09)
+		// {
+		// 	return 0;
+		// }
+		// else
 		{
 			return 1 * jValue;
 		}
