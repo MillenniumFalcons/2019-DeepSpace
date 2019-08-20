@@ -15,6 +15,12 @@ public class VisionController {
 	public static VisionController limelightFourbar = new VisionController("fourbar");
 
 	public double x, y, speed, area, sumError, prevError, leftSpeed, rightSpeed;
+	
+	//Is inversly proportional to area to reduce speed as robot gets closer to target.
+	public double speedReducer;
+
+	//Is the area of the target when hatch touches velcro
+	private double maxArea = Constants.limelightMaxArea;
 
 	private double kp = Constants.limelightPID[0];
 	private double ki = Constants.limelightPID[1];

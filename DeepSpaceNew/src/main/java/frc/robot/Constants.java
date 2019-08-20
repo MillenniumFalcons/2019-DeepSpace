@@ -24,7 +24,7 @@ public class Constants
 
 	// Hatch Intake Motor Pins
 	public static final int shoppingCartMotorPin = 3;
-	public static final int shoppingCartSPXPin = 1;
+	public static final int shoppingCartSPXPin = 1; //hatch grabber spx
 	public static final int hatchGrabberPDPpin = 7; // 6 pratice, 7 comp
 
 	// Ball Intake
@@ -77,8 +77,8 @@ public class Constants
 	public static final double[] carriagePIDF = { 11, 0.00004, 80, 0 };
 
 	// Elevator Motion Magic
-	public static final int kElevatorCruiseVelocity = 6500;
-	public static final int kElevatorAcceleration = 13000;
+	public static final int kElevatorCruiseVelocity = 6500; //6500
+	public static final int kElevatorAcceleration = 13000; //13000
 
 	// Hatch Intake PID Values
 	public static final int kHatchWristPID = 0; // PID Slot Index
@@ -100,13 +100,15 @@ public class Constants
 	// public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF = {  .341* 1.05, 0, 3.4, .281417 }; // .281417
+	public static final double[] leftVelocityPIDF = {  .341 * 1.05, 0, 3.4, .281417 }; // .281417
 	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
 
 	public static final double[] limelightPID = { .19, 0, 1 }; // p = .2, i = 0, d = 1.5
 	public static final double limelightThreshold = .0037;
 	public static final double limelightYOffset = -8;
-	public static final double limelightAreaThreshold = 9.5; // 12% area
+	private static final double limelightAreaThreshold = 9.5;
+	public static final double limelightMaxArea = 9.5; //12%
+	public static final double limelightMinArea = 0;
 
 	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";
 	public static final String limelightClimberIP = "http://10.36.47.49:5801/";
@@ -198,9 +200,10 @@ public class Constants
 	public static final double kMaxVelocity = 4.22;
 
 	public static final double kBeta = 1.6; // b > 0 Correction
-	public static final double kZeta = 0.17; // 0 < z < 1 Dampening
+	public static final double kZeta = 0.17; // 0 < z < 1 Dampening //.17 hou apr 18th
 
 	public static final double kFieldWidth = 8.2296;
 	public static final double expirationTimeSRX = 2; // seconds	
+	
 	
 }
