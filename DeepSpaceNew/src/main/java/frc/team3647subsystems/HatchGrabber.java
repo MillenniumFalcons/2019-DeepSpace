@@ -8,11 +8,13 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 public class HatchGrabber extends Subsystem {
 	private VictorSPX hatchSucker;
+	private double current;
 
 	private static HatchGrabber INSTANCE = new HatchGrabber();
 
 	private HatchGrabber() {
 		hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
+		current = 0;
 	}
 
 	public static HatchGrabber getInstance() {
@@ -20,9 +22,9 @@ public class HatchGrabber extends Subsystem {
 	}
 
 	public void run(Joysticks coController) {
-		if (coController.rightBumper)
+		if (coController.leftBumper)
 			grabHatch();
-		else if (coController.leftBumper)
+		else if (coController.rightBumper)
 			releaseHatch();
 		else if (!Robot.cargoDetection)
 			runConstant();
@@ -35,16 +37,30 @@ public class HatchGrabber extends Subsystem {
 	}
 
 	public boolean hatchIn() {
-		double current = Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin);
 		return current > 3.5 && current < 5.5;
 	}
 
+	private void updateCurrent() {
+		current = Robot.pDistributionPanel.getCurrent(Constants.hatchGrabberPDPpin);
+	}
+
+	private double limitCurrent(double motorConst, double currentConst) {
+		updateCurrent();
+		return current > currentConst ? (currentConst / current) * motorConst : motorConst;
+
+	}
+
+	public double getCurrent() {
+		updateCurrent();
+		return current;
+	}
+
 	public void grabHatch() {
-		setOpenLoop(.6);
+		hatchSucker.set(ControlMode.PercentOutput, limitCurrent(.6, 3.5));
 	}
 
 	public void releaseHatch() {
-		setOpenLoop(-1);
+		hatchSucker.set(ControlMode.PercentOutput, -limitCurrent(1, 15));
 	}
 
 	public void runConstant() {

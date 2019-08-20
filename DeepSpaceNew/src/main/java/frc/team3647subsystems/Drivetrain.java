@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import frc.robot.Constants;
+import frc.team3647StateMachine.SeriesStateMachine;
+import frc.team3647inputs.Joysticks;
+import frc.team3647subsystems.VisionController.VisionMode;
 
 public class Drivetrain {
 	private WPI_TalonSRX leftSRX;
@@ -61,6 +64,9 @@ public class Drivetrain {
 		rightSRX.setSafetyEnabled(false);
 
 		setToBrake();
+
+		drive.setRightSideInverted(false);
+		drive.setDeadband(.09);
 
 		initialized = true;
 	}
@@ -135,6 +141,19 @@ public class Drivetrain {
 		leftSRX.config_kF(slot, left[3], Constants.kTimeoutMs);
 	}
 
+	
+	public void driveVisionTeleop(Joysticks mainController, SeriesStateMachine stateMachine, boolean scaleInputs) {
+		if (mainController.rightBumper && Math.abs(mainController.rightJoyStickX) < .1) {
+			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController);
+		} else {
+			VisionController.limelightClimber.set(VisionMode.kBlack);
+			VisionController.limelightFourbar.set(VisionMode.kBlack);
+			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6,
+					mainController.leftJoyStickY < .15,
+					(scaleInputs || mainController.rightJoyStickPress));
+		}
+	}
+
 	/**
 	 * Method to control robot
 	 * 
@@ -142,22 +161,74 @@ public class Drivetrain {
 	 * @param yValue joystick y value
 	 * @param gyro   gyro object
 	 */
-	public void customArcadeDrive(double xValue, double yValue) {
-		double threshold = 0.09;
-		if (initialized) {
-			if (yValue != 0 && Math.abs(xValue) < threshold) {
-				setOpenLoop(yValue, yValue);
-			} else if (yValue == 0 && Math.abs(xValue) < threshold) {
-				stop();
-			} else {
-				curvatureDrive(xValue, yValue);
-			}
-		} else {
-			init();
+	public void customArcadeDrive(double xValue, double yValue, boolean quickTurn, boolean scaleInputs) {
+		if (scaleInputs) {
+			xValue *= .65;
+			yValue *= .6;
 		}
+
+		drive.curvatureDrive(yValue, xValue, quickTurn);
 	}
 
+
+	public void arcadeDrive(double throttle, double turn, boolean scaleInputs) {
+		throttle = limit(throttle);
+		turn = limit(turn);
+		double leftMotorOutput;
+		double rightMotorOutput;
+
+		double maxInput = Math.copySign(Math.max(Math.abs(throttle), Math.abs(turn)), throttle);
+
+		if (throttle >= 0.0) {
+			// First quadrant, else second quadrant
+			if (turn >= 0.0) {
+				leftMotorOutput = maxInput;
+				rightMotorOutput = throttle - turn;
+			} else {
+				leftMotorOutput = throttle + turn;
+				rightMotorOutput = maxInput;
+			}
+		} else {
+			// Third quadrant, else fourth quadrant
+			if (turn >= 0.0) {
+				leftMotorOutput = throttle + turn;
+				rightMotorOutput = maxInput;
+			} else {
+				leftMotorOutput = maxInput;
+				rightMotorOutput = throttle - turn;
+			}
+		}
+
+		if (scaleInputs) {
+			leftMotorOutput = limit(leftMotorOutput) * .6;
+			rightMotorOutput = limit(rightMotorOutput) * .6;
+		}
+		leftSRX.set(limit(leftMotorOutput));
+		rightSRX.set(limit(rightMotorOutput));
+
+	}
+
+	private double limit(double value) {
+		if (value > 1) {
+			value = 1;
+		} else if (value < -1) {
+			value = -1;
+		}
+		return value;
+	}
+
+
 	public void setOpenLoop(double lOutput, double rOutput) {
+		rightSRX.set(ControlMode.PercentOutput, rOutput);
+		leftSRX.set(ControlMode.PercentOutput, lOutput);
+	}
+
+	public void setOpenLoop(double lOutput, double rOutput, boolean scaleInputs) {
+		if (scaleInputs) {
+			rOutput *= .6;
+			lOutput *= .6;
+		}
+
 		rightSRX.set(ControlMode.PercentOutput, rOutput);
 		leftSRX.set(ControlMode.PercentOutput, lOutput);
 	}
@@ -179,7 +250,7 @@ public class Drivetrain {
 			curvatureDrive(xValue, yValue);
 		}
 	}
-
+									//puts x         //puts y
 	private void curvatureDrive(double speed, double rotation) {
 		try {
 			drive.curvatureDrive(speed, rotation, rotation < .15); // curvature drive from WPILIB libraries.

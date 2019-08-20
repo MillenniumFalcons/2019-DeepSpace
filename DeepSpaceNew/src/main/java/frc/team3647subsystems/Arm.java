@@ -1,5 +1,7 @@
 package frc.team3647subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -70,7 +72,7 @@ public class Arm extends SRXSubsystem {
 
     public void moveToRevLimitSwitch() {
         if (!getRevLimitSwitchValue()) {
-            setOpenLoop(-.5);
+            setOpenLoop(-.3);
         } else {
             resetEncoder();
             setPosition(0);
@@ -80,7 +82,7 @@ public class Arm extends SRXSubsystem {
     @Override
     public void stop() {
         try {
-            getMaster().stopMotor();
+            setOpenLoop(0);
             armNEO.stopMotor();
         } catch (NullPointerException e) {
             armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -110,16 +112,26 @@ public class Arm extends SRXSubsystem {
         }
     }
 
+    @Override
     public void setToBrake() {
         armNEO.setIdleMode(IdleMode.kBrake);
     }
 
+    @Override
     public void setToCoast() {
         armNEO.setIdleMode(IdleMode.kCoast);
+    }
+
+    public String getName() {
+        return "Arm";
     }
 
     public void disableArm() {
         stop();
         setToCoast();
     }
+
+	public TalonSRX getMasterMotor() {
+		return getMaster();
+	}
 }

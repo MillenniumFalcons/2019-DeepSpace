@@ -28,6 +28,18 @@ public class RobotState {
         return isSpecial;
     }
 
+    public Direction getDirection()
+    {
+        return mArmPosition.getDirection();
+    }
+
+    public String toString()
+    {
+        return "Elevator " + mElevatorLevel.getValue() + "\nArm " + mArmPosition.getValue();
+    }
+
+    public static final RobotState MINROTATEFLATBWD = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.FLATBACKWARDS);
+    public static final RobotState MINROTATEFLATFWD = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.FLATFORWARDS);
     public static final RobotState HATCHL1FORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATFORWARDS);
     public static final RobotState HATCHL1BACKWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATBACKWARDS);
     public static final RobotState HATCHL1VISIONFORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATVISIONFORWARDS);

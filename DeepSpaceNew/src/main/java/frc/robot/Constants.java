@@ -25,7 +25,7 @@ public class Constants
 	// Hatch Intake Motor Pins
 	public static final int shoppingCartMotorPin = 3;
 	public static final int shoppingCartSPXPin = 1;
-	public static final int hatchGrabberPDPpin = 6; // 6 pratice, 7 comp
+	public static final int hatchGrabberPDPpin = 7; // 6 pratice, 7 comp
 
 	// Ball Intake
 	public static final int ballMotorPin = 2;
@@ -103,10 +103,13 @@ public class Constants
 	public static final double[] leftVelocityPIDF = {  .341* 1.05, 0, 3.4, .281417 }; // .281417
 	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
 
-	public static final double[] limelightPID = { .2, 0, 1.5 };
+	public static final double[] limelightPID = { .19, 0, 1 }; // p = .2, i = 0, d = 1.5
 	public static final double limelightThreshold = .0037;
 	public static final double limelightYOffset = -8;
-	public static final double limelightAreaThreshold = 9.5;
+	public static final double limelightAreaThreshold = 9.5; // 12% area
+
+	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";
+	public static final String limelightClimberIP = "http://10.36.47.49:5801/";
 	
 
 	public static final double velocityConstant = 3600; // 3600enc / 100ms
@@ -132,9 +135,11 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXForwardVision = 4200;
-	public static final int armSRXFlatForwards = 4750; //4290;
-	public static final int armSRXBackwardVision = 22000; //22650; 
-	public static final int armSRXFlatBackwards = 22400; //22400
+	public static final int armSRXFlatForwards = 4500; //4290;
+	public static final int armSRXBackwardVision = 21828; //22000; 
+	public static final int armSRXL3HatchFWD = 4750;
+	public static final int armSRXL3HatchBWD = 22000;
+	public static final int armSRXFlatBackwards = 22200; //22400
 	public static final int armSRXCargoL3Front = 24200;
 	public static final int armSRXCargoL3Back = 1900;
 	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
@@ -146,7 +151,7 @@ public class Constants
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
 	public static final int armSRXClimb = 20500;
-	public static int armSRXResetEncoderVal = 3000;
+	public static final int armSRXResetEncoderVal = 3000;
 
 	// NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;
@@ -169,7 +174,7 @@ public class Constants
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28400;
 	public static final int elevatorCargoL3 = 42800;
-	public static final int elevatorHatchL3 = 44000;
+	public static final int elevatorHatchL3 = 42800;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 14350;
 	public static final int elevatorMinRotation = 20000; // Might want to combine with hatch lvl2

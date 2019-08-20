@@ -5,10 +5,7 @@ import frc.robot.Constants;
 public class ArmPosition extends SubsystemAimedState{
 
     private Direction dir;
-    public enum Direction{
-        kForwards,
-        kBackwards;
-    }
+
     private ArmPosition(int encoderValue, GameObject object){
         super(encoderValue, object);
 

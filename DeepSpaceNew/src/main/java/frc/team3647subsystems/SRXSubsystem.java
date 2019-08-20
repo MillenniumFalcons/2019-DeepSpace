@@ -3,6 +3,7 @@ package frc.team3647subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import frc.robot.Constants;
@@ -16,7 +17,7 @@ public abstract class SRXSubsystem extends Subsystem {
 	private int MMVelocity, MMAcceleration;
 	private int encoderThreshold;
 
-	private WPI_TalonSRX masterSRX;
+	private TalonSRX masterSRX;
 
 	protected boolean initialized = false;
 
@@ -27,6 +28,8 @@ public abstract class SRXSubsystem extends Subsystem {
 		this.PIDArr = PIDArr;
 		masterSRX = new WPI_TalonSRX(masterCANID);
 		this.encoderThreshold = encoderThreshold;
+		this.MMAcceleration = MMAcceleration;
+		this.MMVelocity = MMVelocity;
 	}
 
 	public void init() {
@@ -37,9 +40,11 @@ public abstract class SRXSubsystem extends Subsystem {
 		masterSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Constants.kTimeoutMs);
 		masterSRX.setSensorPhase(true);
 		masterSRX.setInverted(false);
-		masterSRX.setNeutralMode(NeutralMode.Brake);
+		
 
 		configPIDFMM(PIDArr[0], PIDArr[1], PIDArr[2], PIDArr[3], MMVelocity, MMAcceleration);
+
+		masterSRX.setNeutralMode(NeutralMode.Brake);
 		initialized = true;
 	}
 
@@ -52,16 +57,21 @@ public abstract class SRXSubsystem extends Subsystem {
 		// Motion Magic Constants
 		masterSRX.configMotionCruiseVelocity(vel, Constants.kTimeoutMs);
 		masterSRX.configMotionAcceleration(accel, Constants.kTimeoutMs);
+
 	}
 
 	public abstract void run();
 
-	protected void setPosition(int position) {
+	public abstract String getName();
+
+	public void setPosition(int position) {
 		// Motion Magic
 		try {
 			masterSRX.set(ControlMode.MotionMagic, position);
+			System.out.println(getName() + " is now going to " + position);
 		} catch (NullPointerException e) {
-			masterSRX = new WPI_TalonSRX(masterCANID);
+			masterSRX = new TalonSRX(masterCANID);
+			initSensors();
 			masterSRX.set(ControlMode.MotionMagic, position);
 		}
 	}
@@ -83,17 +93,18 @@ public abstract class SRXSubsystem extends Subsystem {
 	public void setOpenLoop(double demand) {
 		try {
 			masterSRX.set(ControlMode.PercentOutput, demand);
+			// System.out.println(getName() + " is now open loop at demand " + demand);
 		} catch (NullPointerException e) {
-			masterSRX = new WPI_TalonSRX(masterCANID);
+			masterSRX = new TalonSRX(masterCANID);
 			initSensors();
 		}
 	}
 
 	public void stop() {
 		try {
-			masterSRX.stopMotor();
+			setOpenLoop(0);
 		} catch (NullPointerException e) {
-			masterSRX = new WPI_TalonSRX(masterCANID);
+			masterSRX = new TalonSRX(masterCANID);
 			initSensors();
 		}
 
@@ -108,7 +119,7 @@ public abstract class SRXSubsystem extends Subsystem {
 			encoderError = masterSRX.getClosedLoopError(0); // Gets difference between aimed encoder value and current
 															// encoder value
 		} catch (NullPointerException e) {
-			masterSRX = new WPI_TalonSRX(masterCANID);
+			masterSRX = new TalonSRX(masterCANID);
 			initSensors();
 		}
 	}
@@ -117,7 +128,7 @@ public abstract class SRXSubsystem extends Subsystem {
 		try {
 			masterSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
 		} catch (NullPointerException e) {
-			masterSRX = new WPI_TalonSRX(masterCANID);
+			masterSRX = new TalonSRX(masterCANID);
 			initSensors();
 		}
 	}
@@ -136,6 +147,14 @@ public abstract class SRXSubsystem extends Subsystem {
 		return false;
 	}
 
+	public void setToCoast() {
+		masterSRX.setNeutralMode(NeutralMode.Coast);
+	}
+
+	public void setToBrake(){
+		masterSRX.setNeutralMode(NeutralMode.Brake);
+	}
+
 	public int getEncoderValue() {
 		return encoderValue;
 	}
@@ -148,7 +167,7 @@ public abstract class SRXSubsystem extends Subsystem {
 		return encoderError;
 	}
 
-	protected WPI_TalonSRX getMaster() {
+	protected TalonSRX getMaster() {
 		return masterSRX;
 	}
 }

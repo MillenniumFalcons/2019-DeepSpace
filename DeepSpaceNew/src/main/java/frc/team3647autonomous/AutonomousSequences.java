@@ -29,7 +29,7 @@ public class AutonomousSequences {
 	// private static Drivetrain mDrivetrain = Robot.mDrivtrain;
 
 	public static void autoInitFWD(String trajectoryName) {
-		Robot.mDrivtrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		Robot.mDrivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
@@ -42,14 +42,14 @@ public class AutonomousSequences {
 	}
 
 	public static void autoInitFWD2(String trajectoryName) {
-		Robot.mDrivtrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		Robot.mDrivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.FORWARD);
 	}
 
 	public static void autoInitBWD(String trajectoryName) {
-		Robot.mDrivtrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+		Robot.mDrivetrain.selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 		driveSignal = new DriveSignal();
 		trajectory = TrajectoryUtil.getTrajectoryFromName(trajectoryName);
 		ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
@@ -79,24 +79,24 @@ public class AutonomousSequences {
 	public static void runVision() {
 		ramsetePeriodic();
 		if (!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished()) {
-			Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+			Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 		} else if (ramseteFollower.pathFractionSegment(.5)) {
 			limelightClimber.center();
-			Robot.mDrivtrain.setAutoVelocity(leftSpeed + (visionVelocityConstant) * limelightClimber.leftSpeed,
+			Robot.mDrivetrain.setAutoVelocity(leftSpeed + (visionVelocityConstant) * limelightClimber.leftSpeed,
 					rightSpeed + (visionVelocityConstant) * limelightClimber.rightSpeed);
 		} else if (ramseteFollower.isFinished() && limelightClimber.y > Constants.limelightYOffset) {
 			limelightClimber.center();
-			Robot.mDrivtrain.setAutoVelocity((visionVelocityConstant) * limelightClimber.leftSpeed,
+			Robot.mDrivetrain.setAutoVelocity((visionVelocityConstant) * limelightClimber.leftSpeed,
 					(visionVelocityConstant) * limelightClimber.rightSpeed);
 		} else {
 			Robot.mHatchGrabber.releaseHatch();
-			Robot.mDrivtrain.setAutoVelocity(-500, -500);
+			Robot.mDrivetrain.setAutoVelocity(-500, -500);
 		}
 	}
 
 	public static void runPath() {
 		ramsetePeriodic();
-		Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+		Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 	}
 
 	public static void frontRocketAuto(String LeftOrRight) {
@@ -104,7 +104,7 @@ public class AutonomousSequences {
 		switch (autoStep) {
 		case 0:
 			if (!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 			} else {
 				if (LeftOrRight.equals("Left")) {
 					limelightClimber.set(VisionMode.kLeft);
@@ -119,7 +119,7 @@ public class AutonomousSequences {
 				Robot.stateMachine.aimedRobotState = RobotState.HATCHL1FORWARDS;
 			if (ramseteFollower.pathFractionSegment(.5)) {
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -134,7 +134,7 @@ public class AutonomousSequences {
 			break;
 		case 5:
 			if (!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.15)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL1BACKWARDS;
 					Robot.mHatchGrabber.stop();
@@ -147,7 +147,7 @@ public class AutonomousSequences {
 			if (ramseteFollower.pathFractionSegment(.5)) {
 				limelightFourbar.center();
 				Robot.mHatchGrabber.grabHatch();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightFourbar.rightSpeed);
 			} else {
 				autoInitFWD2("StationTo" + LeftOrRight + "FrontRocket");
@@ -164,7 +164,7 @@ public class AutonomousSequences {
 			break;
 		case 10:
 			if (!ramseteFollower.pathFractionSegment(.5) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.2)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL2FORWARDS;
 					Robot.mHatchGrabber.runConstant();
@@ -176,7 +176,7 @@ public class AutonomousSequences {
 		case 11:
 			if (ramseteFollower.pathFractionSegment(.5)) {
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -186,7 +186,7 @@ public class AutonomousSequences {
 		case 13:
 			if (autoTimer.get() < 0.3) {
 				Robot.mHatchGrabber.releaseHatch();
-				Robot.mDrivtrain.setAutoVelocity(-500, -500);
+				Robot.mDrivetrain.setAutoVelocity(-500, -500);
 			} else {
 				Robot.mHatchGrabber.stop();
 				// Drivetrain.stop();
@@ -197,11 +197,11 @@ public class AutonomousSequences {
 			break;
 		case 14:
 			Robot.runAuto = false;
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			Robot.mHatchGrabber.stop();
 			break;
 		default:
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			break;
 		}
 	}
@@ -214,7 +214,7 @@ public class AutonomousSequences {
 				Robot.stateMachine.aimedRobotState = RobotState.HATCHL2FORWARDS;
 			}
 			if (!ramseteFollower.pathFractionSegment(.9) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 			} else {
 				if (LeftOrRight.equals("Left")) {
 					limelightClimber.set(VisionMode.kRight);
@@ -227,7 +227,7 @@ public class AutonomousSequences {
 		case 1:
 			if (ramseteFollower.pathFractionSegment(.8)) {
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -246,7 +246,7 @@ public class AutonomousSequences {
 			break;
 		case 5:
 			if (!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.15)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL1BACKWARDS;
 					Robot.mHatchGrabber.stop();
@@ -259,7 +259,7 @@ public class AutonomousSequences {
 			if (ramseteFollower.pathFractionSegment(.6)) {
 				limelightFourbar.center();
 				Robot.mHatchGrabber.grabHatch();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightFourbar.rightSpeed);
 			} else {
 				autoInitFWD2("StationTo" + LeftOrRight + "FrontRocket");
@@ -274,7 +274,7 @@ public class AutonomousSequences {
 			break;
 		case 10:
 			if (!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.2)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL2FORWARDS;
 					Robot.mHatchGrabber.runConstant();
@@ -286,7 +286,7 @@ public class AutonomousSequences {
 		case 11:
 			if (ramseteFollower.pathFractionSegment(.6)) {
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -296,7 +296,7 @@ public class AutonomousSequences {
 		case 13:
 			if (autoTimer.get() < 0.3) {
 				Robot.mHatchGrabber.releaseHatch();
-				Robot.mDrivtrain.setAutoVelocity(-500, -500);
+				Robot.mDrivetrain.setAutoVelocity(-500, -500);
 			} else {
 				Robot.mHatchGrabber.stop();
 				// Drivetrain.stop();
@@ -307,11 +307,11 @@ public class AutonomousSequences {
 			break;
 		case 14:
 			Robot.runAuto = false;
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			Robot.mHatchGrabber.stop();
 			break;
 		default:
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			break;
 		}
 	}
@@ -327,7 +327,7 @@ public class AutonomousSequences {
 			}
 			limelightClimber.set(VisionMode.kRight);
 			if (!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 			} else {
 				autoStep = 1;
 			}
@@ -336,7 +336,7 @@ public class AutonomousSequences {
 			if (ramseteFollower.pathFractionSegment(.8)) {
 				Robot.stateMachine.aimedRobotState = RobotState.HATCHL1FORWARDS;
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -355,7 +355,7 @@ public class AutonomousSequences {
 			break;
 		case 5:
 			if (!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.15)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL1BACKWARDS;
 					Robot.mHatchGrabber.runConstant();
@@ -368,7 +368,7 @@ public class AutonomousSequences {
 			if (ramseteFollower.pathFractionSegment(.6)) {
 				limelightFourbar.center();
 				Robot.mHatchGrabber.grabHatch();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightFourbar.rightSpeed);
 			} else {
 				autoInitFWD2("StationTo" + LeftOrRight + "CargoShipBay2");
@@ -383,7 +383,7 @@ public class AutonomousSequences {
 			break;
 		case 10:
 			if (!ramseteFollower.pathFractionSegment(.82) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.2)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL1FORWARDS;
 					Robot.mHatchGrabber.runConstant();
@@ -395,7 +395,7 @@ public class AutonomousSequences {
 		case 11:
 			if (ramseteFollower.pathFractionSegment(.82)) {
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -405,10 +405,10 @@ public class AutonomousSequences {
 		case 13:
 			if (autoTimer.get() < 0.3) {
 				Robot.mHatchGrabber.releaseHatch();
-				Robot.mDrivtrain.setAutoVelocity(-500, -500);
+				Robot.mDrivetrain.setAutoVelocity(-500, -500);
 			} else {
 				Robot.mHatchGrabber.stop();
-				Robot.mDrivtrain.stop();
+				Robot.mDrivetrain.stop();
 				autoStep = 14;
 				autoTimer.stop();
 				autoTimer.reset();
@@ -416,11 +416,11 @@ public class AutonomousSequences {
 			break;
 		case 14:
 			Robot.runAuto = false;
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			Robot.mHatchGrabber.stop();
 			break;
 		default:
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			break;
 		}
 	}
@@ -435,7 +435,7 @@ public class AutonomousSequences {
 				limelightClimber.set(VisionMode.kRight);
 			}
 			if (!ramseteFollower.pathFractionSegment(.8) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 			} else {
 				autoStep = 1;
 			}
@@ -444,7 +444,7 @@ public class AutonomousSequences {
 			if (ramseteFollower.pathFractionSegment(.8)) {
 				Robot.stateMachine.aimedRobotState = RobotState.HATCHL1FORWARDS;
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -463,7 +463,7 @@ public class AutonomousSequences {
 			break;
 		case 5:
 			if (!ramseteFollower.pathFractionSegment(.6) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.15)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL1BACKWARDS;
 					Robot.mHatchGrabber.runConstant();
@@ -476,7 +476,7 @@ public class AutonomousSequences {
 			if (ramseteFollower.pathFractionSegment(.6)) {
 				limelightFourbar.center();
 				Robot.mHatchGrabber.grabHatch();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightFourbar.rightSpeed);
 			} else {
 				autoInitFWD2("StationTo" + LeftOrRight + "CargoShipBay2");
@@ -491,7 +491,7 @@ public class AutonomousSequences {
 			break;
 		case 10:
 			if (!ramseteFollower.pathFractionSegment(.82) && !ramseteFollower.isFinished()) {
-				Robot.mDrivtrain.setAutoVelocity(leftSpeed, rightSpeed);
+				Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
 				if (ramseteFollower.pathFractionSegment(.2)) {
 					Robot.stateMachine.aimedRobotState = RobotState.HATCHL1FORWARDS;
 					Robot.mHatchGrabber.runConstant();
@@ -503,7 +503,7 @@ public class AutonomousSequences {
 		case 11:
 			if (ramseteFollower.pathFractionSegment(.82)) {
 				limelightClimber.center();
-				Robot.mDrivtrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
+				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightClimber.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightClimber.rightSpeed);
 			} else if (ramseteFollower.isFinished()) {
 				Robot.mHatchGrabber.releaseHatch();
@@ -515,10 +515,10 @@ public class AutonomousSequences {
 		case 13:
 			if (autoTimer.get() < 0.3) {
 				Robot.mHatchGrabber.releaseHatch();
-				Robot.mDrivtrain.setAutoVelocity(-500, -500);
+				Robot.mDrivetrain.setAutoVelocity(-500, -500);
 			} else {
 				Robot.mHatchGrabber.stop();
-				Robot.mDrivtrain.stop();
+				Robot.mDrivetrain.stop();
 				autoStep = 14;
 				autoTimer.stop();
 				autoTimer.reset();
@@ -526,11 +526,11 @@ public class AutonomousSequences {
 			break;
 		case 14:
 			Robot.runAuto = false;
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			Robot.mHatchGrabber.stop();
 			break;
 		default:
-			Robot.mDrivtrain.stop();
+			Robot.mDrivetrain.stop();
 			break;
 		}
 

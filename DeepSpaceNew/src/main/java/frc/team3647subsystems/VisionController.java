@@ -4,6 +4,10 @@ package frc.team3647subsystems;
 import edu.wpi.first.networktables.*;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.team3647StateMachine.ArmPosition;
+import frc.team3647StateMachine.RobotState;
+import frc.team3647inputs.Joysticks;
 
 public class VisionController {
 
@@ -139,7 +143,7 @@ public class VisionController {
 	private Limelight limelight;
 
 	public enum VisionMode {
-		kRight(2), kLeft(3), kClosest(4), kDriver(1), kBlack(0);
+		kRight(2), kLeft(3), kDriver(1), kBlack(0), kClosestLvl1(4), kClosestLvl2(5), kClosestLvl3(6);
 
 		public int pipeline;
 
@@ -151,6 +155,70 @@ public class VisionController {
 	public VisionController(String orientation) {
 		limelight = new Limelight(orientation);
 		limelight.set("streamMode", 0);
+	}
+
+	public static VisionController getLimelight(ArmPosition armAimedState) // ( ) ball shooter, >< hatch intake, ----
+																			// arm, encoderVal is where the ball intake
+																			// is.
+	{
+		if (armAimedState != null) {
+			if (armAimedState.getValue() < Constants.armSRXVerticalStowed) // Arm is, going to be, forwards )---->
+			{
+				// if there is no cargo and the aimed state isn't cargo intake, use the front
+				// limelight
+				if (!Robot.cargoDetection
+						&& !Robot.stateMachine.aimedRobotState.equals(RobotState.CARGOLOADINGSTATIONBWD)) {
+					return limelightClimber;
+				}
+				// If there is cargo, or cargo loading station backwards is the aimed state, use
+				// the rear limelight
+				return limelightFourbar;
+			}
+
+			else // Arm is backwards <----(
+			{
+				// If there is no cargo and the state isn't cargo forwards, use rear limelight
+				if (!Robot.cargoDetection
+						&& !Robot.stateMachine.aimedRobotState.equals(RobotState.CARGOLOADINGSTATIONFWD)) {
+					return limelightFourbar;
+				}
+				// If there is cargo, or state is cargo loading station front, use front
+				// limelight
+				return limelightClimber;
+			}
+		}
+
+		// if arm aimed state is null, return front limelight
+		return limelightClimber;
+	}
+
+	public static void vision(RobotState aimedRobotState, boolean scaleInputs, Joysticks mainController) {
+		double joyY = mainController.leftJoyStickY;
+		double joyX = mainController.rightJoyStickX;
+		VisionMode mode = VisionMode.kClosestLvl1;
+		VisionController mVision = limelightClimber;
+
+		if (aimedRobotState != null) {
+			mVision = getLimelight(aimedRobotState.getArmPosition());
+			int currentLevelValue = aimedRobotState.getElevatorLevel().getValue();
+			if (currentLevelValue > 30000) {
+				mode = VisionMode.kClosestLvl3;
+			} else if (currentLevelValue > 15000) {
+				mode = VisionMode.kClosestLvl2;
+			} else {
+				mode = VisionMode.kClosestLvl1;
+			}
+		}
+
+		mVision.set(mode);
+
+		if (mode == VisionMode.kDriver) {
+			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
+		} else {
+			mVision.center();
+
+			Drivetrain.getInstance().setOpenLoop(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY, scaleInputs);
+		}
 	}
 
 	// update Limelight Inputs
@@ -219,14 +287,14 @@ public class VisionController {
 																			// a.k.a. actual speed output
 		speed = output;
 
-		if (speed > 0 && speed < .1) // Speed threshold if in between 0 and .25, set speed to .25
-			speed = 0.1;
-		else if (speed < 0 && speed > -.1) // Speed threshold if in between -.25 and 0, set speed to -.25
-			speed = -0.1;
-		else if (speed > 1) // Speed threshold if greater than 1, set speed to 1
-			speed = 1;
-		else if (speed < -1) // Speed threshold if less than -1, set speed to -1
-			speed = -1;
+		if (speed > 0 && speed < .05) // Speed threshold if in between 0 and .25, set speed to .25
+			speed = 0.05;
+		else if (speed < 0 && speed > -.05) // Speed threshold if in between -.25 and 0, set speed to -.25
+			speed = -.05;
+		else if (speed > .25) // Speed threshold if greater than 1, set speed to 1
+			speed = .25;
+		else if (speed < -.25) // Speed threshold if less than -1, set speed to -1
+			speed = -.25;
 
 		prevError = error; // update prevError to current Error
 

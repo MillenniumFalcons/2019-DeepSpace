@@ -1,10 +1,13 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3647StateMachine.RobotState;
+import frc.team3647StateMachine.ElevatorLevel;
 import frc.team3647StateMachine.SeriesStateMachine;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
@@ -14,25 +17,20 @@ import frc.team3647subsystems.VisionController.VisionMode;
 import frc.team3647utility.AutoChooser;
 import frc.team3647utility.PDP;
 import frc.team3647utility.Path;
+import frc.team3647utility.LastMethod;
 
 public class Robot extends TimedRobot {
 
-	public static PDP pDistributionPanel;
-	public static Joysticks mainController;
-	public static Joysticks coController;
+	public static PDP pDistributionPanel = new PDP();;
+	public static Joysticks mainController = new Joysticks(0);
+	public static Joysticks coController = new Joysticks(1);
+	public static LastMethod lastMethod;
 
-	public static Gyro gyro;
-
-	private static Notifier drivetrainNotifier;
-	private static Notifier armFollowerNotifier;
-	private static Notifier autoNotifier;
-	private static Notifier pathNotifier;
-	private static Notifier subsystemsEncodersNotifier;;
+	public static Gyro gyro = new Gyro();
 
 	public static boolean runAuto = false;
 
 	public static boolean cargoDetection;
-
 
 	// All the subsystems
 	public static BallShooter mBallShooter = BallShooter.getInstance();
@@ -42,9 +40,30 @@ public class Robot extends TimedRobot {
 
 	public static Arm mArm = Arm.getInstance();
 	public static Elevator mElevator = Elevator.getInstance();
-	public static Drivetrain mDrivtrain = Drivetrain.getInstance();
+	public static Drivetrain mDrivetrain = Drivetrain.getInstance();
 
 	public static SeriesStateMachine stateMachine = SeriesStateMachine.getInstance();
+
+	private static Notifier autoNotifier;
+
+	private static Notifier drivetrainNotifier = new Notifier(() -> {
+		mainController.update();
+		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000);
+	});
+
+	private static Notifier armFollowerNotifier = new Notifier(() -> {
+		mArm.armNEOFollow();
+	});
+
+	private static Notifier pathNotifier = new Notifier(() -> {
+		mDrivetrain.updateEncoders();
+		Odometry.getInstance().runOdometry(mDrivetrain);
+	});
+
+	private static Notifier subsystemsEncodersNotifier = new Notifier(() -> {
+		mElevator.updateEncoder();
+		mArm.updateEncoder();
+	});
 
 	private AutoChooser mAutoChooser;
 
@@ -54,35 +73,12 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		LiveWindow.disableAllTelemetry();
 		LiveWindow.setEnabled(false);
-		pDistributionPanel = new PDP();
 
 		VisionController.limelightClimber.set(VisionMode.kBlack);
 		VisionController.limelightFourbar.set(VisionMode.kBlack);
-		mainController = new Joysticks(0);
-		coController = new Joysticks(1);
-		gyro = new Gyro();
 
-		mDrivtrain.init();
-
+		mDrivetrain.init();
 		mArm.setToBrake();
-
-		subsystemsEncodersNotifier = new Notifier(() -> {
-			mElevator.updateEncoder();
-			mArm.updateEncoder();
-		});
-		armFollowerNotifier = new Notifier(() -> {
-			mArm.armNEOFollow();
-		});
-
-		drivetrainNotifier = new Notifier(() -> {
-			mainController.update();
-			driveVisionTeleop();
-		});
-
-		autoNotifier = new Notifier(() -> {
-			mDrivtrain.updateEncoders();
-			Odometry.getInstance().runOdometry(mDrivtrain);
-		});
 
 		pathNotifier = new Notifier(() -> {
 			// AutonomousSequences.frontRocketAuto("Right");
@@ -90,9 +86,12 @@ public class Robot extends TimedRobot {
 			AutonomousSequences.mixedRocketAuto("Left");
 		});
 
-		mAutoChooser = new AutoChooser();
-		mAutoChooser.update();
-		mPath = new Path(mAutoChooser.getSide(), mAutoChooser.getStruct(), mAutoChooser.getMode());
+		// mAutoChooser = new AutoChooser();
+		// mAutoChooser.update();
+		// mPath = new Path(mAutoChooser.getSide(), mAutoChooser.getStruct(),
+		// mAutoChooser.getMode());
+
+		lastMethod = LastMethod.kStarted;
 	}
 
 	@Override
@@ -100,16 +99,23 @@ public class Robot extends TimedRobot {
 		if (isAutonomous()) {
 			gyro.update();
 		}
-		if (isEnabled()) {
-			coController.update();
-		} else {
-			mAutoChooser.update();
-			mPath.update(mAutoChooser.getSide(), mAutoChooser.getStruct(), mAutoChooser.getMode());
-			SmartDashboard.putString("Path running first", mPath.getIntialPath());
-		}
+		// if (!isEnabled()) {
+		// mAutoChooser.update();
+		// mPath.update(mAutoChooser.getSide(), mAutoChooser.getStruct(),
+		// mAutoChooser.getMode());
+		// SmartDashboard.putString("Path running first", mPath.getIntialPath());
+		// }
+
+		coController.update();
+		// System.out.println("Elevator encoder " + mElevator.getEncoderValue());
+		// mElevator.updateBannerSensor();
+		// if(mElevator.getBannerSensorValue()) {
+		// mElevator.resetEncoder();
+		// }
 		// mainController.update(); Done in drivetrain notifier!
 		// SmartDashboard.putNumber("Match Timer",
 		// DriverStation.getInstance().getMatchTime());
+
 		cargoDetection = mBallShooter.cargoDetection();
 	}
 
@@ -121,12 +127,12 @@ public class Robot extends TimedRobot {
 			gyro = new Gyro();
 		}
 
-		runAuto = true;
+		runAuto = false;
 		AutonomousSequences.autoStep = 0;
 
-		mDrivtrain.init();
-		mDrivtrain.setToBrake();
-		mDrivtrain.resetEncoders();
+		mDrivetrain.init();
+		mDrivetrain.setToBrake();
+		mDrivetrain.resetEncoders();
 
 		mArm.init();
 		mElevator.init();
@@ -134,10 +140,10 @@ public class Robot extends TimedRobot {
 		mBallIntake.init();
 		mMiniShoppingCart.init();
 
-		pathNotifier = new Notifier(() -> {
-			mPath.run();
-		});
-		AutonomousSequences.autoInitFWD(mPath.getIntialPath()); // off lvl 2
+		// pathNotifier = new Notifier(() -> {
+		// mPath.run();
+		// });
+		// AutonomousSequences.autoInitFWD(mPath.getIntialPath()); // off lvl 2
 
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //off lvl 1
 		// AutonomousSequences.autoInitFWD("LeftPlatformToBackLeftRocket"); //mixed left
@@ -154,22 +160,15 @@ public class Robot extends TimedRobot {
 			autoNotifier.startPeriodic(.01);
 		}
 
-		armFollowerNotifier.startPeriodic(.01);
 		subsystemsEncodersNotifier.startPeriodic(.05);
+		armFollowerNotifier.startPeriodic(.01);
 
 		AirCompressor.run();
+		lastMethod = LastMethod.kAuto;
 	}
 
 	@Override
 	public void autonomousPeriodic() {
-
-		if (mainController.buttonB) {
-			mDrivtrain.stop();
-			runAuto = false;
-			disabledInit();
-			teleopInit();
-		}
-
 		if (!runAuto)
 			teleopPeriodic();
 		else {
@@ -177,7 +176,14 @@ public class Robot extends TimedRobot {
 			mArm.run();
 			mElevator.run();
 			updateJoysticks();
+			if (mainController.buttonB) {
+				mDrivetrain.stop();
+				runAuto = false;
+				disabledInit();
+				teleopInit();
+			}
 		}
+
 	}
 
 	@Override
@@ -188,47 +194,51 @@ public class Robot extends TimedRobot {
 		mBallIntake.init();
 		mMiniShoppingCart.init();
 
+		subsystemsEncodersNotifier.startPeriodic(.05);
 		drivetrainNotifier.startPeriodic(.02);
 		armFollowerNotifier.startPeriodic(.01);
 
-		subsystemsEncodersNotifier.startPeriodic(.02);
 		AirCompressor.run();
+		lastMethod = LastMethod.kTeleop;
 	}
 
 	// Teleop Code
 	@Override
 	public void teleopPeriodic() {
 		mHatchGrabber.run(coController);
-		stateMachine.updateControllers(cargoDetection);
+		stateMachine.updateControllers(cargoDetection, isOperatorControl());
 		// subsystems encocers uses notifiers
 		stateMachine.run();
 		mArm.run();
 		mElevator.run();
 		mBallShooter.runBlink();
 
+		System.out.println("Elevator encoder " + mElevator.getEncoderValue());
 		// Drivetrain uses the notifier
-
-		if (stateMachine.runClimberManually) {
-			mMiniShoppingCart.run(mainController);
-		}
+		mMiniShoppingCart.run(mainController);
 
 	}
 
 	private static void disableAuto() {
-		mDrivtrain.init();
-		mDrivtrain.setToBrake();
-		autoNotifier.stop();
-		pathNotifier.stop();
+		mDrivetrain.init();
+		mDrivetrain.setToBrake();
+		if (autoNotifier != null) {
+			autoNotifier.stop();
+		}
+		if (pathNotifier != null) {
+			pathNotifier.stop();
+		}
 	}
 
 	@Override
 	public void disabledInit() {
 		drivetrainNotifier.stop();
-		mDrivtrain.stop();
+		mDrivetrain.stop();
 		pathNotifier.stop();
 		subsystemsEncodersNotifier.stop();
 		// armFollowerNotifier.stop();
 		// stateMachineRunnerNotifier.stop();
+		lastMethod = LastMethod.kDisabled;
 	}
 
 	@Override
@@ -238,23 +248,25 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void testInit() {
-		// Elevator.init();
-		// drivetrainNotifier.startPeriodic(.02);
-		mMiniShoppingCart.init();
-		// Arm.init();
+		// TestingMethods.reset();
+		// mDrivetrain.init();
+		mElevator.initSensors();
 		// armFollowerNotifier.startPeriodic(.01);
-		// Arm.initSensors();
-		// drivetrainNotifier.startPeriodic(.02);
+		lastMethod = LastMethod.kTesting;
 	}
 
 	@Override
 	public void testPeriodic() {
-		mMiniShoppingCart.run(mainController);
-		mainController.update();
 
-		// BallShooter.stopMotor();
-		// HatchGrabber.stopMotor();
-		// AirCompressor.run();
+		TestingMethods.test(Elevator.getInstance());
+
+		if (mainController.buttonA) {
+			mElevator.setPosition(4000);
+		} else if (mainController.buttonY) {
+			mElevator.setPosition(1000);
+		}
+
+		lastMethod = LastMethod.kTesting;
 	}
 
 	private void updateJoysticks() {
@@ -279,67 +291,4 @@ public class Robot extends TimedRobot {
 
 	double threshold = Constants.limelightThreshold;
 
-	private void driveVisionTeleop() {
-		if (mainController.rightBumper && mainController.rightJoyStickX < .1) {
-			vision((mElevator.getEncoderValue() > 27000), VisionMode.kClosest);
-		} else {
-			VisionController.limelightClimber.set(VisionMode.kBlack);
-			VisionController.limelightFourbar.set(VisionMode.kBlack);
-			if (mElevator.getEncoderValue() > 27000)
-				mDrivtrain.customArcadeDrive(mainController.rightJoyStickX * .65, mainController.leftJoyStickY * .6);
-			else
-				mDrivtrain.customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY);
-		}
-	}
-
-	private void vision(boolean scaleJoy, VisionMode mode) {
-		double joyY = mainController.leftJoyStickY;
-		double joyX = mainController.rightJoyStickX;
-
-		VisionController mVision = getLimelight();
-
-		VisionController mVisionDriver = mVision;
-		if (mVision.equals(VisionController.limelightClimber))
-			mVisionDriver = VisionController.limelightFourbar;
-		else
-			mVisionDriver = VisionController.limelightClimber;
-
-		if (scaleJoy) {
-			joyY *= .6;
-			joyX *= .65;
-		}
-
-		mVision.set(mode);
-		if (mode != VisionMode.kBlack) {
-			mVisionDriver.set(VisionMode.kDriver);
-		}
-		if (mode == VisionMode.kDriver) {
-			mDrivtrain.customArcadeDrive(joyX, joyY);
-		} else {
-			mVision.center();
-			mDrivtrain.setOpenLoop(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY);
-		}
-	}
-
-	private VisionController getLimelight() {
-		if (mArm.aimedState != null) {
-			// Arm is flipped bwds
-			if (mArm.aimedState.getValue() < Constants.armSRXVerticalStowed) {
-				// If cargo then its actually forwards
-				if (!cargoDetection || RobotState.CARGOLOADINGSTATIONFWD.equals(stateMachine.aimedRobotState))
-					return VisionController.limelightClimber;
-				else
-					return VisionController.limelightFourbar;
-			}
-			// Arm is forwards
-			else {
-				// if cargo its actually backwards
-				if (!cargoDetection || RobotState.CARGOLOADINGSTATIONBWD.equals(stateMachine.aimedRobotState))
-					return VisionController.limelightFourbar;
-				else
-					return VisionController.limelightClimber;
-			}
-		}
-		return VisionController.limelightClimber;
-	}
 }

@@ -6,13 +6,13 @@ public abstract class SubsystemAimedState{
     private boolean isSpecial;
     private GameObject object;
 
-    public SubsystemAimedState(int encoderValue, GameObject object){
+    protected SubsystemAimedState(int encoderValue, GameObject object){
         this.object = object;
         this.encoderValue = encoderValue;
         isSpecial = false;
     }
 
-    public SubsystemAimedState(){
+    protected SubsystemAimedState(){
         this.object = GameObject.kNone;
         this.encoderValue = -1;
         isSpecial = true;

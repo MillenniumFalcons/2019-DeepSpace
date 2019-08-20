@@ -1,8 +1,10 @@
 package frc.team3647subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+// import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.team3647StateMachine.ElevatorLevel;
@@ -41,6 +43,7 @@ public class Elevator extends SRXSubsystem {
 		aimedState = ElevatorLevel.STOPPED;
 		initSensors();
 
+		
 		setEncoderValue(5000);
 		updateEncoder();
 	}
@@ -48,41 +51,48 @@ public class Elevator extends SRXSubsystem {
 	@Override
 	public void initSensors() {
 		super.initSensors();
-
+		System.out.println("initialized Elevator");
 		aimedState = ElevatorLevel.STOPPED;
 
 		GearboxSPX2.follow(getMaster());
 		GearboxSPX1.follow(getMaster());
 		GearBoxSPX3.follow(getMaster());
+
 		GearboxSPX2.setInverted(false);
 		getMaster().setInverted(false);
 		GearboxSPX1.setInverted(false);
+		GearBoxSPX3.setInverted(false);
 
 		getMaster().enableCurrentLimit(true);
-		getMaster().configContinuousCurrentLimit(35);
+		getMaster().configContinuousCurrentLimit(25);
 
 		getMaster().setNeutralMode(NeutralMode.Brake);
-		getMaster().setName("Elevator", "elevatorMaster");
-		getMaster().setExpiration(Constants.expirationTimeSRX);
 		updateBannerSensor();
+
 		initialized = true;
 	}
 
+	public boolean hasInitialized() {
+		return initialized;
+	}
 	public void run() {
-		if (!initialized)
+		if (!initialized) {
 			initSensors();
+		}
 
 		updateBannerSensor();
+
 		if (aimedState != null) {
 			if (!aimedState.isSpecial()) {
 				setPosition(aimedState.getValue());
 			} else {
-				if (aimedState.equals(ElevatorLevel.BOTTOM))
+				if (aimedState.equals(ElevatorLevel.BOTTOM)) {
 					moveToBottom();
-				else if (aimedState.equals(ElevatorLevel.STOPPED))
+				} else if (aimedState.equals(ElevatorLevel.STOPPED)) {
 					stop();
-				else if (aimedState.equals(ElevatorLevel.START))
+				} else if (aimedState.equals(ElevatorLevel.START)) {
 					moveToBottomStart();
+				}
 			}
 		}
 	}
@@ -91,29 +101,33 @@ public class Elevator extends SRXSubsystem {
 		if (getBannerSensorValue()) {
 			stop();
 			resetEncoder();
-		} else
+		} else {
 			setOpenLoop(-.3);
+		}
 	}
 
 	private void moveToBottomStart(double speed) {
 		if (getBannerSensorValue()) {
 			stop();
 			resetEncoder();
-		} else
+		} else {
 			setOpenLoop(-speed);
+		}
 	}
 
 	boolean reachedZeroButNotBottom = false;
 
 	private void moveToBottom() {
-		if (getEncoderValue() <= 100 && !getBannerSensorValue())
+		if (getEncoderValue() <= 100 && !getBannerSensorValue()) {
 			reachedZeroButNotBottom = true;
+		}
 
 		if (reachedZeroButNotBottom) {
 			moveToBottomStart(.2);
 			reachedZeroButNotBottom = !getBannerSensorValue();
-		} else if (!getBannerSensorValue() && !reachedZeroButNotBottom)
+		} else if (!getBannerSensorValue() && !reachedZeroButNotBottom) {
 			setPosition(0);
+		}
 	}
 
 	public void updateBannerSensor() {
@@ -137,14 +151,23 @@ public class Elevator extends SRXSubsystem {
 	}
 
 	public boolean isStateAboveMinRotate(ElevatorLevel state) {
-		if (state != null)
+		if (state != null) {
 			return state.isAboveMinRotate();
+		}
 		return false;
+	}
+
+	public TalonSRX getMasterMotor() {
+		return getMaster();
 	}
 
 	public void disableElevator() {
 		aimedState = null;
 		stop();
+	}
+
+	public String getName() {
+		return "Elevator";
 	}
 
 }
