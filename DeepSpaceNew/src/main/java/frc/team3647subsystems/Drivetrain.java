@@ -154,7 +154,7 @@ public class Drivetrain {
 			mainController.setRumble(0);
 			VisionController.limelightClimber.set(VisionMode.kBlack);
 			VisionController.limelightFourbar.set(VisionMode.kBlack);
-			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6,
+			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY,
 					mainController.leftJoyStickY < .4,
 					(scaleInputs || mainController.rightJoyStickPress));
 		}
