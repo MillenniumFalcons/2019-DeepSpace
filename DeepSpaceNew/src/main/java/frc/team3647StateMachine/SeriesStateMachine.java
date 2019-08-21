@@ -92,7 +92,6 @@ public class SeriesStateMachine {
         prevCargoIntakeExtended = false;
         startedBallIntakeTimer = false;
 
-
         initialized = true;
     }
 
@@ -139,7 +138,6 @@ public class SeriesStateMachine {
                 else if (coController.dPadUp)
                     aimedRobotState = RobotState.CARGOL3BACKWARDS;
             }
-
 
             if (coController.leftJoyStickPress) {
                 aimedRobotState = RobotState.STOWED;
@@ -211,7 +209,6 @@ public class SeriesStateMachine {
 
     public void run() {
 
-        
         elevatorAboveMinRotate = mElevator.isAboveMinRotate(-550);
 
         if (!RobotState.NONE.equals(aimedRobotState)) {
@@ -254,8 +251,9 @@ public class SeriesStateMachine {
         case ARRIVED:
             mArm.aimedState = aimedState.getArmPosition();
             mElevator.aimedState = aimedState.getElevatorLevel();
-            if (aimedStateIsCargoHandoff)
+            if (aimedStateIsCargoHandoff) {
                 runCargoHandoff();
+            }
             break;
         case MOVEELEV:
             mElevator.aimedState = aimedState.getElevatorLevel();
@@ -281,13 +279,13 @@ public class SeriesStateMachine {
 
     private void runCargoHandoff() {
         prevCargoIntakeExtended = true;
-        mBallIntake.run();
         if (this.coController.leftTrigger < .15) {
             mBallIntake.stop();
-            if (Robot.cargoDetection)
+            if (Robot.cargoDetection) {
                 aimedRobotState = RobotState.CARGOSHIPFORWARDS;
-            else
-                aimedRobotState = RobotState.BEFORECARGOHANDOFF;
+            }
+        } else {
+            mBallIntake.run();
         }
     }
 

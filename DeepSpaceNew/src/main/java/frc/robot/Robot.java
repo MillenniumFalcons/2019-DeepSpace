@@ -1,4 +1,4 @@
- package frc.robot;
+package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
 
 	private static Notifier drivetrainNotifier = new Notifier(() -> {
 		mainController.update();
-		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000);
+		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 35000);
 	});
 
 	private static Notifier armFollowerNotifier = new Notifier(() -> {
@@ -249,22 +249,26 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testInit() {
 		// TestingMethods.reset();
-		// mDrivetrain.init();
-		mElevator.initSensors();
+		mDrivetrain.init();
+		// mElevator.initSensors();
 		// armFollowerNotifier.startPeriodic(.01);
 		lastMethod = LastMethod.kTesting;
+		AirCompressor.stop();
 	}
 
 	@Override
 	public void testPeriodic() {
 
-		TestingMethods.test(Elevator.getInstance());
-
 		if (mainController.buttonA) {
-			mElevator.setPosition(4000);
+			mDrivetrain.setRawVelocity(-500, -500);
 		} else if (mainController.buttonY) {
-			mElevator.setPosition(1000);
+			mDrivetrain.setRawVelocity(500, 500);
+		} else {
+			mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
 		}
+		mDrivetrain.updateEncoders();
+		System.out.println("Difference: " + (mDrivetrain.getLeftVelocity() - mDrivetrain.getRightVelocity()));
+		mainController.update();
 
 		lastMethod = LastMethod.kTesting;
 	}

@@ -15,11 +15,12 @@ public class VisionController {
 	public static VisionController limelightFourbar = new VisionController("fourbar");
 
 	public double x, y, speed, area, sumError, prevError, leftSpeed, rightSpeed;
-	
-	//Is inversly proportional to area to reduce speed as robot gets closer to target.
+
+	// Is inversly proportional to area to reduce speed as robot gets closer to
+	// target.
 	public double speedReducer;
 
-	//Is the area of the target when hatch touches velcro
+	// Is the area of the target when hatch touches velcro
 	private double maxArea = Constants.limelightMaxArea;
 
 	private double kp = Constants.limelightPID[0];
@@ -101,7 +102,7 @@ public class VisionController {
 			set("ledMode", 0);
 		}
 
-		public boolean getValidTarget() {
+		public boolean hasValidTarget() {
 			return get("tv") == 1;
 		}
 
@@ -220,10 +221,21 @@ public class VisionController {
 
 		if (mode == VisionMode.kDriver) {
 			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
+		} else if (Math.abs(joyX) > .09) {
+			if (!mVision.hasValidTarget()) {
+				mainController.setRumble(.15);
+			} else {
+				mainController.setRumble(0);
+			}
+			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		} else {
 			mVision.center();
-
 			Drivetrain.getInstance().setOpenLoop(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY, scaleInputs);
+			if (!mVision.hasValidTarget()) {
+				mainController.setRumble(.15);
+			} else {
+				mainController.setRumble(0);
+			}
 		}
 	}
 
@@ -246,7 +258,7 @@ public class VisionController {
 		double error = tXAvg.getAverage() / 27.0;
 
 		// checking if the error is within a threshold to stop
-		if (limelight.getValidTarget() && Math.abs(error) < Constants.limelightThreshold) {
+		if (limelight.hasValidTarget() && Math.abs(error) < Constants.limelightThreshold) {
 			// speed = 0; // setting global variable speed equal to zero
 			leftSpeed = 0;
 			rightSpeed = 0;
@@ -342,6 +354,10 @@ public class VisionController {
 
 	public void blink() {
 		limelight.blink();
+	}
+
+	public boolean hasValidTarget() {
+		return limelight.hasValidTarget();
 	}
 
 	// get prevError, because prevError is private

@@ -26,6 +26,9 @@ public class Drivetrain {
 	private int leftEncoderValue;
 	private int rightEncoderValue;
 
+	private int leftVelocity;
+	private int rightVelocity;
+
 	private DifferentialDrive drive;
 
 	public boolean initialized;
@@ -62,6 +65,8 @@ public class Drivetrain {
 		drive.setSafetyEnabled(false);
 		leftSRX.setSafetyEnabled(false);
 		rightSRX.setSafetyEnabled(false);
+
+		selectPIDF(0, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 
 		setToBrake();
 
@@ -143,13 +148,14 @@ public class Drivetrain {
 
 	
 	public void driveVisionTeleop(Joysticks mainController, SeriesStateMachine stateMachine, boolean scaleInputs) {
-		if (mainController.rightBumper && Math.abs(mainController.rightJoyStickX) < .1) {
+		if (mainController.rightBumper) {
 			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController);
 		} else {
+			mainController.setRumble(0);
 			VisionController.limelightClimber.set(VisionMode.kBlack);
 			VisionController.limelightFourbar.set(VisionMode.kBlack);
 			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY * .6,
-					mainController.leftJoyStickY < .15,
+					mainController.leftJoyStickY < .4,
 					(scaleInputs || mainController.rightJoyStickPress));
 		}
 	}
@@ -168,6 +174,7 @@ public class Drivetrain {
 		}
 
 		drive.curvatureDrive(yValue, xValue, quickTurn);
+		// drive.arcadeDrive(yValue, xValue);
 	}
 
 
@@ -301,6 +308,9 @@ public class Drivetrain {
 	public void updateEncoders() {
 		leftEncoderValue = leftSRX.getSelectedSensorPosition();
 		rightEncoderValue = rightSRX.getSelectedSensorPosition();
+
+		leftVelocity = leftSRX.getSelectedSensorVelocity();
+		rightVelocity = rightSRX.getSelectedSensorVelocity();
 	}
 
 	public void resetEncoders() {
@@ -335,6 +345,14 @@ public class Drivetrain {
 	
 	public int getRightEncoderValue() {
 		return rightEncoderValue;
+	}
+
+	public int getLeftVelocity() {
+		return leftVelocity;
+	}
+
+	public int getRightVelocity() {
+		return rightVelocity;
 	}
 
 	public void testDrivetrainCurrent() {
