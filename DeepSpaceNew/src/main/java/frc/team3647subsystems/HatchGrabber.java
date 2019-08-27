@@ -7,10 +7,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 public class HatchGrabber extends Subsystem {
-	private VictorSPX hatchSucker;
-	private double current;
 
 	private static HatchGrabber INSTANCE = new HatchGrabber();
+
+	private VictorSPX hatchSucker;
+	private double current;
 
 	private HatchGrabber() {
 		hatchSucker = new VictorSPX(Constants.shoppingCartSPXPin);
@@ -22,14 +23,15 @@ public class HatchGrabber extends Subsystem {
 	}
 
 	public void run(Joysticks coController) {
-		if (coController.leftBumper)
+		if (coController.leftBumper) {
 			grabHatch();
-		else if (coController.rightBumper)
+		} else if (coController.rightBumper) {
 			releaseHatch();
-		else if (!Robot.cargoDetection)
+		} else if (!Robot.cargoDetection) {
 			runConstant();
-		else
+		} else {
 			stop();
+		}
 	}
 
 	public void setOpenLoop(double demand) {

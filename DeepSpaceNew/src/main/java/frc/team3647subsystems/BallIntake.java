@@ -6,14 +6,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import frc.team3647utility.Solenoid;
 
-public class BallIntake extends Subsystem
-{
+public class BallIntake extends Subsystem {
+	private static BallIntake INSTANCE = new BallIntake();
+
 	private Solenoid extensionCylinder;
 	private Solenoid extensionCylinder2;
 	private VictorSPX intakeMotor;
 	
-	private static BallIntake INSTANCE = new BallIntake();
-
 	private BallIntake(){
 		extensionCylinder = new Solenoid(Constants.ballIntakeSolinoidPin);
 		extensionCylinder2 = new Solenoid(Constants.ballIntakeSolinoidPin2);
@@ -23,6 +22,7 @@ public class BallIntake extends Subsystem
 	public static BallIntake getInstance(){
 		return INSTANCE;
 	}
+
 	public void init(){
 		intakeMotor.setInverted(false);
 	}

@@ -18,9 +18,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
  * Add your docs here.
  */
 public class MiniShoppingCart extends Subsystem {
-	private WPI_TalonSRX motorSRX;
-
 	private static MiniShoppingCart INSTANCE = new MiniShoppingCart();
+	
+	private WPI_TalonSRX motorSRX;
 
 	private MiniShoppingCart() {
 		motorSRX = new WPI_TalonSRX(Constants.shoppingCartMotorPin);

@@ -10,6 +10,10 @@ import frc.robot.Constants;
 import frc.team3647StateMachine.SubsystemAimedState;
 
 public abstract class SRXSubsystem extends Subsystem {
+	
+	protected boolean initialized = false;
+	
+	public SubsystemAimedState aimedState;
 
 	private int encoderError, encoderValue, encoderVelocity;
 	private int masterCANID;
@@ -19,9 +23,6 @@ public abstract class SRXSubsystem extends Subsystem {
 
 	private TalonSRX masterSRX;
 
-	protected boolean initialized = false;
-
-	public SubsystemAimedState aimedState;
 
 	protected SRXSubsystem(int masterCANID, double[] PIDArr, int MMVelocity, int MMAcceleration, int encoderThreshold) {
 		this.masterCANID = masterCANID;
@@ -62,8 +63,7 @@ public abstract class SRXSubsystem extends Subsystem {
 
 	public abstract void run();
 
-	public abstract String getName();
-
+	
 	public void setPosition(int position) {
 		// Motion Magic
 		try {
@@ -75,14 +75,14 @@ public abstract class SRXSubsystem extends Subsystem {
 			masterSRX.set(ControlMode.MotionMagic, position);
 		}
 	}
-
+	
 	protected boolean positionThreshold(double constant) {
 		return (constant + encoderThreshold) > encoderValue && (constant - encoderThreshold) < encoderValue;
 	}
-
+	
 	public boolean reachedState(SubsystemAimedState nAimedState) {
 		if (aimedState != null && !nAimedState.isSpecial())
-			return positionThreshold(nAimedState.getValue());
+		return positionThreshold(nAimedState.getValue());
 		return false;
 	}
 
@@ -107,9 +107,9 @@ public abstract class SRXSubsystem extends Subsystem {
 			masterSRX = new TalonSRX(masterCANID);
 			initSensors();
 		}
-
+		
 	}
-
+	
 	public void updateEncoder() {
 		// When the arm rotates all the way to the back encoder resets
 		// Gets encoder from SRX
@@ -117,13 +117,13 @@ public abstract class SRXSubsystem extends Subsystem {
 			encoderValue = masterSRX.getSelectedSensorPosition(0);
 			encoderVelocity = masterSRX.getSelectedSensorVelocity(0);
 			encoderError = masterSRX.getClosedLoopError(0); // Gets difference between aimed encoder value and current
-															// encoder value
+			// encoder value
 		} catch (NullPointerException e) {
 			masterSRX = new TalonSRX(masterCANID);
 			initSensors();
 		}
 	}
-
+	
 	protected void setEncoderValue(int encoderValue) {
 		try {
 			masterSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
@@ -132,42 +132,43 @@ public abstract class SRXSubsystem extends Subsystem {
 			initSensors();
 		}
 	}
-
+	
 	public void resetEncoder() {
 		setEncoderValue(0);
 	}
-
+	
 	public boolean isEncoderInThreshold() {
 		// Checks the difference between the aimed encoder value and the current encoder
 		// value
 		// If difference less than a constant, assume current and aimed positions are
 		// the same
 		if (Math.abs(encoderError) < 80)
-			return true;
+		return true;
 		return false;
 	}
-
+	
 	public void setToCoast() {
 		masterSRX.setNeutralMode(NeutralMode.Coast);
 	}
-
+	
 	public void setToBrake(){
 		masterSRX.setNeutralMode(NeutralMode.Brake);
 	}
-
+	
 	public int getEncoderValue() {
 		return encoderValue;
 	}
-
+	
 	public int getEncoderVelocity() {
 		return encoderVelocity;
 	}
-
+	
 	public int getEncoderError() {
 		return encoderError;
 	}
-
+	
 	protected TalonSRX getMaster() {
 		return masterSRX;
 	}
+	public abstract String getName();
 }

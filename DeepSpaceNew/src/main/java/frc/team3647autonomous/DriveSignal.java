@@ -3,7 +3,8 @@ package frc.team3647autonomous;
 public class DriveSignal 
 {
 
-    private double left, right;
+    private double left;
+    private double right;
 
     public DriveSignal() 
     {
@@ -37,7 +38,7 @@ public class DriveSignal
         this.right = right;
     }
 
-    public void setBoth(double rightIn, double leftIn)
+    public void setBoth(double leftIn, double rightIn)
     {
         this.right = rightIn;
         this.left = leftIn;

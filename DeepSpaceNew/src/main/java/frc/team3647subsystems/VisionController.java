@@ -39,6 +39,10 @@ public class VisionController {
 	// PID loop
 
 	private class Limelight {
+		// NetworkTable is the class used to grab values from the Limelight Network
+		// Table
+		public NetworkTable table;
+		
 		// x is the tx degree value from Limelight Network Table
 		private double x;
 
@@ -49,9 +53,6 @@ public class VisionController {
 		// area to the entire picture area, as a percent.
 		private double area;
 
-		// NetworkTable is the class used to grab values from the Limelight Network
-		// Table
-		public NetworkTable table;
 
 		// used to initalize the main, important things
 		public Limelight(String orientation) {
@@ -223,18 +224,18 @@ public class VisionController {
 			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		} else if (Math.abs(joyX) > .09) {
 			if (!mVision.hasValidTarget()) {
-				mainController.setRumble(.15);
+				mainController.setRumblePower(.15);
 			} else {
-				mainController.setRumble(0);
+				mainController.setRumblePower(0);
 			}
 			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		} else {
 			mVision.center();
 			Drivetrain.getInstance().setOpenLoop(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY, scaleInputs);
 			if (!mVision.hasValidTarget()) {
-				mainController.setRumble(.15);
+				mainController.setRumblePower(.15);
 			} else {
-				mainController.setRumble(0);
+				mainController.setRumblePower(0);
 			}
 		}
 	}

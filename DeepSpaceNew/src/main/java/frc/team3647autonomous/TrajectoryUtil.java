@@ -91,6 +91,6 @@ public class TrajectoryUtil
         else
             System.out.println("CSV READ SUCCESSFUL");
 
-        return trajectory;
+        return correctPath(trajectory);
     }
 }
