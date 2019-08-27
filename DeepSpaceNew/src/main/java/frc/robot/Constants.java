@@ -106,7 +106,7 @@ public class Constants
 	public static final double[] limelightPID = { .19, 0, 1 }; // p = .2, i = 0, d = 1.5
 	public static final double limelightThreshold = .0037;
 	public static final double limelightYOffset = -8;
-	private static final double limelightAreaThreshold = 9.5;
+	public static final double limelightAreaThreshold = 9.5;
 	public static final double limelightMaxArea = 9.5; //12%
 	public static final double limelightMinArea = 0;
 
@@ -119,7 +119,7 @@ public class Constants
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Drivetrain Current Limiting Constants
 	public static final int drivePeakCurrent = 35; // Measured in Amps
-	public static final int drivePeakCurrentDuration = 5000; // Measured in Milliseconds
+	public static final int drivePeakCurrentDuration = 1000; // Measured in Milliseconds
 	public static final int driveContinousCurrent = 30; // Measured in Amps
 
 	// Elevator Current Limiting
@@ -153,6 +153,8 @@ public class Constants
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
 	public static final int armSRXClimb = 20500;
+	public static final int armSRXCargoFlatForwards = 22200;
+	public static final int armSRXCargoFlatBackwards = 4500;
 	public static final int armSRXResetEncoderVal = 3000;
 
 	// NEO Hall Effect SEnsor Positions
@@ -197,7 +199,9 @@ public class Constants
 	public static final double kEncoderTicks = 4096;
 	public static final double kWheelDiameter = .153; // meters
 	public static final double kWheelBase = .7112;
-	public static final double kMaxVelocity = 4.22;
+	public static final double kMaxVelocity = 4.22; //meter per second
+
+	// 4.22 m/s .153pi meters / second = 1 rev / second
 
 	public static final double kBeta = 1.6; // b > 0 Correction
 	public static final double kZeta = 0.17; // 0 < z < 1 Dampening //.17 hou apr 18th

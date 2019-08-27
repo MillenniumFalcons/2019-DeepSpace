@@ -11,29 +11,28 @@ import frc.team3647StateMachine.ElevatorLevel;
 
 public class Elevator extends SRXSubsystem {
 
+	private static Elevator INSTANCE = new Elevator();
+
 	private boolean bannerSensorValue = false;
 
 	// Sensor at bottom of elevator
-	private DigitalInput limitSwitch;
+	private DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
+
 
 	// Elevator motors
-	private VictorSPX GearboxSPX1;
-	private VictorSPX GearboxSPX2;
-	private VictorSPX GearBoxSPX3;
+	public VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);
+	public VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2);
+	// public VictorSPX GearBoxSPX3;
 
-	private static Elevator INSTANCE = new Elevator();
+	
 
 	private Elevator() {
 		super(Constants.ElevatorGearboxSRX, Constants.interstagePIDF, Constants.kElevatorCruiseVelocity,
 				Constants.kElevatorAcceleration, Constants.kElevatorPositionThreshold);
 		aimedState = ElevatorLevel.STOPPED;
-		GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);
-		GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2);
-		GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
-		limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
+		// GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
 		bannerSensorValue = false;
 	}
-
 	public static Elevator getInstance() {
 		return INSTANCE;
 	}
@@ -56,12 +55,12 @@ public class Elevator extends SRXSubsystem {
 
 		GearboxSPX2.follow(getMaster());
 		GearboxSPX1.follow(getMaster());
-		GearBoxSPX3.follow(getMaster());
+		// GearBoxSPX3.follow(getMaster());
 
 		GearboxSPX2.setInverted(false);
 		getMaster().setInverted(false);
 		GearboxSPX1.setInverted(false);
-		GearBoxSPX3.setInverted(false);
+		// GearBoxSPX3.setInverted(false);
 
 		getMaster().enableCurrentLimit(true);
 		getMaster().configContinuousCurrentLimit(25);
@@ -75,6 +74,7 @@ public class Elevator extends SRXSubsystem {
 	public boolean hasInitialized() {
 		return initialized;
 	}
+
 	public void run() {
 		if (!initialized) {
 			initSensors();

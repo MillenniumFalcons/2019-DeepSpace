@@ -1,6 +1,7 @@
 package frc.team3647subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -14,14 +15,20 @@ import frc.team3647inputs.Joysticks;
 import frc.team3647subsystems.VisionController.VisionMode;
 
 public class Drivetrain {
-	private WPI_TalonSRX leftSRX;
-	private WPI_TalonSRX rightSRX;
+	private static Drivetrain INSTANCE = new Drivetrain();
 
-	private VictorSPX leftSPX1;
-	private VictorSPX leftSPX2;
+	public int prevVelR = 0;
+	public int prevVelL = 0;
 
-	private VictorSPX rightSPX2;
-	private VictorSPX rightSPX1;
+	private WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
+	private WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
+
+
+	private VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
+	private VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
+
+	private VictorSPX rightSPX2 = new VictorSPX(Constants.rightSlave1Pin);
+	private VictorSPX rightSPX1 = new VictorSPX(Constants.rightSlave2Pin);
 
 	private int leftEncoderValue;
 	private int rightEncoderValue;
@@ -29,22 +36,13 @@ public class Drivetrain {
 	private int leftVelocity;
 	private int rightVelocity;
 
-	private DifferentialDrive drive;
+	private DifferentialDrive drive = new DifferentialDrive(leftSRX, rightSRX);
 
 	public boolean initialized;
 
-	private static Drivetrain INSTANCE = new Drivetrain();
+	
 
 	private Drivetrain() {
-		leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
-		leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
-		leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
-
-		rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
-		rightSPX1 = new VictorSPX(Constants.rightSlave1Pin);
-		rightSPX2 = new VictorSPX(Constants.rightSlave2Pin);
-
-		drive = new DifferentialDrive(leftSRX, rightSRX);
 		initialized = false;
 	}
 
@@ -58,6 +56,8 @@ public class Drivetrain {
 
 		configLeftSRX();
 		configRightSRX();
+
+		; // 1 second from 0 to 100% motor output
 
 		// leftSRX.setExpiration(Constants.expirationTimeSRX);
 		// rightSRX.setExpiration(Constants.expirationTimeSRX);
@@ -101,6 +101,7 @@ public class Drivetrain {
 		leftSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration);
 
 		leftSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent);
+		// leftSRX.configOpenloopRamp(.25);
 		leftSRX.setName("Drivetrain", "leftSRX");
 	}
 
@@ -120,9 +121,11 @@ public class Drivetrain {
 		rightSRX.configPeakCurrentDuration(Constants.drivePeakCurrentDuration);
 		rightSRX.configContinuousCurrentLimit(Constants.driveContinousCurrent);
 
+		// rightSRX.configOpenloopRamp(.25);
+
 		rightSRX.setInverted(true);
-		rightSPX1.setInverted(true);
-		rightSPX2.setInverted(true);
+		rightSPX1.setInverted(InvertType.FollowMaster);
+		rightSPX2.setInverted(InvertType.FollowMaster);
 
 		rightSRX.setName("Drivetrain", "rightSRX");
 	}
@@ -146,12 +149,16 @@ public class Drivetrain {
 		leftSRX.config_kF(slot, left[3], Constants.kTimeoutMs);
 	}
 
+	public void configDefaultPIDF() {
+		selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
+	}
+
 	
 	public void driveVisionTeleop(Joysticks mainController, SeriesStateMachine stateMachine, boolean scaleInputs) {
 		if (mainController.rightBumper) {
 			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController);
 		} else {
-			mainController.setRumble(0);
+			mainController.setRumblePower(0);
 			VisionController.limelightClimber.set(VisionMode.kBlack);
 			VisionController.limelightFourbar.set(VisionMode.kBlack);
 			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY,
@@ -370,8 +377,6 @@ public class Drivetrain {
 		System.out.println("Right Vel:" + rightSRX.getSelectedSensorVelocity());
 	}
 
-	public int prevVelR = 0, prevVelL = 0;
-
 	public void printAccel() {
 		int currentVelR = rightSRX.getSelectedSensorVelocity();
 		int currentVelL = leftSRX.getSelectedSensorVelocity();
@@ -388,7 +393,5 @@ public class Drivetrain {
 		int velErrorL = leftSRX.getClosedLoopError();
 		System.out.println("Right Vel Error: " + velErrorR);
 		System.out.println("Left Vel Error: " + velErrorL);
-	}
-
-	
+	}	
 }

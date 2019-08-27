@@ -6,10 +6,17 @@ public abstract class SubsystemAimedState{
     private boolean isSpecial;
     private GameObject object;
 
-    protected SubsystemAimedState(int encoderValue, GameObject object){
+    protected SubsystemAimedState(int encoderValue, GameObject object) throws NullPointerException{
         this.object = object;
+        if(this.object == null) {
+            throw new NullPointerException("Game object is null!");
+        }
         this.encoderValue = encoderValue;
         isSpecial = false;
+    }
+
+    protected SubsystemAimedState(int encoderValue) {
+        this(encoderValue, GameObject.kNone);
     }
 
     protected SubsystemAimedState(){

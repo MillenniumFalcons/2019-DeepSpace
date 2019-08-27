@@ -1,6 +1,5 @@
 package frc.team3647subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
@@ -13,18 +12,16 @@ import frc.team3647StateMachine.ArmPosition;
 
 public class Arm extends SRXSubsystem {
 
-    private CANSparkMax armNEO;
-    private CANDigitalInput revNeoLimitSwitch;
-    private CANDigitalInput fwdNeoLimitSwitch;
-
     private static Arm INSTANCE = new Arm();
+
+    private CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANDigitalInput revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+    private CANDigitalInput fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
 
     private Arm() {
         super(Constants.armSRXPin, Constants.armPIDF, Constants.kArmSRXCruiseVelocity, Constants.kArmSRXAcceleration,
                 Constants.kArmSRXPositionThreshold);
-        armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
-        revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-        fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
     }
 
     public static Arm getInstance() {
@@ -131,7 +128,7 @@ public class Arm extends SRXSubsystem {
         setToCoast();
     }
 
-	public TalonSRX getMasterMotor() {
-		return getMaster();
-	}
+    public TalonSRX getMasterMotor() {
+        return getMaster();
+    }
 }

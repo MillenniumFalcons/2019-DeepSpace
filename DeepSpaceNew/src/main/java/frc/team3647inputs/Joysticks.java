@@ -1,15 +1,10 @@
 package frc.team3647inputs;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Timer;
+import frc.team3647utility.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class Joysticks {
-	/**
-	 * XboxController Object for Main-Driver Controller; contains all Xbox
-	 * Controller Functions
-	 */
-	private XboxController controller;
 
 	/**
 	 * Main controller Variable
@@ -19,12 +14,28 @@ public class Joysticks {
 	public boolean rightJoyStickPress, leftJoyStickPress, leftMidButton, rightMidButton, buttonXPressed;
 
 	/**
+	 * XboxController Object for Main-Driver Controller; contains all Xbox
+	 * Controller Functions
+	 */
+	private XboxController controller;
+
+	private int controllerPin;
+
+	private double rumblePower;
+	private Timer rumbleTimer;
+	private boolean vibrated = false;
+
+
+	/**
 	 * Co-Driver Controller Variable
 	 */
-	public int dPadValue = -1; // dPad degree value
+	private int dPadValue = -1; // dPad degree value
 
 	public Joysticks(int controllerPin) {
 		controller = new XboxController(controllerPin);
+		rumbleTimer = new Timer();
+		vibrated = false;
+		this.controllerPin = controllerPin;
 	}
 
 	/**
@@ -52,9 +63,13 @@ public class Joysticks {
 
 		leftMidButton = controller.getBackButton();
 		rightMidButton = controller.getStartButton();
+		
 
 		dPadValue = controller.getPOV();
 		setDPadValues();
+		if(controllerPin == 0) {
+			runRumble();
+		}
 	}
 
 	/**
@@ -78,10 +93,34 @@ public class Joysticks {
 	 * @param joystick object
 	 * @param power    power of rumble from 0 to 1
 	 */
-	public void setRumble(double power) {
+	private void setRumble(double power) {
 		controller.setRumble(GenericHID.RumbleType.kLeftRumble, power);
 		controller.setRumble(GenericHID.RumbleType.kRightRumble, power);
 	}
+
+	public void setRumblePower(double power) {
+		this.rumblePower = power;
+	}
+
+	private void runRumble() {
+		if(rumblePower > 0) {
+			if(!rumbleTimer.isRunning()) {
+				rumbleTimer.reset();
+				rumbleTimer.start();
+			} else if(!vibrated && rumbleTimer.get() > .2) {
+				setRumble(rumblePower);
+				if(rumbleTimer.get() > 1.2) {
+					setRumble(0);
+					rumblePower = 0;
+					vibrated = true;
+				}
+			}
+		} else {
+			setRumble(0);
+			vibrated = false;
+		}
+	}
+
 
 	/**
 	 * Set co driver dPad values. 0 degrees = top, 180 = down, 90 right 270 == left

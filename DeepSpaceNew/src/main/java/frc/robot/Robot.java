@@ -1,13 +1,11 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3647StateMachine.ElevatorLevel;
 import frc.team3647StateMachine.SeriesStateMachine;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
@@ -20,6 +18,7 @@ import frc.team3647utility.Path;
 import frc.team3647utility.LastMethod;
 
 public class Robot extends TimedRobot {
+
 
 	public static PDP pDistributionPanel = new PDP();;
 	public static Joysticks mainController = new Joysticks(0);
@@ -48,7 +47,7 @@ public class Robot extends TimedRobot {
 
 	private static Notifier drivetrainNotifier = new Notifier(() -> {
 		mainController.update();
-		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 35000);
+		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000);
 	});
 
 	private static Notifier armFollowerNotifier = new Notifier(() -> {
@@ -249,7 +248,8 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testInit() {
 		// TestingMethods.reset();
-		mDrivetrain.init();
+		// mDrivetrain.init();
+		mElevator.initSensors();
 		// mElevator.initSensors();
 		// armFollowerNotifier.startPeriodic(.01);
 		lastMethod = LastMethod.kTesting;
@@ -259,15 +259,14 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 
-		if (mainController.buttonA) {
-			mDrivetrain.setRawVelocity(-500, -500);
-		} else if (mainController.buttonY) {
-			mDrivetrain.setRawVelocity(500, 500);
-		} else {
-			mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
-		}
-		mDrivetrain.updateEncoders();
-		System.out.println("Difference: " + (mDrivetrain.getLeftVelocity() - mDrivetrain.getRightVelocity()));
+		// if (mainController.buttonA) {
+		// 	mDrivetrain.setRawVelocity(-500, -500);
+		// } else if (mainController.buttonY) {
+		// 	mDrivetrain.setRawVelocity(500, 500);
+		// } else {
+		// 	mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
+		// }
+		mElevator.getMasterMotor().set(ControlMode.PercentOutput, mainController.leftJoyStickY);
 		mainController.update();
 
 		lastMethod = LastMethod.kTesting;

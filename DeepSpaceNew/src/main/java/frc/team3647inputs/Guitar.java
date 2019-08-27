@@ -4,15 +4,18 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Guitar 
 {
-	/**
-	 * Joystick Object for Guitar Controller
-	 */
-	private Joystick guitarController;
+
 		
 	/**
 	 * Controller Variables
 	 */
 	public boolean fret1Up, fret1Down, fret2Up, fret2Down, fret3Up, fret3Down, strumUp, strumDown, stow;
+
+
+	/**
+	 * Joystick Object for Guitar Controller
+	 */
+	private Joystick guitarController;
 
 
 	public Guitar(int controllerPin)

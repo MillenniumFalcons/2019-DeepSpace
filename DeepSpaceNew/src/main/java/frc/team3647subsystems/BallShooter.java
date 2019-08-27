@@ -11,21 +11,15 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class BallShooter extends Subsystem {
-	private CANifier can;
-	private VictorSPX intakeMotor;
-
-	private boolean flashed, startedTimer;
-	private Timer ballBlinkTimer;
 
 	private static BallShooter INSTANCE = new BallShooter();
+	
+	
+	private CANifier canifier = new CANifier(Constants.canifierPin);
+	private VictorSPX intakeMotor = new VictorSPX(Constants.ballShooterPin);
+	private boolean flashed = false;
+	private Timer ballBlinkTimer = new Timer();	
 
-	private BallShooter() {
-		intakeMotor = new VictorSPX(Constants.ballShooterPin);
-		ballBlinkTimer = new Timer();
-		flashed = false;
-		can = new CANifier(Constants.canifierPin);
-		startedTimer = false;
-	}
 
 	public static BallShooter getInstance() {
 		return INSTANCE;
@@ -37,11 +31,10 @@ public class BallShooter extends Subsystem {
 
 	public void runBlink() {
 		if (Robot.cargoDetection) {
-			if (!startedTimer) {
+			if (!ballBlinkTimer.isRunning()) {
 				ballBlinkTimer.reset();
 				ballBlinkTimer.start();
-				startedTimer = true;
-			} else if (!flashed && startedTimer && ballBlinkTimer.get() > .2) {
+			} else if (!flashed && ballBlinkTimer.get() > .2) {
 				VisionController.limelightClimber.blink();
 				VisionController.limelightFourbar.blink();
 				if (ballBlinkTimer.get() > 1.2) {
@@ -57,7 +50,6 @@ public class BallShooter extends Subsystem {
 			ballBlinkTimer.stop();
 			VisionController.limelightClimber.setLED();
 			VisionController.limelightFourbar.setLED();
-			startedTimer = false;
 			flashed = false;
 		}
 	}
@@ -84,7 +76,7 @@ public class BallShooter extends Subsystem {
 	}
 
 	public boolean cargoDetection() {
-		return !can.getGeneralInput(GeneralPin.LIMR);
+		return !canifier.getGeneralInput(GeneralPin.LIMR);
 	}
 
 	public void printBeamBreak() {

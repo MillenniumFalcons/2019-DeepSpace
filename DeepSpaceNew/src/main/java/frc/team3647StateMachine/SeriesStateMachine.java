@@ -7,32 +7,45 @@ import frc.team3647subsystems.BallShooter;
 import frc.team3647subsystems.MiniShoppingCart;
 import frc.team3647utility.Timer;
 import frc.team3647subsystems.Elevator;
-import frc.team3647subsystems.Arm;;
+import frc.team3647subsystems.Arm;
+
+import frc.team3647StateMachine.Movement.*;
 
 public class SeriesStateMachine {
+
+    private static SeriesStateMachine INSTANCE = new SeriesStateMachine();
+
     public RobotState aimedRobotState;
+    public boolean initializedRobot = false;
+    public boolean runClimberManually = false;
+    public boolean initialized = false;
 
     // Variables to control initialization
     private boolean ranOnce = false;
-    public boolean initializedRobot = false;
     private int initStep = 0;
 
-    public boolean forceCargoOff = false;
-    public boolean forceCargoOn = false;
+    private boolean forceCargoOff = false;
+    private boolean forceCargoOn = false;
 
     // Variables to control ground cargo intake
     private boolean arrivedAtMidPos = false;
     private boolean prevCargoIntakeExtended = false;
     private boolean startedBallIntakeTimer = false;
-    private Timer ballIntakeTimer;
+    private Timer ballIntakeTimer = new Timer();
 
-    // Variables to control hatch intake sequence
-    private boolean pressedLeftBumper = false;
     // variables to control climb
-    private Timer climbTimer;
+    private Timer climbTimer = new Timer();
     private boolean ranClimbSequenceOnce = false;
 
-    public boolean runClimberManually;
+    private final Movement ARRIVED = new Arrived(() -> {
+        runCargoHandoff();
+    });
+    private final Movement FREEMOVE = new FreeMove();
+    private final Movement MOVEARM = new MoveArm();
+    private final Movement MOVEELEV = new MoveElevator();
+    private final Movement SAFEZMOVE = new SafeZ();
+    private final Movement SAFEZDMOVE = new SafeZDown();
+    private final Movement SAFEZUMOVE = new SafeZUp();
 
     // Variables to control movements
     private boolean elevatorReachedState;
@@ -40,43 +53,22 @@ public class SeriesStateMachine {
     private boolean elevatorAboveMinRotate;
     private boolean elevatorAimedStateAboveMinRotate;
 
-    private Arm mArm;
-    private Elevator mElevator;
-    private BallIntake mBallIntake;
-    private BallShooter mBallShooter;
-    private MiniShoppingCart mShoppingCart;
+    private Arm mArm = Robot.mArm;
+    private Elevator mElevator = Robot.mElevator;
+    private BallIntake mBallIntake = Robot.mBallIntake;
+    private BallShooter mBallShooter = Robot.mBallShooter;
+    private MiniShoppingCart mShoppingCart = Robot.mMiniShoppingCart;
 
-    private Joysticks mainController;
-    private Joysticks coController;
-
-    public boolean initialized;
-
-    private static SeriesStateMachine INSTANCE = new SeriesStateMachine();
-
-    private SeriesStateMachine() {
-        this.mArm = Robot.mArm;
-        this.mElevator = Robot.mElevator;
-        this.mBallIntake = Robot.mBallIntake;
-        this.mBallShooter = Robot.mBallShooter;
-        this.mShoppingCart = Robot.mMiniShoppingCart;
-        this.mainController = Robot.mainController;
-        this.coController = Robot.coController;
-
-        ballIntakeTimer = new Timer();
-
-        climbTimer = new Timer();
-        runClimberManually = false;
-
-        initialized = false;
-    }
+    private Joysticks mainController = Robot.mainController;
+    private Joysticks coController = Robot.coController;
 
     public static SeriesStateMachine getInstance() {
         return INSTANCE;
     }
 
-    private enum Movement {
-        ARRIVED, MOVEELEV, MOVEARM, SAFEZMOVE, SAFEZDMOVE, SAFEZUMOVE, FREEMOVE
-    }
+    // private enum Movement {
+    // ARRIVED, MOVEELEV, MOVEARM, SAFEZMOVE, SAFEZDMOVE, SAFEZUMOVE, FREEMOVE;
+    // }
 
     public void init() {
         // Variables to control init
@@ -144,8 +136,8 @@ public class SeriesStateMachine {
             }
 
             if (coController.leftTrigger > .15) {
-                if ((RobotState.CARGOLOADINGSTATIONBWD.equals(aimedRobotState)
-                        || RobotState.CARGOLOADINGSTATIONFWD.equals(aimedRobotState))) {
+                if (RobotState.CARGOLOADINGSTATIONBWD.equals(aimedRobotState)
+                        || RobotState.CARGOLOADINGSTATIONFWD.equals(aimedRobotState)) {
                     mBallShooter.intakeCargo(1);
                 } else {
                     aimedRobotState = RobotState.CARGOHANDOFF;
@@ -156,7 +148,7 @@ public class SeriesStateMachine {
                 arrivedAtMidPos = false;
                 mBallIntake.stop();
 
-                if ((Math.abs(mArm.getEncoderVelocity()) > 500 || Math.abs(mElevator.getEncoderVelocity()) > 500)) {
+                if ((Math.abs(mArm.getEncoderVelocity()) > 500) || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
                     mBallShooter.intakeCargo(.45);
                 } else {
                     mBallShooter.stop();
@@ -211,21 +203,21 @@ public class SeriesStateMachine {
 
         elevatorAboveMinRotate = mElevator.isAboveMinRotate(-550);
 
+        boolean aimedStatesAreNotNull = aimedRobotState.getElevatorLevel() != null
+                && aimedRobotState.getArmPosition() != null;
+
+        if (aimedStatesAreNotNull) {
+            elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
+            armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
+        } else {
+            elevatorReachedState = false;
+            armReachedState = false;
+        }
+        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel() != null
+                ? mElevator.isStateAboveMinRotate(aimedRobotState.getElevatorLevel())
+                : false;
+
         if (!RobotState.NONE.equals(aimedRobotState)) {
-            boolean aimedStatesAreNotNull = aimedRobotState.getElevatorLevel() != null
-                    && aimedRobotState.getArmPosition() != null;
-
-            if (aimedStatesAreNotNull) {
-                elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
-                armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
-            } else {
-                elevatorReachedState = false;
-                armReachedState = false;
-            }
-            elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel() != null
-                    ? mElevator.isStateAboveMinRotate(aimedRobotState.getElevatorLevel())
-                    : false;
-
             if (RobotState.START.equals(aimedRobotState)) {
                 initializeRobotPosition();
             } else if (RobotState.CARGOHANDOFF.equals(aimedRobotState)) {
@@ -246,35 +238,37 @@ public class SeriesStateMachine {
     }
 
     private void goToAimedState(RobotState aimedState) {
-        boolean aimedStateIsCargoHandoff = aimedState == RobotState.CARGOHANDOFF;
-        switch (movementCheck(aimedState)) {
-        case ARRIVED:
-            mArm.aimedState = aimedState.getArmPosition();
-            mElevator.aimedState = aimedState.getElevatorLevel();
-            if (aimedStateIsCargoHandoff) {
-                runCargoHandoff();
-            }
-            break;
-        case MOVEELEV:
-            mElevator.aimedState = aimedState.getElevatorLevel();
-            break;
-        case MOVEARM:
-            mArm.aimedState = aimedState.getArmPosition();
-            break;
-        case SAFEZMOVE:
-            safetyRotateArm(aimedState.getArmPosition());
-            break;
-        case SAFEZDMOVE:
-            safetyRotateArmDown(aimedState.getArmPosition());
-            break;
-        case SAFEZUMOVE:
-            safetyRotateArmUp(aimedState.getArmPosition(), aimedState.getElevatorLevel());
-            break;
-        case FREEMOVE:
-            mArm.aimedState = aimedState.getArmPosition();
-            mElevator.aimedState = aimedState.getElevatorLevel();
-            break;
-        }
+
+        movementCheck(aimedState).run();
+        // switch (movementCheck(aimedState)) {
+        // case ARRIVED:
+        // mArm.aimedState = aimedState.getArmPosition();
+        // mElevator.aimedState = aimedState.getElevatorLevel();
+        // if (aimedStateIsCargoHandoff) {
+        // runCargoHandoff();
+        // }
+        // break;
+        // case MOVEELEV:
+        // mElevator.aimedState = aimedState.getElevatorLevel();
+        // break;
+        // case MOVEARM:
+        // mArm.aimedState = aimedState.getArmPosition();
+        // break;
+        // case SAFEZMOVE:
+        // safetyRotateArm(aimedState.getArmPosition());
+        // break;
+        // case SAFEZDMOVE:
+        // safetyRotateArmDown(aimedState.getArmPosition());
+        // break;
+        // case SAFEZUMOVE:
+        // safetyRotateArmUp(aimedState.getArmPosition(),
+        // aimedState.getElevatorLevel());
+        // break;
+        // case FREEMOVE:
+        // mArm.aimedState = aimedState.getArmPosition();
+        // mElevator.aimedState = aimedState.getElevatorLevel();
+        // break;
+        // }
     }
 
     private void runCargoHandoff() {
@@ -283,6 +277,8 @@ public class SeriesStateMachine {
             mBallIntake.stop();
             if (Robot.cargoDetection) {
                 aimedRobotState = RobotState.CARGOSHIPFORWARDS;
+            } else {
+                aimedRobotState = RobotState.BEFORECARGOHANDOFF;
             }
         } else {
             mBallIntake.run();
@@ -308,10 +304,11 @@ public class SeriesStateMachine {
     }
 
     private void cargoHandoff() {
-        if (prevCargoIntakeExtended || ballIntakeTimer.get() > .5)
+        if (prevCargoIntakeExtended || ballIntakeTimer.get() > .5) {
             goToAimedState(RobotState.CARGOHANDOFF);
-        else
+        } else {
             extendCargoGroundIntake();
+        }
     }
 
     // Method will only run when robot initializes until reaching hatch level 1
@@ -386,28 +383,30 @@ public class SeriesStateMachine {
     }
 
     private Movement movementCheck(RobotState aimedState) {
+        Movement returnMovement;
         if (elevatorReachedState && armReachedState) {
-            return Movement.ARRIVED;
-        } else if (!elevatorReachedState && armReachedState)// if arm is correct pos, elevator can ALWAYS move
-        {
-            return Movement.MOVEELEV;
-        } else if (elevatorReachedState && !armReachedState)// check if arm can move without moving elevator
-        {
-            if (elevatorAboveMinRotate)
-                return Movement.MOVEARM;
-            else
-                return Movement.SAFEZMOVE;
-        } else // Both have to move
-        {
-            if (elevatorAboveMinRotate && elevatorAimedStateAboveMinRotate)
-                return Movement.FREEMOVE;
-            else if (elevatorAboveMinRotate && !elevatorAimedStateAboveMinRotate)
-                return Movement.SAFEZDMOVE;
-            else if (elevatorAimedStateAboveMinRotate)
-                return Movement.SAFEZUMOVE;
-            else
-                return Movement.SAFEZMOVE;
+            returnMovement = ARRIVED;
+        } else if (!elevatorReachedState && armReachedState) {
+            returnMovement = MOVEELEV;
+        } else if (elevatorReachedState && !armReachedState) {
+            if (elevatorAboveMinRotate) {
+                returnMovement = MOVEARM;
+            } else {
+                returnMovement = SAFEZMOVE;
+            }
+        } else {
+            if (elevatorAboveMinRotate && elevatorAimedStateAboveMinRotate) {
+                returnMovement = FREEMOVE;
+            } else if (elevatorAboveMinRotate && !elevatorAimedStateAboveMinRotate) {
+                returnMovement = SAFEZDMOVE;
+            } else if (elevatorAimedStateAboveMinRotate) {
+                returnMovement = SAFEZUMOVE;
+            } else {
+                returnMovement = SAFEZMOVE;
+            }
         }
+        returnMovement.currentRobotState = aimedState;
+        return returnMovement;
     }
 
     public RobotState getAimedRobotState() {
