@@ -170,7 +170,8 @@ public class SeriesStateMachine {
             if (mainController.buttonA) {
                 aimedRobotState = RobotState.NONE;
                 mElevator.aimedState = ElevatorLevel.START;
-            } else if (mainController.buttonY) {
+            } 
+            if (mainController.buttonY) {
                 aimedRobotState = RobotState.REVLIMITSWITCH;
             }
 

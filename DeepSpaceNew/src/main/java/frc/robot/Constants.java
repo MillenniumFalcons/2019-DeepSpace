@@ -18,6 +18,10 @@ public class Constants
 	public static final int ElevatorGearboxSPX2 = 11; // 13
 	public static final int ElevatorGearboxSPX3 = 14; // 13
 
+	public static final int ElevatorMasterPDP = 15;
+	public static final int ElevatorGearboxSPX1PDP = 13;
+	public static final int ElevatorGearboxSPX2PDP = 12;
+
 	// Arm Motor Pins
 	public static final int armSRXPin = 18;
 	public static final int armNEOPin = 17;

@@ -57,9 +57,9 @@ public class TestingMethods {
     private static void testArm(Arm armInstance) {
 
         armInstance.updateEncoder();
-        // System.out.println("Arm Encoder Value: " + armInstance.getEncoderValue());
-        // System.out.println("Arm Rev Limit Switch: " + armInstance.getRevLimitSwitchValue() + "\nArm Fwd Limit Swtich: "
-                // + armInstance.getFwdLimitSwitchValue());
+        System.out.println("Arm Encoder Value: " + armInstance.getEncoderValue());
+        System.out.println("Arm Rev Limit Switch: " + armInstance.getRevLimitSwitchValue() + "\nArm Fwd Limit Swtich: "
+                + armInstance.getFwdLimitSwitchValue());
         if (armInstance.getRevLimitSwitchValue()) {
             armInstance.resetEncoder();
         }

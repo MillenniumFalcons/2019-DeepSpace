@@ -212,7 +212,10 @@ public class Robot extends TimedRobot {
 		mElevator.run();
 		mBallShooter.runBlink();
 
-		System.out.println("Elevator encoder " + mElevator.getEncoderValue());
+		System.out.println("Master current: " + pDistributionPanel.getCurrent(Constants.ElevatorMasterPDP));
+		System.out.println("Gearbox 1 current: " + pDistributionPanel.getCurrent(Constants.ElevatorGearboxSPX1PDP));
+		System.out.println("Gearbox 2 current: " + pDistributionPanel.getCurrent(Constants.ElevatorGearboxSPX2PDP));
+
 		// Drivetrain uses the notifier
 		mMiniShoppingCart.run(mainController);
 
@@ -266,7 +269,8 @@ public class Robot extends TimedRobot {
 		// } else {
 		// 	mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
 		// }
-		mElevator.getMasterMotor().set(ControlMode.PercentOutput, mainController.leftJoyStickY);
+		System.out.println(mElevator.getEncoderValue());
+		mElevator.updateEncoder();
 		mainController.update();
 
 		lastMethod = LastMethod.kTesting;
