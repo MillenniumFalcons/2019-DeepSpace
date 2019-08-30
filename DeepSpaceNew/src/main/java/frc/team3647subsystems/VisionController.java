@@ -240,6 +240,11 @@ public class VisionController {
 		}
 	}
 
+
+	public void setUSBStream() {
+		limelight.set("stream", 2);
+	}
+
 	// update Limelight Inputs
 	public void updateInputs() {
 		limelight.update();

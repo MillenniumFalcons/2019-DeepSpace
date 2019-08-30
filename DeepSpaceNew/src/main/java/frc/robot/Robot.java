@@ -98,6 +98,11 @@ public class Robot extends TimedRobot {
 		if (isAutonomous()) {
 			gyro.update();
 		}
+
+		if(!isEnabled()) {
+			VisionController.limelightClimber.setUSBStream();
+			VisionController.limelightFourbar.setUSBStream();
+		}
 		// if (!isEnabled()) {
 		// mAutoChooser.update();
 		// mPath.update(mAutoChooser.getSide(), mAutoChooser.getStruct(),
