@@ -33,8 +33,6 @@ public class Joysticks {
 
 	public Joysticks(int controllerPin) {
 		controller = new XboxController(controllerPin);
-		rumbleTimer = new Timer();
-		vibrated = false;
 		this.controllerPin = controllerPin;
 	}
 
@@ -67,9 +65,6 @@ public class Joysticks {
 
 		dPadValue = controller.getPOV();
 		setDPadValues();
-		if(controllerPin == 0) {
-			runRumble();
-		}
 	}
 
 	/**
@@ -93,34 +88,10 @@ public class Joysticks {
 	 * @param joystick object
 	 * @param power    power of rumble from 0 to 1
 	 */
-	private void setRumble(double power) {
+	public void setRumble(double power) {
 		controller.setRumble(GenericHID.RumbleType.kLeftRumble, power);
 		controller.setRumble(GenericHID.RumbleType.kRightRumble, power);
 	}
-
-	public void setRumblePower(double power) {
-		this.rumblePower = power;
-	}
-
-	private void runRumble() {
-		if(rumblePower > 0) {
-			if(!rumbleTimer.isRunning()) {
-				rumbleTimer.reset();
-				rumbleTimer.start();
-			} else if(!vibrated && rumbleTimer.get() > .2) {
-				setRumble(rumblePower);
-				if(rumbleTimer.get() > 1.2) {
-					setRumble(0);
-					rumblePower = 0;
-					vibrated = true;
-				}
-			}
-		} else {
-			setRumble(0);
-			vibrated = false;
-		}
-	}
-
 
 	/**
 	 * Set co driver dPad values. 0 degrees = top, 180 = down, 90 right 270 == left

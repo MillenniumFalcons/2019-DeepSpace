@@ -151,7 +151,7 @@ public class VisionController {
 	private Limelight limelight;
 
 	public enum VisionMode {
-		kRight(2), kLeft(3), kDriver(1), kBlack(0), kClosestLvl1(4), kClosestLvl2(5), kClosestLvl3(6);
+		kRight(2), kLeft(3), kDriver(1), kBlack(0), kClosestLvl1(4), kClosestLvl2(4), kClosestLvl3(6);
 
 		public int pipeline;
 
@@ -204,7 +204,7 @@ public class VisionController {
 		double joyY = mainController.leftJoyStickY;
 		double joyX = mainController.rightJoyStickX;
 		VisionMode mode = VisionMode.kClosestLvl1;
-		VisionController mVision = limelightClimber;
+		VisionController mVision = limelightFourbar;
 
 		if (aimedRobotState != null) {
 			mVision = getLimelight(aimedRobotState.getArmPosition());
@@ -220,23 +220,20 @@ public class VisionController {
 
 		mVision.set(mode);
 
+
+		// if (!mVision.hasValidTarget()) {
+		// 	mainController.setRumble(1);
+		// } else {
+		// 	mainController.setRumble(0);
+		// }
+
 		if (mode == VisionMode.kDriver) {
 			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		} else if (Math.abs(joyX) > .09) {
-			if (!mVision.hasValidTarget()) {
-				mainController.setRumblePower(.15);
-			} else {
-				mainController.setRumblePower(0);
-			}
 			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		} else {
 			mVision.center();
 			Drivetrain.getInstance().setOpenLoop(mVision.leftSpeed + joyY, mVision.rightSpeed + joyY, scaleInputs);
-			if (!mVision.hasValidTarget()) {
-				mainController.setRumblePower(.15);
-			} else {
-				mainController.setRumblePower(0);
-			}
 		}
 	}
 
@@ -315,10 +312,10 @@ public class VisionController {
 			speed = 0.05;
 		else if (speed < 0 && speed > -.05) // Speed threshold if in between -.25 and 0, set speed to -.25
 			speed = -.05;
-		else if (speed > .25) // Speed threshold if greater than 1, set speed to 1
-			speed = .25;
-		else if (speed < -.25) // Speed threshold if less than -1, set speed to -1
-			speed = -.25;
+		else if (speed > .5) // Speed threshold if greater than 1, set speed to 1
+			speed = .5;
+		else if (speed < -.5) // Speed threshold if less than -1, set speed to -1
+			speed = -.5;
 
 		prevError = error; // update prevError to current Error
 

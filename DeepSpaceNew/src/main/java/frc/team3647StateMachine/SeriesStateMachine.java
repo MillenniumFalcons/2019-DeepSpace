@@ -225,7 +225,10 @@ public class SeriesStateMachine {
                 cargoHandoff();
             } else if (RobotState.CLIMB.equals(aimedRobotState)) {
                 climbing();
-            } else if (RobotState.STOPPED.equals(aimedRobotState)) {
+            }else if(RobotState.REVLIMITSWITCH.equals(aimedRobotState)) {
+                safetyRotateArm(ArmPosition.REVLIMITSWITCH);
+            }
+             else if (RobotState.STOPPED.equals(aimedRobotState)) {
                 mElevator.aimedState = ElevatorLevel.STOPPED;
                 mArm.aimedState = ArmPosition.STOPPED;
             } else if (!aimedRobotState.isSpecial()) {
@@ -322,6 +325,9 @@ public class SeriesStateMachine {
                 safetyRotateArm(ArmPosition.REVLIMITSWITCH);
                 if (mArm.getRevLimitSwitchValue()) {
                     mArm.resetEncoder();
+                    initStep = 1;
+                } else if(mArm.getFwdLimitSwitchValue()) {
+                    mArm.resetEncoderFwds();
                     initStep = 1;
                 }
                 break;

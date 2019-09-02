@@ -6,8 +6,8 @@ public class ArmPosition extends SubsystemAimedState {
 
     public static final ArmPosition FWDLIMITSWITCH = new ArmPosition();
     public static final ArmPosition REVLIMITSWITCH = new ArmPosition();
-    public static final ArmPosition CARGOFLATBACKWARDS= new ArmPosition(Constants.armSRXCargoFlatForwards, GameObject.kCargo);
-    public static final ArmPosition CARGOFLATFORWARDS = new ArmPosition(Constants.armSRXCargoFlatBackwards, GameObject.kCargo);
+    public static final ArmPosition CARGOFLATBACKWARDS= new ArmPosition(Constants.armSRXCargoFlatBackwards, GameObject.kCargo);
+    public static final ArmPosition CARGOFLATFORWARDS = new ArmPosition(Constants.armSRXCargoFlatForwards, GameObject.kCargo);
     public static final ArmPosition HATCHFLATFORWARDS = new ArmPosition(Constants.armSRXFlatForwards, GameObject.kHatch);
     public static final ArmPosition HATCHFLATBACKWARDS = new ArmPosition(Constants.armSRXFlatBackwards, GameObject.kHatch);
     public static final ArmPosition CARGOL3FRONT = new ArmPosition(Constants.armSRXCargoL3Front, GameObject.kCargo);

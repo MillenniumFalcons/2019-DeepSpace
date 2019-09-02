@@ -157,7 +157,7 @@ public class Constants
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
 	public static final int armSRXClimb = 20500;
-	public static final int armSRXCargoFlatForwards = 22200;
+	public static final int armSRXCargoFlatForwards = 22200; 
 	public static final int armSRXCargoFlatBackwards = 4500;
 	public static final int armSRXResetEncoderVal = 3000;
 

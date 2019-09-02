@@ -65,7 +65,7 @@ public class Arm extends SRXSubsystem {
         } else {
             stop();
         }
-    }
+    }   
 
     public void moveToRevLimitSwitch() {
         if (!getRevLimitSwitchValue()) {
@@ -76,6 +76,9 @@ public class Arm extends SRXSubsystem {
         }
     }
 
+    public void resetEncoderFwds() {
+        setEncoderValue(Constants.armSRXFwdLimitSwitch);
+    }
     @Override
     public void stop() {
         try {
