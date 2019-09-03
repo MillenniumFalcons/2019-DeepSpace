@@ -292,8 +292,8 @@ public class SeriesStateMachine {
                 if (mArm.getRevLimitSwitchValue()) {
                     mArm.resetEncoder();
                     initStep = 1;
-                } else if (mArm.getFwdLimitSwitchValue()) {
-                    mArm.resetEncoderFwd();
+                } else if(mArm.getFwdLimitSwitchValue()) {
+                    mArm.resetEncoderFwds();
                     initStep = 1;
                 }
                 break;

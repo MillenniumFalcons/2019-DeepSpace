@@ -98,6 +98,11 @@ public class Robot extends TimedRobot {
 		if (isAutonomous()) {
 			gyro.update();
 		}
+
+		if(!isEnabled()) {
+			VisionController.limelightClimber.setUSBStream();
+			VisionController.limelightFourbar.setUSBStream();
+		}
 		// if (!isEnabled()) {
 		// mAutoChooser.update();
 		// mPath.update(mAutoChooser.getSide(), mAutoChooser.getStruct(),
@@ -211,10 +216,11 @@ public class Robot extends TimedRobot {
 		mArm.run();
 		mElevator.run();
 		mBallShooter.runBlink();
+		
 
-		System.out.println("Master current: " + pDistributionPanel.getCurrent(Constants.ElevatorMasterPDP));
-		System.out.println("Gearbox 1 current: " + pDistributionPanel.getCurrent(Constants.ElevatorGearboxSPX1PDP));
-		System.out.println("Gearbox 2 current: " + pDistributionPanel.getCurrent(Constants.ElevatorGearboxSPX2PDP));
+		// System.out.println("Master current: " + pDistributionPanel.getCurrent(Constants.ElevatorMasterPDP));
+		// System.out.println("Gearbox 1 current: " + pDistributionPanel.getCurrent(Constants.ElevatorGearboxSPX1PDP));
+		// System.out.println("Gearbox 2 current: " + pDistributionPanel.getCurrent(Constants.ElevatorGearboxSPX2PDP));
 
 		// Drivetrain uses the notifier
 		mMiniShoppingCart.run(mainController);
@@ -250,28 +256,28 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void testInit() {
-		// TestingMethods.reset();
+		TestingMethods.reset();
 		// mDrivetrain.init();
-		mElevator.initSensors();
+		// mBallShooter.init();
+		// mElevator.initSensors();
 		// mElevator.initSensors();
 		// armFollowerNotifier.startPeriodic(.01);
 		lastMethod = LastMethod.kTesting;
+		// mMiniShoppingCart.init();	
 		AirCompressor.stop();
 	}
 
 	@Override
 	public void testPeriodic() {
 
-		// if (mainController.buttonA) {
-		// 	mDrivetrain.setRawVelocity(-500, -500);
-		// } else if (mainController.buttonY) {
-		// 	mDrivetrain.setRawVelocity(500, 500);
-		// } else {
-		// 	mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
-		// }
-		System.out.println(mElevator.getEncoderValue());
-		mElevator.updateEncoder();
+		// mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
+		// mBallShooter.runBlink();
+		TestingMethods.test(mElevator);
+		// mMiniShoppingCart.run(mainController);
 		mainController.update();
+
+
+		// TestingMethods.test(mElevator);
 
 		lastMethod = LastMethod.kTesting;
 	}

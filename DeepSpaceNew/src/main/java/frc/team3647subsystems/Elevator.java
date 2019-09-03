@@ -120,8 +120,9 @@ public class Elevator extends SRXSubsystem {
 
 
 	private void moveToBottom() {
-		if (getEncoderValue() <= 100 && !getBannerSensorValue()) {
-			reachedZeroButNotBottom = true;
+
+		if(!getBannerSensorValue()) {
+			reachedZeroButNotBottom = getEncoderValue() <= 100;
 		}
 
 		if (reachedZeroButNotBottom) {

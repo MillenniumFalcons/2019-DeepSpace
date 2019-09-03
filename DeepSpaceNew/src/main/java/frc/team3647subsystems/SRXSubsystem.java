@@ -65,7 +65,7 @@ public abstract class SRXSubsystem extends Subsystem {
 		// Motion Magic
 		try {
 			masterSRX.set(ControlMode.MotionMagic, position);
-			System.out.println(getName() + " is now going to " + position);
+			// System.out.println(getName() + " is now going to " + position);
 		} catch (NullPointerException e) {
 			masterSRX = new TalonSRX(masterCANID);
 			initSensors();

@@ -158,7 +158,7 @@ public class Drivetrain {
 		if (mainController.rightBumper) {
 			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController);
 		} else {
-			mainController.setRumblePower(0);
+			mainController.setRumble(0);
 			VisionController.limelightClimber.set(VisionMode.kBlack);
 			VisionController.limelightFourbar.set(VisionMode.kBlack);
 			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY,
@@ -178,6 +178,9 @@ public class Drivetrain {
 		if (scaleInputs) {
 			xValue *= .65;
 			yValue *= .6;
+		} else {
+			xValue *= .8;
+			yValue *= .8;
 		}
 
 		drive.curvatureDrive(yValue, xValue, quickTurn);
