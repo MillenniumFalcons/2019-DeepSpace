@@ -129,7 +129,7 @@ public class Constants
 	// Elevator Current Limiting
 	public static int kElevatorPeakCurrent = 50;
 	public static int kElevatorPeakCurrentDuration = 5000;
-	public static int kElevatorContinuousCurrent = 4;
+	public static int kElevatorContinuousCurrent = 35;
 	
 	// Hatch Current Limiting
 	public static final int kHatchWristPeakCurrent = 40;

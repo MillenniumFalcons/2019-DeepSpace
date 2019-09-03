@@ -14,6 +14,8 @@ public class Elevator extends SRXSubsystem {
 	private static Elevator INSTANCE = new Elevator();
 
 	private boolean bannerSensorValue = false;
+	private boolean reachedZeroButNotBottom = false;
+
 
 	// Sensor at bottom of elevator
 	private DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
@@ -63,7 +65,8 @@ public class Elevator extends SRXSubsystem {
 		// GearBoxSPX3.setInverted(false);
 
 		getMaster().enableCurrentLimit(true);
-		getMaster().configContinuousCurrentLimit(25);
+		getMaster().configContinuousCurrentLimit(Constants.kElevatorContinuousCurrent);
+
 
 		getMaster().setNeutralMode(NeutralMode.Brake);
 		updateBannerSensor();
@@ -115,7 +118,6 @@ public class Elevator extends SRXSubsystem {
 		}
 	}
 
-	boolean reachedZeroButNotBottom = false;
 
 	private void moveToBottom() {
 		if (getEncoderValue() <= 100 && !getBannerSensorValue()) {

@@ -18,7 +18,8 @@ public abstract class Sequence {
     private Path[] pathArr;
     private Drivetrain mDrivetrain = Drivetrain.getInstance();
     private Side side;
-    protected int currentPathIndex;
+    protected int nextPathIndex = 0;
+    protected int currentIndex = -1;
     // private
     private String name;
 
@@ -47,6 +48,7 @@ public abstract class Sequence {
         this.name = name;
         this.side = pathArr[0].side;
         initialized = false;
+        nextPathIndex = 0;
     }
 
     /**
@@ -55,8 +57,6 @@ public abstract class Sequence {
      * @param index     the index of the path, 0,1,2
      */
     public void init(int index) {
-        currentPathIndex = index;
-
         mDrivetrain.configDefaultPIDF();
         driveSignal = new DriveSignal();
         mVision = pathArr[index].pathLimelight;
@@ -67,14 +67,14 @@ public abstract class Sequence {
             Odometry.getInstance().odometryInit();
         }
         ramseteFollower = new RamseteFollower(pathArr[index].getTrajectory(), pathArr[index].direction);
+        currentIndex = index;
 
     }
 
     public void execute() {
         ramsetePeriodic();
-        if (!initialized) {
-            init(currentPathIndex);
-            initialized = true;
+        if(currentIndex < nextPathIndex) {
+            init(nextPathIndex);
         }
     }
 

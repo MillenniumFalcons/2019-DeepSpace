@@ -76,6 +76,10 @@ public class Arm extends SRXSubsystem {
         }
     }
 
+    public void resetEncoderFwd() {
+        setEncoderValue(Constants.armSRXFwdLimitSwitch);
+    }
+
     @Override
     public void stop() {
         try {

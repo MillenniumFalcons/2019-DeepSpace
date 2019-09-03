@@ -66,6 +66,13 @@ public class RobotState {
         isSpecial = armPosition.isSpecial();
     }
 
+    public RobotState getStateAtMinRotate(RobotState currentState) {
+        if(currentState.isAboveMinRotate()) {
+            return currentState;
+        }
+        return new RobotState(ElevatorLevel.MINROTATE, currentState.getArmPosition());
+    }
+
     public ArmPosition getArmPosition() {
         return mArmPosition;
     }
