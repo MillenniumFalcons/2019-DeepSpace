@@ -8,11 +8,13 @@ public class CargoShip extends Sequence {
 
     public CargoShip(Side side) {
         super("CargoShip",
-            new Path[] {
-                new Path(side, FieldElement.HAB, FieldElement.cargoShipBay2, MotionProfileDirection.FORWARD),
-                new Path(side, FieldElement.cargoShipBay2, FieldElement.LoadingStation, MotionProfileDirection.BACKWARD),
-                new Path(side, FieldElement.LoadingStation, FieldElement.cargoShipBay1, MotionProfileDirection.FORWARD),
-            }
+                new Path[] {
+                        Path.createNewPath(side, FieldElement.HAB, FieldElement.cargoShipBay2,
+                                MotionProfileDirection.FORWARD, .8),
+                        Path.createNewPath(side, FieldElement.cargoShipBay2, FieldElement.LoadingStation,
+                                MotionProfileDirection.BACKWARD, .6),
+                        Path.createNewPath(side, FieldElement.LoadingStation, FieldElement.cargoShipBay1,
+                                MotionProfileDirection.FORWARD, .82), }
 
         );
     }
@@ -20,6 +22,11 @@ public class CargoShip extends Sequence {
     @Override
     public void init(int index) {
         super.init(index);
+    }
+
+    @Override
+    public void execute() {
+        super.execute();
     }
 
 }

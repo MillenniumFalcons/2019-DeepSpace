@@ -15,6 +15,9 @@ public class SeriesStateMachine {
 
     private static SeriesStateMachine INSTANCE = new SeriesStateMachine();
 
+    /**
+     * how you tell the subsystem where you want it to be
+     */
     public RobotState aimedRobotState;
     public boolean initializedRobot = false;
     public boolean runClimberManually = false;
@@ -24,17 +27,36 @@ public class SeriesStateMachine {
     private boolean ranOnce = false;
     private int initStep = 0;
 
+    /**
+     * for the coDriver a way to score hatches and get to hatch states if the cargo
+     * beam break sensor is faulty, will report true
+     */
     private boolean forceCargoOff = false;
+    /**
+     * for the coDriver, a way to force cargo on in case the ball is not detected by
+     * the sensor, still able to go to ball states
+     */
     private boolean forceCargoOn = false;
 
     // Variables to control ground cargo intake
-    private boolean arrivedAtMidPos = false;
+    /**
+     * was the fourbar extended and not retracted, removes delay between
+     * elevator+arm going to intake and coDriver pressing left trigger
+     */
     private boolean prevCargoIntakeExtended = false;
-    private boolean startedBallIntakeTimer = false;
+    /**
+     * to keep track of how long it takes to deploy the ground intake
+     */
     private Timer ballIntakeTimer = new Timer();
 
     // variables to control climb
+    /**
+     * @deprecated
+     */
     private Timer climbTimer = new Timer();
+    /**
+     * @deprecated
+     */
     private boolean ranClimbSequenceOnce = false;
 
     private final Movement ARRIVED = new Arrived(() -> {
@@ -47,12 +69,38 @@ public class SeriesStateMachine {
     private final Movement SAFEZDMOVE = new SafeZDown();
     private final Movement SAFEZUMOVE = new SafeZUp();
 
-    // Variables to control movements
+    // Variables to control movements, caching booleans to not call methods for no
+    // reason
+
+    /**
+     * after checking for null, check if each subsystem reached its respective state
+     * must use mSubsystem.reachedState(SubsystemAimedState) instead of
+     * mSubsystem.reachedAimedState(), because we might send elevator to minRotate
+     * mid sequence and it got there already, so from its point of view
+     * reachedAimedState() == true, but we actually want it to go to a different one
+     * specified in aimedRobotState, same for the arm.
+     */
     private boolean elevatorReachedState;
+    /**
+     * after checking for null, check if each subsystem reached its respective state
+     * must use mSubsystem.reachedState(SubsystemAimedState) instead of
+     * mSubsystem.reachedAimedState(), because we might send arm to flatForwards mid
+     * sequence and it got there already, so from its point of view
+     * reachedAimedState() == true, but we actually want it to go to a different one
+     * specified in aimedRobotState, same for the elevator.
+     */
     private boolean armReachedState;
+    /**
+     * is elevator currently above minRotate constant, updated in void run()
+     */
     private boolean elevatorAboveMinRotate;
+    /**
+     * is the next RobotPosition going to be above minrotation, used to help with
+     * faster movement
+     */
     private boolean elevatorAimedStateAboveMinRotate;
 
+    // get all subsystems from the robot
     private Arm mArm = Robot.mArm;
     private Elevator mElevator = Robot.mElevator;
     private BallIntake mBallIntake = Robot.mBallIntake;
@@ -70,6 +118,9 @@ public class SeriesStateMachine {
     // ARRIVED, MOVEELEV, MOVEARM, SAFEZMOVE, SAFEZDMOVE, SAFEZUMOVE, FREEMOVE;
     // }
 
+    /**
+     * initializes all the variables for robot control, only run once every game
+     */
     public void init() {
         // Variables to control init
         aimedRobotState = RobotState.NONE;
@@ -80,9 +131,7 @@ public class SeriesStateMachine {
         aimedRobotState = RobotState.START;
 
         // reset Variables to control cargo intake
-        arrivedAtMidPos = false;
         prevCargoIntakeExtended = false;
-        startedBallIntakeTimer = false;
 
         initialized = true;
     }
@@ -121,11 +170,14 @@ public class SeriesStateMachine {
                     aimedRobotState = RobotState.CARGOL2FORWARDS;
                 } else if (coController.buttonY) {
                     aimedRobotState = RobotState.CARGOL3FORWARDS;
-                } else if (coController.dPadDown) {
-                    aimedRobotState = RobotState.CARGOSHIPBACKWARDS;
+                }
+                // We retract the cargo if the next cargo state is backwards, because it is
+                // obvious the drivers would have to do it on their own anyways otherwise
+                else if (coController.dPadDown) {
+                    aimedRobotState = RobotState.CARGOL1BACKWARDS;
                     retractCargoIntake();
                 } else if (coController.dPadLeft) {
-                    aimedRobotState = RobotState.CARGOL1BACKWARDS;
+                    aimedRobotState = RobotState.CARGOSHIPBACKWARDS;
                     retractCargoIntake();
                 } else if (coController.dPadRight) {
                     aimedRobotState = RobotState.CARGOL2BACKWARDS;
@@ -144,19 +196,23 @@ public class SeriesStateMachine {
                 retractCargoIntake();
             }
 
+            // starts ball intaking sequence
             if (coController.leftTrigger > .15) {
+                // if the robot is at the loading station state, then just run ball shooter in
                 if (RobotState.CARGOLOADINGSTATIONBWD.equals(aimedRobotState)
                         || RobotState.CARGOLOADINGSTATIONFWD.equals(aimedRobotState)) {
                     mBallShooter.intakeCargo(1);
                 } else {
+                    // set state machine to go to cargoHandoff state from the ground intake
                     aimedRobotState = RobotState.CARGOHANDOFF;
                 }
             } else {
                 ballIntakeTimer.reset();
                 ballIntakeTimer.stop();
-                arrivedAtMidPos = false;
                 mBallIntake.stop();
 
+                // if anything moves, run ball intake in to keep balls from flying out while
+                // rotating the arm
                 if ((Math.abs(mArm.getEncoderVelocity()) > 500) || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
                     mBallShooter.intakeCargo(.45);
                 }
@@ -170,6 +226,8 @@ public class SeriesStateMachine {
 
             // Main controller controls
             if (mainController.buttonA) {
+                // must make aimedRobotState NONE, othewise, it will override the elevator state
+                // set the next loop
                 aimedRobotState = RobotState.NONE;
                 mElevator.aimedState = ElevatorLevel.START;
             }
@@ -207,6 +265,7 @@ public class SeriesStateMachine {
 
         elevatorAboveMinRotate = mElevator.isAboveMinRotate(-550);
 
+        /** to prevent from having a null exception */
         boolean aimedStatesAreNotNull = aimedRobotState.getElevatorLevel() != null
                 && aimedRobotState.getArmPosition() != null;
 
@@ -217,10 +276,13 @@ public class SeriesStateMachine {
             elevatorReachedState = false;
             armReachedState = false;
         }
+
         elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel() != null
                 ? mElevator.isStateAboveMinRotate(aimedRobotState.getElevatorLevel())
                 : false;
 
+        // only run the sequence if the state is an actual one, having a NONE state
+        // makes having a NullPointerExcpetion less likely
         if (!RobotState.NONE.equals(aimedRobotState)) {
             if (RobotState.START.equals(aimedRobotState)) {
                 initializeRobotPosition();
@@ -260,10 +322,11 @@ public class SeriesStateMachine {
     }
 
     private void extendCargoGroundIntake() {
-        if (canCargoIntakeMove(mElevator)) {
+        if (canCargoIntakeMove(mElevator) || mElevator.reachedState(RobotState.BEFORECARGOHANDOFF.getElevatorLevel())) {
             mBallIntake.extend();
             mBallIntake.stop();
             if (!ballIntakeTimer.isRunning()) {
+                ballIntakeTimer.reset();
                 ballIntakeTimer.start();
             }
         } else {
@@ -281,9 +344,10 @@ public class SeriesStateMachine {
         }
     }
 
-    // Method will only run when robot initializes until reaching hatch level 1
-    // forwards
-    // Cannot run again
+    /**
+     * Method will only run when robot initializes until reaching hatch level 1
+     * forwards shouldn't run again
+     */
     private void initializeRobotPosition() {
         if (!ranOnce) {
             switch (initStep) {
@@ -292,19 +356,24 @@ public class SeriesStateMachine {
                 if (mArm.getRevLimitSwitchValue()) {
                     mArm.resetEncoder();
                     initStep = 1;
-                } else if(mArm.getFwdLimitSwitchValue()) {
+                } else if (mArm.getFwdLimitSwitchValue()) {
                     mArm.resetEncoderFwds();
                     initStep = 1;
                 }
                 break;
             case 1:
-                aimedRobotState = RobotState.BOTTOMSTART;
+                setAimedRobotState(RobotState.BOTTOMSTART);
                 break;
             }
         }
 
     }
 
+    /**
+     * goes to minrotate first then rotates the arm
+     * 
+     * @param pos where to rotate the arm to
+     */
     private void safetyRotateArm(ArmPosition pos) {
         if (mElevator.getEncoderVelocity() > -750 && elevatorAboveMinRotate && mElevator.getEncoderValue() <= 30000) {
             mArm.aimedState = pos;
@@ -314,11 +383,17 @@ public class SeriesStateMachine {
         }
     }
 
+    /**
+     * @deprecated
+     */
     private void safetyRotateArmDown(ArmPosition pos) {
         mElevator.aimedState = ElevatorLevel.MINROTATE;
         mArm.aimedState = pos;
     }
 
+    /**
+     * @deprecated
+     */
     private void safetyRotateArmUp(ArmPosition armPos, ElevatorLevel eLevel) {
         if (elevatorAboveMinRotate) {
             mArm.aimedState = armPos;
@@ -329,6 +404,9 @@ public class SeriesStateMachine {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public int possibeArmPosition(int elevEncoder) {
         if (mArm.getEncoderValue() < Constants.armSRXVerticalStowed)
             return (int) (Math.pow((20018 - elevEncoder) / (.00022417), .5) + 13150);
@@ -336,18 +414,37 @@ public class SeriesStateMachine {
             return (int) (-Math.pow((20018 - elevEncoder) / (.00022417), .5) + 13150);
     }
 
+    /**
+     * @deprecated
+     */
     public int possibleElevatorPosition(int armEncoder) {
         return (int) (-0.00022417 * (armEncoder - Constants.armSRXFlatForwards)
                 * (armEncoder - Constants.armSRXFlatBackwards));
     }
 
+
+    public boolean hasElevatorReachedAimedState() {
+        return elevatorReachedState;
+    }
+
+    public boolean hasArmReachedAimedState() {
+        return armReachedState;
+    }
+
+    /**
+     * 
+     * @param aimedState what is the next state
+     * @return how and which subsystem to move next
+     */
     private Movement movementCheck(RobotState aimedState) {
         Movement returnMovement;
         if (elevatorReachedState && armReachedState) {
             returnMovement = ARRIVED;
         } else if (!elevatorReachedState && armReachedState) {
+            // if elevator needs to move but arm is in the right state
             returnMovement = MOVEELEV;
         } else if (elevatorReachedState && !armReachedState) {
+            // if arm needs to move but elevator is at right state
             if (elevatorAboveMinRotate) {
                 returnMovement = MOVEARM;
             } else {
@@ -372,17 +469,25 @@ public class SeriesStateMachine {
         return aimedRobotState;
     }
 
+    /**
+     * for the outside to tell state machine where you want it to be
+     */
     public void setAimedRobotState(RobotState newAimedState) {
         aimedRobotState = newAimedState;
     }
 
+    /**
+     * retracts the intake and resets timer and varibles responsible for controlling
+     * the sequence
+     */
     private void retractCargoIntake() {
         mBallIntake.retract();
+        prevCargoIntakeExtended = false;
         ballIntakeTimer.reset();
         ballIntakeTimer.stop();
     }
 
-    // if elevator is at bottom or in cargo handoff, ball intake can't move
+    // if elevator is at bottom or in cargo handoff, ball intake can't deploy
     private boolean canCargoIntakeMove(Elevator mElevator) {
         return mElevator.getEncoderValue() > ElevatorLevel.CARGO1.getValue() - 500
                 || !mElevator.reachedState(RobotState.CARGOHANDOFF.getElevatorLevel());

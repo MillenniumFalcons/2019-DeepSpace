@@ -9,6 +9,9 @@ public abstract class Movement {
     protected Elevator mElevator = Elevator.getInstance();
     protected Arm mArm = Arm.getInstance();
 
+    /**
+     * specifies what happens when movementCheck() tells you to do this movement
+     */
     public abstract void run();
     
 }

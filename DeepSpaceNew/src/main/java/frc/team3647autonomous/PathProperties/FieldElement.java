@@ -4,7 +4,7 @@ import frc.team3647StateMachine.RobotState;
 
 public class FieldElement extends PathProperties {
 
-    public static final FieldElement HAB = new FieldElement("Hab", RobotState.NONE, ScorablePosition.NONE);
+    public static final FieldElement HAB = new FieldElement("Hab", RobotState.START, ScorablePosition.NONE);
 
     //Scorable elements
     public static final FieldElement LoadingStation = new FieldElement("LoadingStation", RobotState.HATCHL1BACKWARDS, ScorablePosition.NONE);

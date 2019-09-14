@@ -53,14 +53,19 @@ public class VisionController {
 		// area to the entire picture area, as a percent.
 		private double area;
 
+		public String name = "Limelight-";
 
 		// used to initalize the main, important things
 		public Limelight(String orientation) {
 			// initializing the network table to grab values from limelight
 			table = NetworkTableInstance.getDefault().getTable("limelight-" + orientation);
 			update();
+			name += orientation;
 		}
 
+		public String toString() {
+			return name;
+		}
 		public void set(int pipeline) {
 			setPipeline(pipeline);
 		}

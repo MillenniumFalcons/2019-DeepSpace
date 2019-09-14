@@ -3,6 +3,9 @@ package frc.team3647StateMachine.Movement;
 import frc.team3647StateMachine.ArmPosition;
 import frc.team3647StateMachine.ElevatorLevel;
 
+/**
+ * moves to minRotate first then moves arm
+ */
 public class SafeZ extends Movement {
     public void run() {
         if ((mElevator.getEncoderVelocity() > -750) && (mElevator.isAboveMinRotate(-550)) && (mElevator.getEncoderValue() <= 30000)) {

@@ -51,6 +51,7 @@ public class ArmPosition extends SubsystemAimedState {
     private ArmPosition(int encoderValue) {
         this(encoderValue, GameObject.kNone);
     }
+    
     private ArmPosition(){
         super();
     }

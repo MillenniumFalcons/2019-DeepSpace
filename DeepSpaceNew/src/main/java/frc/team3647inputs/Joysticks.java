@@ -21,10 +21,18 @@ public class Joysticks {
 
 	private int controllerPin;
 
+	/**
+	 * @deprecated
+	 */
 	private double rumblePower;
+	/**
+	 * @deprecated
+	 */
 	private Timer rumbleTimer;
+	/**
+	 * @deprecated
+	 */
 	private boolean vibrated = false;
-
 
 	/**
 	 * Co-Driver Controller Variable
@@ -37,7 +45,8 @@ public class Joysticks {
 	}
 
 	/**
-	 * Set main controller values.
+	 * update main controller values, must be run to use public variables as
+	 * triggers
 	 */
 	public void update() {
 
@@ -61,7 +70,6 @@ public class Joysticks {
 
 		leftMidButton = controller.getBackButton();
 		rightMidButton = controller.getStartButton();
-		
 
 		dPadValue = controller.getPOV();
 		setDPadValues();

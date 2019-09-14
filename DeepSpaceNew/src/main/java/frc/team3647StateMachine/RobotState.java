@@ -1,5 +1,8 @@
 package frc.team3647StateMachine;
 
+/**
+ * predetermined positions for arm and elevator, or whatever the robot can be doing at a time
+ */
 public class RobotState {
 
     public static final RobotState MINROTATEFLATBWD = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.HATCHFLATBACKWARDS);
@@ -81,10 +84,17 @@ public class RobotState {
         return mElevatorLevel;
     }
 
+    /**
+     * @return is the elevator level of this aimed state above minrotate
+     */
     public boolean isAboveMinRotate() {
         return mElevatorLevel.isAboveMinRotate();
     }
 
+    /**
+     * 
+     * @return if the state has to use something other than motion magic to get to it, or the default run method
+     */
     public boolean isSpecial() {
         return isSpecial;
     }
