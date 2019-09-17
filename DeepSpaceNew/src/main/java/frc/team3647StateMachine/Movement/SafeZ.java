@@ -6,12 +6,12 @@ import frc.team3647StateMachine.ElevatorLevel;
 /**
  * moves to minRotate first then moves arm
  */
-public class SafeZ extends Movement {
+public class SafeZ extends SafeMove {
     public void run() {
-        if ((mElevator.getEncoderVelocity() > -750) && (mElevator.isAboveMinRotate(-550)) && (mElevator.getEncoderValue() <= 30000)) {
+        if ((mElevator.getEncoderVelocity() > -750) && (mElevator.isAboveValue(minRotateToUse.getValue())) && (mElevator.getEncoderValue() <= 10000)) {
             mArm.aimedState = currentRobotState.getArmPosition();
         } else {
-            mElevator.aimedState = ElevatorLevel.MINROTATE;
+            mElevator.aimedState = minRotateToUse;
             mArm.aimedState = ArmPosition.STOPPED;
         }
     }

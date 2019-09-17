@@ -12,9 +12,6 @@ public class RobotState {
     public static final RobotState HATCHL1FORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL1BACKWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATBACKWARDS);
 
-    public static final RobotState HATCHL1VISIONFORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATVISIONFORWARDS);
-    public static final RobotState HATCHL1VISIONBACKWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATVISIONBACKWARDS);
-
     public static final RobotState HATCHL2FORWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL2BACKWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATBACKWARDS);
 
@@ -42,7 +39,7 @@ public class RobotState {
 
 
     public static final RobotState STOWED = new RobotState(ElevatorLevel.STOWED, ArmPosition.STOWED);
-    public static final RobotState VERTICALSTOWED = new RobotState(ElevatorLevel.VERTICALSTOWED, ArmPosition.VERTICALSTOWED);
+    public static final RobotState VERTICALSTOWED = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.VERTICALSTOWED);
 
     public static final RobotState REVLIMITSWITCH = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.REVLIMITSWITCH);
     public static final RobotState FWDLIMITSWITCH = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.FWDLIMITSWITCH);

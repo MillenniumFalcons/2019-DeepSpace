@@ -40,6 +40,9 @@ public abstract class SubsystemAimedState{
         return isSpecial;
     }
 
+    /**
+     * @return the object the robot will have at this position
+     */
     public GameObject getObject() {
         return this.object;
     }

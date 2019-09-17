@@ -42,7 +42,7 @@ public class Elevator extends SRXSubsystem {
 		aimedState = ElevatorLevel.STOPPED;
 		initSensors();
 
-		setEncoderValue(5000);
+		setEncoderValue(0);
 		updateEncoder();
 	}
 
@@ -172,21 +172,39 @@ public class Elevator extends SRXSubsystem {
 	 * @see void updateEncoder() from SRXSubsystem parent class
 	 */
 	public boolean isAboveMinRotate() {
-		return getEncoderValue() >= Constants.elevatorMinRotation;
+		return isAboveMinRotate(0);
 	}
 
 	public boolean isAboveMinRotate(int threshold) {
-		return (getEncoderValue() >= Constants.elevatorMinRotation + threshold);
+		return isXAboveYWithThresholdZ(getEncoderValue(), Constants.elevatorMinRotation, threshold);
+	}
+
+
+	public boolean isXAboveYWithThresholdZ(int x, int y, int z) {
+		return (x >= y + z);
+	}
+
+	public boolean isAboveMinRotateHigher() {
+		return isAboveMinRotateHigher(0);
+	}
+
+	public boolean isAboveMinRotateHigher(int threshold) {
+		return isXAboveYWithThresholdZ(getEncoderValue(), Constants.elevatorMinRotationHigher, threshold);
 	}
 
 	public boolean isValueAboveMinRotate(int val) {
-		return (val >= Constants.elevatorMinRotation - 500);
+		return isXAboveYWithThresholdZ(val, Constants.elevatorMinRotation, 0);
+	}
+
+	public boolean isAboveValue(int value) {
+		return value >= getEncoderValue();
 	}
 
 	/**
 	 * 
 	 * @param state ElevatorLevel to check
 	 * @return is the encoder value for the state above a constant
+	 * @deprecated please use state.isAboveMinRotate() instead
 	 */
 	public boolean isStateAboveMinRotate(ElevatorLevel state) {
 		if (state != null) {

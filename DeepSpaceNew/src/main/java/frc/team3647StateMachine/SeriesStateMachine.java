@@ -7,6 +7,7 @@ import frc.team3647subsystems.BallShooter;
 import frc.team3647subsystems.MiniShoppingCart;
 import frc.team3647utility.Timer;
 import frc.team3647subsystems.Elevator;
+import frc.team3647subsystems.HatchGrabber;
 import frc.team3647subsystems.Arm;
 
 import frc.team3647StateMachine.Movement.*;
@@ -26,6 +27,8 @@ public class SeriesStateMachine {
     // Variables to control initialization
     private boolean ranOnce = false;
     private int initStep = 0;
+
+    public boolean cargoDetectedAfterPiston;
 
     /**
      * for the coDriver a way to score hatches and get to hatch states if the cargo
@@ -65,9 +68,9 @@ public class SeriesStateMachine {
     private final Movement FREEMOVE = new FreeMove();
     private final Movement MOVEARM = new MoveArm();
     private final Movement MOVEELEV = new MoveElevator();
-    private final Movement SAFEZMOVE = new SafeZ();
-    private final Movement SAFEZDMOVE = new SafeZDown();
-    private final Movement SAFEZUMOVE = new SafeZUp();
+    private final SafeMove SAFEZMOVE = new SafeZ();
+    private final SafeMove SAFEZDMOVE = new SafeZDown();
+    private final SafeMove SAFEZUMOVE = new SafeZUp();
 
     // Variables to control movements, caching booleans to not call methods for no
     // reason
@@ -94,6 +97,8 @@ public class SeriesStateMachine {
      * is elevator currently above minRotate constant, updated in void run()
      */
     private boolean elevatorAboveMinRotate;
+
+    private boolean elevatorAboveMinRotateHigher;
     /**
      * is the next RobotPosition going to be above minrotation, used to help with
      * faster movement
@@ -105,8 +110,7 @@ public class SeriesStateMachine {
     private Elevator mElevator = Robot.mElevator;
     private BallIntake mBallIntake = Robot.mBallIntake;
     private BallShooter mBallShooter = Robot.mBallShooter;
-    private MiniShoppingCart mShoppingCart = Robot.mMiniShoppingCart;
-
+    private HatchGrabber mHatchGrabber = Robot.mHatchGrabber;
     private Joysticks mainController = Robot.mainController;
     private Joysticks coController = Robot.coController;
 
@@ -114,6 +118,8 @@ public class SeriesStateMachine {
         return INSTANCE;
     }
 
+    private boolean movementRequiresHigherRotation;
+    ElevatorLevel minRotateTosUse = ElevatorLevel.MINROTATEHIGHER;
     // private enum Movement {
     // ARRIVED, MOVEELEV, MOVEARM, SAFEZMOVE, SAFEZDMOVE, SAFEZUMOVE, FREEMOVE;
     // }
@@ -136,8 +142,54 @@ public class SeriesStateMachine {
         initialized = true;
     }
 
-    public void updateControllers(boolean cargoDetection, boolean isTeleop) {
+    public void updateControllers(boolean cargoDetectionSensor, boolean isTeleop) {
+        /**
+         * cargo detection, after checking if hatch is extended.
+         */
+        boolean cargoDetection = cargoDetectionSensor && !mHatchGrabber.isExtended();
+        cargoDetectedAfterPiston = cargoDetection;
         try {
+
+            System.out.println("Cargo detection after: " + cargoDetection);
+            if (coController.leftJoyStickPress) {
+                aimedRobotState = RobotState.VERTICALSTOWED;
+            }
+
+            if (coController.rightJoyStickPress) {
+                retractCargoIntake();
+            }
+
+            // starts ball intaking sequence
+            if (coController.leftTrigger > .15) {
+                mHatchGrabber.retract(0);
+                // if the robot is at the loading station state, then just run ball shooter in
+                if (RobotState.CARGOLOADINGSTATIONBWD.equals(aimedRobotState)
+                        || RobotState.CARGOLOADINGSTATIONFWD.equals(aimedRobotState)) {
+                    mBallShooter.intakeCargo(1);
+                } else {
+                    // set state machine to go to cargoHandoff state from the ground intake
+                    aimedRobotState = RobotState.CARGOHANDOFF;
+                }
+            } else {
+                ballIntakeTimer.reset();
+                ballIntakeTimer.stop();
+                mBallIntake.stop();
+
+                // if anything moves, run ball intake in to keep balls from flying out while
+                // rotating the arm
+                if ((Math.abs(mArm.getEncoderVelocity()) > 500) || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
+                    mBallShooter.intakeCargo(.45);
+                } else {
+                    mBallShooter.stop();
+                }
+            }
+
+            if (coController.rightTrigger > .15) {
+                mHatchGrabber.extend(0); // extend to punch ball
+                mBallShooter.shootBall(coController.rightTrigger);
+                mHatchGrabber.retract(1.2); // delay 1.2 seconds
+            }
+
             if ((!cargoDetection || forceCargoOff) && !forceCargoOn) {
                 // hatch states
                 if (coController.buttonA) {
@@ -188,42 +240,6 @@ public class SeriesStateMachine {
                 }
             }
 
-            if (coController.leftJoyStickPress) {
-                aimedRobotState = RobotState.STOWED;
-            }
-
-            if (coController.rightJoyStickPress) {
-                retractCargoIntake();
-            }
-
-            // starts ball intaking sequence
-            if (coController.leftTrigger > .15) {
-                // if the robot is at the loading station state, then just run ball shooter in
-                if (RobotState.CARGOLOADINGSTATIONBWD.equals(aimedRobotState)
-                        || RobotState.CARGOLOADINGSTATIONFWD.equals(aimedRobotState)) {
-                    mBallShooter.intakeCargo(1);
-                } else {
-                    // set state machine to go to cargoHandoff state from the ground intake
-                    aimedRobotState = RobotState.CARGOHANDOFF;
-                }
-            } else {
-                ballIntakeTimer.reset();
-                ballIntakeTimer.stop();
-                mBallIntake.stop();
-
-                // if anything moves, run ball intake in to keep balls from flying out while
-                // rotating the arm
-                if ((Math.abs(mArm.getEncoderVelocity()) > 500) || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
-                    mBallShooter.intakeCargo(.45);
-                }
-            }
-
-            if (coController.rightTrigger > .15) {
-                mBallShooter.shootBall(coController.rightTrigger);
-            } else {
-                mBallShooter.stop();
-            }
-
             // Main controller controls
             if (mainController.buttonA) {
                 // must make aimedRobotState NONE, othewise, it will override the elevator state
@@ -245,17 +261,11 @@ public class SeriesStateMachine {
                 forceCargoOn = false;
                 forceCargoOff = true;
             }
-
-            if (mainController.dPadLeft) {
-                aimedRobotState = RobotState.CARGOLOADINGSTATIONBWD;
-            } else if (mainController.dPadRight) {
-                aimedRobotState = RobotState.CARGOLOADINGSTATIONFWD;
-            }
+  
 
             if (mainController.buttonX && isTeleop) {
                 aimedRobotState = RobotState.CARGOSHIPFORWARDS;
             }
-
         } catch (NullPointerException e) {
             aimedRobotState = RobotState.STOPPED;
         }
@@ -263,7 +273,7 @@ public class SeriesStateMachine {
 
     public void run() {
 
-        elevatorAboveMinRotate = mElevator.isAboveMinRotate(-550);
+        
 
         /** to prevent from having a null exception */
         boolean aimedStatesAreNotNull = aimedRobotState.getElevatorLevel() != null
@@ -272,15 +282,21 @@ public class SeriesStateMachine {
         if (aimedStatesAreNotNull) {
             elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
             armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
+            movementRequiresHigherRotation = aimedRobotState.getArmPosition().doesRequireHigherRotation() || mArm.getEncoderValue() > 24000 || mArm.getEncoderValue() < 2000;
+            minRotateTosUse = movementRequiresHigherRotation ? ElevatorLevel.MINROTATEHIGHER : ElevatorLevel.MINROTATE;
+            
         } else {
             elevatorReachedState = false;
             armReachedState = false;
+            minRotateTosUse = ElevatorLevel.MINROTATEHIGHER;
         }
 
-        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel() != null
-                ? mElevator.isStateAboveMinRotate(aimedRobotState.getElevatorLevel())
-                : false;
+        elevatorAboveMinRotate = mElevator.isAboveValue(minRotateTosUse.getValue());
 
+        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel() != null
+                ? aimedRobotState.getElevatorLevel().getValue() > minRotateTosUse.getValue()
+                : false;
+        
         // only run the sequence if the state is an actual one, having a NONE state
         // makes having a NullPointerExcpetion less likely
         if (!RobotState.NONE.equals(aimedRobotState)) {
@@ -311,7 +327,7 @@ public class SeriesStateMachine {
         prevCargoIntakeExtended = true;
         if (this.coController.leftTrigger < .15) {
             mBallIntake.stop();
-            if (Robot.cargoDetection) {
+            if (cargoDetectedAfterPiston) {
                 aimedRobotState = RobotState.CARGOSHIPFORWARDS;
             } else {
                 aimedRobotState = RobotState.BEFORECARGOHANDOFF;
@@ -352,7 +368,7 @@ public class SeriesStateMachine {
         if (!ranOnce) {
             switch (initStep) {
             case 0:
-                safetyRotateArm(ArmPosition.REVLIMITSWITCH);
+                safetyRotateArm(ArmPosition.FWDLIMITSWITCH);
                 if (mArm.getRevLimitSwitchValue()) {
                     mArm.resetEncoder();
                     initStep = 1;
@@ -366,7 +382,6 @@ public class SeriesStateMachine {
                 break;
             }
         }
-
     }
 
     /**
@@ -375,10 +390,11 @@ public class SeriesStateMachine {
      * @param pos where to rotate the arm to
      */
     private void safetyRotateArm(ArmPosition pos) {
-        if (mElevator.getEncoderVelocity() > -750 && elevatorAboveMinRotate && mElevator.getEncoderValue() <= 30000) {
+        ElevatorLevel minRotateToUse = movementRequiresHigherRotation ? ElevatorLevel.MINROTATEHIGHER : ElevatorLevel.MINROTATE;
+        if (mElevator.getEncoderVelocity() > -750 && mElevator.reachedState(minRotateToUse) && mElevator.getEncoderValue() <= 10000) {
             mArm.aimedState = pos;
         } else {
-            mElevator.aimedState = ElevatorLevel.MINROTATE;
+            mElevator.aimedState = minRotateToUse;
             mArm.aimedState = ArmPosition.STOPPED;
         }
     }
@@ -422,7 +438,6 @@ public class SeriesStateMachine {
                 * (armEncoder - Constants.armSRXFlatBackwards));
     }
 
-
     public boolean hasElevatorReachedAimedState() {
         return elevatorReachedState;
     }
@@ -457,9 +472,13 @@ public class SeriesStateMachine {
                 returnMovement = SAFEZDMOVE;
             } else if (elevatorAimedStateAboveMinRotate) {
                 returnMovement = SAFEZUMOVE;
-            } else {
+            } else
                 returnMovement = SAFEZMOVE;
             }
+        if(returnMovement instanceof SafeMove) {
+            SafeMove movement = ((SafeMove)returnMovement);
+            movement.setMinRotateToUse(this.minRotateTosUse);
+            returnMovement = movement;
         }
         returnMovement.currentRobotState = aimedState;
         return returnMovement;

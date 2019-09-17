@@ -70,8 +70,8 @@ public class Constants
 	public static final double[] armPIDF = { 1, 0, 20, 0 };
 
 	// Arm motion magic
-	public static final int kArmSRXCruiseVelocity = 3250;
-	public static final int kArmSRXAcceleration = 8000;
+	public static final int kArmSRXCruiseVelocity = 1625;
+	public static final int kArmSRXAcceleration = 4000;
 
 	// Elevator PID Values
 	public static final int interstageSlotIdx = 0; // PID Slot Index
@@ -104,8 +104,8 @@ public class Constants
 	// public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF = {  .341 * 1.70, 0, 3.4, .281417 }; // .281417
-	public static final double[] rightVelocityPIDF = { .341, 0, 3.4, .281417 };
+	public static final double[] leftVelocityPIDF = {  .341 * 1.70, .0005, 3.4, .281417 }; // .281417
+	public static final double[] rightVelocityPIDF = { .341		  , .0005, 3.4, .281417 };
 
 	public static final double[] limelightPID = { .19, 0, 1 }; // p = .2, i = 0, d = 1.5
 	public static final double limelightThreshold = .0037;
@@ -113,6 +113,8 @@ public class Constants
 	public static final double limelightAreaThreshold = 9.5;
 	public static final double limelightMaxArea = 9.5; //12%
 	public static final double limelightMinArea = 0;
+
+	public static final int visionVelocityConstant = 2500;
 
 	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";
 	public static final String limelightClimberIP = "http://10.36.47.49:5801/";
@@ -129,7 +131,7 @@ public class Constants
 	// Elevator Current Limiting
 	public static int kElevatorPeakCurrent = 50;
 	public static int kElevatorPeakCurrentDuration = 5000;
-	public static int kElevatorContinuousCurrent = 35;
+	public static int kElevatorContinuousCurrent = 25;
 	
 	// Hatch Current Limiting
 	public static final int kHatchWristPeakCurrent = 40;
@@ -140,26 +142,23 @@ public class Constants
 	// Arm Positions
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
-	public static final int armSRXForwardVision = 4200;
 	public static final int armSRXFlatForwards = 4500; //4290;
-	public static final int armSRXBackwardVision = 21828; //22000; 
-	public static final int armSRXL3HatchFWD = 4750;
-	public static final int armSRXL3HatchBWD = 22000;
 	public static final int armSRXFlatBackwards = 22200; //22400
-	public static final int armSRXCargoL3Front = 24200;
-	public static final int armSRXCargoL3Back = 1900;
-	public static final int armSRXCargoShipFront = 20500; // ADDED mar 1
-	public static final int armSRXCargoShipBack = 5700;
+	public static final int armSRXCargoL3Front = 7600;
+	public static final int armSRXCargoL3Back = 18500;
+	public static final int armSRXCargoShipFront = 1300; // ADDED mar 1
+	public static final int armSRXCargoShipBack = 24800;
 	public static final int armSRXHatchHandoff = 1700;
 	public static final int armSRXStowed = 11000;
-	public static final int armSRXVerticalStowed = 12860;
+	public static final int armSRXVerticalStowed = 13500;
 	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 8570;
 	public static final int armSRXFwdLimitSwitch = 26150;
 	public static final int armSRXClimb = 20500;
-	public static final int armSRXCargoFlatForwards = 22200; 
-	public static final int armSRXCargoFlatBackwards = 4500;
+	public static final int armSRXCargoFlatForwards = 4500; 
+	public static final int armSRXCargoFlatBackwards = 22200;
 	public static final int armSRXResetEncoderVal = 3000;
+
 
 	// NEO Hall Effect SEnsor Positions
 	public static final double armNEOFlatForwards = 12.666;
@@ -176,19 +175,20 @@ public class Constants
 	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values
 	public static final int elevatorCargoL1 = 6200; // need to check
 	public static final int elevatorHatchHandoff = 6000;
-	public static final int elevatorCargoHandoff = 6150; // need to test this and hatch handoff levels, might be able to
-															// combine
+	public static final int elevatorCargoHandoff = 6150; 
 	public static final int elevatorCargoShip = 26000;
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28400;
 	public static final int elevatorCargoL3 = 42800;
 	public static final int elevatorHatchL3 = 42800;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
-	public static final int elevatorVerticalStowed = 14350;
-	public static final int elevatorMinRotation = 20000; // Might want to combine with hatch lvl2
+	public static final int elevatorVerticalStowed = 0;
+	public static final int elevatorMinRotation = 5000;
+	public static final int elevatorMinRotationHigher = 8500; // when going to limit switches, or cargo intake
 	public static final int elevatorStartingStowed = 5000;
 	public static final int elevatorCargoLoadingStation = 18300;
-	public static final int elevatorBeforeCargoHandoff = 18000;
+	public static final int elevatorBeforeCargoHandoff = 8500;
+
 
 	// Hatch Intake Positions
 	public static final int kWristPositionThreshold = 25;
@@ -207,7 +207,7 @@ public class Constants
 
 	// 4.22 m/s .153pi meters / second = 1 rev / second
 
-	public static final double kBeta = 1.6; // b > 0 Correction
+	public static final double kBeta = 3; // b > 0 Correction // 1.6 11/9/19
 	public static final double kZeta = 0.17; // 0 < z < 1 Dampening //.17 hou apr 18th
 
 	public static final double kFieldWidth = 8.2296;

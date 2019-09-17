@@ -8,7 +8,6 @@ public abstract class Movement {
     public RobotState currentRobotState = RobotState.NONE;
     protected Elevator mElevator = Elevator.getInstance();
     protected Arm mArm = Arm.getInstance();
-
     /**
      * specifies what happens when movementCheck() tells you to do this movement
      */

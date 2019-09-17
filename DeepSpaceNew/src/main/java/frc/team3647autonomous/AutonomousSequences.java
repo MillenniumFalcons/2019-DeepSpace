@@ -63,7 +63,7 @@ public class AutonomousSequences {
 		leftSpeed = Units.metersToEncoderTicks(driveSignal.getLeft() / 10);
 
 		if (ramseteFollower.isFinished()) {
-			ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
+			// ramseteFollower = new RamseteFollower(trajectory, MotionProfileDirection.BACKWARD);
 			Odometry.getInstance().setInitialOdometry(TrajectoryUtil.reversePath(trajectory));
 		}
 	}
@@ -344,7 +344,7 @@ public class AutonomousSequences {
 			}
 			break;
 		case 4:
-			autoInitBWD(LeftOrRight + "CargoShipBay1ToStation");
+			autoInitBWD(LeftOrRight + "CargoShipBay2LoadingStation");
 			limelightClimber.set(VisionMode.kBlack);
 			if (LeftOrRight.equals("Left")) {
 				limelightClimber.set(VisionMode.kRight);
@@ -371,7 +371,7 @@ public class AutonomousSequences {
 				Robot.mDrivetrain.setAutoVelocity(linearVelocity + (visionVelocityConstant) * limelightFourbar.leftSpeed,
 						linearVelocity + (visionVelocityConstant) * limelightFourbar.rightSpeed);
 			} else {
-				autoInitFWD2("StationTo" + LeftOrRight + "CargoShipBay2");
+				autoInitFWD2(LeftOrRight + "LoadingStationCargoShipBay1");
 				limelightFourbar.set(VisionMode.kBlack);
 				if (LeftOrRight.equals("Left")) {
 					limelightClimber.set(VisionMode.kRight);

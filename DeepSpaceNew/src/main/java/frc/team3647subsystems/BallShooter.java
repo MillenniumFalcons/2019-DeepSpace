@@ -13,13 +13,18 @@ import frc.robot.Robot;
 public class BallShooter extends Subsystem {
 
 	private static BallShooter INSTANCE = new BallShooter();
-	
-	
-	private CANifier canifier = new CANifier(Constants.canifierPin);
-	private VictorSPX intakeMotor = new VictorSPX(Constants.ballShooterPin);
-	private boolean flashed = false;
-	private Timer ballBlinkTimer = new Timer();	
 
+	public boolean cargoDetection = false;
+
+	/** canifier, for getting the beam break sensor value */
+	private CANifier canifier = new CANifier(Constants.canifierPin);
+
+	/**
+	 * the motor that runs the shooter in or out
+	 */
+	private VictorSPX intakeMotor = new LazyVictorSPX(Constants.ballShooterPin);
+	private boolean flashed = false;
+	private Timer ballBlinkTimer = new Timer();
 
 	public static BallShooter getInstance() {
 		return INSTANCE;
@@ -29,11 +34,16 @@ public class BallShooter extends Subsystem {
 		intakeMotor.setInverted(false);
 	}
 
+	/**
+	 * the blinker methods for everytime we sense a ball with the beam break.
+	 */
 	public void runBlink() {
-		if (Robot.cargoDetection) {
+		cargoDetection = Robot.stateMachine.cargoDetectedAfterPiston;
+		if (cargoDetection) {
 			if (!ballBlinkTimer.isRunning()) {
 				ballBlinkTimer.reset();
 				ballBlinkTimer.start();
+				// wait .2sec so we don't screw with the limelights
 			} else if (!flashed && ballBlinkTimer.get() > .2) {
 				VisionController.limelightClimber.blink();
 				VisionController.limelightFourbar.blink();
@@ -42,10 +52,13 @@ public class BallShooter extends Subsystem {
 				}
 			}
 			if (flashed) {
+				// reset limelights back to original control, turn on led when using, off when
+				// not.
 				VisionController.limelightClimber.setLED();
 				VisionController.limelightFourbar.setLED();
 			}
 		} else {
+			// reset all vars when cargo is gone to get ready for new cargo
 			ballBlinkTimer.reset();
 			ballBlinkTimer.stop();
 			VisionController.limelightClimber.setLED();
@@ -58,6 +71,11 @@ public class BallShooter extends Subsystem {
 		intakeMotor.set(ControlMode.PercentOutput, demand);
 	}
 
+	/**
+	 * current limitng out with openloop
+	 * 
+	 * @param demand power to send to the shooter motor
+	 */
 	public void shootBall(double demand) {
 		double mDemand = demand / 2;
 		if (mDemand < .3) {
@@ -66,6 +84,9 @@ public class BallShooter extends Subsystem {
 		setOpenLoop(limitCurrent(mDemand));
 	}
 
+	/**
+	 * current limiting in with openloop
+	 */
 	public void intakeCargo(double power) {
 		setOpenLoop(-limitCurrent(.4));
 	}
@@ -75,11 +96,19 @@ public class BallShooter extends Subsystem {
 		return (1.3 / current + constant);
 	}
 
-	public boolean cargoDetection() {
+	/**
+	 * only run once per loop and cache values because it puts extra load on the can
+	 * bus
+	 * 
+	 * @return is the beam break sensor triggered will also be true if the sensor is
+	 *         disconnected
+	 */
+	private boolean cargoDetection() {
 		return !canifier.getGeneralInput(GeneralPin.LIMR);
 	}
 
+	
 	public void printBeamBreak() {
-		System.out.println("Cargo Beam Break: " + Robot.cargoDetection);
+		System.out.println("Cargo Beam Break: " + cargoDetection);
 	}
 }

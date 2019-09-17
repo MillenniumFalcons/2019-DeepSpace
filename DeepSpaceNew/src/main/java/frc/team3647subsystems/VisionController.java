@@ -175,30 +175,7 @@ public class VisionController {
 																			// is.
 	{
 		if (armAimedState != null) {
-			if (armAimedState.getValue() < Constants.armSRXVerticalStowed) // Arm is, going to be, forwards )---->
-			{
-				// if there is no cargo and the aimed state isn't cargo intake, use the front
-				// limelight
-				if (!Robot.cargoDetection
-						&& !Robot.stateMachine.aimedRobotState.equals(RobotState.CARGOLOADINGSTATIONBWD)) {
-					return limelightClimber;
-				}
-				// If there is cargo, or cargo loading station backwards is the aimed state, use
-				// the rear limelight
-				return limelightFourbar;
-			}
-
-			else // Arm is backwards <----(
-			{
-				// If there is no cargo and the state isn't cargo forwards, use rear limelight
-				if (!Robot.cargoDetection
-						&& !Robot.stateMachine.aimedRobotState.equals(RobotState.CARGOLOADINGSTATIONFWD)) {
-					return limelightFourbar;
-				}
-				// If there is cargo, or state is cargo loading station front, use front
-				// limelight
-				return limelightClimber;
-			}
+			return armAimedState.getValue() > Constants.armSRXVerticalStowed ? limelightFourbar : limelightClimber;
 		}
 
 		// if arm aimed state is null, return front limelight
