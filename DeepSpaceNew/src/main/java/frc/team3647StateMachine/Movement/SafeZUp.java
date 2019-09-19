@@ -6,9 +6,9 @@ import frc.team3647StateMachine.ArmPosition;
  * moves elevator to next state.
  * if above minRotate, transition to freeMove (both subsystems go wherever they want to)
  */
-public class SafeZUp extends SafeMove {
+public class SafeZUp extends Movement {
     public void run() {
-        if (mElevator.isAboveValue(minRotateToUse.getValue())) {
+        if (mElevator.isAboveValue(minRotate.getValue(), -550)) {
             mArm.aimedState = currentRobotState.getArmPosition();
             mElevator.aimedState = currentRobotState.getElevatorLevel();
         } else {

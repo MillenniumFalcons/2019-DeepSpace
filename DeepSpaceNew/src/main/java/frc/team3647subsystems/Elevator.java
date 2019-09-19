@@ -85,23 +85,22 @@ public class Elevator extends SRXSubsystem {
 		updateBannerSensor();
 
 		if (aimedState != null) {
-			if (!aimedState.isSpecial()) {
+			if (!aimedState.isSpecial() && aimedState.getValue() != -1) {
 				setPosition(aimedState.getValue());
-			} else {
-				if (aimedState.equals(ElevatorLevel.BOTTOM)) {
-					moveToBottom();
-				} else if (aimedState.equals(ElevatorLevel.STOPPED)) {
-					stop();
-				} else if (aimedState.equals(ElevatorLevel.START)) {
-					moveToBottomStart();
-				}
+			} else if (aimedState.equals(ElevatorLevel.BOTTOM)) {
+				moveToBottom();
+			} else if (aimedState.equals(ElevatorLevel.STOPPED)) {
+				stop();
+			} else if (aimedState.equals(ElevatorLevel.START)) {
+				moveToBottomStart();
 			}
+
 		}
 	}
 
 	/**
-	 * moves to bottom with openloop only until hit banner sensor, than stops and resets
-	 * the encoder
+	 * moves to bottom with openloop only until hit banner sensor, than stops and
+	 * resets the encoder
 	 */
 	private void moveToBottomStart() {
 		if (getBannerSensorValue()) {
@@ -179,38 +178,17 @@ public class Elevator extends SRXSubsystem {
 		return isXAboveYWithThresholdZ(getEncoderValue(), Constants.elevatorMinRotation, threshold);
 	}
 
-
 	public boolean isXAboveYWithThresholdZ(int x, int y, int z) {
 		return (x >= y + z);
 	}
 
-	public boolean isAboveMinRotateHigher() {
-		return isAboveMinRotateHigher(0);
-	}
-
-	public boolean isAboveMinRotateHigher(int threshold) {
-		return isXAboveYWithThresholdZ(getEncoderValue(), Constants.elevatorMinRotationHigher, threshold);
-	}
 
 	public boolean isValueAboveMinRotate(int val) {
 		return isXAboveYWithThresholdZ(val, Constants.elevatorMinRotation, 0);
 	}
 
-	public boolean isAboveValue(int value) {
-		return value >= getEncoderValue();
-	}
-
-	/**
-	 * 
-	 * @param state ElevatorLevel to check
-	 * @return is the encoder value for the state above a constant
-	 * @deprecated please use state.isAboveMinRotate() instead
-	 */
-	public boolean isStateAboveMinRotate(ElevatorLevel state) {
-		if (state != null) {
-			return state.isAboveMinRotate();
-		}
-		return false;
+	public boolean isAboveValue(int value, int threshold) {
+		return getEncoderValue() > (value + threshold);
 	}
 
 	public TalonSRX getMasterMotor() {

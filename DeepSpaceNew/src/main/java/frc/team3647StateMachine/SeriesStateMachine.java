@@ -68,9 +68,9 @@ public class SeriesStateMachine {
     private final Movement FREEMOVE = new FreeMove();
     private final Movement MOVEARM = new MoveArm();
     private final Movement MOVEELEV = new MoveElevator();
-    private final SafeMove SAFEZMOVE = new SafeZ();
-    private final SafeMove SAFEZDMOVE = new SafeZDown();
-    private final SafeMove SAFEZUMOVE = new SafeZUp();
+    private final Movement SAFEZMOVE = new SafeZ();
+    private final Movement SAFEZDMOVE = new SafeZDown();
+    private final Movement SAFEZUMOVE = new SafeZUp();
 
     // Variables to control movements, caching booleans to not call methods for no
     // reason
@@ -97,13 +97,16 @@ public class SeriesStateMachine {
      * is elevator currently above minRotate constant, updated in void run()
      */
     private boolean elevatorAboveMinRotate;
-
-    private boolean elevatorAboveMinRotateHigher;
     /**
      * is the next RobotPosition going to be above minrotation, used to help with
      * faster movement
      */
     private boolean elevatorAimedStateAboveMinRotate;
+
+    ElevatorLevel currentPositionRequiredMinRotate;
+    ElevatorLevel nextPositionRequiredMinRotate;
+    int greatestMinRotateValue;
+    ElevatorLevel greatestMinRotate;
 
     // get all subsystems from the robot
     private Arm mArm = Robot.mArm;
@@ -118,8 +121,6 @@ public class SeriesStateMachine {
         return INSTANCE;
     }
 
-    private boolean movementRequiresHigherRotation;
-    ElevatorLevel minRotateTosUse = ElevatorLevel.MINROTATEHIGHER;
     // private enum Movement {
     // ARRIVED, MOVEELEV, MOVEARM, SAFEZMOVE, SAFEZDMOVE, SAFEZUMOVE, FREEMOVE;
     // }
@@ -261,7 +262,6 @@ public class SeriesStateMachine {
                 forceCargoOn = false;
                 forceCargoOff = true;
             }
-  
 
             if (mainController.buttonX && isTeleop) {
                 aimedRobotState = RobotState.CARGOSHIPFORWARDS;
@@ -273,30 +273,21 @@ public class SeriesStateMachine {
 
     public void run() {
 
-        
+        currentPositionRequiredMinRotate = getMinRotateBasedOnArmEncoderValue(mArm.getEncoderValue());
+        nextPositionRequiredMinRotate = aimedRobotState.getArmPosition().getApplicableMinRotate();
 
-        /** to prevent from having a null exception */
-        boolean aimedStatesAreNotNull = aimedRobotState.getElevatorLevel() != null
-                && aimedRobotState.getArmPosition() != null;
+        greatestMinRotateValue = Math.max(currentPositionRequiredMinRotate.getValue(),
+                nextPositionRequiredMinRotate.getValue());
 
-        if (aimedStatesAreNotNull) {
-            elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
-            armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
-            movementRequiresHigherRotation = aimedRobotState.getArmPosition().doesRequireHigherRotation() || mArm.getEncoderValue() > 24000 || mArm.getEncoderValue() < 2000;
-            minRotateTosUse = movementRequiresHigherRotation ? ElevatorLevel.MINROTATEHIGHER : ElevatorLevel.MINROTATE;
-            
-        } else {
-            elevatorReachedState = false;
-            armReachedState = false;
-            minRotateTosUse = ElevatorLevel.MINROTATEHIGHER;
-        }
+        greatestMinRotate = currentPositionRequiredMinRotate.isAboveOtherLevel(nextPositionRequiredMinRotate)
+                ? currentPositionRequiredMinRotate
+                : nextPositionRequiredMinRotate;
 
-        elevatorAboveMinRotate = mElevator.isAboveValue(minRotateTosUse.getValue());
+        elevatorAboveMinRotate = mElevator.isAboveValue(greatestMinRotateValue, -550);
+        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel().getValue() > greatestMinRotateValue;
+        armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
+        elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
 
-        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel() != null
-                ? aimedRobotState.getElevatorLevel().getValue() > minRotateTosUse.getValue()
-                : false;
-        
         // only run the sequence if the state is an actual one, having a NONE state
         // makes having a NullPointerExcpetion less likely
         if (!RobotState.NONE.equals(aimedRobotState)) {
@@ -305,7 +296,7 @@ public class SeriesStateMachine {
             } else if (RobotState.CARGOHANDOFF.equals(aimedRobotState)) {
                 cargoHandoff();
             } else if (RobotState.REVLIMITSWITCH.equals(aimedRobotState)) {
-                safetyRotateArm(ArmPosition.REVLIMITSWITCH);
+                movementCheck(aimedRobotState).run();
             } else if (RobotState.STOPPED.equals(aimedRobotState)) {
                 mElevator.aimedState = ElevatorLevel.STOPPED;
                 mArm.aimedState = ArmPosition.STOPPED;
@@ -368,7 +359,7 @@ public class SeriesStateMachine {
         if (!ranOnce) {
             switch (initStep) {
             case 0:
-                safetyRotateArm(ArmPosition.FWDLIMITSWITCH);
+                movementCheck(RobotState.REVLIMITSWITCH).run();
                 if (mArm.getRevLimitSwitchValue()) {
                     mArm.resetEncoder();
                     initStep = 1;
@@ -390,11 +381,12 @@ public class SeriesStateMachine {
      * @param pos where to rotate the arm to
      */
     private void safetyRotateArm(ArmPosition pos) {
-        ElevatorLevel minRotateToUse = movementRequiresHigherRotation ? ElevatorLevel.MINROTATEHIGHER : ElevatorLevel.MINROTATE;
-        if (mElevator.getEncoderVelocity() > -750 && mElevator.reachedState(minRotateToUse) && mElevator.getEncoderValue() <= 10000) {
+        if (mElevator.getEncoderVelocity() > -750
+                && mElevator.isAboveValue(pos.getApplicableMinRotate().getValue(), -550)
+                && mElevator.getEncoderValue() <= 10000) {
             mArm.aimedState = pos;
         } else {
-            mElevator.aimedState = minRotateToUse;
+            mElevator.aimedState = pos.getApplicableMinRotate();
             mArm.aimedState = ArmPosition.STOPPED;
         }
     }
@@ -453,6 +445,7 @@ public class SeriesStateMachine {
      */
     private Movement movementCheck(RobotState aimedState) {
         Movement returnMovement;
+
         if (elevatorReachedState && armReachedState) {
             returnMovement = ARRIVED;
         } else if (!elevatorReachedState && armReachedState) {
@@ -472,15 +465,14 @@ public class SeriesStateMachine {
                 returnMovement = SAFEZDMOVE;
             } else if (elevatorAimedStateAboveMinRotate) {
                 returnMovement = SAFEZUMOVE;
-            } else
+            } else {
                 returnMovement = SAFEZMOVE;
             }
-        if(returnMovement instanceof SafeMove) {
-            SafeMove movement = ((SafeMove)returnMovement);
-            movement.setMinRotateToUse(this.minRotateTosUse);
-            returnMovement = movement;
         }
+
+        // for use in the lambdas
         returnMovement.currentRobotState = aimedState;
+        returnMovement.minRotate = greatestMinRotate;
         return returnMovement;
     }
 
@@ -510,5 +502,14 @@ public class SeriesStateMachine {
     private boolean canCargoIntakeMove(Elevator mElevator) {
         return mElevator.getEncoderValue() > ElevatorLevel.CARGO1.getValue() - 500
                 || !mElevator.reachedState(RobotState.CARGOHANDOFF.getElevatorLevel());
+    }
+
+    private ElevatorLevel getMinRotateBasedOnArmEncoderValue(int armEncoderValue) {
+        if (armEncoderValue < 4000) {
+            return ElevatorLevel.MINROTATEFRONT;
+        } else if (armEncoderValue > 22500) {
+            return ElevatorLevel.MINROTATEBACK;
+        }
+        return ElevatorLevel.MINROTATE;
     }
 }

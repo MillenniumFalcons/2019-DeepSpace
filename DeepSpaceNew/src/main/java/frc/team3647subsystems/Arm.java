@@ -47,14 +47,14 @@ public class Arm extends SRXSubsystem {
     }
 
     /**
-     * follower code for the NEO because it wouldn't follow a talon with motion magic otherwise
+     * follower code for the NEO because it wouldn't follow a talon with motion
+     * magic otherwise
      */
     public void armNEOFollow() {
         // set to voltage that srx is output on a scale of -1 to 1
         armNEO.set(getMaster().getMotorOutputVoltage() / 12);
     }
 
-    
     public void run() {
         if (!initialized) {
             initSensors();
@@ -63,16 +63,15 @@ public class Arm extends SRXSubsystem {
         if (aimedState != null) {
             // None-special arm positions are those that have encoder values for the arm
             // (rotational values, degree like)
-            if (!aimedState.isSpecial()) {
+
+            if (!aimedState.isSpecial() && aimedState.getValue() != -1) {
                 setPosition(aimedState.getValue());
+            } else if (aimedState.equals(ArmPosition.REVLIMITSWITCH)) {
+                moveToRevLimitSwitch();
+            } else if (aimedState.equals(ArmPosition.FWDLIMITSWITCH)) {
+                moveToFwdLimitSwitch();
             } else {
-                if (aimedState.equals(ArmPosition.REVLIMITSWITCH)) {
-                    moveToRevLimitSwitch();
-                } else if (aimedState.equals(ArmPosition.FWDLIMITSWITCH)) {
-                    moveToFwdLimitSwitch();
-                } else {
-                    stop();
-                }
+                stop();
             }
         }
     }
@@ -82,6 +81,7 @@ public class Arm extends SRXSubsystem {
      */
     public void moveToFwdLimitSwitch() {
         if (!getFwdLimitSwitchValue()) {
+            // System.out.println("Moving to fwd limit switch");
             setOpenLoop(.2);
         } else {
             stop();

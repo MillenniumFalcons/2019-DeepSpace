@@ -85,7 +85,7 @@ public class RobotState {
      * @return is the elevator level of this aimed state above minrotate
      */
     public boolean isAboveMinRotate() {
-        return mElevatorLevel.isAboveMinRotate();
+        return mElevatorLevel.isAboveOtherLevel(mArmPosition.getApplicableMinRotate());
     }
 
     /**

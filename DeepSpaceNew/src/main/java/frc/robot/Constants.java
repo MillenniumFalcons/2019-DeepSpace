@@ -152,7 +152,7 @@ public class Constants
 	public static final int armSRXStowed = 11000;
 	public static final int armSRXVerticalStowed = 13500;
 	public static final int armSRXStowedBackwards = 15000;
-	public static final int armSRXCargoHandoff = 8570;
+	public static final int armSRXCargoHandoff = 26000;
 	public static final int armSRXFwdLimitSwitch = 26150;
 	public static final int armSRXClimb = 20500;
 	public static final int armSRXCargoFlatForwards = 4500; 
@@ -184,10 +184,11 @@ public class Constants
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 0;
 	public static final int elevatorMinRotation = 5000;
-	public static final int elevatorMinRotationHigher = 8500; // when going to limit switches, or cargo intake
+	public static final int elevatorMinRotationFront = 8500; // when going to limit switches, or cargo intake
+	public static final int elevatorMinRotationBack = 14000;
 	public static final int elevatorStartingStowed = 5000;
 	public static final int elevatorCargoLoadingStation = 18300;
-	public static final int elevatorBeforeCargoHandoff = 8500;
+	public static final int elevatorBeforeCargoHandoff = 14000;
 
 
 	// Hatch Intake Positions

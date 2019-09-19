@@ -12,7 +12,6 @@ public abstract class SubsystemAimedState{
             throw new NullPointerException("Game object is null!");
         }
         this.encoderValue = encoderValue;
-        isSpecial = false;
     }
 
     protected SubsystemAimedState(int encoderValue) {
@@ -38,6 +37,10 @@ public abstract class SubsystemAimedState{
      */
     public boolean isSpecial(){
         return isSpecial;
+    }
+
+    protected void setSpecial(boolean isSpecial) {
+        this.isSpecial = isSpecial;
     }
 
     /**
