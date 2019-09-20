@@ -67,7 +67,9 @@ public class Constants
 	public static final int allSRXPID = 0;
 	// Arm PID Values
 	public static final int armPID = 0;
-	public static final double[] armPIDF = { 1, 0, 20, 0 };
+	public static final double[] armPIDF = { 1, 0, 0, 0 };
+
+	// public static final double[] armPIDF = { 1, 0, 30, .7 }; good for lvl3
 
 	// Arm motion magic
 	public static final int kArmSRXCruiseVelocity = 1625;
@@ -185,7 +187,7 @@ public class Constants
 	public static final int elevatorVerticalStowed = 0;
 	public static final int elevatorMinRotation = 5000;
 	public static final int elevatorMinRotationFront = 8500; // when going to limit switches, or cargo intake
-	public static final int elevatorMinRotationBack = 14000;
+	public static final int elevatorMinRotationBack = 16000;
 	public static final int elevatorStartingStowed = 5000;
 	public static final int elevatorCargoLoadingStation = 18300;
 	public static final int elevatorBeforeCargoHandoff = 14000;

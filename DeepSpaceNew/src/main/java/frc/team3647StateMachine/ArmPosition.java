@@ -47,11 +47,14 @@ public class ArmPosition extends SubsystemAimedState {
 
     private ArmPosition(int encoderValue, GameObject object){
         super(encoderValue, object);
+
         if(encoderValue >= Constants.armSRXVerticalStowed){
             dir = Direction.kBackwards;
         }else{
             dir = Direction.kForwards;
         }
+
+
         if(encoderValue < 4000) {
             this.minRotateToUse = ElevatorLevel.MINROTATEFRONT;
         } else if (encoderValue > 22500) {
@@ -59,6 +62,7 @@ public class ArmPosition extends SubsystemAimedState {
         } else {
             this.minRotateToUse = ElevatorLevel.MINROTATE;
         }
+        
         setSpecial(this.encoderValue == -1);
     }
 
@@ -68,10 +72,6 @@ public class ArmPosition extends SubsystemAimedState {
     
     private ArmPosition(){
         this(-1);
-    }
-
-    private ArmPosition(ElevatorLevel minRotateToUse) {
-        this.minRotateToUse = minRotateToUse;
     }
 
     public Direction getDirection(){

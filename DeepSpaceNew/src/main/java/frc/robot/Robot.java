@@ -194,7 +194,8 @@ public class Robot extends TimedRobot {
 		stateMachine.run();
 		mArm.run();
 		mElevator.run();
-		mBallShooter.runBlink();
+		mBallShooter.updateCargoDetection();
+		mBallShooter.runBlink(stateMachine.cargoDetectedAfterPiston);
 		// System.out.println("Arm percent output" + mArm.getMasterMotor().getMotorOutputPercent());
 		System.out.println("Arm encoder: " + mArm.getEncoderValue());
 		System.out.println("Elevator Encoder: " + mElevator.getEncoderValue());
@@ -246,19 +247,25 @@ public class Robot extends TimedRobot {
 		lastMethod = LastMethod.kTesting;
 
 		// mHatchGrabber.init();
+		mArm.initSensors();
+		armFollowerNotifier.startPeriodic(.01);
 	}
 
 	@Override
 	public void testPeriodic() {
 
-		// if(mainController.buttonA) {
-		// 	mHatchGrabber.retract(3);
-		// }
-		// else if(mainController.buttonB) {
-		// 	mHatchGrabber.extend(3);
-		// }
-		// mArm.run();
-		TestingMethods.test(mArm);
+		mArm.run();
+		if(mainController.buttonA) {
+			mArm.aimedState = ArmPosition.HATCHFLATFORWARDS;
+		} else if(mainController.buttonB) {
+			mArm.aimedState = ArmPosition.CARGOSHIPBACKWARDS;
+		} else if(mainController.buttonX) {
+			mArm.aimedState = ArmPosition.CARGOL3BACK;
+		} else if(mainController.buttonY) {
+			mArm.aimedState = ArmPosition.VERTICALSTOWED;
+		}
+		mArm.updateEncoder();
+		mArm.printEncoder();
 		mainController.update();
 		lastMethod = LastMethod.kTesting;
 	}

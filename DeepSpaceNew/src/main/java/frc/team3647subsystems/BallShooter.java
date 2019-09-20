@@ -34,12 +34,15 @@ public class BallShooter extends Subsystem {
 		intakeMotor.setInverted(false);
 	}
 
+	public void updateCargoDetection() {
+		cargoDetection = cargoDetection();
+	}
 	/**
 	 * the blinker methods for everytime we sense a ball with the beam break.
 	 */
-	public void runBlink() {
-		cargoDetection = Robot.stateMachine.cargoDetectedAfterPiston;
-		if (cargoDetection) {
+	public void runBlink(boolean cargoDetectionAfterPiston) {
+		
+		if (cargoDetectionAfterPiston) {
 			if (!ballBlinkTimer.isRunning()) {
 				ballBlinkTimer.reset();
 				ballBlinkTimer.start();
@@ -69,6 +72,7 @@ public class BallShooter extends Subsystem {
 
 	public void setOpenLoop(double demand) {
 		intakeMotor.set(ControlMode.PercentOutput, demand);
+
 	}
 
 	/**

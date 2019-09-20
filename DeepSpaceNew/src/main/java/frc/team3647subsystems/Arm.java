@@ -46,6 +46,7 @@ public class Arm extends SRXSubsystem {
         super.initSensors();
     }
 
+
     /**
      * follower code for the NEO because it wouldn't follow a talon with motion
      * magic otherwise
@@ -60,6 +61,7 @@ public class Arm extends SRXSubsystem {
             initSensors();
         }
 
+        // getMaster().selectProfileSlot(slotIdx, pidIdx); 
         if (aimedState != null) {
             // None-special arm positions are those that have encoder values for the arm
             // (rotational values, degree like)
@@ -174,6 +176,10 @@ public class Arm extends SRXSubsystem {
     public void disableArm() {
         stop();
         setToCoast();
+    }
+
+    public void printEncoder() {
+        System.out.println("Arm encoder: " + getEncoderValue());
     }
 
     public TalonSRX getMasterMotor() {

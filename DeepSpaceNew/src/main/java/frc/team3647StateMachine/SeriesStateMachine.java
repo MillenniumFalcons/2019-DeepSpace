@@ -148,6 +148,7 @@ public class SeriesStateMachine {
          * cargo detection, after checking if hatch is extended.
          */
         boolean cargoDetection = cargoDetectionSensor && !mHatchGrabber.isExtended();
+        System.out.println("Hatch Grabber extended: " + mHatchGrabber.isExtended());
         cargoDetectedAfterPiston = cargoDetection;
         try {
 
@@ -178,17 +179,18 @@ public class SeriesStateMachine {
 
                 // if anything moves, run ball intake in to keep balls from flying out while
                 // rotating the arm
-                if ((Math.abs(mArm.getEncoderVelocity()) > 500) || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
-                    mBallShooter.intakeCargo(.45);
-                } else {
-                    mBallShooter.stop();
+                if (coController.rightTrigger < .15) {
+                    if ((Math.abs(mArm.getEncoderVelocity()) > 500)
+                            || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
+                        mBallShooter.intakeCargo(.45);
+                    } else {
+                        mBallShooter.stop();
+                    }
                 }
             }
 
             if (coController.rightTrigger > .15) {
-                mHatchGrabber.extend(0); // extend to punch ball
                 mBallShooter.shootBall(coController.rightTrigger);
-                mHatchGrabber.retract(1.2); // delay 1.2 seconds
             }
 
             if ((!cargoDetection || forceCargoOff) && !forceCargoOn) {
@@ -272,22 +274,6 @@ public class SeriesStateMachine {
     }
 
     public void run() {
-
-        currentPositionRequiredMinRotate = getMinRotateBasedOnArmEncoderValue(mArm.getEncoderValue());
-        nextPositionRequiredMinRotate = aimedRobotState.getArmPosition().getApplicableMinRotate();
-
-        greatestMinRotateValue = Math.max(currentPositionRequiredMinRotate.getValue(),
-                nextPositionRequiredMinRotate.getValue());
-
-        greatestMinRotate = currentPositionRequiredMinRotate.isAboveOtherLevel(nextPositionRequiredMinRotate)
-                ? currentPositionRequiredMinRotate
-                : nextPositionRequiredMinRotate;
-
-        elevatorAboveMinRotate = mElevator.isAboveValue(greatestMinRotateValue, -550);
-        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel().getValue() > greatestMinRotateValue;
-        armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
-        elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
-
         // only run the sequence if the state is an actual one, having a NONE state
         // makes having a NullPointerExcpetion less likely
         if (!RobotState.NONE.equals(aimedRobotState)) {
@@ -445,6 +431,21 @@ public class SeriesStateMachine {
      */
     private Movement movementCheck(RobotState aimedState) {
         Movement returnMovement;
+
+        currentPositionRequiredMinRotate = getMinRotateBasedOnArmEncoderValue(mArm.getEncoderValue());
+        nextPositionRequiredMinRotate = aimedRobotState.getArmPosition().getApplicableMinRotate();
+
+        greatestMinRotateValue = Math.max(currentPositionRequiredMinRotate.getValue(),
+                nextPositionRequiredMinRotate.getValue());
+
+        greatestMinRotate = currentPositionRequiredMinRotate.isAboveOtherLevel(nextPositionRequiredMinRotate)
+                ? currentPositionRequiredMinRotate
+                : nextPositionRequiredMinRotate;
+
+        elevatorAboveMinRotate = mElevator.isAboveValue(greatestMinRotateValue, -550);
+        elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel().getValue() > greatestMinRotateValue;
+        armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
+        elevatorReachedState = mElevator.reachedState(aimedRobotState.getElevatorLevel());
 
         if (elevatorReachedState && armReachedState) {
             returnMovement = ARRIVED;

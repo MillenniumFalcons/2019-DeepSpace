@@ -14,8 +14,8 @@ import frc.team3647utility.Solenoid;
 public class BallIntake extends Subsystem {
 	private static BallIntake INSTANCE = new BallIntake();
 
-	private Solenoid extensionCylinder;
-	private Solenoid extensionCylinder2;
+	public Solenoid extensionCylinder;
+	public Solenoid extensionCylinder2;
 	private VictorSPX intakeMotor;
 	
 	private BallIntake(){
@@ -58,6 +58,7 @@ public class BallIntake extends Subsystem {
 		extensionCylinder.set(false);
 		extensionCylinder2.set(false);
 	}
+
 
 	public void intake(double power){
 		setOpenLoop(power);
