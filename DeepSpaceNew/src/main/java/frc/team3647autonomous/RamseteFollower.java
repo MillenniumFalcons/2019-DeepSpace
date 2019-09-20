@@ -176,8 +176,17 @@ public class RamseteFollower {
         return this.segmentIndex;
     }
 
+    public double getSegmentFraction() {
+        return this.segmentIndex / (double)trajectory.length();
+    }
+
+    /**
+     * 
+     * @param fraction percentage to check (.1 = 10%, .5 = 50% etc.)
+     * @return boolean is the path past this percentage 
+     */
     public boolean pathFractionSegment(double fraction) {
-        return (this.segmentIndex > trajectory.length() * fraction) && (this.segmentIndex < trajectory.length());
+        return (this.segmentIndex >= trajectory.length() * fraction) && (this.segmentIndex <= trajectory.length());
     }
 
     public void printDeltaDist() {

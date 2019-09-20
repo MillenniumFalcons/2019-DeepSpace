@@ -66,8 +66,9 @@ public class TestingMethods {
     }
 
     private static void testBallShooter(BallShooter ballShooterInstance) {
-        ballShooterInstance.runBlink();
-        System.out.println(ballShooterInstance.cargoDetection());
+        ballShooterInstance.runBlink(ballShooterInstance.cargoDetection);
+        ballShooterInstance.updateCargoDetection();
+        System.out.println(ballShooterInstance.cargoDetection);
     }
 
     private static void testHatchGrabberer(HatchGrabber hatchGrabberInstance) {

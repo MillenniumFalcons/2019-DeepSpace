@@ -1,5 +1,8 @@
 package frc.team3647StateMachine;
 
+/**
+ * predetermined positions for arm and elevator, or whatever the robot can be doing at a time
+ */
 public class RobotState {
 
     public static final RobotState MINROTATEFLATBWD = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.HATCHFLATBACKWARDS);
@@ -8,9 +11,6 @@ public class RobotState {
 
     public static final RobotState HATCHL1FORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL1BACKWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATBACKWARDS);
-
-    public static final RobotState HATCHL1VISIONFORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATVISIONFORWARDS);
-    public static final RobotState HATCHL1VISIONBACKWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.FLATVISIONBACKWARDS);
 
     public static final RobotState HATCHL2FORWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL2BACKWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATBACKWARDS);
@@ -39,14 +39,14 @@ public class RobotState {
 
 
     public static final RobotState STOWED = new RobotState(ElevatorLevel.STOWED, ArmPosition.STOWED);
-    public static final RobotState VERTICALSTOWED = new RobotState(ElevatorLevel.VERTICALSTOWED, ArmPosition.VERTICALSTOWED);
+    public static final RobotState VERTICALSTOWED = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.VERTICALSTOWED);
 
     public static final RobotState REVLIMITSWITCH = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.REVLIMITSWITCH);
     public static final RobotState FWDLIMITSWITCH = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.FWDLIMITSWITCH);
 
     public static final RobotState NONE = new RobotState(ElevatorLevel.NONE, ArmPosition.NONE);
     public static final RobotState START = new RobotState(ElevatorLevel.NONE, ArmPosition.NONE);
-    public static final RobotState BOTTOMSTART = new RobotState(ElevatorLevel.START, ArmPosition.HATCHFLATFORWARDS);
+    public static final RobotState BOTTOMSTART = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATFORWARDS);
 
     public static final RobotState CLIMB = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.CLIMB);
     public static final RobotState STOPPED = new RobotState(ElevatorLevel.STOPPED, ArmPosition.STOPPED);
@@ -66,6 +66,13 @@ public class RobotState {
         isSpecial = armPosition.isSpecial();
     }
 
+    public RobotState getStateAtMinRotate(RobotState currentState) {
+        if(currentState.isAboveMinRotate()) {
+            return currentState;
+        }
+        return new RobotState(ElevatorLevel.MINROTATE, currentState.getArmPosition());
+    }
+
     public ArmPosition getArmPosition() {
         return mArmPosition;
     }
@@ -74,10 +81,17 @@ public class RobotState {
         return mElevatorLevel;
     }
 
+    /**
+     * @return is the elevator level of this aimed state above minrotate
+     */
     public boolean isAboveMinRotate() {
-        return mElevatorLevel.isAboveMinRotate();
+        return mElevatorLevel.isAboveOtherLevel(mArmPosition.getApplicableMinRotate());
     }
 
+    /**
+     * 
+     * @return if the state has to use something other than motion magic to get to it, or the default run method
+     */
     public boolean isSpecial() {
         return isSpecial;
     }

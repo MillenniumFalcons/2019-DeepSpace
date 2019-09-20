@@ -2,6 +2,10 @@ package frc.team3647autonomous;
 
 public enum MotionProfileDirection 
 {
-    BACKWARD, 
-    FORWARD
+    BACKWARD("BACKWARD"), 
+    FORWARD("FORWARD");
+    public String asString;
+    MotionProfileDirection(String asString) {
+        this.asString = asString;
+    }
 }

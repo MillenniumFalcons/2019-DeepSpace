@@ -20,21 +20,18 @@ public class ElevatorLevel extends SubsystemAimedState {
     public static final ElevatorLevel CARGOSHIP = new ElevatorLevel(Constants.elevatorCargoShip, GameObject.kCargo);
     public static final ElevatorLevel STOWED = new ElevatorLevel(Constants.elevatorStowed);
     public static final ElevatorLevel MINROTATE = new ElevatorLevel(Constants.elevatorMinRotation);
+    public static final ElevatorLevel MINROTATEFRONT = new ElevatorLevel(Constants.elevatorMinRotationFront);
+    public static final ElevatorLevel MINROTATEBACK = new ElevatorLevel(Constants.elevatorMinRotationBack);
     public static final ElevatorLevel VERTICALSTOWED = new ElevatorLevel(Constants.elevatorMinRotation);
     public static final ElevatorLevel CARGOLOADINGSTATION = new ElevatorLevel(Constants.elevatorCargoLoadingStation, GameObject.kCargo);
     public static final ElevatorLevel BEFORECARGOHANDOFF = new ElevatorLevel(Constants.elevatorBeforeCargoHandoff, GameObject.kCargo);
     public static final ElevatorLevel START = new ElevatorLevel();
     public static final ElevatorLevel NONE = new ElevatorLevel();
 
-    private boolean isAboveMinRotate;
 
     private ElevatorLevel(int encoderValue, GameObject object){
         super(encoderValue, object);
-
-        isAboveMinRotate = false;
-        if(encoderValue >= Constants.elevatorMinRotation){
-            isAboveMinRotate = true;
-        }
+        setSpecial(encoderValue == -1);
     }
 
     private ElevatorLevel(int encoderValue) {
@@ -42,16 +39,15 @@ public class ElevatorLevel extends SubsystemAimedState {
     }
 
     private ElevatorLevel(){
-        super();
-        isAboveMinRotate = false;
+        this(-1);
     }
 
     /**
      * 
      * @return if elevator level is above a set constant
      */
-    public boolean isAboveMinRotate(){
-        return isAboveMinRotate;
+    public boolean isAboveOtherLevel(ElevatorLevel otherLevel){
+        return getValue() > otherLevel.getValue();
     }
 
 }

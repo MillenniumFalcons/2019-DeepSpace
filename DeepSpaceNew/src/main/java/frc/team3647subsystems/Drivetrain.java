@@ -23,7 +23,6 @@ public class Drivetrain {
 	private WPI_TalonSRX leftSRX = new WPI_TalonSRX(Constants.leftMasterPin);
 	private WPI_TalonSRX rightSRX = new WPI_TalonSRX(Constants.rightMasterPin);
 
-
 	private VictorSPX leftSPX1 = new VictorSPX(Constants.leftSlave1Pin);
 	private VictorSPX leftSPX2 = new VictorSPX(Constants.leftSlave2Pin);
 
@@ -40,8 +39,6 @@ public class Drivetrain {
 
 	public boolean initialized;
 
-	
-
 	private Drivetrain() {
 		initialized = false;
 	}
@@ -51,17 +48,12 @@ public class Drivetrain {
 	}
 
 	public void init() {
-		// Set up followers
+		// makes the stupid motor controllers (victors) follow the smart talons
 		setFollowers();
 
 		configLeftSRX();
 		configRightSRX();
 
-		; // 1 second from 0 to 100% motor output
-
-		// leftSRX.setExpiration(Constants.expirationTimeSRX);
-		// rightSRX.setExpiration(Constants.expirationTimeSRX);
-		// drive.setExpiration(Constants.expirationTimeSRX);
 		drive.setSafetyEnabled(false);
 		leftSRX.setSafetyEnabled(false);
 		rightSRX.setSafetyEnabled(false);
@@ -153,26 +145,36 @@ public class Drivetrain {
 		selectPIDF(Constants.velocitySlotIdx, Constants.rightVelocityPIDF, Constants.leftVelocityPIDF);
 	}
 
-	
+	/**
+	 * Uses vision cameras to adjust for turning if right bumper pressed
+	 * 
+	 * @param mainController should be controller at 0
+	 * @param stateMachine   the SeriesStateMachine instance use by caller
+	 * @param scaleInputs    should be the elevator height over some predetermined
+	 *                       constant
+	 */
 	public void driveVisionTeleop(Joysticks mainController, SeriesStateMachine stateMachine, boolean scaleInputs) {
 		if (mainController.rightBumper) {
 			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController);
 		} else {
 			mainController.setRumble(0);
+			// to not blind when not using vision
 			VisionController.limelightClimber.set(VisionMode.kBlack);
 			VisionController.limelightFourbar.set(VisionMode.kBlack);
+			// curvature drive, but quick turn when under .4 power to have control at higher
+			// speeds and quick turn
 			customArcadeDrive(mainController.rightJoyStickX, mainController.leftJoyStickY,
-					mainController.leftJoyStickY < .4,
-					(scaleInputs || mainController.rightJoyStickPress));
+					mainController.leftJoyStickY < .4, (scaleInputs || mainController.rightJoyStickPress));
 		}
 	}
 
 	/**
-	 * Method to control robot
+	 * Curvature drive from wpilib
 	 * 
-	 * @param xValue joystick x value
-	 * @param yValue joystick y value
-	 * @param gyro   gyro object
+	 * @param xValue      joystick x value
+	 * @param yValue      joystick y value
+	 * @param quickTurn   can turn in place?
+	 * @param scaleInputs normally .8, if true, .6
 	 */
 	public void customArcadeDrive(double xValue, double yValue, boolean quickTurn, boolean scaleInputs) {
 		if (scaleInputs) {
@@ -184,10 +186,11 @@ public class Drivetrain {
 		}
 
 		drive.curvatureDrive(yValue, xValue, quickTurn);
-		// drive.arcadeDrive(yValue, xValue);
 	}
 
-
+	/**
+	 * copied wpilib arcade
+	 */
 	public void arcadeDrive(double throttle, double turn, boolean scaleInputs) {
 		throttle = limit(throttle);
 		turn = limit(turn);
@@ -234,7 +237,6 @@ public class Drivetrain {
 		return value;
 	}
 
-
 	public void setOpenLoop(double lOutput, double rOutput) {
 		rightSRX.set(ControlMode.PercentOutput, rOutput);
 		leftSRX.set(ControlMode.PercentOutput, lOutput);
@@ -267,7 +269,8 @@ public class Drivetrain {
 			curvatureDrive(xValue, yValue);
 		}
 	}
-									//puts x         //puts y
+
+	// puts x //puts y
 	private void curvatureDrive(double speed, double rotation) {
 		try {
 			drive.curvatureDrive(speed, rotation, rotation < .15); // curvature drive from WPILIB libraries.
@@ -293,6 +296,27 @@ public class Drivetrain {
 	}
 
 	public void setAutoVelocity(double leftDriveSignal, double rightDriveSignal) {
+
+		//normalize speeds to 1300 (half velocity) and keep the same ratios;
+		if (leftDriveSignal > 1300) {
+			if (rightDriveSignal < leftDriveSignal) {
+				rightDriveSignal = (rightDriveSignal / leftDriveSignal) * 1300;
+				leftDriveSignal = 1300;
+			} else {
+				leftDriveSignal = (leftDriveSignal / rightDriveSignal) * 1300;
+				rightDriveSignal = 1300;
+			}
+		} else if (rightDriveSignal > 1300) {
+			if (leftDriveSignal < rightDriveSignal) {
+				leftDriveSignal = (leftDriveSignal / rightDriveSignal) * 1300;
+				rightDriveSignal = 1300;
+			} else {
+				rightDriveSignal = (rightDriveSignal / leftDriveSignal) * 1300;
+				leftDriveSignal = 1300;
+			}
+		}
+
+
 		rightSRX.set(ControlMode.Velocity, rightDriveSignal);
 		leftSRX.set(ControlMode.Velocity, leftDriveSignal);
 	}
@@ -352,7 +376,7 @@ public class Drivetrain {
 	public void resetRightEncoder() {
 		setRightEncoderValue(0);
 	}
-	
+
 	public int getRightEncoderValue() {
 		return rightEncoderValue;
 	}
@@ -396,5 +420,5 @@ public class Drivetrain {
 		int velErrorL = leftSRX.getClosedLoopError();
 		System.out.println("Right Vel Error: " + velErrorR);
 		System.out.println("Left Vel Error: " + velErrorL);
-	}	
+	}
 }

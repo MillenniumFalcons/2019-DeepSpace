@@ -12,7 +12,6 @@ public abstract class SubsystemAimedState{
             throw new NullPointerException("Game object is null!");
         }
         this.encoderValue = encoderValue;
-        isSpecial = false;
     }
 
     protected SubsystemAimedState(int encoderValue) {
@@ -40,6 +39,13 @@ public abstract class SubsystemAimedState{
         return isSpecial;
     }
 
+    protected void setSpecial(boolean isSpecial) {
+        this.isSpecial = isSpecial;
+    }
+
+    /**
+     * @return the object the robot will have at this position
+     */
     public GameObject getObject() {
         return this.object;
     }

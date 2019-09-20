@@ -14,17 +14,16 @@ public class Elevator extends SRXSubsystem {
 	private static Elevator INSTANCE = new Elevator();
 
 	private boolean bannerSensorValue = false;
+	private boolean reachedZeroButNotBottom = false;
 
-	// Sensor at bottom of elevator
+	/**
+	 * Sensor at bottom of elevator to detect if we are at the bottom
+	 */
 	private DigitalInput limitSwitch = new DigitalInput(Constants.elevatorBeamBreakPin);
-
 
 	// Elevator motors
 	public VictorSPX GearboxSPX1 = new VictorSPX(Constants.ElevatorGearboxSPX1);
 	public VictorSPX GearboxSPX2 = new VictorSPX(Constants.ElevatorGearboxSPX2);
-	// public VictorSPX GearBoxSPX3;
-
-	
 
 	private Elevator() {
 		super(Constants.ElevatorGearboxSRX, Constants.interstagePIDF, Constants.kElevatorCruiseVelocity,
@@ -33,6 +32,7 @@ public class Elevator extends SRXSubsystem {
 		// GearBoxSPX3 = new VictorSPX(Constants.ElevatorGearboxSPX3);
 		bannerSensorValue = false;
 	}
+
 	public static Elevator getInstance() {
 		return INSTANCE;
 	}
@@ -42,8 +42,7 @@ public class Elevator extends SRXSubsystem {
 		aimedState = ElevatorLevel.STOPPED;
 		initSensors();
 
-		
-		setEncoderValue(5000);
+		setEncoderValue(0);
 		updateEncoder();
 	}
 
@@ -53,17 +52,19 @@ public class Elevator extends SRXSubsystem {
 		System.out.println("initialized Elevator");
 		aimedState = ElevatorLevel.STOPPED;
 
+		// set the followers for the elevator, so the two stupid motors (victors) follow
+		// the smart one (talon)
 		GearboxSPX2.follow(getMaster());
 		GearboxSPX1.follow(getMaster());
-		// GearBoxSPX3.follow(getMaster());
 
 		GearboxSPX2.setInverted(false);
 		getMaster().setInverted(false);
 		GearboxSPX1.setInverted(false);
 		// GearBoxSPX3.setInverted(false);
 
+		// limit the elevator current so that we don't burn motors
 		getMaster().enableCurrentLimit(true);
-		getMaster().configContinuousCurrentLimit(35);
+		getMaster().configContinuousCurrentLimit(Constants.kElevatorContinuousCurrent);
 
 		getMaster().setNeutralMode(NeutralMode.Brake);
 		updateBannerSensor();
@@ -80,23 +81,27 @@ public class Elevator extends SRXSubsystem {
 			initSensors();
 		}
 
+		// must update banner sensor value every loop
 		updateBannerSensor();
 
 		if (aimedState != null) {
-			if (!aimedState.isSpecial()) {
+			if (!aimedState.isSpecial() && aimedState.getValue() != -1) {
 				setPosition(aimedState.getValue());
-			} else {
-				if (aimedState.equals(ElevatorLevel.BOTTOM)) {
-					moveToBottom();
-				} else if (aimedState.equals(ElevatorLevel.STOPPED)) {
-					stop();
-				} else if (aimedState.equals(ElevatorLevel.START)) {
-					moveToBottomStart();
-				}
+			} else if (aimedState.equals(ElevatorLevel.BOTTOM)) {
+				moveToBottom();
+			} else if (aimedState.equals(ElevatorLevel.STOPPED)) {
+				stop();
+			} else if (aimedState.equals(ElevatorLevel.START)) {
+				moveToBottomStart();
 			}
+
 		}
 	}
 
+	/**
+	 * moves to bottom with openloop only until hit banner sensor, than stops and
+	 * resets the encoder
+	 */
 	private void moveToBottomStart() {
 		if (getBannerSensorValue()) {
 			stop();
@@ -115,47 +120,75 @@ public class Elevator extends SRXSubsystem {
 		}
 	}
 
-	boolean reachedZeroButNotBottom = false;
-
+	/**
+	 * special movement to bottom that uses a combination of motion magic and open
+	 * loop to make sure we reach the absolute bottom
+	 */
 	private void moveToBottom() {
 
-		if(!getBannerSensorValue()) {
+		if (!getBannerSensorValue()) {
+			// if we reached motion magic bottom, but we aren't at the physical bottom
+			// because banner sensor isn't triggerd but we are less than 100 encoder values
+			// away
 			reachedZeroButNotBottom = getEncoderValue() <= 100;
+		} else {
+			// System.out.println("Reset encoder and stop!");
+			// if the banner sensor is triggered, we should reset the encoders and stop the
+			// elevator to not burn
+			stop();
+			resetEncoder();
 		}
 
 		if (reachedZeroButNotBottom) {
-			moveToBottomStart(.2);
+			// slowly move down until reached banner sensor
+			setOpenLoop(-.2);
 			reachedZeroButNotBottom = !getBannerSensorValue();
 		} else if (!getBannerSensorValue() && !reachedZeroButNotBottom) {
+			// use motion magic if we know elevator is farther than 100 encoder values from
+			// the bottom
 			setPosition(0);
 		}
 	}
 
+	/**
+	 * pulls the banner sensor value from the digital input and stores in variable,
+	 * must be run every loop otherwise getter will be wrong
+	 */
 	public void updateBannerSensor() {
 		bannerSensorValue = limitSwitch.get();
 	}
 
+	/**
+	 * @return the last stored value of the banner sensor
+	 * @see void updateBannerSensor()
+	 */
 	public boolean getBannerSensorValue() {
 		return bannerSensorValue;
 	}
 
+	/**
+	 * @return if the elevator encoder value is above the minimum rotation constant
+	 * @see void updateEncoder() from SRXSubsystem parent class
+	 */
 	public boolean isAboveMinRotate() {
-		return getEncoderValue() >= Constants.elevatorMinRotation;
+		return isAboveMinRotate(0);
 	}
 
 	public boolean isAboveMinRotate(int threshold) {
-		return (getEncoderValue() >= Constants.elevatorMinRotation + threshold);
+		return isXAboveYWithThresholdZ(getEncoderValue(), Constants.elevatorMinRotation, threshold);
 	}
+
+	public boolean isXAboveYWithThresholdZ(int x, int y, int z) {
+		return (x >= y + z);
+	}
+
 
 	public boolean isValueAboveMinRotate(int val) {
-		return (val >= Constants.elevatorMinRotation - 500);
+		return isXAboveYWithThresholdZ(val, Constants.elevatorMinRotation, 0);
 	}
 
-	public boolean isStateAboveMinRotate(ElevatorLevel state) {
-		if (state != null) {
-			return state.isAboveMinRotate();
-		}
-		return false;
+	public boolean isAboveValue(int value, int threshold) {
+		return getEncoderValue() > (value + threshold);
 	}
 
 	public TalonSRX getMasterMotor() {

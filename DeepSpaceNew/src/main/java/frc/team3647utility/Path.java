@@ -68,17 +68,17 @@ public class Path
         if(structure.equals(Structure.kRocket))
         {
             if(autoMode.equals(AutoMode.kRegular)){
-                method = () -> {AutonomousSequences.frontRocketAuto(direction.str);};
+                // method = () -> {AutonomousSequences.frontRocketAuto(direction.str);};
             }else{
-                method = () -> {AutonomousSequences.mixedRocketAuto(direction.str);};
+                // method = () -> {AutonomousSequences.mixedRocketAuto(direction.str);};
             }
         }
         else
         {
             if(autoMode.equals(AutoMode.kRegular)){
-                method = () -> {AutonomousSequences.sideCargoShipAuto(direction.str);};
+                // method = () -> {AutonomousSequences.sideCargoShipAuto(direction.str);};
             }else{
-                method = () -> {AutonomousSequences.mixedCargoShipAuto(direction.str);};
+                // method = () -> {AutonomousSequences.mixedCargoShipAuto(direction.str);};
             }
         }
     }
