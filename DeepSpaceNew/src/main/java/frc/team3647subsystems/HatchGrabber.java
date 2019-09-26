@@ -20,32 +20,41 @@ public class HatchGrabber extends Subsystem {
 	private double delay = 0;
 	private boolean shouldExtend = true;
 	private boolean shouldRetract = false;
-	
+
+	private boolean punched = false;
+	private boolean shouldPunch = false;
+
 	private Notifier hatchSolenoidNotifier = new Notifier(() -> {
-		if(shouldExtend) {
-			Timer.delay(delay);
+		if (shouldPunch && !punched) {
 			hatchSolenoid.set(false);
-			extended = true;	
-		}
-		else if(shouldRetract) {
-			Timer.delay(delay);
+			extended = true;
+			Timer.delay(.7);
 			hatchSolenoid.set(true);
 			extended = false;
+			punched = true;
 		} else {
-			hatchSolenoid.set(true);
-			extended = false;
+			if (shouldExtend) {
+				Timer.delay(delay);
+				hatchSolenoid.set(false);
+				extended = true;
+			} else if (shouldRetract) {
+				Timer.delay(delay);
+				hatchSolenoid.set(true);
+				extended = false;
+			} else {
+				hatchSolenoid.set(true);
+				extended = false;
+			}
+			punched = false;
 		}
 	});
 
-	
 	private double current = 0;
 
 	private boolean extended;
 
-
 	private HatchGrabber() {
 	}
-
 
 	/**
 	 * Starts the notifier thread that runs the piston
@@ -121,6 +130,10 @@ public class HatchGrabber extends Subsystem {
 
 	public boolean isExtended() {
 		return extended;
+	}
+
+	public void shouldPunch(boolean shouldPunch) {
+		this.shouldPunch = shouldPunch;
 	}
 
 }

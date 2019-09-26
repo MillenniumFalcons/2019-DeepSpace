@@ -4,7 +4,6 @@ package frc.team3647subsystems;
 import edu.wpi.first.networktables.*;
 
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.team3647StateMachine.ArmPosition;
 import frc.team3647StateMachine.RobotState;
 import frc.team3647inputs.Joysticks;

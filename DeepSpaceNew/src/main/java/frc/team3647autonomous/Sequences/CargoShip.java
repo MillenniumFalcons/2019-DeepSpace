@@ -10,11 +10,11 @@ public class CargoShip extends Sequence {
         super("CargoShip",
                 new Path[] {
                         Path.createNewPath(side, FieldElement.HAB, FieldElement.cargoShipBay2,
-                                MotionProfileDirection.FORWARD, .8),
+                                MotionProfileDirection.FORWARD, .8, 3600),
                         Path.createNewPath(side, FieldElement.cargoShipBay2, FieldElement.LoadingStation,
-                                MotionProfileDirection.BACKWARD, .6),
+                                MotionProfileDirection.BACKWARD, .6, 3600),
                         Path.createNewPath(side, FieldElement.LoadingStation, FieldElement.cargoShipBay1,
-                                MotionProfileDirection.FORWARD, .82), }
+                                MotionProfileDirection.FORWARD, .82, 3600), }
 
         );
     }

@@ -1,27 +1,18 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
-
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import frc.team3647StateMachine.ArmPosition;
 import frc.team3647StateMachine.SeriesStateMachine;
-import frc.team3647autonomous.AutoTest;
 import frc.team3647autonomous.AutonomousSequences;
-import frc.team3647autonomous.MotionProfileDirection;
 import frc.team3647autonomous.Odometry;
-import frc.team3647autonomous.RamseteFollower;
-import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647autonomous.PathProperties.Side;
-import frc.team3647autonomous.Sequences.CargoShip;
+import frc.team3647autonomous.Sequences.Rocket;
 import frc.team3647autonomous.Sequences.Sequence;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.*;
 import frc.team3647subsystems.VisionController.VisionMode;
-import frc.team3647utility.AutoChooser;
 import frc.team3647utility.PDP;
-import frc.team3647utility.Path;
 import frc.team3647utility.LastMethod;
 
 
@@ -55,10 +46,11 @@ public class Robot extends TimedRobot {
 	public static SeriesStateMachine stateMachine = SeriesStateMachine.getInstance();
 
 	
-	private static Sequence leftCargoShipAuto = new CargoShip(Side.LEFT);
+	// private static Sequence leftCargoShipAuto = new CargoShip(Side.LEFT);
+	private static Sequence leftRocket = new Rocket(Side.LEFT);
 
 	private static Notifier autoPathNotifier = new Notifier(() -> {
-		leftCargoShipAuto.execute();
+		leftRocket.execute();
 	});
 
 	private static Notifier drivetrainNotifier = new Notifier(() -> {
@@ -104,6 +96,7 @@ public class Robot extends TimedRobot {
 			VisionController.limelightFourbar.setUSBStream();
 		}
 
+		mBallShooter.updateCargoDetection();
 		coController.update();
 
 		cargoDetection = mBallShooter.cargoDetection;
@@ -127,7 +120,6 @@ public class Robot extends TimedRobot {
 		mElevator.init();
 		stateMachine.init();
 		mBallIntake.init();
-		mMiniShoppingCart.init();
 		mHatchGrabber.init();
 
 
@@ -136,7 +128,7 @@ public class Robot extends TimedRobot {
 			drivetrainNotifier.startPeriodic(.02);
 		} else {
 			odometryDrivetrainNotifier.startPeriodic(.02);
-			autoPathNotifier.startPeriodic(.01);
+			autoPathNotifier.startPeriodic(.02);
 			// AutoTest.init("StraightAndTurnRight");
 		}
 
@@ -144,6 +136,7 @@ public class Robot extends TimedRobot {
 		armFollowerNotifier.startPeriodic(.01);
 
 		AirCompressor.run();
+
 		lastMethod = LastMethod.kAuto;
 	}
 
@@ -152,12 +145,11 @@ public class Robot extends TimedRobot {
 		if (!runAuto)
 			teleopPeriodic();
 		else {
-			Sequence.log("Running Autonomous");
-			Sequence.log("Odometry: " + Odometry.getInstance());
-			// stateMachine.run();
-			// mArm.run();
-			// mElevator.run();
-			// updateJoysticks();
+			// Sequence.log("Odometry: " + Odometry.getInstance());
+			stateMachine.run();
+			mArm.run();
+			mElevator.run();
+			updateJoysticks();
 			if (mainController.buttonB) {
 				mDrivetrain.stop();
 				mDrivetrain.setOpenLoop(0, 0);
@@ -175,7 +167,6 @@ public class Robot extends TimedRobot {
 		mArm.initSensors();
 		mElevator.initSensors();
 		mBallIntake.init();
-		mMiniShoppingCart.init();
 		mHatchGrabber.init();
 		subsystemsEncodersNotifier.startPeriodic(.05);
 		drivetrainNotifier.startPeriodic(.02);
@@ -194,17 +185,9 @@ public class Robot extends TimedRobot {
 		stateMachine.run();
 		mArm.run();
 		mElevator.run();
-		mBallShooter.updateCargoDetection();
 		mBallShooter.runBlink(stateMachine.cargoDetectedAfterPiston);
-		// System.out.println("Arm percent output" + mArm.getMasterMotor().getMotorOutputPercent());
-		System.out.println("Arm encoder: " + mArm.getEncoderValue());
-		System.out.println("Elevator Encoder: " + mElevator.getEncoderValue());
-		System.out.println("Elevator Banner Sensor: " + mElevator.getBannerSensorValue());
-		// System.out.println("Arm Velocity: " + mArm.getEncoderVelocity());
 
 		// Drivetrain uses the notifier
-		mMiniShoppingCart.run(mainController);
-
 	}
 
 	private static void disableAuto() {
@@ -233,9 +216,11 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
-		AutoTest.finish();
+		VisionController.limelightClimber.setLED();
+		VisionController.limelightFourbar.setLED();
 		mElevator.stop();
 		// mArm.stop();
+		mArm.stop();
 		mHatchGrabber.stop();
 		mDrivetrain.stop();
 	}
@@ -244,28 +229,18 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testInit() {
 		TestingMethods.reset();
-		lastMethod = LastMethod.kTesting;
 
-		// mHatchGrabber.init();
-		mArm.initSensors();
-		armFollowerNotifier.startPeriodic(.01);
+		lastMethod = LastMethod.kTesting;
+		mDrivetrain.init();
+		// Odometry.getInstance().setInitialOdometry(TrajectoryUtil.getTrajectoryFromName("LeftHabRocketFront"));
+		// odometryDrivetrainNotifier.startPeriodic(.01);
 	}
 
 	@Override
 	public void testPeriodic() {
-
-		mArm.run();
-		if(mainController.buttonA) {
-			mArm.aimedState = ArmPosition.HATCHFLATFORWARDS;
-		} else if(mainController.buttonB) {
-			mArm.aimedState = ArmPosition.CARGOSHIPBACKWARDS;
-		} else if(mainController.buttonX) {
-			mArm.aimedState = ArmPosition.CARGOL3BACK;
-		} else if(mainController.buttonY) {
-			mArm.aimedState = ArmPosition.VERTICALSTOWED;
-		}
-		mArm.updateEncoder();
-		mArm.printEncoder();
+		
+		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
+		// TestingMethods.test(mArm);
 		mainController.update();
 		lastMethod = LastMethod.kTesting;
 	}

@@ -34,6 +34,11 @@ public class Arm extends SRXSubsystem {
         return INSTANCE;
     }
 
+    public void init() {
+        updateEncoder();
+        initSensors();
+        setEncoderValue(13050);
+    }
     /**
      * What should run before teleop, initializes the arm but doesn't reset the
      * encoder so can run midgame

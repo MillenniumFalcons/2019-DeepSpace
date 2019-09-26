@@ -86,8 +86,8 @@ public class RamseteFollower {
         left = (-(velocity.getAngular() * Constants.kWheelBase) + (2 * velocity.getLinear())) / 2;
         right = ((velocity.getAngular() * Constants.kWheelBase) + (2 * velocity.getLinear())) / 2;
 
-        driveSignal.setLeft(left);
-        driveSignal.setRight(right);
+        driveSignal.setLeft(left/10);
+        driveSignal.setRight(right/10);
 
         segmentIndex++;
 
@@ -195,5 +195,9 @@ public class RamseteFollower {
 
     public void printCurrentEncoders() {
         System.out.println("Odometry encoder: " + odometry.getCurrentEncoderPosition());
+    }
+
+    public double getLinearVelocity() {
+        return this.linearVelocity / 10;
     }
 }

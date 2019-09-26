@@ -135,6 +135,7 @@ public class Drivetrain {
 		rightSRX.config_kD(slot, right[2], Constants.kTimeoutMs);
 		rightSRX.config_kF(slot, right[3], Constants.kTimeoutMs);
 
+
 		leftSRX.config_kP(slot, left[0], Constants.kTimeoutMs);
 		leftSRX.config_kI(slot, left[1], Constants.kTimeoutMs);
 		leftSRX.config_kD(slot, left[2], Constants.kTimeoutMs);
@@ -296,27 +297,6 @@ public class Drivetrain {
 	}
 
 	public void setAutoVelocity(double leftDriveSignal, double rightDriveSignal) {
-
-		//normalize speeds to 1300 (half velocity) and keep the same ratios;
-		if (leftDriveSignal > 1300) {
-			if (rightDriveSignal < leftDriveSignal) {
-				rightDriveSignal = (rightDriveSignal / leftDriveSignal) * 1300;
-				leftDriveSignal = 1300;
-			} else {
-				leftDriveSignal = (leftDriveSignal / rightDriveSignal) * 1300;
-				rightDriveSignal = 1300;
-			}
-		} else if (rightDriveSignal > 1300) {
-			if (leftDriveSignal < rightDriveSignal) {
-				leftDriveSignal = (leftDriveSignal / rightDriveSignal) * 1300;
-				rightDriveSignal = 1300;
-			} else {
-				rightDriveSignal = (rightDriveSignal / leftDriveSignal) * 1300;
-				leftDriveSignal = 1300;
-			}
-		}
-
-
 		rightSRX.set(ControlMode.Velocity, rightDriveSignal);
 		leftSRX.set(ControlMode.Velocity, leftDriveSignal);
 	}

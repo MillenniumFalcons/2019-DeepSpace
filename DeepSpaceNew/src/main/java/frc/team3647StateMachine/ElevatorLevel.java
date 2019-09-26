@@ -19,6 +19,7 @@ public class ElevatorLevel extends SubsystemAimedState {
     public static final ElevatorLevel CARGO1 = new ElevatorLevel(Constants.elevatorCargoL1, GameObject.kCargo);
     public static final ElevatorLevel CARGOSHIP = new ElevatorLevel(Constants.elevatorCargoShip, GameObject.kCargo);
     public static final ElevatorLevel STOWED = new ElevatorLevel(Constants.elevatorStowed);
+    public static final ElevatorLevel LOWESTMINROTATE = new ElevatorLevel(Constants.elevatorMinRotateL1);
     public static final ElevatorLevel MINROTATE = new ElevatorLevel(Constants.elevatorMinRotation);
     public static final ElevatorLevel MINROTATEFRONT = new ElevatorLevel(Constants.elevatorMinRotationFront);
     public static final ElevatorLevel MINROTATEBACK = new ElevatorLevel(Constants.elevatorMinRotationBack);

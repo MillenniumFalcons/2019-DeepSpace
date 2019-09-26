@@ -1,7 +1,6 @@
 package frc.team3647StateMachine.Movement;
 
 import frc.team3647StateMachine.ArmPosition;
-import frc.team3647StateMachine.ElevatorLevel;
 
 /**
  * moves to minRotate first then moves arm

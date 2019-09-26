@@ -27,7 +27,6 @@ public class Gyro {
     public void update() {
         gyro.getYawPitchRoll(ypr);
         heading = gyro.getCompassHeading();
-        compassHeading = gyro.getAbsoluteCompassHeading();
         yaw = ypr[0];
         pitch = ypr[1];
         roll = ypr[2];
@@ -53,7 +52,7 @@ public class Gyro {
     }
 
     public void setCompass(double angleDeg) {
-        gyro.setCompassAngle(angleDeg);
+        // gyro.setCompassAngle(angleDeg);
     }
 
     public void resetCompass() {

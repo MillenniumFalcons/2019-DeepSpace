@@ -1,12 +1,12 @@
 package frc.team3647autonomous.Sequences;
 
+import frc.robot.Constants;
 import frc.team3647autonomous.MotionProfileDirection;
 import frc.team3647autonomous.TrajectoryUtil;
 import frc.team3647autonomous.PathProperties.Side;
 import frc.team3647subsystems.VisionController;
 import frc.team3647subsystems.VisionController.VisionMode;
 import frc.team3647autonomous.PathProperties.FieldElement;
-import frc.team3647autonomous.PathProperties.PathProperties;
 import jaci.pathfinder.Trajectory;
 
 /**
@@ -27,11 +27,13 @@ public class Path {
 
     public double visionPercentage = 1.0;
     public double nextStatePercentage = .5;
+    public int visionVelocityConstant = Constants.visionVelocityConstant;
 
     private Path(Side side, FieldElement startElement, FieldElement endElement, MotionProfileDirection direction,
-            double visionPercentage, VisionController pathLimelight, VisionMode visionMode) {
+            double visionPercentage, VisionController pathLimelight, VisionMode visionMode, int visionVelocityConstant) {
         this.trajectoryName = side.asString + startElement.asString + startElement.scorablePosition.asString
                 + endElement.asString + endElement.scorablePosition.asString;
+        System.out.println("Path Name: " + trajectoryName);
         this.trajectory = TrajectoryUtil.getTrajectoryFromName(this.trajectoryName);
         this.endElement = endElement;
         this.startElement = startElement;
@@ -39,9 +41,9 @@ public class Path {
         this.direction = direction;
         this.visionPercentage = visionPercentage;
         this.nextStatePercentage = 1 - visionPercentage;
-
         this.pathLimelight = pathLimelight;
         this.visionMode = visionMode;
+        this.visionVelocityConstant = visionVelocityConstant;
     }
 
     Trajectory getTrajectory() {
@@ -56,7 +58,7 @@ public class Path {
      * @param visionPercentage when to start using vision as a percentage from the trajectory ( for rocket and loading station earlier) for cargoShip later (wait for the turn)
      * @return the path
      */
-    public static Path createNewPath(Side side, FieldElement startElement, FieldElement endElement, MotionProfileDirection direction, double visionPercentage) {
+    public static Path createNewPath(Side side, FieldElement startElement, FieldElement endElement, MotionProfileDirection direction, double visionPercentage, int visionVelocityConstant) {
 
         VisionController pathLimelight = VisionController.limelightClimber;
         VisionMode visionMode = VisionMode.kClosestLvl1;
@@ -81,9 +83,12 @@ public class Path {
             } else if (endElement == FieldElement.ROCKETFRONT || endElement == FieldElement.cargoShipFront) {
                 visionMode = VisionMode.kLeft;
             }
-
         }
 
-        return new Path(side, startElement, endElement, direction, visionPercentage, pathLimelight, visionMode);
+        // if(endElement == FieldElement.ROCKETFRONT) {
+        //     visionMode = VisionMode.kClosestLvl1;
+        // }
+
+        return new Path(side, startElement, endElement, direction, visionPercentage, pathLimelight, visionMode, visionVelocityConstant);
     }
 }
