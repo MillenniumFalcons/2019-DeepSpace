@@ -22,7 +22,7 @@ public class TrajectoryUtil {
 
         return new Trajectory(segments.stream()
                 .map(segment -> new Segment(segment.dt, segment.x, segment.y, distance - segment.position,
-                        -segment.velocity, -segment.acceleration, -segment.jerk, segment.heading))
+                        -segment.velocity, -segment.acceleration, -segment.jerk, -segment.heading))
                 .toArray(Segment[]::new));
     }
 

@@ -67,12 +67,13 @@ public class Constants
 	public static final int allSRXPID = 0;
 	// Arm PID Values
 	public static final int armPID = 0;
-	public static final double[] armPIDF = { 1, 0, 0, 0 };
+	public static final double[] armPIDF = { .8, 0, 30, 0 }; // extended
+	public static final double[] armPIDFExtended = { 1, 0, 20, 0 }; // extended
 
 	// public static final double[] armPIDF = { 1, 0, 30, .7 }; good for lvl3
 
 	// Arm motion magic
-	public static final int kArmSRXCruiseVelocity = 1625;
+	public static final int kArmSRXCruiseVelocity = 2200;
 	public static final int kArmSRXAcceleration = 4000;
 
 	// Elevator PID Values
@@ -106,8 +107,8 @@ public class Constants
 	// public static final double[] rightPercentPIDF = { 0.1, 0, 0.1, 0 };
 
 	// Left and Right Drivetrain Velocity PIDF Values (in that order)
-	public static final double[] leftVelocityPIDF = {  .341 * 1.70, .0005, 3.4, .281417 }; // .281417
-	public static final double[] rightVelocityPIDF = { .341		  , .0005, 3.4, .281417 };
+	public static final double[] leftVelocityPIDF = {  .35, 0, 0, .32 }; // .281417 .341 * 1.7, .0005, 3.4
+	public static final double[] rightVelocityPIDF = { .39, 0, 0, .31 };
 
 	public static final double[] limelightPID = { .19, 0, 1 }; // p = .2, i = 0, d = 1.5
 	public static final double limelightThreshold = .0037;
@@ -116,7 +117,7 @@ public class Constants
 	public static final double limelightMaxArea = 9.5; //12%
 	public static final double limelightMinArea = 0;
 
-	public static final int visionVelocityConstant = 2500;
+	public static final int visionVelocityConstant = 3600;
 
 	public static final String limelightFourbarIP = "http://10.36.47.105:5801/";
 	public static final String limelightClimberIP = "http://10.36.47.49:5801/";
@@ -145,7 +146,10 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXFlatForwards = 4500; //4290;
-	public static final int armSRXFlatBackwards = 22200; //22400
+	public static final int armSRXFlatBackwards = 21700; //22400
+	public static final int armSRXAutoFlatBackwards = 21700; //22400
+	public static final int armSRXLevel3FlatForwards = 5200; //4290;
+	public static final int armSRXLevel3FlatBackwards = 21500; //22400
 	public static final int armSRXCargoL3Front = 7600;
 	public static final int armSRXCargoL3Back = 18500;
 	public static final int armSRXCargoShipFront = 1300; // ADDED mar 1
@@ -160,6 +164,9 @@ public class Constants
 	public static final int armSRXCargoFlatForwards = 4500; 
 	public static final int armSRXCargoFlatBackwards = 22200;
 	public static final int armSRXResetEncoderVal = 3000;
+
+	public static final int armSRXBackwardLimit = armSRXFlatBackwards + 500;
+	public static final int armSRXVerticalLimit = armSRXVerticalStowed - 500;
 
 
 	// NEO Hall Effect SEnsor Positions
@@ -181,12 +188,13 @@ public class Constants
 	public static final int elevatorCargoShip = 26000;
 	public static final int elevatorHatchL2 = 23000;
 	public static final int elevatorCargoL2 = 28400;
-	public static final int elevatorCargoL3 = 42800;
+	public static final int elevatorCargoL3 = 41000;
 	public static final int elevatorHatchL3 = 42800;
 	public static final int elevatorStowed = 13120; // if lower arm slams ground ball and hatch intakes
 	public static final int elevatorVerticalStowed = 0;
+	public static final int elevatorMinRotateL1 = 0;
 	public static final int elevatorMinRotation = 5000;
-	public static final int elevatorMinRotationFront = 8500; // when going to limit switches, or cargo intake
+	public static final int elevatorMinRotationFront = 17000; // when going to limit switches, or cargo intake
 	public static final int elevatorMinRotationBack = 16000;
 	public static final int elevatorStartingStowed = 5000;
 	public static final int elevatorCargoLoadingStation = 18300;
@@ -206,12 +214,12 @@ public class Constants
 	public static final double kEncoderTicks = 4096;
 	public static final double kWheelDiameter = .153; // meters
 	public static final double kWheelBase = .7112;
-	public static final double kMaxVelocity = 4.22; //meter per second
+	public static final double kMaxVelocity = 3; //meter per second
 
 	// 4.22 m/s .153pi meters / second = 1 rev / second
 
-	public static final double kBeta = 3; // b > 0 Correction // 1.6 11/9/19
-	public static final double kZeta = 0.17; // 0 < z < 1 Dampening //.17 hou apr 18th
+	public static final double kBeta = 2; // b > 0 Correction // 1.6 11/9/19
+	public static final double kZeta = .1; // 0 < z < 1 Dampening //.17 hou apr 18th
 
 	public static final double kFieldWidth = 8.2296;
 	public static final double expirationTimeSRX = 2; // seconds	

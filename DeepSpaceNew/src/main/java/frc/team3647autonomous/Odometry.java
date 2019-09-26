@@ -129,6 +129,6 @@ public class Odometry {
     }
 
     public String toString() {
-        return "X Position: " + x + " Y Position: " + y + " Heading: " + theta;
+        return "X Position: " + x + "\nY Position: " + y + "\nHeading: " + theta;
     }
 }

@@ -24,11 +24,11 @@ public class AutoTest {
 
     public static Notifier pathNotifier = new Notifier(() -> {
         ramsetePeriodic();
-        // Log("RightWanted: " + rightSpeed + "\nLeftWanted: " + leftSpeed);
+        Log("RightWanted: " + rightSpeed + "\nLeftWanted: " + leftSpeed);
 
         Robot.mDrivetrain.setAutoVelocity(leftSpeed, rightSpeed);
-        // Log("RightActual: " + Robot.mDrivetrain.getRightVelocity() + "\nLeftActual: " + Robot.mDrivetrain.getLeftVelocity());
-        // Log("Desired heading: " + segment.heading + "\nactual heading: " + Math.toRadians(Robot.gyro.getYaw()));
+        Log("RightActual: " + Robot.mDrivetrain.getRightVelocity() + "\nLeftActual: " + Robot.mDrivetrain.getLeftVelocity());
+        Log("Desired heading: " + segment.heading + "\nactual heading: " + Math.toRadians(Robot.gyro.getYaw()));
 
         if(ramseteFollower.isFinished() && direction==MotionProfileDirection.FORWARD) {
         }

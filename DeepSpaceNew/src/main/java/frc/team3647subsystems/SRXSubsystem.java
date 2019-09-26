@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.Constants;
 import frc.team3647StateMachine.SubsystemAimedState;
-import frc.team3647utility.LazyTalonSRX;
 
 public abstract class SRXSubsystem extends Subsystem {
 

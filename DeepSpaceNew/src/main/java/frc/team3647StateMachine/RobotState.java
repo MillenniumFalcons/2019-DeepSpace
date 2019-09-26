@@ -15,8 +15,8 @@ public class RobotState {
     public static final RobotState HATCHL2FORWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL2BACKWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATBACKWARDS);
 
-    public static final RobotState HATCHL3FORWARDS = new RobotState(ElevatorLevel.HATCHL3, ArmPosition.HATCHFLATFORWARDS);
-    public static final RobotState HATCHL3BACKWARDS = new RobotState(ElevatorLevel.HATCHL3, ArmPosition.HATCHFLATBACKWARDS);
+    public static final RobotState HATCHL3FORWARDS = new RobotState(ElevatorLevel.HATCHL3, ArmPosition.HATCHFLATFORWARDSL3);
+    public static final RobotState HATCHL3BACKWARDS = new RobotState(ElevatorLevel.HATCHL3, ArmPosition.HATCHFLATBACKWARDSL3);
 
 
     public static final RobotState CARGOL1FORWARDS = new RobotState(ElevatorLevel.CARGO1, ArmPosition.CARGOFLATFORWARDS);
@@ -47,6 +47,7 @@ public class RobotState {
     public static final RobotState NONE = new RobotState(ElevatorLevel.NONE, ArmPosition.NONE);
     public static final RobotState START = new RobotState(ElevatorLevel.NONE, ArmPosition.NONE);
     public static final RobotState BOTTOMSTART = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATFORWARDS);
+    public static final RobotState HATCHL1BACKWARDSAUTO = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATBACKWARDSAUTO);
 
     public static final RobotState CLIMB = new RobotState(ElevatorLevel.MINROTATE, ArmPosition.CLIMB);
     public static final RobotState STOPPED = new RobotState(ElevatorLevel.STOPPED, ArmPosition.STOPPED);

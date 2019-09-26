@@ -4,7 +4,6 @@ import frc.robot.*;
 import frc.team3647inputs.*;
 import frc.team3647subsystems.BallIntake;
 import frc.team3647subsystems.BallShooter;
-import frc.team3647subsystems.MiniShoppingCart;
 import frc.team3647utility.Timer;
 import frc.team3647subsystems.Elevator;
 import frc.team3647subsystems.HatchGrabber;
@@ -103,9 +102,26 @@ public class SeriesStateMachine {
      */
     private boolean elevatorAimedStateAboveMinRotate;
 
+    /**
+     * The min Rotate elevator level that the current arm position requires, is
+     * based on the positions encoder value, for example, REVLIMITSWITCH, has a
+     * higher min rotate than HATCHFLATFORWARDS
+     */
     ElevatorLevel currentPositionRequiredMinRotate;
+    /**
+     * The min Rotate elevator level that the next arm position requires, is based
+     * on the positions encoder value, for example, REVLIMITSWITCH, has a higher min
+     * rotate than HATCHFLATFORWARDS
+     */
     ElevatorLevel nextPositionRequiredMinRotate;
+    /**
+     * of the two required minRotates, next and current, the greatest value goes
+     * here, the highest elevator level
+     */
     int greatestMinRotateValue;
+    /**
+     * of the two required minRotates, next and current, the highest state goes here
+     */
     ElevatorLevel greatestMinRotate;
 
     // get all subsystems from the robot
@@ -121,10 +137,6 @@ public class SeriesStateMachine {
         return INSTANCE;
     }
 
-    // private enum Movement {
-    // ARRIVED, MOVEELEV, MOVEARM, SAFEZMOVE, SAFEZDMOVE, SAFEZUMOVE, FREEMOVE;
-    // }
-
     /**
      * initializes all the variables for robot control, only run once every game
      */
@@ -134,9 +146,7 @@ public class SeriesStateMachine {
         initializedRobot = false;
         initStep = 0;
         ranOnce = false;
-        // Init aimed state
-        aimedRobotState = RobotState.START;
-
+        // aimedRobotState = RobotState.HATCHL1FORWARDS;
         // reset Variables to control cargo intake
         prevCargoIntakeExtended = false;
 
@@ -148,11 +158,8 @@ public class SeriesStateMachine {
          * cargo detection, after checking if hatch is extended.
          */
         boolean cargoDetection = cargoDetectionSensor && !mHatchGrabber.isExtended();
-        System.out.println("Hatch Grabber extended: " + mHatchGrabber.isExtended());
         cargoDetectedAfterPiston = cargoDetection;
         try {
-
-            System.out.println("Cargo detection after: " + cargoDetection);
             if (coController.leftJoyStickPress) {
                 aimedRobotState = RobotState.VERTICALSTOWED;
             }
@@ -178,19 +185,24 @@ public class SeriesStateMachine {
                 mBallIntake.stop();
 
                 // if anything moves, run ball intake in to keep balls from flying out while
-                // rotating the arm
+                // rotating the arm, unless the co driver is trying to shoot the ball or the hatch grabber is extended
                 if (coController.rightTrigger < .15) {
-                    if ((Math.abs(mArm.getEncoderVelocity()) > 500)
-                            || (Math.abs(mElevator.getEncoderVelocity()) > 500)) {
-                        mBallShooter.intakeCargo(.45);
+                    if ((Math.abs(mArm.getEncoderVelocity()) > 700)
+                            || (Math.abs(mElevator.getEncoderVelocity()) > 700) && !mHatchGrabber.isExtended()) {
+                        mBallShooter.intakeCargo(.2);
                     } else {
                         mBallShooter.stop();
                     }
                 }
             }
 
+            // run ball shooter out when co driver holds right trigger,
+            // The ball shooter will stop above ^
             if (coController.rightTrigger > .15) {
                 mBallShooter.shootBall(coController.rightTrigger);
+                mHatchGrabber.shouldPunch(true);
+            } else {
+                mHatchGrabber.shouldPunch(false);
             }
 
             if ((!cargoDetection || forceCargoOff) && !forceCargoOn) {
@@ -225,21 +237,14 @@ public class SeriesStateMachine {
                     aimedRobotState = RobotState.CARGOL2FORWARDS;
                 } else if (coController.buttonY) {
                     aimedRobotState = RobotState.CARGOL3FORWARDS;
-                }
-                // We retract the cargo if the next cargo state is backwards, because it is
-                // obvious the drivers would have to do it on their own anyways otherwise
-                else if (coController.dPadDown) {
+                } else if (coController.dPadDown) {
                     aimedRobotState = RobotState.CARGOL1BACKWARDS;
-                    retractCargoIntake();
                 } else if (coController.dPadLeft) {
                     aimedRobotState = RobotState.CARGOSHIPBACKWARDS;
-                    retractCargoIntake();
                 } else if (coController.dPadRight) {
                     aimedRobotState = RobotState.CARGOL2BACKWARDS;
-                    retractCargoIntake();
                 } else if (coController.dPadUp) {
                     aimedRobotState = RobotState.CARGOL3BACKWARDS;
-                    retractCargoIntake();
                 }
             }
 
@@ -250,6 +255,7 @@ public class SeriesStateMachine {
                 aimedRobotState = RobotState.NONE;
                 mElevator.aimedState = ElevatorLevel.START;
             }
+
             if (mainController.buttonY) {
                 aimedRobotState = RobotState.REVLIMITSWITCH;
             }
@@ -274,21 +280,28 @@ public class SeriesStateMachine {
     }
 
     public void run() {
+
+        System.out.println("Elevator Encoder: " + mElevator.getEncoderValue());
+        System.out.println("Arm Encoder: " + mArm.getEncoderValue());
         // only run the sequence if the state is an actual one, having a NONE state
         // makes having a NullPointerExcpetion less likely
-        if (!RobotState.NONE.equals(aimedRobotState)) {
-            if (RobotState.START.equals(aimedRobotState)) {
-                initializeRobotPosition();
-            } else if (RobotState.CARGOHANDOFF.equals(aimedRobotState)) {
-                cargoHandoff();
-            } else if (RobotState.REVLIMITSWITCH.equals(aimedRobotState)) {
-                movementCheck(aimedRobotState).run();
-            } else if (RobotState.STOPPED.equals(aimedRobotState)) {
-                mElevator.aimedState = ElevatorLevel.STOPPED;
-                mArm.aimedState = ArmPosition.STOPPED;
-            } else if (!aimedRobotState.isSpecial()) {
-                goToAimedState();
+        try {
+            if (!RobotState.NONE.equals(aimedRobotState)) {
+                if (RobotState.START.equals(aimedRobotState)) {
+                    initializeRobotPosition();
+                } else if (RobotState.CARGOHANDOFF.equals(aimedRobotState)) {
+                    cargoHandoff();
+                } else if (RobotState.REVLIMITSWITCH.equals(aimedRobotState)) {
+                    movementCheck(aimedRobotState).run();
+                } else if (RobotState.STOPPED.equals(aimedRobotState)) {
+                    mElevator.aimedState = ElevatorLevel.STOPPED;
+                    mArm.aimedState = ArmPosition.STOPPED;
+                } else if (!aimedRobotState.isSpecial()) {
+                    goToAimedState();
+                }
             }
+        } catch (NullPointerException e) {
+            aimedRobotState = RobotState.NONE;
         }
     }
 
@@ -306,6 +319,8 @@ public class SeriesStateMachine {
             mBallIntake.stop();
             if (cargoDetectedAfterPiston) {
                 aimedRobotState = RobotState.CARGOSHIPFORWARDS;
+                //In order to automatically retract the intake after releasing
+                retractCargoIntake();
             } else {
                 aimedRobotState = RobotState.BEFORECARGOHANDOFF;
             }
@@ -441,7 +456,11 @@ public class SeriesStateMachine {
         greatestMinRotate = currentPositionRequiredMinRotate.isAboveOtherLevel(nextPositionRequiredMinRotate)
                 ? currentPositionRequiredMinRotate
                 : nextPositionRequiredMinRotate;
-
+        
+        if(isGoodForNoMinRotate(mArm.getEncoderValue(), aimedRobotState.getArmPosition().getValue())) {
+            greatestMinRotate = ElevatorLevel.LOWESTMINROTATE;
+            greatestMinRotateValue = 0;
+        }
         elevatorAboveMinRotate = mElevator.isAboveValue(greatestMinRotateValue, -550);
         elevatorAimedStateAboveMinRotate = aimedRobotState.getElevatorLevel().getValue() > greatestMinRotateValue;
         armReachedState = mArm.reachedState(aimedRobotState.getArmPosition());
@@ -512,5 +531,12 @@ public class SeriesStateMachine {
             return ElevatorLevel.MINROTATEBACK;
         }
         return ElevatorLevel.MINROTATE;
+    }
+
+    private boolean isGoodForNoMinRotate(int armEncoder, int futureArmEncoder) {
+        boolean currentBetweenLimit = armEncoder < Constants.armSRXBackwardLimit && armEncoder > Constants.armSRXVerticalLimit;
+        boolean futureBetweenLimit = futureArmEncoder < Constants.armSRXBackwardLimit && futureArmEncoder > Constants.armSRXVerticalLimit;
+
+        return currentBetweenLimit && futureBetweenLimit;
     }
 }

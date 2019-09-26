@@ -49,7 +49,6 @@ public class Elevator extends SRXSubsystem {
 	@Override
 	public void initSensors() {
 		super.initSensors();
-		System.out.println("initialized Elevator");
 		aimedState = ElevatorLevel.STOPPED;
 
 		// set the followers for the elevator, so the two stupid motors (victors) follow
