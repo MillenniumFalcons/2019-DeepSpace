@@ -154,9 +154,9 @@ public class Drivetrain {
 	 * @param scaleInputs    should be the elevator height over some predetermined
 	 *                       constant
 	 */
-	public void driveVisionTeleop(Joysticks mainController, SeriesStateMachine stateMachine, boolean scaleInputs) {
+	public void driveVisionTeleop(Joysticks mainController, SeriesStateMachine stateMachine, boolean scaleInputs, double armEncoderValue) {
 		if (mainController.rightBumper) {
-			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController);
+			VisionController.vision(stateMachine.getAimedRobotState(), scaleInputs, mainController, armEncoderValue);
 		} else {
 			mainController.setRumble(0);
 			// to not blind when not using vision

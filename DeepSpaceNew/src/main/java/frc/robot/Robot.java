@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
 
 	private static Notifier drivetrainNotifier = new Notifier(() -> {
 		mainController.update();
-		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000);
+		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
 	});
 
 	private static Notifier armFollowerNotifier = new Notifier(() -> {
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
 		}
 
 		AutonomousSequences.autoStep = 0;
-		runAuto = false;
+		runAuto = true;
 		mDrivetrain.init();
 		mDrivetrain.setToBrake();
 		mDrivetrain.resetEncoders();
@@ -231,17 +231,13 @@ public class Robot extends TimedRobot {
 		TestingMethods.reset();
 
 		lastMethod = LastMethod.kTesting;
-		mDrivetrain.init();
-		// Odometry.getInstance().setInitialOdometry(TrajectoryUtil.getTrajectoryFromName("LeftHabRocketFront"));
-		// odometryDrivetrainNotifier.startPeriodic(.01);
 	}
 
 	@Override
 	public void testPeriodic() {
-		
-		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
-		// TestingMethods.test(mArm);
 		mainController.update();
+		if(mainController.leftBumper){mHatchGrabber.grabHatch();}
+		else {mHatchGrabber.stop();}
 		lastMethod = LastMethod.kTesting;
 	}
 
