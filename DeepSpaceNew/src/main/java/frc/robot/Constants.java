@@ -127,9 +127,9 @@ public class Constants
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CURRENT LIMITING VALUES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Drivetrain Current Limiting Constants
-	public static final int drivePeakCurrent = 35; // Measured in Amps
+	public static final int drivePeakCurrent = 60; // Measured in Amps
 	public static final int drivePeakCurrentDuration = 1000; // Measured in Milliseconds
-	public static final int driveContinousCurrent = 30; // Measured in Amps
+	public static final int driveContinousCurrent = 35; // Measured in Amps
 
 	// Elevator Current Limiting
 	public static int kElevatorPeakCurrent = 50;
@@ -146,8 +146,8 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXFlatForwards = 4500; //4290;
-	public static final int armSRXFlatBackwards = 21700; //22400
-	public static final int armSRXAutoFlatBackwards = 21700; //22400
+	public static final int armSRXFlatBackwards = 21900; //22400
+	public static final int armSRXAutoFlatBackwards = 21850; //22400
 	public static final int armSRXLevel3FlatForwards = 5200; //4290;
 	public static final int armSRXLevel3FlatBackwards = 21500; //22400
 	public static final int armSRXCargoL3Front = 7600;
@@ -156,7 +156,7 @@ public class Constants
 	public static final int armSRXCargoShipBack = 24800;
 	public static final int armSRXHatchHandoff = 1700;
 	public static final int armSRXStowed = 11000;
-	public static final int armSRXVerticalStowed = 13500;
+	public static final int armSRXVerticalStowed = 13050; // alligned to the two bolts
 	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 26000;
 	public static final int armSRXFwdLimitSwitch = 26150;

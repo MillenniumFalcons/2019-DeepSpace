@@ -169,12 +169,12 @@ public class VisionController {
 		limelight.set("streamMode", 0);
 	}
 
-	public static VisionController getLimelight(ArmPosition armAimedState, double armEncoderValue) // ( ) ball shooter, >< hatch intake, ----
+	public static VisionController getLimelight(RobotState aimedRobotState, double armEncoderValue) // ( ) ball shooter, >< hatch intake, ----
 																			// arm, encoderVal is where the ball intake
 																			// is.
 	{
-		if (armAimedState != null) {
-			return armAimedState.getValue() > Constants.armSRXVerticalStowed ? limelightFourbar : limelightClimber;
+		if (aimedRobotState != null) {
+			return aimedRobotState.getArmPosition().getValue() > Constants.armSRXVerticalStowed ? limelightFourbar : limelightClimber;
 		} else {
 			return armEncoderValue > Constants.armSRXVerticalStowed ? limelightFourbar : limelightClimber;
 		}
@@ -184,10 +184,9 @@ public class VisionController {
 		double joyY = mainController.leftJoyStickY;
 		double joyX = mainController.rightJoyStickX;
 		VisionMode mode = VisionMode.kClosestLvl1;
-		VisionController mVision = limelightFourbar;
+		VisionController mVision = getLimelight(aimedRobotState, armEncoderValue);;
 
 		if (aimedRobotState != null) {
-			mVision = getLimelight(aimedRobotState.getArmPosition(), armEncoderValue);
 			int currentLevelValue = aimedRobotState.getElevatorLevel().getValue();
 			if (currentLevelValue > 30000) {
 				mode = VisionMode.kClosestLvl3;

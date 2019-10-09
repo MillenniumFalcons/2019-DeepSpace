@@ -165,7 +165,7 @@ public abstract class SRXSubsystem extends Subsystem {
 	 * 
 	 * @param encoderValue the new encoder value to be set, no bounds checking.
 	 */
-	protected void setEncoderValue(int encoderValue) {
+	public void setEncoderValue(int encoderValue) {
 		try {
 			masterSRX.setSelectedSensorPosition(encoderValue, 0, Constants.kTimeoutMs);
 		} catch (NullPointerException e) {

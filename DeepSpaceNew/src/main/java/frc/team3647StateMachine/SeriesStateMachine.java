@@ -200,7 +200,7 @@ public class SeriesStateMachine {
             // The ball shooter will stop above ^
             if (coController.rightTrigger > .15) {
                 mBallShooter.shootBall(coController.rightTrigger);
-                mHatchGrabber.shouldPunch(true);
+                mHatchGrabber.shouldPunch(!isRobotTooHighForPunch(mElevator.getEncoderValue(), aimedRobotState.getElevatorLevel().getValue()));
             } else {
                 mHatchGrabber.shouldPunch(false);
             }
@@ -538,5 +538,9 @@ public class SeriesStateMachine {
         boolean futureBetweenLimit = futureArmEncoder < Constants.armSRXBackwardLimit && futureArmEncoder > Constants.armSRXVerticalLimit;
 
         return currentBetweenLimit && futureBetweenLimit;
+    }
+
+    private boolean isRobotTooHighForPunch(double currentElevatorEncoder, double aimedElevatorEncoder) {
+        return currentElevatorEncoder > 35000 || aimedElevatorEncoder > 35000;
     }
 }

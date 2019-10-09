@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import frc.team3647StateMachine.ArmPosition;
 import frc.team3647StateMachine.SeriesStateMachine;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
@@ -111,7 +112,7 @@ public class Robot extends TimedRobot {
 		}
 
 		AutonomousSequences.autoStep = 0;
-		runAuto = true;
+		runAuto = false;
 		mDrivetrain.init();
 		mDrivetrain.setToBrake();
 		mDrivetrain.resetEncoders();
@@ -230,14 +231,20 @@ public class Robot extends TimedRobot {
 	public void testInit() {
 		TestingMethods.reset();
 
+		// mArm.setEncoderValue(-13050);
 		lastMethod = LastMethod.kTesting;
+		
 	}
 
 	@Override
 	public void testPeriodic() {
-		mainController.update();
-		if(mainController.leftBumper){mHatchGrabber.grabHatch();}
-		else {mHatchGrabber.stop();}
+		// mainController.update();
+		// TestingMethods.test(mArm);
+		// mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
+		// if(mainController.leftBumper){mHatchGrabber.grabHatch();}
+		// else {mHatchGrabber.stop();}
+
+		
 		lastMethod = LastMethod.kTesting;
 	}
 
