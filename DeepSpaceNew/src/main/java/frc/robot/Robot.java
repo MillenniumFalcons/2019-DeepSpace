@@ -48,10 +48,10 @@ public class Robot extends TimedRobot {
 
 	
 	// private static Sequence leftCargoShipAuto = new CargoShip(Side.LEFT);
-	private static Sequence leftRocket = new Rocket(Side.LEFT);
+	// private static Sequence leftRocket = new Rocket(Side.LEFT);
 
 	private static Notifier autoPathNotifier = new Notifier(() -> {
-		leftRocket.execute();
+		// leftRocket.execute();
 	});
 
 	private static Notifier drivetrainNotifier = new Notifier(() -> {
@@ -232,6 +232,7 @@ public class Robot extends TimedRobot {
 		TestingMethods.reset();
 
 		// mArm.setEncoderValue(-13050);
+		// AirCompressor.run();
 		lastMethod = LastMethod.kTesting;
 		
 	}
@@ -239,7 +240,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 		// mainController.update();
-		// TestingMethods.test(mArm);
+		TestingMethods.test(mArm);
 		// mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
 		// if(mainController.leftBumper){mHatchGrabber.grabHatch();}
 		// else {mHatchGrabber.stop();}

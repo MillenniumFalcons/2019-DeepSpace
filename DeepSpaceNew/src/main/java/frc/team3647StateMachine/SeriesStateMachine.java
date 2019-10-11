@@ -29,6 +29,8 @@ public class SeriesStateMachine {
 
     public boolean cargoDetectedAfterPiston;
 
+    private boolean tryingToRetractIntake = false;
+
     /**
      * for the coDriver a way to score hatches and get to hatch states if the cargo
      * beam break sensor is faulty, will report true
@@ -124,6 +126,8 @@ public class SeriesStateMachine {
      */
     ElevatorLevel greatestMinRotate;
 
+    private boolean armHasReset = false;
+
     // get all subsystems from the robot
     private Arm mArm = Robot.mArm;
     private Elevator mElevator = Robot.mElevator;
@@ -165,11 +169,13 @@ public class SeriesStateMachine {
             }
 
             if (coController.rightJoyStickPress) {
+                tryingToRetractIntake = true;
                 retractCargoIntake();
             }
 
             // starts ball intaking sequence
             if (coController.leftTrigger > .15) {
+                tryingToRetractIntake = false;
                 mHatchGrabber.retract(0);
                 // if the robot is at the loading station state, then just run ball shooter in
                 if (RobotState.CARGOLOADINGSTATIONBWD.equals(aimedRobotState)
@@ -224,7 +230,7 @@ public class SeriesStateMachine {
                 } else if (coController.dPadUp) {
                     aimedRobotState = RobotState.HATCHL3BACKWARDS;
                 } else if (coController.leftBumper) {
-                    if (!RobotState.HATCHL1FORWARDS.equals(aimedRobotState)) {
+                    if (!isRobotLevel1Forwards()) {
                         aimedRobotState = RobotState.HATCHL1BACKWARDS;
                     }
                 }
@@ -239,14 +245,24 @@ public class SeriesStateMachine {
                     aimedRobotState = RobotState.CARGOL3FORWARDS;
                 } else if (coController.dPadDown) {
                     aimedRobotState = RobotState.CARGOL1BACKWARDS;
-                } else if (coController.dPadLeft) {
-                    aimedRobotState = RobotState.CARGOSHIPBACKWARDS;
                 } else if (coController.dPadRight) {
+                    aimedRobotState = RobotState.CARGOSHIPBACKWARDS;
+                } else if (coController.dPadLeft) {
                     aimedRobotState = RobotState.CARGOL2BACKWARDS;
                 } else if (coController.dPadUp) {
                     aimedRobotState = RobotState.CARGOL3BACKWARDS;
                 }
             }
+
+            //if we reset we have different positioning for some reason
+            if(armHasReset) {
+                if(aimedRobotState == RobotState.HATCHL1BACKWARDS) {
+                    aimedRobotState = RobotState.HATCHL1BACKWARDSRESET;
+                } else if(aimedRobotState == RobotState.HATCHL1FORWARDS) {
+                    aimedRobotState = RobotState.HATCHL1FORWARDSRESET;
+                }
+            }
+
 
             // Main controller controls
             if (mainController.buttonA) {
@@ -257,6 +273,7 @@ public class SeriesStateMachine {
             }
 
             if (mainController.buttonY) {
+                armHasReset = true;
                 aimedRobotState = RobotState.REVLIMITSWITCH;
             }
 
@@ -330,7 +347,7 @@ public class SeriesStateMachine {
     }
 
     private void extendCargoGroundIntake() {
-        if (canCargoIntakeMove(mElevator) || mElevator.reachedState(RobotState.BEFORECARGOHANDOFF.getElevatorLevel())) {
+        if ((canCargoIntakeMove(mElevator) || mElevator.reachedState(RobotState.BEFORECARGOHANDOFF.getElevatorLevel())) && !tryingToRetractIntake) {
             mBallIntake.extend();
             mBallIntake.stop();
             if (!ballIntakeTimer.isRunning()) {
@@ -542,5 +559,9 @@ public class SeriesStateMachine {
 
     private boolean isRobotTooHighForPunch(double currentElevatorEncoder, double aimedElevatorEncoder) {
         return currentElevatorEncoder > 35000 || aimedElevatorEncoder > 35000;
+    }
+
+    private boolean isRobotLevel1Forwards() {
+        return aimedRobotState == RobotState.HATCHL1FORWARDSRESET || aimedRobotState == RobotState.HATCHL1FORWARDS;
     }
 }

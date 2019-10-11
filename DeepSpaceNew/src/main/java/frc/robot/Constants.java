@@ -146,7 +146,9 @@ public class Constants
 	// SRX MAG Encoder Positions
 	public static final int kArmSRXPositionThreshold = 400; // Threshold for arm positions in encoder values
 	public static final int armSRXFlatForwards = 4500; //4290;
+	public static final int armSRXFlatForwardsReset = 4800; //4290;
 	public static final int armSRXFlatBackwards = 21900; //22400
+	public static final int armSRXFlatBackwardsReset = 22350;
 	public static final int armSRXAutoFlatBackwards = 21850; //22400
 	public static final int armSRXLevel3FlatForwards = 5200; //4290;
 	public static final int armSRXLevel3FlatBackwards = 21500; //22400
@@ -156,7 +158,7 @@ public class Constants
 	public static final int armSRXCargoShipBack = 24800;
 	public static final int armSRXHatchHandoff = 1700;
 	public static final int armSRXStowed = 11000;
-	public static final int armSRXVerticalStowed = 13050; // alligned to the two bolts
+	public static final int armSRXVerticalStowed = 13070; // alligned to the two bolts
 	public static final int armSRXStowedBackwards = 15000;
 	public static final int armSRXCargoHandoff = 26000;
 	public static final int armSRXFwdLimitSwitch = 26150;
@@ -198,7 +200,7 @@ public class Constants
 	public static final int elevatorMinRotationBack = 16000;
 	public static final int elevatorStartingStowed = 5000;
 	public static final int elevatorCargoLoadingStation = 18300;
-	public static final int elevatorBeforeCargoHandoff = 14000;
+	public static final int elevatorBeforeCargoHandoff = 17000;
 
 
 	// Hatch Intake Positions

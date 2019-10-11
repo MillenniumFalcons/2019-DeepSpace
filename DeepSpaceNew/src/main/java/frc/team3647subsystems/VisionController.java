@@ -199,13 +199,6 @@ public class VisionController {
 
 		mVision.set(mode);
 
-
-		// if (!mVision.hasValidTarget()) {
-		// 	mainController.setRumble(1);
-		// } else {
-		// 	mainController.setRumble(0);
-		// }
-
 		if (mode == VisionMode.kDriver) {
 			Drivetrain.getInstance().customArcadeDrive(joyX, joyY, joyY < .15, scaleInputs);
 		} else if (Math.abs(joyX) > .09) {
