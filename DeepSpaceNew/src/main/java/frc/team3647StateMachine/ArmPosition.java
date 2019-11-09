@@ -16,6 +16,8 @@ public class ArmPosition extends SubsystemAimedState {
     public static final ArmPosition CARGOFLATFORWARDS = new ArmPosition(Constants.armSRXCargoFlatForwards, GameObject.kCargo);
     public static final ArmPosition HATCHFLATFORWARDS = new ArmPosition(Constants.armSRXFlatForwards, GameObject.kHatch);
     public static final ArmPosition HATCHFLATBACKWARDS = new ArmPosition(Constants.armSRXFlatBackwards, GameObject.kHatch);
+    public static final ArmPosition HATCHFLATBACKWARDSRESET = new ArmPosition(Constants.armSRXFlatBackwardsReset, GameObject.kHatch);
+    public static final ArmPosition HATCHFLATFORWARDSRESET = new ArmPosition(Constants.armSRXFlatForwardsReset, GameObject.kHatch);
     public static final ArmPosition HATCHFLATBACKWARDSAUTO = new ArmPosition(Constants.armSRXAutoFlatBackwards, GameObject.kHatch);
 
     public static final ArmPosition HATCHFLATFORWARDSL3 = new ArmPosition(Constants.armSRXLevel3FlatForwards, GameObject.kHatch);

@@ -37,7 +37,7 @@ public class Arm extends SRXSubsystem {
     public void init() {
         updateEncoder();
         initSensors();
-        setEncoderValue(13050);
+        setEncoderValue(Constants.armSRXVerticalStowed);
     }
     /**
      * What should run before teleop, initializes the arm but doesn't reset the

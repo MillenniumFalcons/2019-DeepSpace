@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import frc.team3647StateMachine.ArmPosition;
 import frc.team3647StateMachine.SeriesStateMachine;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
@@ -47,15 +48,15 @@ public class Robot extends TimedRobot {
 
 	
 	// private static Sequence leftCargoShipAuto = new CargoShip(Side.LEFT);
-	private static Sequence leftRocket = new Rocket(Side.LEFT);
+	// private static Sequence leftRocket = new Rocket(Side.LEFT);
 
 	private static Notifier autoPathNotifier = new Notifier(() -> {
-		leftRocket.execute();
+		// leftRocket.execute();
 	});
 
 	private static Notifier drivetrainNotifier = new Notifier(() -> {
 		mainController.update();
-		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000);
+		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
 	});
 
 	private static Notifier armFollowerNotifier = new Notifier(() -> {
@@ -230,18 +231,21 @@ public class Robot extends TimedRobot {
 	public void testInit() {
 		TestingMethods.reset();
 
+		// mArm.setEncoderValue(-13050);
+		// AirCompressor.run();
 		lastMethod = LastMethod.kTesting;
-		mDrivetrain.init();
-		// Odometry.getInstance().setInitialOdometry(TrajectoryUtil.getTrajectoryFromName("LeftHabRocketFront"));
-		// odometryDrivetrainNotifier.startPeriodic(.01);
+		
 	}
 
 	@Override
 	public void testPeriodic() {
+		// mainController.update();
+		TestingMethods.test(mArm);
+		// mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
+		// if(mainController.leftBumper){mHatchGrabber.grabHatch();}
+		// else {mHatchGrabber.stop();}
+
 		
-		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mainController.rightJoyStickPress);
-		// TestingMethods.test(mArm);
-		mainController.update();
 		lastMethod = LastMethod.kTesting;
 	}
 

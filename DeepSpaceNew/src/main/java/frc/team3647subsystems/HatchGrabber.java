@@ -95,6 +95,7 @@ public class HatchGrabber extends Subsystem {
 
 	private double limitCurrent(double motorConst, double currentConst) {
 		updateCurrent();
+		System.out.println("Hatch Motor current: " + current);
 		return current > currentConst ? (currentConst / current) * motorConst : motorConst;
 
 	}
@@ -105,7 +106,8 @@ public class HatchGrabber extends Subsystem {
 	}
 
 	public void grabHatch() {
-		hatchSucker.set(ControlMode.PercentOutput, limitCurrent(.6, 3.5));
+		double output = limitCurrent(1, 15);
+		hatchSucker.set(ControlMode.PercentOutput, output);
 	}
 
 	public void releaseHatch() {

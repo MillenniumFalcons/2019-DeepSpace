@@ -12,6 +12,9 @@ public class RobotState {
     public static final RobotState HATCHL1FORWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL1BACKWARDS = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATBACKWARDS);
 
+    public static final RobotState HATCHL1BACKWARDSRESET = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATBACKWARDSRESET);
+    public static final RobotState HATCHL1FORWARDSRESET = new RobotState(ElevatorLevel.BOTTOM, ArmPosition.HATCHFLATFORWARDSRESET);
+
     public static final RobotState HATCHL2FORWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATFORWARDS);
     public static final RobotState HATCHL2BACKWARDS = new RobotState(ElevatorLevel.HATCHL2, ArmPosition.HATCHFLATBACKWARDS);
 
