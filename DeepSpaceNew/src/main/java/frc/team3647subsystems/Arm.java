@@ -3,8 +3,10 @@ package frc.team3647subsystems;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 
@@ -15,19 +17,26 @@ import frc.team3647StateMachine.ArmPosition;
  * The arm class is what controls the arm on the robot, has the spark max motor
  * controller that follows the SRX and the way to get the arm to its aimed state
  */
-public class Arm extends SRXSubsystem {
+public class Arm extends Subsystem{
 
     private static Arm INSTANCE = new Arm();
-
+    public ArmPosition aimedState = ArmPosition.NONE;
     private CANSparkMax armNEO = new CANSparkMax(Constants.armNEOPin, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANDigitalInput revNeoLimitSwitch = armNEO.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
     private CANDigitalInput fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
     private CANEncoder neoEncoder = new CANEncoder(armNEO);
+    private CANPIDController neoPID = new CANPIDController(armNEO);
+    private double[] PIDArr = Constants.armNEOPIDF;
+    private double cruiseVelocity = Constants.armNEOSmartMotionCruiseVelocity;
+    private double acceleration = Constants.armNEOSmartMotionAcceleration;
+
+
+    private int encoderValue, encoderVelocity, encoderThreshold;
+
+    private boolean initialized = false;
 
     private Arm() {
-        super(Constants.armSRXPin, Constants.armPIDF, Constants.kArmSRXCruiseVelocity, Constants.kArmSRXAcceleration,
-                Constants.kArmSRXPositionThreshold);
-
+            
     }
 
     public static Arm getInstance() {
@@ -39,6 +48,7 @@ public class Arm extends SRXSubsystem {
         initSensors();
         setEncoderValue(Constants.armSRXVerticalStowed);
     }
+
     /**
      * What should run before teleop, initializes the arm but doesn't reset the
      * encoder so can run midgame
@@ -48,18 +58,25 @@ public class Arm extends SRXSubsystem {
         // Brake mode for easier PID
         armNEO.setIdleMode(IdleMode.kBrake);
         armNEO.enableVoltageCompensation(12);// max voltage of 12v to scale output better
-        super.initSensors();
+        neoEncoder = new CANEncoder(armNEO);
+        neoPID = new CANPIDController(armNEO);
+        neoPID.setFeedbackDevice(neoEncoder);
+        configPIDFMM(PIDArr[0], PIDArr[1], PIDArr[2], PIDArr[3], cruiseVelocity, acceleration);
     }
 
+    protected void configPIDFMM(double p, double i, double d, double f, double vel, double accel) {
+        neoEncoder.setPositionConversionFactor(Constants.ratioOfSrxToNeoEncoders);
+        neoEncoder.setVelocityConversionFactor(Constants.ratioOfSrxToNeoEncoders * Constants.rpmToRevPer100ms);
 
-    /**
-     * follower code for the NEO because it wouldn't follow a talon with motion
-     * magic otherwise
-     */
-    public void armNEOFollow() {
-        // set to voltage that srx is output on a scale of -1 to 1
-        armNEO.set(getMaster().getMotorOutputVoltage() / 12);
+        neoPID.setP(p, Constants.allSRXPID);
+		neoPID.setI(i, Constants.allSRXPID);
+		neoPID.setD(d, Constants.allSRXPID);
+		neoPID.setFF(f, Constants.allSRXPID);
+		// Motion Magic Constants
+		neoPID.setSmartMotionMaxVelocity(vel / (Constants.ratioOfSrxToNeoEncoders * Constants.rpmToRevPer100ms), Constants.allSRXPID);
+        neoPID.setSmartMotionMaxAccel(accel, Constants.allSRXPID);
     }
+    
 
     public void run() {
         if (!initialized) {
@@ -115,10 +132,12 @@ public class Arm extends SRXSubsystem {
         setEncoderValue(Constants.armSRXFwdLimitSwitch);
     }
 
+    public void setOpenLoop(double power) {
+        armNEO.set(power);
+    }
     /**
      * overrides from inherited stop to stop the neo and the SRX
      */
-    @Override
     public void stop() {
         try {
             setOpenLoop(0);
@@ -129,14 +148,6 @@ public class Arm extends SRXSubsystem {
             fwdNeoLimitSwitch = armNEO.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
             initSensors();
         }
-    }
-
-    /**
-     * move NEO manually to make sure it works, shouldn't be used normally
-     */
-    public void moveNEO(double power) {
-        armNEO.set(power);
-        System.out.println(armNEO.getMotorTemperature());
     }
 
     /**
@@ -164,12 +175,54 @@ public class Arm extends SRXSubsystem {
         }
     }
 
-    @Override
+    public void setEncoderValue(double value) {
+        neoEncoder.setPosition(value);
+    }
+
+    public void resetEncoder() {
+        setEncoderValue(0);
+    }
+
+
+    protected boolean positionThreshold(double constant) {
+		return (constant + encoderThreshold) > encoderValue && (constant - encoderThreshold) < encoderValue;
+	}
+
+	/**
+	 * @return is the subsystem encoder within a threshold of the parameter state's
+	 *         encoder
+	 * @param nAimedState state to check against
+	 */
+	public boolean reachedState(ArmPosition nAimedState) {
+		if (aimedState != null && !nAimedState.isSpecial()) {
+			return positionThreshold(nAimedState.getValue());
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @return has the subsystem reached its current aimed state
+	 * @see {@link reachedState(SubsystemAimedState)}
+	 */
+	public boolean reachedAimedState() {
+		return reachedState(aimedState);
+    }
+    
+
+    public void updateEncoder() {
+        encoderValue = (int)neoEncoder.getPosition();
+        encoderVelocity = (int)neoEncoder.getVelocity();
+    }
+
+    public void setPosition(double position) {
+        neoPID.setReference(position, ControlType.kSmartMotion);
+    }
+
     public void setToBrake() {
         armNEO.setIdleMode(IdleMode.kBrake);
     }
 
-    @Override
     public void setToCoast() {
         armNEO.setIdleMode(IdleMode.kCoast);
     }
@@ -186,12 +239,19 @@ public class Arm extends SRXSubsystem {
     public void printEncoder() {
         System.out.println("Arm encoder: " + getEncoderValue());
     }
+    	/**
+	 * @return current encoder value
+	 * @see void updateEncoder()
+	 */
+	public int getEncoderValue() {
+		return encoderValue;
+	}
 
-    public TalonSRX getMasterMotor() {
-        return getMaster();
-    }
-
-    public double getNEOEncoderValue() {
-        return neoEncoder.getPosition();
-    }
+	/**
+	 * @return current encoder velocity
+	 * @see void updateEncoder()
+	 */
+	public int getEncoderVelocity() {
+		return encoderVelocity;
+	}
 }

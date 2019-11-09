@@ -182,6 +182,28 @@ public class Constants
 	public static final double armNEOBallHandoff = 25.071;
 	public static final double armNEOFwdLimitSwitch = 77.074;
 
+	public static final double[] armNEOPIDF =  { .8, 0, 30, 0 };
+
+	// Arm motion magic
+	public static final int armNEOSmartMotionCruiseVelocity = 2200;
+	public static final int armNEOSmartMotionAcceleration = 4000;
+
+	/**
+	 * multiply talonSRX native units to get neo native units
+	 */
+	public static final double ratioOfNeoToSrxEncoders = armNEOFwdLimitSwitch / armSRXFwdLimitSwitch;
+
+
+	/**
+	 * multiply neo native units to get talonSRX native units
+	 */
+	public static final double ratioOfSrxToNeoEncoders = armSRXFwdLimitSwitch / armNEOFwdLimitSwitch;
+
+	/**
+	 * Multiply rpm to get revolution per 100ms (like talonSRX encoder)
+	 */
+	public static final double rpmToRevPer100ms = 600;
+
 	// Elevator Positions
 	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values
 	public static final int elevatorCargoL1 = 6200; // need to check

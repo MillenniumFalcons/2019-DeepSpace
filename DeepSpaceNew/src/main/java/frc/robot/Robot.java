@@ -59,10 +59,6 @@ public class Robot extends TimedRobot {
 		mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
 	});
 
-	private static Notifier armFollowerNotifier = new Notifier(() -> {
-		mArm.armNEOFollow();
-	});
-
 	private static Notifier odometryDrivetrainNotifier = new Notifier(() -> {
 		mDrivetrain.updateEncoders();
 		gyro.update();
@@ -134,7 +130,6 @@ public class Robot extends TimedRobot {
 		}
 
 		subsystemsEncodersNotifier.startPeriodic(.05);
-		armFollowerNotifier.startPeriodic(.01);
 
 		AirCompressor.run();
 
@@ -171,7 +166,6 @@ public class Robot extends TimedRobot {
 		mHatchGrabber.init();
 		subsystemsEncodersNotifier.startPeriodic(.05);
 		drivetrainNotifier.startPeriodic(.02);
-		armFollowerNotifier.startPeriodic(.01);
 
 		AirCompressor.run();
 		lastMethod = LastMethod.kTeleop;
@@ -233,7 +227,9 @@ public class Robot extends TimedRobot {
 
 		// mArm.setEncoderValue(-13050);
 		// AirCompressor.run();
+		mArm.init();
 		lastMethod = LastMethod.kTesting;
+		AirCompressor.stop();
 		
 	}
 
