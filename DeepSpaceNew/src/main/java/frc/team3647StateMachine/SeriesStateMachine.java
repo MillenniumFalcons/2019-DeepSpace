@@ -63,9 +63,7 @@ public class SeriesStateMachine {
      */
     private boolean ranClimbSequenceOnce = false;
 
-    private final Movement ARRIVED = new Arrived(() -> {
-        runCargoHandoff();
-    });
+    private final Movement ARRIVED = new Arrived(this::runCargoHandoff);
     private final Movement FREEMOVE = new FreeMove();
     private final Movement MOVEARM = new MoveArm();
     private final Movement MOVEELEV = new MoveElevator();

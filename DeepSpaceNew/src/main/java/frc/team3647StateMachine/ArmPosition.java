@@ -62,9 +62,9 @@ public class ArmPosition extends SubsystemAimedState {
         }
 
 
-        if(encoderValue < 4000) {
+        if(encoderValue < 3700) {
             this.minRotateToUse = ElevatorLevel.MINROTATEFRONT;
-        } else if (encoderValue > 22500) {
+        } else if (encoderValue > 23000) {
             this.minRotateToUse = ElevatorLevel.MINROTATEBACK;
         } else {
             this.minRotateToUse = ElevatorLevel.MINROTATE;

@@ -1,9 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team3647StateMachine.ArmPosition;
+import frc.team3647StateMachine.RobotState;
 import frc.team3647StateMachine.SeriesStateMachine;
 import frc.team3647autonomous.AutonomousSequences;
 import frc.team3647autonomous.Odometry;
@@ -82,6 +84,7 @@ public class Robot extends TimedRobot {
 
 		mDrivetrain.init();
 		mArm.setToBrake();
+		
 
 		lastMethod = LastMethod.kStarted;
 	}
@@ -181,7 +184,7 @@ public class Robot extends TimedRobot {
 		mArm.run();
 		mElevator.run();
 		mBallShooter.runBlink(stateMachine.cargoDetectedAfterPiston);
-
+		
 		// Drivetrain uses the notifier
 	}
 
@@ -228,6 +231,8 @@ public class Robot extends TimedRobot {
 		// mArm.setEncoderValue(-13050);
 		// AirCompressor.run();
 		mArm.init();
+
+		// mArm.setToCoast();
 		lastMethod = LastMethod.kTesting;
 		AirCompressor.stop();
 		
@@ -235,13 +240,22 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void testPeriodic() {
-		// mainController.update();
-		TestingMethods.test(mArm);
-		// mDrivetrain.driveVisionTeleop(mainController, stateMachine, mElevator.getEncoderValue() > 27000, mArm.getEncoderValue());
-		// if(mainController.leftBumper){mHatchGrabber.grabHatch();}
-		// else {mHatchGrabber.stop();}
-
 		
+		mainController.update();
+		mArm.run();
+		mArm.printEncoder();
+		mArm.updateEncoder();
+		if(mainController.buttonA) {
+			mArm.setAimedState(ArmPosition.CARGOL3FRONT);
+		} else if (mainController.buttonB) {
+			mArm.setAimedState(ArmPosition.CARGOHANDOFF);
+		} else if (mainController.buttonX) {
+			mArm.setAimedState(ArmPosition.HATCHFLATFORWARDS);
+		} else if(mainController.buttonY) {
+			mArm.setAimedState(ArmPosition.VERTICALSTOWED);
+		} 
+		// mArm.setOpenLoop(.3 * mainController.leftJoyStickY);	
+		// System.out.println("Joystick power: " + (.3 * mainController.leftJoyStickY));
 		lastMethod = LastMethod.kTesting;
 	}
 

@@ -57,12 +57,19 @@ public class TestingMethods {
     private static void testArm(Arm armInstance) {
 
         armInstance.updateEncoder();
-        System.out.println("Arm Encoder Value: " + armInstance.getEncoderValue());
-        System.out.println("Arm Rev Limit Switch: " + armInstance.getRevLimitSwitchValue() + "\nArm Fwd Limit Swtich: "
-                + armInstance.getFwdLimitSwitchValue());
-        if (armInstance.getRevLimitSwitchValue()) {
-            armInstance.resetEncoder();
-        }
+        System.out.println("NEO Encoder: " + armInstance.getEncoderValue());
+        System.out.println("NEO velocity: " + armInstance.getEncoderVelocity());
+
+        // System.out.println("SRX Encoder: " + armInstance.srxEncoderValue);
+        // System.out.println("SRX velocity: " + armInstance.srxVelocity);
+        
+        // System.out.println("Diff: " + (armInstance.srxVelocity - armInstance.getEncoderVelocity()));
+        // System.out.println("Arm Rev Limit Switch: " + armInstance.getRevLimitSwitchValue() + "\nArm Fwd Limit Swtich: "
+        //         + armInstance.getFwdLimitSwitchValue());
+        // if (armInstance.getRevLimitSwitchValue()) {
+        //     armInstance.resetEncoder();
+        //     armInstance.armSRX.setSelectedSensorPosition(0);
+        // }
     }
 
     private static void testBallShooter(BallShooter ballShooterInstance) {

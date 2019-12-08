@@ -172,21 +172,21 @@ public class Constants
 
 
 	// NEO Hall Effect SEnsor Positions
-	public static final double armNEOFlatForwards = 12.666;
-	public static final double armNEOFlatBackwards = 63.406;
+	public static final double armNEOFlatForwards = 12.59528;
+	public static final double armNEOFlatBackwards = 63.73938;
 	public static final double armNEOCargoL3Front = 72.811;
 	public static final double armNEOCargoL3Back = 4.976;
 	public static final double armNEOHatchHandoff = 5.024;
 	public static final double armNEOStowed = 32.714;
-	public static final double armNEOVerticalStowed = 37.642;
+	public static final double armNEOVerticalStowed = 38.380577;
 	public static final double armNEOBallHandoff = 25.071;
 	public static final double armNEOFwdLimitSwitch = 77.074;
 
-	public static final double[] armNEOPIDF =  { .8, 0, 30, 0 };
+	public static final double[] armNEOPIDF =  { .000, 0, 0.005, 0.0015}; //p=.00016 d = .0004
 
 	// Arm motion magic
-	public static final int armNEOSmartMotionCruiseVelocity = 2200;
-	public static final int armNEOSmartMotionAcceleration = 4000;
+	public static final int armNEOSmartMotionCruiseVelocity = 300;
+	public static final int armNEOSmartMotionAcceleration = 500;
 
 	/**
 	 * multiply talonSRX native units to get neo native units
@@ -202,7 +202,7 @@ public class Constants
 	/**
 	 * Multiply rpm to get revolution per 100ms (like talonSRX encoder)
 	 */
-	public static final double rpmToRevPer100ms = 600;
+	public static final double rpmToRevPer100ms = 1.0/600;
 
 	// Elevator Positions
 	public static final int kElevatorPositionThreshold = 500; // Threshold for arm positions in encoder values

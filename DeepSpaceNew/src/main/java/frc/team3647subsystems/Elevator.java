@@ -83,6 +83,10 @@ public class Elevator extends SRXSubsystem {
 		// must update banner sensor value every loop
 		updateBannerSensor();
 
+		if(bannerSensorValue && getEncoderValue() != 0) {
+			resetEncoder();
+		}
+
 		if (aimedState != null) {
 			if (!aimedState.isSpecial() && aimedState.getValue() != -1) {
 				setPosition(aimedState.getValue());
@@ -93,7 +97,6 @@ public class Elevator extends SRXSubsystem {
 			} else if (aimedState.equals(ElevatorLevel.START)) {
 				moveToBottomStart();
 			}
-
 		}
 	}
 

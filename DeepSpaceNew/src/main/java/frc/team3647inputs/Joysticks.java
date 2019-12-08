@@ -21,18 +21,6 @@ public class Joysticks {
 
 	private int controllerPin;
 
-	/**
-	 * @deprecated
-	 */
-	private double rumblePower;
-	/**
-	 * @deprecated
-	 */
-	private Timer rumbleTimer;
-	/**
-	 * @deprecated
-	 */
-	private boolean vibrated = false;
 
 	/**
 	 * Co-Driver Controller Variable
